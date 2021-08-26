@@ -2,7 +2,9 @@
 
 #include <string>
 
-enum TokenType {
+namespace lexer {
+
+enum Kind {
   Identifier,
   Constant,
   LBrace,
@@ -28,16 +30,23 @@ enum TokenType {
   Call,
   While,
   If,
-  Assign
+  Assign,
+  End,
+  Unexpected
 };
 
 struct Token {
-  TokenType type;
+  Kind type;
   std::string value;
 };
 
 class Lexer {
+private:
+  std::string m_source;
+
 public:
   Lexer(std::string source);
   Token getNextToken();
 };
+
+} // namespace lexer

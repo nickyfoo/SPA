@@ -63,7 +63,7 @@ public:
 
 class Lexer {
 private:
-  char *source;
+  const char *source;
 
   int lineNo;
   int colNo;
@@ -83,7 +83,7 @@ private:
   Token *orOrUnknown();
 
 public:
-  Lexer(char *_source) : source(_source), lineNo(1), colNo(0), idx(0){};
+  Lexer(const char *_source) : source(_source), lineNo(1), colNo(0), idx(0){};
   Token *getNextToken();
 };
 

@@ -35,26 +35,40 @@ Token *Lexer::getNextToken() {
   switch (get()) {
   case '\0':
     res = new Token(Kind::End, "", lineNo, colNo);
+    break;
+
+  case ';':
+    res = new Token(Kind::Semicolon, "", lineNo, colNo);
+    break;
 
   case '(':
     res = new Token(Kind::LParen, "", lineNo, colNo);
+    break;
   case ')':
     res = new Token(Kind::RParen, "", lineNo, colNo);
+    break;
   case '{':
     res = new Token(Kind::LBrace, "", lineNo, colNo);
+    break;
   case '}':
     res = new Token(Kind::RBrace, "", lineNo, colNo);
+    break;
 
   case '+':
     res = new Token(Kind::Plus, "", lineNo, colNo);
+    break;
   case '-':
     res = new Token(Kind::Minus, "", lineNo, colNo);
+    break;
   case '/':
     res = new Token(Kind::Divide, "", lineNo, colNo);
+    break;
   case '*':
     res = new Token(Kind::Multiply, "", lineNo, colNo);
+    break;
   case '%':
     res = new Token(Kind::Modulo, "", lineNo, colNo);
+    break;
 
   case '>':
     return gtOrGte();

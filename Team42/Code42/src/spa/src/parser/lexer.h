@@ -12,6 +12,8 @@ enum class Kind {
   LBrace,
   RBrace,
 
+  Semicolon,
+
   Plus,
   Minus,
   Divide,

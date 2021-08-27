@@ -1,5 +1,5 @@
 #include "ctype.h"
-#include "lexer.h"
+#include "Lexer.h"
 #include <string>
 
 using namespace lexer;

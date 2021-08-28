@@ -89,11 +89,12 @@ public:
 
 class BufferedLexer {
 private:
+  const char *source;
   Lexer *lexer;
   Token *next = nullptr;
 
 public:
-  BufferedLexer(Lexer *_lexer) : lexer(_lexer){};
+  BufferedLexer(char *_source) : source(_source), lexer(new Lexer(_source)){};
   Token *getNextToken();
   Token *peekNextToken();
 };

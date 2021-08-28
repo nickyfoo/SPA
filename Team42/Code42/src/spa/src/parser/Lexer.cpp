@@ -1,5 +1,5 @@
-#include "ctype.h"
 #include "Lexer.h"
+#include "ctype.h"
 #include <string>
 
 using namespace lexer;
@@ -23,7 +23,7 @@ Token *Lexer::getNextToken() {
   }
 
   if (isdigit(get())) {
-    return constant_();
+    return constantOrUnknown();
   }
 
   if (isalpha(get())) {
@@ -92,13 +92,17 @@ Token *Lexer::getNextToken() {
   return res;
 };
 
-Token *Lexer::constant_() {
+Token *Lexer::constantOrUnknown() {
   std::string value = "";
   int startCol = colNo;
 
   while (isdigit(get())) {
     value += get();
     next();
+  }
+
+  if (value[0] == '0') {
+    return new Token(Kind::Unknown, value, lineNo, startCol);
   }
 
   return new Token(Kind::Constant, value, lineNo, startCol);

@@ -69,7 +69,7 @@ private:
   int colNo;
   int idx;
 
-  Token *constant_();
+  Token *constantOrUnknown();
   Token *identifierOrKeyword();
 
   char get();

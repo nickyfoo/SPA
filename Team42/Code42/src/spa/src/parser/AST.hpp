@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include <vector>
 
@@ -13,6 +15,7 @@ enum Kind {
   While,
   Read,
   Print,
+  Call,
   Procedure,
   Program
 };
@@ -121,6 +124,14 @@ public:
 
   PrintNode(class IdentifierNode _var, int _lineNo, int _colNo)
       : Node(Kind::Print, _lineNo, _colNo), var(_var) {}
+};
+
+class CallNode : public Node {
+public:
+  class IdentifierNode proc;
+
+  CallNode(class IdentifierNode _proc, int _lineNo, int _colNo)
+      : Node(Kind::Call, _lineNo, _colNo), proc(_proc) {}
 };
 
 class ProcedureNode : public Node {

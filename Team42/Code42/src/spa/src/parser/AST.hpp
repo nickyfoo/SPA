@@ -135,6 +135,7 @@ public:
 };
 
 class ProcedureNode : public Node {
+public:
   std::vector<Node> stmtLst;
 
   ProcedureNode(std::vector<Node> _stmtLst, int _lineNo, int _colNo)
@@ -142,6 +143,7 @@ class ProcedureNode : public Node {
 };
 
 class ProgramNode : public Node {
+public:
   std::vector<class ProcedureNode> procedures;
 
   ProgramNode(std::vector<class ProcedureNode> _procedures, int _lineNo, int _colNo)

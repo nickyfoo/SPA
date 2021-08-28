@@ -32,108 +32,108 @@ public:
   Node(Kind _kind, int _lineNo, int _colNo) : kind(_kind), lineNo(_lineNo), colNo(_colNo) {}
 };
 
-class Identifier : public Node {
+class IdentifierNode : public Node {
 public:
   std::string name;
 
-  Identifier(std::string _name, int _lineNo, int _colNo)
+  IdentifierNode(std::string _name, int _lineNo, int _colNo)
       : Node(Kind::Identifier, _lineNo, _colNo), name(_name) {}
 };
 
-class Constant : public Node {
+class ConstantNode : public Node {
 public:
   std::string value;
 
-  Constant(std::string _value, int _lineNo, int _colNo)
+  ConstantNode(std::string _value, int _lineNo, int _colNo)
       : Node(Kind::Constant, _lineNo, _colNo), value(_value) {}
 };
 
-class Expression : public Node {
+class ExpressionNode : public Node {
 public:
   ExprOp op;
   Node left;
   Node right;
 
-  Expression(ExprOp _op, Node _left, Node _right, int _lineNo, int _colNo)
+  ExpressionNode(ExprOp _op, Node _left, Node _right, int _lineNo, int _colNo)
       : Node(Kind::Expression, _lineNo, _colNo), op(_op), left(_left), right(_right) {}
 };
 
-class RelExpression : public Node {
+class RelExpressionNode : public Node {
 public:
   RelExprOp op;
   Node left;
   Node right;
 
-  RelExpression(RelExprOp _op, Node _left, Node _right, int _lineNo, int _colNo)
+  RelExpressionNode(RelExprOp _op, Node _left, Node _right, int _lineNo, int _colNo)
       : Node(Kind::RelExpression, _lineNo, _colNo), op(_op), left(_left), right(_right) {}
 };
 
-class CondExpression : public Node {
+class CondExpressionNode : public Node {
 public:
   CondExprOp op;
   Node left;
   Node right;
 
-  CondExpression(CondExprOp _op, Node _left, Node _right, int _lineNo, int _colNo)
+  CondExpressionNode(CondExprOp _op, Node _left, Node _right, int _lineNo, int _colNo)
       : Node(Kind::CondExpression, _lineNo, _colNo), op(_op), left(_left), right(_right) {}
 };
 
-class Assign : public Node {
+class AssignNode : public Node {
 public:
-  class Identifier var;
-  class Expression expr;
+  class IdentifierNode var;
+  class ExpressionNode expr;
 
-  Assign(class Identifier _var, class Expression _expr, int _lineNo, int _colNo)
+  AssignNode(class IdentifierNode _var, class ExpressionNode _expr, int _lineNo, int _colNo)
       : Node(Kind::Assign, _lineNo, _colNo), var(_var), expr(_expr) {}
 };
 
-class If : public Node {
+class IfNode : public Node {
 public:
-  class CondExpression cond;
+  class CondExpressionNode cond;
   std::vector<Node> ifBlock;
   std::vector<Node> elseBlock;
 
-  If(class CondExpression _cond, std::vector<Node> _ifBlock, std::vector<Node> _elseBlock,
-     int _lineNo, int _colNo)
+  IfNode(class CondExpressionNode _cond, std::vector<Node> _ifBlock, std::vector<Node> _elseBlock,
+         int _lineNo, int _colNo)
       : Node(Kind::If, _lineNo, _colNo), cond(_cond), ifBlock(_ifBlock), elseBlock(_elseBlock) {}
 };
 
-class While : public Node {
+class WhileNode : public Node {
 public:
-  class CondExpression cond;
+  class CondExpressionNode cond;
   std::vector<Node> stmtLst;
 
-  While(class CondExpression _cond, std::vector<Node> _stmtLst, int _lineNo, int _colNo)
+  WhileNode(class CondExpressionNode _cond, std::vector<Node> _stmtLst, int _lineNo, int _colNo)
       : Node(Kind::While, _lineNo, _colNo), cond(_cond), stmtLst(_stmtLst) {}
 };
 
-class Read : public Node {
+class ReadNode : public Node {
 public:
-  class Identifier var;
+  class IdentifierNode var;
 
-  Read(class Identifier _var, int _lineNo, int _colNo)
+  ReadNode(class IdentifierNode _var, int _lineNo, int _colNo)
       : Node(Kind::Read, _lineNo, _colNo), var(_var) {}
 };
 
-class Print : public Node {
+class PrintNode : public Node {
 public:
-  class Identifier var;
+  class IdentifierNode var;
 
-  Print(class Identifier _var, int _lineNo, int _colNo)
+  PrintNode(class IdentifierNode _var, int _lineNo, int _colNo)
       : Node(Kind::Print, _lineNo, _colNo), var(_var) {}
 };
 
-class Procedure : public Node {
+class ProcedureNode : public Node {
   std::vector<Node> stmtLst;
 
-  Procedure(std::vector<Node> _stmtLst, int _lineNo, int _colNo)
+  ProcedureNode(std::vector<Node> _stmtLst, int _lineNo, int _colNo)
       : Node(Kind::Procedure, _lineNo, _colNo), stmtLst(_stmtLst) {}
 };
 
-class Program : public Node {
-  std::vector<class Procedure> procedures;
+class ProgramNode : public Node {
+  std::vector<class ProcedureNode> procedures;
 
-  Program(std::vector<class Procedure> _procedures, int _lineNo, int _colNo)
+  ProgramNode(std::vector<class ProcedureNode> _procedures, int _lineNo, int _colNo)
       : Node(Kind::Procedure, _lineNo, _colNo), procedures(_procedures) {}
 };
 

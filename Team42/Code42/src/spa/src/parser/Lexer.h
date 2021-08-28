@@ -94,7 +94,7 @@ private:
   Token *next = nullptr;
 
 public:
-  BufferedLexer(char *_source) : source(_source), lexer(new Lexer(_source)){};
+  BufferedLexer(const char *_source) : source(_source), lexer(new Lexer(_source)){};
   Token *getNextToken();
   Token *peekNextToken();
 };

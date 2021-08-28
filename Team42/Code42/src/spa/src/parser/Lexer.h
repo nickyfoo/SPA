@@ -87,4 +87,15 @@ public:
   Token *getNextToken();
 };
 
+class BufferedLexer {
+private:
+  Lexer *lexer;
+  Token *next = nullptr;
+
+public:
+  BufferedLexer(Lexer *_lexer) : lexer(_lexer){};
+  Token *getNextToken();
+  Token *peekNextToken();
+};
+
 } // namespace lexer

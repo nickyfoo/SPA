@@ -219,3 +219,22 @@ Token *Lexer::orOrUnknown() {
 
   return new Token(Kind::Unknown, "|", lineNo, colNo - 1);
 }
+
+Token *BufferedLexer::getNextToken() {
+  if (next != nullptr) {
+    Token *tmp = next;
+    next = nullptr;
+    return tmp;
+  }
+
+  return lexer->getNextToken();
+}
+
+Token *BufferedLexer::peekNextToken() {
+  if (next != nullptr) {
+    return next;
+  }
+
+  next = lexer->getNextToken();
+  return next;
+}

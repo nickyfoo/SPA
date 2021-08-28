@@ -199,14 +199,137 @@ ast::AssignNode parseAssign(lexer::BufferedLexer lexer) {
   return ast::AssignNode{var, expr, startLine, startCol};
 }
 
-ast::ExpressionNode parseExpression(lexer::BufferedLexer lexer) { throw "Not implemented!"; }
+ast::ExpressionNode parseExpression(lexer::BufferedLexer lexer) {
+  /* lexer::Token *t = lexer.getNextToken(); */
+  /* int startLine = t->lineNo; */
+  /* int startCol = t->colNo; */
+
+  /* ast::Node left; */
+  /* ast::Node right; */
+  /* ast::ExprOp op; */
+
+  /* if (t->kind == lexer::Kind::LParen) { */
+  /*   left = parser::parseExpression(lexer); */
+
+  /*   t = lexer.getNextToken(); */
+  /*   if (t->kind != lexer::Kind::RParen) { */
+  /*     throw parseError(")", t->lineNo, t->colNo); */
+  /*   } */
+  /* } else if (t->kind != lexer::Kind::Constant || t->kind != lexer::Kind::Identifier) { */
+  /*   throw parseError("( or <Constant> or <Identifier>", t->lineNo, t->colNo); */
+  /* } else { */
+
+  /* } */
+}
 
 ast::CondExpressionNode parseCondExpression(lexer::BufferedLexer lexer) {
   // include parsing "(" and ")" that always comes with condExpr
-  throw "Not implemented!";
+  lexer::Token *t = lexer.getNextToken();
+  int startLine = t->lineNo;
+  int startCol = t->colNo;
+
+  if (t->kind != lexer::Kind::LParen) {
+    throw parseError("(", t->lineNo, t->colNo);
+  }
+
+  t = lexer.peekNextToken();
+
+  if (t->kind == lexer::Kind::Not) {
+    // flush "!"
+    lexer.getNextToken();
+    ast::Node left = parser::parseCondExpression(lexer);
+
+    t = lexer.getNextToken();
+    if (t->kind != lexer::Kind::RParen) {
+      throw parseError(")", t->lineNo, t->colNo);
+    }
+
+    return ast::CondExpressionNode{ast::CondExprOp::Not, left, ast::Node(), startLine, startCol};
+  }
+
+  if (t->kind == lexer::Kind::Constant || t->kind == lexer::Kind::Identifier) {
+    ast::Node left = parser::parseRelExpression(lexer);
+
+    t = lexer.getNextToken();
+    if (t->kind != lexer::Kind::RParen) {
+      throw parseError(")", t->lineNo, t->colNo);
+    }
+
+    return ast::CondExpressionNode{ast::CondExprOp::None, left, ast::Node(), startLine, startCol};
+  }
+
+  if (t->kind != lexer::Kind::LParen) {
+    throw parseError("! or ( or <Constant> or <Identifier>", t->lineNo, t->colNo);
+  }
+
+  // And or Or
+  ast::Node left = parser::parseCondExpression(lexer);
+  ast::CondExprOp op;
+
+  t = lexer.getNextToken();
+  if (t->kind == lexer::Kind::And) {
+    op = ast::CondExprOp::And;
+  } else if (t->kind == lexer::Kind::Or) {
+    op = ast::CondExprOp::Or;
+  } else {
+    throw parseError("|| or &&", t->lineNo, t->colNo);
+  }
+
+  ast::Node right = parser::parseCondExpression(lexer);
+
+  t = lexer.getNextToken();
+  if (t->kind != lexer::Kind::RParen) {
+    throw parseError(")", t->lineNo, t->colNo);
+  }
+
+  return ast::CondExpressionNode{op, left, right, startLine, startCol};
 }
 
-ast::RelExpressionNode parseRelExpression(lexer::BufferedLexer lexer) { throw "Not implemented!"; }
+ast::RelExpressionNode parseRelExpression(lexer::BufferedLexer lexer) {
+  lexer::Token *t = lexer.getNextToken();
+  int startLine = t->lineNo;
+  int startCol = t->colNo;
+
+  ast::Node left;
+  if (t->kind == lexer::Kind::Constant) {
+    left = ast::ConstantNode{t->value, t->lineNo, t->colNo};
+  } else if (t->kind == lexer::Kind::Identifier) {
+    left = ast::IdentifierNode{t->value, t->lineNo, t->colNo};
+  } else {
+    throw parseError("<Constant> or <Identifier>", t->lineNo, t->colNo);
+  }
+
+  t = lexer.getNextToken();
+  ast::RelExprOp op;
+  switch (t->kind) {
+  case lexer::Kind::Gt:
+    op = ast::RelExprOp::Gt;
+  case lexer::Kind::Gte:
+    op = ast::RelExprOp::Gte;
+  case lexer::Kind::Lt:
+    op = ast::RelExprOp::Lt;
+  case lexer::Kind::Lte:
+    op = ast::RelExprOp::Lte;
+  case lexer::Kind::Eq:
+    op = ast::RelExprOp::Eq;
+  case lexer::Kind::Neq:
+    op = ast::RelExprOp::Neq;
+  default:
+    throw parseError(">, >=, <, <=, ==, !=", t->lineNo, t->colNo);
+  }
+
+  t = lexer.getNextToken();
+  ast::Node right;
+  if (t->kind == lexer::Kind::Constant) {
+    left = ast::ConstantNode{t->value, t->lineNo, t->colNo};
+  } else if (t->kind == lexer::Kind::Identifier) {
+    left = ast::IdentifierNode{t->value, t->lineNo, t->colNo};
+  } else {
+    throw parseError("<Constant> or <Identifier>", t->lineNo, t->colNo);
+  }
+
+  return ast::RelExpressionNode{op, left, right, startLine, startCol};
+}
 
 std::vector<ast::Node> parseStmtLst(lexer::BufferedLexer lexer) {
   // include parsing of "{" and "}" that always surrounds a stmtLst

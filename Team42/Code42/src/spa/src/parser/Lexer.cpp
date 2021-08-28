@@ -101,7 +101,7 @@ Token *Lexer::constantOrUnknown() {
     next();
   }
 
-  if (value[0] == '0') {
+  if (value.length() > 1 && value[0] == '0') {
     return new Token(Kind::Unknown, value, lineNo, startCol);
   }
 

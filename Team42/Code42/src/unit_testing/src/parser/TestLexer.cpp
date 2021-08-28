@@ -13,10 +13,8 @@ TEST_CASE("Lexer 1st Test") {
                        "\tcall computeCentroid;\n"
                        "\tcall printResults;\n"
                        "}";
-  Lexer L(source.c_str());
 
   int numExpectedTokens = 14;
-
   Token *expectedTokens[] = {
       new Token(Kind::Procedure, "", 1, 0),
       new Token(Kind::Identifier, "main", 1, 10),
@@ -34,6 +32,7 @@ TEST_CASE("Lexer 1st Test") {
       new Token(Kind::RBrace, "", 5, 0),
   };
 
+  Lexer L(source.c_str());
   for (int i = 0; i < numExpectedTokens; i++) {
     Token *t = L.getNextToken();
     Token *e = expectedTokens[i];
@@ -41,5 +40,25 @@ TEST_CASE("Lexer 1st Test") {
     REQUIRE(t->value == e->value);
     REQUIRE(t->lineNo == e->lineNo);
     REQUIRE(t->colNo == e->colNo);
+  }
+
+  BufferedLexer B(source.c_str());
+  for (int i = 0; i < numExpectedTokens; i++) {
+    if (i % 2 == 0) {
+      Token *t = B.peekNextToken();
+      Token *e = expectedTokens[i];
+      REQUIRE(t->kind == e->kind);
+      REQUIRE(t->value == e->value);
+      REQUIRE(t->lineNo == e->lineNo);
+      REQUIRE(t->colNo == e->colNo);
+      B.getNextToken();
+    } else {
+      Token *t = B.getNextToken();
+      Token *e = expectedTokens[i];
+      REQUIRE(t->kind == e->kind);
+      REQUIRE(t->value == e->value);
+      REQUIRE(t->lineNo == e->lineNo);
+      REQUIRE(t->colNo == e->colNo);
+    }
   }
 }

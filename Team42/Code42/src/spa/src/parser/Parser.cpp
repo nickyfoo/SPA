@@ -1,6 +1,8 @@
 #include "AST.hpp"
 #include "Lexer.h"
 #include "Parser.h"
+#include <queue>
+#include <stack>
 #include <string>
 #include <vector>
 
@@ -199,27 +201,160 @@ ast::AssignNode parseAssign(lexer::BufferedLexer lexer) {
   return ast::AssignNode{var, expr, startLine, startCol};
 }
 
+bool isExpressionToken(lexer::Token *t) {
+  switch (t->kind) {
+  case lexer::Kind::Constant:
+  case lexer::Kind::Identifier:
+  case lexer::Kind::LParen:
+  case lexer::Kind::RParen:
+  case lexer::Kind::Plus:
+  case lexer::Kind::Minus:
+  case lexer::Kind::Multiply:
+  case lexer::Kind::Divide:
+  case lexer::Kind::Modulo:
+    return true;
+  default:
+    return false;
+  }
+}
+
+ast::ExprOp exprOpFromToken(lexer::Token *t) {
+  switch (t->kind) {
+  case lexer::Kind::Plus:
+    return ast::ExprOp::Plus;
+  case lexer::Kind::Minus:
+    return ast::ExprOp::Minus;
+  case lexer::Kind::Multiply:
+    return ast::ExprOp::Times;
+  case lexer::Kind::Divide:
+    return ast::ExprOp::Divide;
+  case lexer::Kind::Modulo:
+    return ast::ExprOp::Modulo;
+  default:
+    throw "Expected op but got non-op kind at " + std::to_string(t->lineNo) + ":" +
+        std::to_string(t->colNo);
+  }
+}
+
+bool precedes(lexer::Token *t1, lexer::Token *t2) {
+  // return true if t1 has greater or equal precedence than t2
+  switch (t1->kind) {
+  case lexer::Kind::Multiply:
+  case lexer::Kind::Divide:
+  case lexer::Kind::Modulo:
+    return true;
+  case lexer::Kind::Plus:
+  case lexer::Kind::Minus:
+    if (t2->kind == lexer::Kind::Plus || t2->kind == lexer::Kind::Minus) {
+      return true;
+    } else if (t2->kind == lexer::Kind::Multiply || t2->kind == lexer::Kind::Divide ||
+               t2->kind == lexer::Kind::Modulo) {
+      return false;
+    } else {
+      throw "Expected op but got non-op kind at " + std::to_string(t2->lineNo) + ":" +
+          std::to_string(t2->colNo);
+    }
+  default:
+    throw "Expected op but got non-op kind at " + std::to_string(t1->lineNo) + ":" +
+        std::to_string(t1->colNo);
+  }
+}
+
 ast::ExpressionNode parseExpression(lexer::BufferedLexer lexer) {
-  /* lexer::Token *t = lexer.getNextToken(); */
-  /* int startLine = t->lineNo; */
-  /* int startCol = t->colNo; */
+  // use shunting yard algorithm to parse expressions
+  std::stack<ast::Node> outputStack{};
+  std::stack<lexer::Token *> operatorStack{};
 
-  /* ast::Node left; */
-  /* ast::Node right; */
-  /* ast::ExprOp op; */
+  lexer::Token *t = lexer.peekNextToken();
+  while (isExpressionToken(t)) {
+    if (t->kind == lexer::Kind::Constant) {
+      outputStack.push(ast::ConstantNode{t->value, t->lineNo, t->colNo});
 
-  /* if (t->kind == lexer::Kind::LParen) { */
-  /*   left = parser::parseExpression(lexer); */
+    } else if (t->kind == lexer::Kind::Identifier) {
+      outputStack.push(ast::IdentifierNode{t->value, t->lineNo, t->colNo});
 
-  /*   t = lexer.getNextToken(); */
-  /*   if (t->kind != lexer::Kind::RParen) { */
-  /*     throw parseError(")", t->lineNo, t->colNo); */
-  /*   } */
-  /* } else if (t->kind != lexer::Kind::Constant || t->kind != lexer::Kind::Identifier) { */
-  /*   throw parseError("( or <Constant> or <Identifier>", t->lineNo, t->colNo); */
-  /* } else { */
+    } else if (t->kind == lexer::Kind::LParen) {
+      operatorStack.push(t);
 
-  /* } */
+    } else if (t->kind == lexer::Kind::RParen) {
+      lexer::Token *op;
+      while (!operatorStack.empty() && (op = operatorStack.top())->kind != lexer::Kind::LParen) {
+        operatorStack.pop();
+
+        if (operatorStack.empty()) {
+          throw parseError("matching parenthesis", t->lineNo, t->colNo);
+        }
+
+        if (outputStack.size() < 2) {
+          throw parseError("missing operand", op->lineNo, op->colNo);
+        }
+
+        ast::Node right = outputStack.top();
+        outputStack.pop();
+        ast::Node left = outputStack.top();
+        outputStack.pop();
+        ast::ExprOp exprOp = exprOpFromToken(op);
+
+        outputStack.push(ast::ExpressionNode{exprOp, left, right, op->lineNo, op->colNo});
+      }
+
+      // flush matching (
+      operatorStack.pop();
+    } else {
+      // t is an operator
+      lexer::Token *op = operatorStack.top();
+      while (!operatorStack.empty() && op->kind != lexer::Kind::LParen && precedes(op, t)) {
+        operatorStack.pop();
+
+        if (outputStack.size() < 2) {
+          throw parseError("missing operand", op->lineNo, op->colNo);
+        }
+
+        ast::Node right = outputStack.top();
+        outputStack.pop();
+        ast::Node left = outputStack.top();
+        outputStack.pop();
+        ast::ExprOp exprOp = exprOpFromToken(op);
+
+        outputStack.push(ast::ExpressionNode{exprOp, left, right, op->lineNo, op->colNo});
+      }
+    }
+
+    // flush the token and peek next
+    lexer.getNextToken();
+    t = lexer.peekNextToken();
+  }
+
+  while (!operatorStack.empty()) {
+    lexer::Token *op = operatorStack.top();
+    operatorStack.pop();
+
+    if (outputStack.size() < 2) {
+      throw parseError("missing operand", op->lineNo, op->colNo);
+    }
+
+    ast::Node right = outputStack.top();
+    outputStack.pop();
+    ast::Node left = outputStack.top();
+    outputStack.pop();
+    ast::ExprOp exprOp = exprOpFromToken(op);
+
+    outputStack.push(ast::ExpressionNode{exprOp, left, right, op->lineNo, op->colNo});
+  }
+
+  ast::Node *n = &outputStack.top();
+  outputStack.pop();
+
+  if (outputStack.size() > 0) {
+    throw parseError("dangling operand", outputStack.top().lineNo, outputStack.top().colNo);
+  }
+
+  if (n->kind == ast::Kind::Expression) {
+    ast::ExpressionNode *res = static_cast<ast::ExpressionNode *>(n);
+    return *res;
+  }
+
+  return ast::ExpressionNode{ast::ExprOp::Noop, *n, ast::Node{}, n->lineNo, n->colNo};
 }
 
 ast::CondExpressionNode parseCondExpression(lexer::BufferedLexer lexer) {

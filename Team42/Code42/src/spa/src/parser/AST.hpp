@@ -20,7 +20,7 @@ enum Kind {
   Program
 };
 
-enum ExprOp { Plus, Minus, Times, Divide, Modulo };
+enum ExprOp { Plus, Minus, Times, Divide, Modulo, Noop };
 
 enum RelExprOp { Gt, Gte, Lt, Lte, Eq, Neq };
 

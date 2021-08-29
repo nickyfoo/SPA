@@ -1,6 +1,7 @@
 #include "AST.hpp"
 #include "Lexer.h"
 #include "Parser.h"
+#include <iostream>
 #include <queue>
 #include <stack>
 #include <string>
@@ -13,8 +14,9 @@ std::string parseError(std::string expected, int lineNo, int colNo) {
          std::to_string(colNo);
 }
 
-ast::ProgramNode parseProgram(lexer::BufferedLexer lexer) {
-  lexer::Token *t = lexer.peekNextToken();
+ast::ProgramNode parser::parseProgram(lexer::BufferedLexer *lexer) {
+
+  lexer::Token *t = lexer->peekNextToken();
   int startLine = t->lineNo;
   int startCol = t->colNo;
 
@@ -26,13 +28,15 @@ ast::ProgramNode parseProgram(lexer::BufferedLexer lexer) {
 
     ast::ProcedureNode p = parseProcedure(lexer);
     procedures.push_back(p);
+
+    t = lexer->peekNextToken();
   }
 
   return ast::ProgramNode{procedures, startLine, startCol};
 }
 
-ast::ProcedureNode parseProcedure(lexer::BufferedLexer lexer) {
-  lexer::Token *t = lexer.getNextToken();
+ast::ProcedureNode parser::parseProcedure(lexer::BufferedLexer *lexer) {
+  lexer::Token *t = lexer->getNextToken();
   int startLine = t->lineNo;
   int startCol = t->colNo;
 
@@ -41,30 +45,20 @@ ast::ProcedureNode parseProcedure(lexer::BufferedLexer lexer) {
   }
 
   // procedure name
-  t = lexer.getNextToken();
+  t = lexer->getNextToken();
   if (t->kind != lexer::Kind::Identifier) {
     throw parseError("<Identifier> (procedure)", t->lineNo, t->colNo);
   }
   std::string procName = t->value;
 
-  t = lexer.getNextToken();
-  if (t->kind != lexer::Kind::LBrace) {
-    throw parseError("{", t->lineNo, t->colNo);
-  }
-
   // statements
   std::vector<ast::Node> stmtLst = parseStmtLst(lexer);
-
-  t = lexer.getNextToken();
-  if (t->kind != lexer::Kind::RBrace) {
-    throw parseError("}", t->lineNo, t->colNo);
-  }
 
   return ast::ProcedureNode{stmtLst, startLine, startCol};
 }
 
-ast::ReadNode parseRead(lexer::BufferedLexer lexer) {
-  lexer::Token *t = lexer.getNextToken();
+ast::ReadNode parser::parseRead(lexer::BufferedLexer *lexer) {
+  lexer::Token *t = lexer->getNextToken();
   int startLine = t->lineNo;
   int startCol = t->colNo;
 
@@ -72,13 +66,13 @@ ast::ReadNode parseRead(lexer::BufferedLexer lexer) {
     throw parseError("read", t->lineNo, t->colNo);
   }
 
-  t = lexer.getNextToken();
+  t = lexer->getNextToken();
   if (t->kind != lexer::Kind::Identifier) {
     throw parseError("<Identifier> (variable)", t->lineNo, t->colNo);
   }
   ast::IdentifierNode var{t->value, t->lineNo, t->colNo};
 
-  t = lexer.getNextToken();
+  t = lexer->getNextToken();
   if (t->kind != lexer::Kind::Semicolon) {
     throw parseError(";", t->lineNo, t->colNo);
   }
@@ -86,8 +80,8 @@ ast::ReadNode parseRead(lexer::BufferedLexer lexer) {
   return ast::ReadNode{var, startLine, startCol};
 }
 
-ast::PrintNode parsePrint(lexer::BufferedLexer lexer) {
-  lexer::Token *t = lexer.getNextToken();
+ast::PrintNode parser::parsePrint(lexer::BufferedLexer *lexer) {
+  lexer::Token *t = lexer->getNextToken();
   int startLine = t->lineNo;
   int startCol = t->colNo;
 
@@ -95,13 +89,13 @@ ast::PrintNode parsePrint(lexer::BufferedLexer lexer) {
     throw parseError("print", t->lineNo, t->colNo);
   }
 
-  t = lexer.getNextToken();
+  t = lexer->getNextToken();
   if (t->kind != lexer::Kind::Identifier) {
     throw parseError("<Identifier> (variable)", t->lineNo, t->colNo);
   }
   ast::IdentifierNode var{t->value, t->lineNo, t->colNo};
 
-  t = lexer.getNextToken();
+  t = lexer->getNextToken();
   if (t->kind != lexer::Kind::Semicolon) {
     throw parseError(";", t->lineNo, t->colNo);
   }
@@ -109,8 +103,8 @@ ast::PrintNode parsePrint(lexer::BufferedLexer lexer) {
   return ast::PrintNode{var, startLine, startCol};
 }
 
-ast::CallNode parseCall(lexer::BufferedLexer lexer) {
-  lexer::Token *t = lexer.getNextToken();
+ast::CallNode parser::parseCall(lexer::BufferedLexer *lexer) {
+  lexer::Token *t = lexer->getNextToken();
   int startLine = t->lineNo;
   int startCol = t->colNo;
 
@@ -118,13 +112,13 @@ ast::CallNode parseCall(lexer::BufferedLexer lexer) {
     throw parseError("call", t->lineNo, t->colNo);
   }
 
-  t = lexer.getNextToken();
+  t = lexer->getNextToken();
   if (t->kind != lexer::Kind::Identifier) {
     throw parseError("<Identifier> (procedure)", t->lineNo, t->colNo);
   }
   ast::IdentifierNode var{t->value, t->lineNo, t->colNo};
 
-  t = lexer.getNextToken();
+  t = lexer->getNextToken();
   if (t->kind != lexer::Kind::Semicolon) {
     throw parseError(";", t->lineNo, t->colNo);
   }
@@ -132,8 +126,8 @@ ast::CallNode parseCall(lexer::BufferedLexer lexer) {
   return ast::CallNode{var, startLine, startCol};
 }
 
-ast::WhileNode parseWhile(lexer::BufferedLexer lexer) {
-  lexer::Token *t = lexer.getNextToken();
+ast::WhileNode parser::parseWhile(lexer::BufferedLexer *lexer) {
+  lexer::Token *t = lexer->getNextToken();
   int startLine = t->lineNo;
   int startCol = t->colNo;
 
@@ -147,8 +141,8 @@ ast::WhileNode parseWhile(lexer::BufferedLexer lexer) {
   return ast::WhileNode{condExpr, stmtLst, startLine, startCol};
 }
 
-ast::IfNode parseIf(lexer::BufferedLexer lexer) {
-  lexer::Token *t = lexer.getNextToken();
+ast::IfNode parser::parseIf(lexer::BufferedLexer *lexer) {
+  lexer::Token *t = lexer->getNextToken();
   int startLine = t->lineNo;
   int startCol = t->colNo;
 
@@ -158,14 +152,14 @@ ast::IfNode parseIf(lexer::BufferedLexer lexer) {
 
   ast::CondExpressionNode condExpr = parseCondExpression(lexer);
 
-  t = lexer.getNextToken();
+  t = lexer->getNextToken();
   if (t->kind != lexer::Kind::Then) {
     throw parseError("then", t->lineNo, t->colNo);
   }
 
   std::vector<ast::Node> thenStmtLst = parseStmtLst(lexer);
 
-  t = lexer.getNextToken();
+  t = lexer->getNextToken();
   if (t->kind != lexer::Kind::Else) {
     throw parseError("else", t->lineNo, t->colNo);
   }
@@ -175,25 +169,24 @@ ast::IfNode parseIf(lexer::BufferedLexer lexer) {
   return ast::IfNode{condExpr, thenStmtLst, elseStmtLst, startLine, startCol};
 }
 
-ast::AssignNode parseAssign(lexer::BufferedLexer lexer) {
-  lexer::Token *t = lexer.getNextToken();
+ast::AssignNode parser::parseAssign(lexer::BufferedLexer *lexer) {
+  lexer::Token *t = lexer->getNextToken();
   int startLine = t->lineNo;
   int startCol = t->colNo;
 
   if (t->kind != lexer::Kind::Identifier) {
-    throw parseError("<Identifier> variable", t->lineNo, t->colNo);
+    throw parseError("<Identifier>", t->lineNo, t->colNo);
   }
 
   ast::IdentifierNode var = ast::IdentifierNode{t->value, t->lineNo, t->colNo};
 
-  t = lexer.getNextToken();
+  t = lexer->getNextToken();
   if (t->kind != lexer::Kind::Equal) {
     throw parseError("=", t->lineNo, t->colNo);
   }
 
   ast::ExpressionNode expr = parser::parseExpression(lexer);
-
-  t = lexer.getNextToken();
+  t = lexer->getNextToken();
   if (t->kind != lexer::Kind::Semicolon) {
     throw parseError(";", t->lineNo, t->colNo);
   }
@@ -260,12 +253,12 @@ bool precedes(lexer::Token *t1, lexer::Token *t2) {
   }
 }
 
-ast::ExpressionNode parseExpression(lexer::BufferedLexer lexer) {
+ast::ExpressionNode parser::parseExpression(lexer::BufferedLexer *lexer) {
   // use shunting yard algorithm to parse expressions
   std::stack<ast::Node> outputStack{};
   std::stack<lexer::Token *> operatorStack{};
 
-  lexer::Token *t = lexer.peekNextToken();
+  lexer::Token *t = lexer->peekNextToken();
   while (isExpressionToken(t)) {
     if (t->kind == lexer::Kind::Constant) {
       outputStack.push(ast::ConstantNode{t->value, t->lineNo, t->colNo});
@@ -321,8 +314,8 @@ ast::ExpressionNode parseExpression(lexer::BufferedLexer lexer) {
     }
 
     // flush the token and peek next
-    lexer.getNextToken();
-    t = lexer.peekNextToken();
+    lexer->getNextToken();
+    t = lexer->peekNextToken();
   }
 
   while (!operatorStack.empty()) {
@@ -357,9 +350,9 @@ ast::ExpressionNode parseExpression(lexer::BufferedLexer lexer) {
   return ast::ExpressionNode{ast::ExprOp::Noop, *n, ast::Node{}, n->lineNo, n->colNo};
 }
 
-ast::CondExpressionNode parseCondExpression(lexer::BufferedLexer lexer) {
-  // include parsing "(" and ")" that always comes with condExpr
-  lexer::Token *t = lexer.getNextToken();
+ast::CondExpressionNode parser::parseCondExpression(lexer::BufferedLexer *lexer) {
+  // include parsing "(" and ")": that always comes with condExpr
+  lexer::Token *t = lexer->getNextToken();
   int startLine = t->lineNo;
   int startCol = t->colNo;
 
@@ -367,14 +360,14 @@ ast::CondExpressionNode parseCondExpression(lexer::BufferedLexer lexer) {
     throw parseError("(", t->lineNo, t->colNo);
   }
 
-  t = lexer.peekNextToken();
+  t = lexer->peekNextToken();
 
   if (t->kind == lexer::Kind::Not) {
     // flush "!"
-    lexer.getNextToken();
+    lexer->getNextToken();
     ast::Node left = parser::parseCondExpression(lexer);
 
-    t = lexer.getNextToken();
+    t = lexer->getNextToken();
     if (t->kind != lexer::Kind::RParen) {
       throw parseError(")", t->lineNo, t->colNo);
     }
@@ -385,7 +378,7 @@ ast::CondExpressionNode parseCondExpression(lexer::BufferedLexer lexer) {
   if (t->kind == lexer::Kind::Constant || t->kind == lexer::Kind::Identifier) {
     ast::Node left = parser::parseRelExpression(lexer);
 
-    t = lexer.getNextToken();
+    t = lexer->getNextToken();
     if (t->kind != lexer::Kind::RParen) {
       throw parseError(")", t->lineNo, t->colNo);
     }
@@ -401,7 +394,7 @@ ast::CondExpressionNode parseCondExpression(lexer::BufferedLexer lexer) {
   ast::Node left = parser::parseCondExpression(lexer);
   ast::CondExprOp op;
 
-  t = lexer.getNextToken();
+  t = lexer->getNextToken();
   if (t->kind == lexer::Kind::And) {
     op = ast::CondExprOp::And;
   } else if (t->kind == lexer::Kind::Or) {
@@ -412,7 +405,7 @@ ast::CondExpressionNode parseCondExpression(lexer::BufferedLexer lexer) {
 
   ast::Node right = parser::parseCondExpression(lexer);
 
-  t = lexer.getNextToken();
+  t = lexer->getNextToken();
   if (t->kind != lexer::Kind::RParen) {
     throw parseError(")", t->lineNo, t->colNo);
   }
@@ -420,8 +413,8 @@ ast::CondExpressionNode parseCondExpression(lexer::BufferedLexer lexer) {
   return ast::CondExpressionNode{op, left, right, startLine, startCol};
 }
 
-ast::RelExpressionNode parseRelExpression(lexer::BufferedLexer lexer) {
-  lexer::Token *t = lexer.getNextToken();
+ast::RelExpressionNode parser::parseRelExpression(lexer::BufferedLexer *lexer) {
+  lexer::Token *t = lexer->getNextToken();
   int startLine = t->lineNo;
   int startCol = t->colNo;
 
@@ -434,7 +427,7 @@ ast::RelExpressionNode parseRelExpression(lexer::BufferedLexer lexer) {
     throw parseError("<Constant> or <Identifier>", t->lineNo, t->colNo);
   }
 
-  t = lexer.getNextToken();
+  t = lexer->getNextToken();
   ast::RelExprOp op;
   switch (t->kind) {
   case lexer::Kind::Gt:
@@ -453,7 +446,7 @@ ast::RelExpressionNode parseRelExpression(lexer::BufferedLexer lexer) {
     throw parseError(">, >=, <, <=, ==, !=", t->lineNo, t->colNo);
   }
 
-  t = lexer.getNextToken();
+  t = lexer->getNextToken();
   ast::Node right;
   if (t->kind == lexer::Kind::Constant) {
     left = ast::ConstantNode{t->value, t->lineNo, t->colNo};
@@ -466,15 +459,17 @@ ast::RelExpressionNode parseRelExpression(lexer::BufferedLexer lexer) {
   return ast::RelExpressionNode{op, left, right, startLine, startCol};
 }
 
-std::vector<ast::Node> parseStmtLst(lexer::BufferedLexer lexer) {
+std::vector<ast::Node> parser::parseStmtLst(lexer::BufferedLexer *lexer) {
   // include parsing of "{" and "}" that always surrounds a stmtLst
-  lexer::Token *t = lexer.getNextToken();
+  lexer::Token *t = lexer->getNextToken();
 
   if (t->kind != lexer::Kind::LBrace) {
     throw parseError("{", t->lineNo, t->colNo);
   }
 
   std::vector<ast::Node> stmtLst{};
+  t = lexer->peekNextToken();
+
   while (t->kind != lexer::Kind::RBrace) {
     switch (t->kind) {
     case lexer::Kind::Read:
@@ -499,11 +494,11 @@ std::vector<ast::Node> parseStmtLst(lexer::BufferedLexer lexer) {
       throw parseError("<Statement>", t->lineNo, t->colNo);
     }
 
-    t = lexer.peekNextToken();
+    t = lexer->peekNextToken();
   }
 
   // flush the "}"
-  t = lexer.getNextToken();
+  t = lexer->getNextToken();
 
   return stmtLst;
 }

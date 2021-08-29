@@ -17,5 +17,5 @@ ast::ExpressionNode *parseExpression(lexer::BufferedLexer *lexer);
 ast::CondExpressionNode *parseCondExpression(lexer::BufferedLexer *lexer);
 ast::RelExpressionNode *parseRelExpression(lexer::BufferedLexer *lexer);
 
-std::vector<ast::Node> *parseStmtLst(lexer::BufferedLexer *lexer);
+std::vector<ast::Node *> parseStmtLst(lexer::BufferedLexer *lexer);
 } // namespace parser

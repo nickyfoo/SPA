@@ -1,10 +1,15 @@
 #pragma once
 
+#include <algorithm>
+#include <sstream>
 #include <stdio.h>
 #include <string>
 #include <tuple>
 #include <unordered_map>
 #include <vector>
+#include "Entity.h"
+#include "Relationship.h"
+#include "PQLQuery.h"
 
 using namespace std;
 typedef short PROC;
@@ -12,14 +17,16 @@ typedef short PROC;
 class SelectClauseParser {
 public:
     static SelectClauseParser *getInstance();
-    void setSelectClause(unordered_map<string, string> *synonym_to_entity, string select_clause);
-    tuple<string, string, string> *getClauses();
+    void setSelectClause(unordered_map<string, Entity*> *synonym_to_entity, string select_clause);
+    PQLQuery *getClauses();
 private:
     static SelectClauseParser *instance;
-    unordered_map<string, string>* synonym_to_entity;
+    unordered_map<string, Entity*> *synonym_to_entity;
     string select_clause;
     SelectClauseParser();
     bool checkValidSyntax();
-    vector<string> getTokens();
+    vector<string> splitTokensByDelimiter(string input, string delimiter);
+    vector<string> splitTokensByMultipleDelimiters(string input, string delimiters);
     bool isValidIdentifier(string str);
+
 };

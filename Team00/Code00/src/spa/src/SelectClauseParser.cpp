@@ -1,8 +1,4 @@
 #include "SelectClauseParser.h"
-#include<stdio.h>
-#include <iostream>
-#include <string>
-#include <vector>
 
 using namespace std;
 
@@ -20,10 +16,12 @@ void SelectClauseParser::setSelectClause(unordered_map<string, string> *synonym_
     this->select_clause = select_clause;
 }
 
-tuple<string, string, string> SelectClauseParser::getClauses()
+tuple<string, string, string> *SelectClauseParser::getClauses()
 {
     if (!checkValidSyntax()) {
-        return NULL;
+        return nullptr;
+    } else {
+
     }
 }
 
@@ -34,8 +32,12 @@ bool SelectClauseParser::checkValidSyntax()
 
     valid_syntax = tokens.at(0) == "Select" && isValidIdentifier(tokens.at(1))
             && (synonym_to_entity->find(tokens.at(1)) != synonym_to_entity->end());
-    unordered_map<string, string> queried_entities;
-    queried_entities.insert({[tokens.at(1)], synonym_to_entity->find(tokens.at(1)});
+
+
+
+    return valid_syntax;
+//    unordered_map<string, string> queried_entities;
+//    queried_entities.insert({[tokens.at(1)], synonym_to_entity->find(tokens.at(1)});
 
 
 //    for (auto it = tokens.begin()+1; it != tokens.end(); ++it)
@@ -50,22 +52,22 @@ bool SelectClauseParser::checkValidSyntax()
 //        }
 //    }
 
-    bool such_that_found = false;
-    bool pattern_found = false;
-    for (int i=2; i < tokens.size(); ++i)
-    {
-        if (such_that_found) {
-
-        }
-        if (tokens[i] == "such" && i != tokens.size() - 1 && tokens[i+1] == "that") {
-            such_that_found = true;
-            ++i;
-        } else if (tokens[i] == "pattern") {
-            pattern_found = true;
-        }
-    }
-
-    return valid_syntax && (synonym_to_entity->find(tokens.at(1)) != synonym_to_entity->end());
+//    bool such_that_found = false;
+//    bool pattern_found = false;
+//    for (int i=2; i < tokens.size(); ++i)
+//    {
+//        if (such_that_found) {
+//
+//        }
+//        if (tokens[i] == "such" && i != tokens.size() - 1 && tokens[i+1] == "that") {
+//            such_that_found = true;
+//            ++i;
+//        } else if (tokens[i] == "pattern") {
+//            pattern_found = true;
+//        }
+//    }
+//
+//    return valid_syntax && (synonym_to_entity->find(tokens.at(1)) != synonym_to_entity->end());
 
 }
 
@@ -104,6 +106,6 @@ vector<string> SelectClauseParser::getTokens()
         tokens.push_back(token);
         select_clause.erase(0, pos + delimiter.length());
     }
-    tokens.push_back(token)
+    tokens.push_back(token);
 }
 

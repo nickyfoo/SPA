@@ -7,7 +7,16 @@ QueryObject::QueryObject(string input)
     string select_clause;
     tie(entities, select_clause) = splitEntitiesAndSelectClause(input);
     unordered_map<string, Entity> entities_map = getEntitiesMap(entities);
-    getSelectClause(entities_map, select_clause);
+    tuple<string, string, string> tuples = getSelectClause(entities_map, select_clause);
+    if (entities_map == nullptr || tuples == nullptr) {
+        throw invalid_argument("Invalid query");
+    }
+
+}
+
+tuple<string, string, string> QueryObject::getClauses()
+{
+    return this->clauses;
 }
 
 tuple<vector<string>>, string> QueryObject::splitEntitiesAndSelectClause(string input) {
@@ -32,7 +41,7 @@ unordered_map<string, Entity> QueryObject::getEntitiesMap(vector<string> entitie
     return ep.getEntitiesMap();
 }
 
-tuple<string, string, string> QueryObject::getSelectClause(unordered_map<string, Entity> entities_map, string select_clause)
+tuple<string, string, string> *QueryObject::getSelectClause(unordered_map<string, Entity> entities_map, string select_clause)
 {
     SelectClauseParser *scp = scp->getInstance();
     scp->setSelectClause(entities_map, select_clause);

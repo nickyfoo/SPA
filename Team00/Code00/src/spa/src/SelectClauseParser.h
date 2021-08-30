@@ -13,7 +13,7 @@ class SelectClauseParser {
 public:
     static SelectClauseParser *getInstance();
     void setSelectClause(unordered_map<string, string> *synonym_to_entity, string select_clause);
-    tuple<string, string, string> getClauses();
+    tuple<string, string, string> *getClauses();
 private:
     static SelectClauseParser *instance;
     unordered_map<string, string>* synonym_to_entity;

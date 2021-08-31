@@ -4,20 +4,21 @@
 #include <vector>
 
 namespace ast {
-enum Kind {
-  Identifier,
-  Constant,
-  Expression,
-  RelExpression,
-  CondExpression,
-  Assign,
-  If,
-  While,
-  Read,
-  Print,
-  Call,
-  Procedure,
-  Program
+    enum Kind {
+        Identifier,
+        Constant,
+        Expression,
+        RelExpression,
+        CondExpression,
+        Assign,
+        If,
+        While,
+        Read,
+        Print,
+        Call,
+        Procedure,
+        Program,
+        NUM_KIND = Program
 };
 
 enum ExprOp { Plus, Minus, Times, Divide, Modulo, Noop };
@@ -153,5 +154,10 @@ public:
   ProgramNode(std::vector<ProcedureNode *> _procedures, int _lineNo, int _colNo)
       : Node(Kind::Procedure, _lineNo, _colNo), procedures(_procedures) {}
 };
+
+std::vector<Node*> nextNodes(Node* node);
+void visit(Node* node, std::vector<void (*)(Node* currentNode)> functions);
+
+void visitWithAncestors(Node* node, std::vector<Node*>& ancestorList, std::vector<void (*) (Node* currentNode, std::vector<Node*>ancestorList)> functions);
 
 } // namespace ast

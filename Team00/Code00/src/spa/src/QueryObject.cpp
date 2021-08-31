@@ -6,6 +6,10 @@ QueryObject::QueryObject(string input)
     string select_clause;
     tie(entities, select_clause) = splitEntitiesAndSelectClause(input);
     unordered_map<string, Entity*> *entities_map = getEntitiesMap(entities);
+    if (entities_map == nullptr) {
+        this->clauses = nullptr;
+        return;
+    }
     PQLQuery *pqlquery = getSelectClause(entities_map, select_clause);
     this->clauses = pqlquery;
 

@@ -36,7 +36,9 @@ PQLQuery *SelectClauseParser::getClauses()
             && (synonym_to_entity->find(select_clauses.at(1)) != synonym_to_entity->end());
     if (valid_syntax) {
         select->push_back(synonym_to_entity->at(select_clauses.at(1) ));
-    };
+    } else {
+        return nullptr;
+    }
     if (valid_syntax && tokens.size() > 1) {
         string relationship_statement = tokens.at(1);
         relationship_statement.erase(remove(relationship_statement.begin(), relationship_statement.end(),

@@ -7,7 +7,9 @@
 int main(int argc, char *argv[])
 {
     std::stringstream ss;
-    ss << "procedure p; stmt s1; stmt s2;   stmt s3;\nSelect s1 such that Follows (  s1   ,2)";
+//    ss << "procedure p; stmt s1; stmt s2;   stmt s3;\nSelect s1 such that Follows*(  s1   ,2)";
+    ss << "stmt s1; stmt s2; var v;\n"
+            "Select s1 such that Follows*(s1,2)";
 //    ss << "stmt select; Select select";
 //    ss << "stmt select; stmt    select1; Select select such that Parent*('test', 5)";
     QueryObject* query = new QueryObject(ss.str());

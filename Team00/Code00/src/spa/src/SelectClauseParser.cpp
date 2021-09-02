@@ -32,7 +32,7 @@ PQLQuery *SelectClauseParser::getClauses()
 
     string select_statement = tokens.at(0);
     vector<string> select_clauses = splitTokensByDelimiter(select_statement, " ");
-    valid_syntax = select_clauses.at(0) == "Select"
+    valid_syntax = select_clauses.at(0) == "Select" && select_clauses.size() == 2
             && (synonym_to_entity->find(select_clauses.at(1)) != synonym_to_entity->end());
     if (valid_syntax) {
         select->push_back(synonym_to_entity->at(select_clauses.at(1) ));

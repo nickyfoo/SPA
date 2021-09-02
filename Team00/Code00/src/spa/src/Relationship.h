@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include "Entity.h"
-#include "StmtNum.h"
 
 enum class RelationshipType {
     Follows,
@@ -18,6 +17,7 @@ public:
     Relationship(string type);
     bool setRef(Entity* left_ref, Entity* right_ref);
     RelationshipType getType();
+    string getTypeStr();
     Entity* getLeftRef();
     Entity* getRightRef();
 private:

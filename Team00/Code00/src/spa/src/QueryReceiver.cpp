@@ -7,21 +7,22 @@
 int main(int argc, char *argv[])
 {
     std::stringstream ss;
-//    ss << "procedure p; stmt s1; stmt s2;   stmt s3;\nSelect s1 such that Follows(s1,s2)";
+    ss << "procedure p; stmt s1; stmt s2;   stmt s3;\nSelect s1 such that Follows (  s1   ,2)";
 //    ss << "stmt select; Select select";
-    ss << "stmt select; stmt    select1; Select select such that Follows(select1, select)";
+//    ss << "stmt select; stmt    select1; Select select such that Parent*('test', 5)";
     QueryObject* query = new QueryObject(ss.str());
     PQLQuery *clause = query->getPQLQuery();
     if (clause == nullptr) {
         std::cout << "Invalid PQL Query!" << "\n" << flush;
     } else {
         for (Entity* entity: *clause->getQueryEntities()) {
-            std::cout << "Synonym is: " << entity->getSynonym() << "\n" << flush;
+            std::cout << "Select " << entity->getValue() << "\n" << flush;
         }
 
         for (Relationship* relationship: *clause->getQueryRelationships()) {
-            std::cout << "Left is: " << relationship->getLeftRef()->getSynonym();
-            std::cout << "   Right is: " << relationship->getRightRef()->getSynonym() << "\n" << flush;
+            std::cout << "Relationship type is: " << relationship->getTypeStr() << "\n";
+            std::cout << "Left is: " << relationship->getLeftRef()->getValue();
+            std::cout << " Right is: " << relationship->getRightRef()->getValue() << "\n" << flush;
         }
     }
 }

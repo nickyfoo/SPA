@@ -32,7 +32,7 @@ PQLQuery *SelectClauseParser::getClauses()
 
     string select_statement = tokens.at(0);
     vector<string> select_clauses = splitTokensByDelimiter(select_statement, " ");
-    valid_syntax = select_clauses.at(0) == "Select" && isValidIdentifier(select_clauses.at(1))
+    valid_syntax = select_clauses.at(0) == "Select"
             && (synonym_to_entity->find(select_clauses.at(1)) != synonym_to_entity->end());
     if (valid_syntax) {
         select->push_back(synonym_to_entity->at(select_clauses.at(1) ));
@@ -41,11 +41,10 @@ PQLQuery *SelectClauseParser::getClauses()
     }
     if (valid_syntax && tokens.size() > 1) {
         Relationship* relationship = getRelationshipStatementClause(tokens.at(1));
-        string relationship_statement = tokens.at(1);
-
-        } else {
+        if (relationship == nullptr) {
             return nullptr;
         }
+        such_that->push_back(relationship);
     }
 
     PQLQuery* ret = new PQLQuery(select, such_that);
@@ -60,32 +59,45 @@ Relationship* SelectClauseParser::getRelationshipStatementClause(string relation
 
     string left_ref = relationship_clauses.at(1);
     string right_ref = relationship_clauses.at(2);
-    if ((synonym_to_entity->find(left_ref) != synonym_to_entity->end() || isValidIdentifier(left_ref))
-            && (synonym_to_entity->find(right_ref) != synonym_to_entity->end() || isValidIdentifier(right_ref))
+
+    if ((synonym_to_entity->find(left_ref) != synonym_to_entity->end() || isValidIdentifier(left_ref) || isInteger(left_ref))
+            && (synonym_to_entity->find(right_ref) != synonym_to_entity->end() || isValidIdentifier(right_ref) || isInteger(right_ref))
             && relationship->getType() != RelationshipType::None) {
-        Entity* left = synonym_to_entity->at(left_ref);
-        Entity* right = synonym_to_entity->at(right_ref);
-        if (relationship->setRef(left, right)) {
-            such_that->push_back(relationship);
+        Entity* left;
+        Entity* right;
+        if (synonym_to_entity->find(left_ref) != synonym_to_entity->end()) {
+            left = synonym_to_entity->at(left_ref);
         } else {
-            return nullptr;
+            left = new Entity(left_ref);
+        }
+
+        if (synonym_to_entity->find(right_ref) != synonym_to_entity->end()) {
+            right = synonym_to_entity->at(right_ref);
+        } else {
+            right = new Entity(right_ref);
+        }
+        if (relationship->setRef(left, right)) {
+            return relationship;
         }
     }
-
+    return nullptr;
 }
 
 // Function that returns true if str
 // is a valid identifier
 bool SelectClauseParser::isValidIdentifier(string str)
 {
+    if (str[0] != '\'' && str[str.length() - 1] != '\'')
+        return false;
+
     // If first character is invalid
-    if (!((str[0] >= 'a' && str[0] <= 'z')
-    || (str[0] >= 'A' && str[0] <= 'Z')
-    || str[0] == '_'))
+    if (!((str[1] >= 'a' && str[1] <= 'z')
+    || (str[1] >= 'A' && str[1] <= 'Z')
+    || str[1] == '_'))
         return false;
 
     // Traverse the string for the rest of the characters
-    for (int i = 1; i < str.length(); i++) {
+    for (int i = 2; i < str.length(); i++) {
         if (!((str[i] >= 'a' && str[i] <= 'z')
         || (str[i] >= 'A' && str[i] <= 'Z')
         || (str[i] >= '0' && str[i] <= '9')
@@ -95,6 +107,12 @@ bool SelectClauseParser::isValidIdentifier(string str)
 
     // String is a valid identifier
     return true;
+}
+
+bool SelectClauseParser::isInteger(string& s) {
+    string::const_iterator it = s.begin();
+    while (it != s.end() && isdigit(*it)) ++it;
+    return !s.empty() && it == s.end();
 }
 
 vector<string> SelectClauseParser::splitTokensByDelimiter(string input, string delimiter)

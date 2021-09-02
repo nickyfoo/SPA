@@ -29,5 +29,6 @@ private:
     vector<string> splitTokensByDelimiter(string input, string delimiter);
     vector<string> splitTokensByMultipleDelimiters(string input, string delimiters);
     bool isValidIdentifier(string str);
+    bool isInteger(string& str);
 
 };

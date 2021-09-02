@@ -4,9 +4,9 @@
 
 enum class RelationshipType {
     Follows,
-    FollowsStar,
+    FollowsT,
     Parent,
-    ParentStar,
+    ParentT,
     Uses,
     Modifies,
     None

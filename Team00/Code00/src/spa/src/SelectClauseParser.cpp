@@ -34,6 +34,7 @@ PQLQuery *SelectClauseParser::getClauses()
     vector<string> select_clauses = splitTokensByDelimiter(select_statement, " ");
     valid_syntax = select_clauses.at(0) == "Select" && select_clauses.size() == 2
             && (synonym_to_entity->find(select_clauses.at(1)) != synonym_to_entity->end());
+
     if (valid_syntax) {
         select->push_back(synonym_to_entity->at(select_clauses.at(1) ));
     } else {
@@ -47,7 +48,7 @@ PQLQuery *SelectClauseParser::getClauses()
         such_that->push_back(relationship);
     }
 
-    PQLQuery* ret = new PQLQuery(select, such_that);
+    PQLQuery* ret = new PQLQuery(select, such_that, synonym_to_entity);
     return ret;
 }
 
@@ -59,12 +60,12 @@ Relationship* SelectClauseParser::getRelationshipStatementClause(string relation
 
     string left_ref = relationship_clauses.at(1);
     string right_ref = relationship_clauses.at(2);
-
     if ((synonym_to_entity->find(left_ref) != synonym_to_entity->end() || isValidIdentifier(left_ref) || isInteger(left_ref))
             && (synonym_to_entity->find(right_ref) != synonym_to_entity->end() || isValidIdentifier(right_ref) || isInteger(right_ref))
             && relationship->getType() != RelationshipType::None) {
         Entity* left;
         Entity* right;
+
         if (synonym_to_entity->find(left_ref) != synonym_to_entity->end()) {
             left = synonym_to_entity->at(left_ref);
         } else {
@@ -76,6 +77,7 @@ Relationship* SelectClauseParser::getRelationshipStatementClause(string relation
         } else {
             right = new Entity(right_ref);
         }
+
         if (relationship->setRef(left, right)) {
             return relationship;
         }
@@ -87,6 +89,9 @@ Relationship* SelectClauseParser::getRelationshipStatementClause(string relation
 // is a valid identifier
 bool SelectClauseParser::isValidIdentifier(string str)
 {
+    if (str == "_")
+        return true;
+
     if (str[0] != '\'' && str[str.length() - 1] != '\'')
         return false;
 
@@ -97,7 +102,7 @@ bool SelectClauseParser::isValidIdentifier(string str)
         return false;
 
     // Traverse the string for the rest of the characters
-    for (int i = 2; i < str.length(); i++) {
+    for (int i = 2; i < str.length() - 1; i++) {
         if (!((str[i] >= 'a' && str[i] <= 'z')
         || (str[i] >= 'A' && str[i] <= 'Z')
         || (str[i] >= '0' && str[i] <= '9')

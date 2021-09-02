@@ -40,24 +40,9 @@ PQLQuery *SelectClauseParser::getClauses()
         return nullptr;
     }
     if (valid_syntax && tokens.size() > 1) {
+        Relationship* relationship = getRelationshipStatementClause(tokens.at(1));
         string relationship_statement = tokens.at(1);
-        relationship_statement.erase(remove(relationship_statement.begin(), relationship_statement.end(),
-                                               ' '), relationship_statement.end());
-        vector<string> relationship_clauses = splitTokensByMultipleDelimiters(relationship_statement, "(,)");
-        Relationship* relationship = new Relationship(relationship_clauses.at(0));
 
-        string left_ref = relationship_clauses.at(1);
-        string right_ref = relationship_clauses.at(2);
-        if (synonym_to_entity->find(left_ref) != synonym_to_entity->end()
-                && synonym_to_entity->find(right_ref) != synonym_to_entity->end()
-                && relationship->getType() != RelationshipType::None) {
-            Entity* left = synonym_to_entity->at(left_ref);
-            Entity* right = synonym_to_entity->at(right_ref);
-            if (relationship->setRef(left, right)) {
-                such_that->push_back(relationship);
-            } else {
-                return nullptr;
-            }
         } else {
             return nullptr;
         }
@@ -65,6 +50,27 @@ PQLQuery *SelectClauseParser::getClauses()
 
     PQLQuery* ret = new PQLQuery(select, such_that);
     return ret;
+}
+
+Relationship* SelectClauseParser::getRelationshipStatementClause(string relationship_statement) {
+    relationship_statement.erase(remove(relationship_statement.begin(), relationship_statement.end(),
+                                        ' '), relationship_statement.end());
+    vector<string> relationship_clauses = splitTokensByMultipleDelimiters(relationship_statement, "(,)");
+    Relationship* relationship = new Relationship(relationship_clauses.at(0));
+
+    string left_ref = relationship_clauses.at(1);
+    string right_ref = relationship_clauses.at(2);
+    if ((synonym_to_entity->find(left_ref) != synonym_to_entity->end() || isValidIdentifier(left_ref))
+            && (synonym_to_entity->find(right_ref) != synonym_to_entity->end() || isValidIdentifier(right_ref))
+            && relationship->getType() != RelationshipType::None) {
+        Entity* left = synonym_to_entity->at(left_ref);
+        Entity* right = synonym_to_entity->at(right_ref);
+        if (relationship->setRef(left, right)) {
+            such_that->push_back(relationship);
+        } else {
+            return nullptr;
+        }
+    }
 
 }
 

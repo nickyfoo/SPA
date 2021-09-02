@@ -8,7 +8,8 @@ int main(int argc, char *argv[])
 {
     std::stringstream ss;
 //    ss << "procedure p; stmt s1; stmt s2;   stmt s3;\nSelect s1 such that Follows(s1,s2)";
-    ss << "stmt select; Select select";
+//    ss << "stmt select; Select select";
+    ss << "stmt select; stmt    select1; Select select such that Follows(select1, select)";
     QueryObject* query = new QueryObject(ss.str());
     PQLQuery *clause = query->getPQLQuery();
     if (clause == nullptr) {

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "Entity.h"
+#include "StmtNum.h"
 
 enum class RelationshipType {
     Follows,

@@ -88,9 +88,10 @@ class AssignNode : public Node {
 public:
   IdentifierNode *var;
   ExpressionNode *expr;
+  int stmtNo;
 
-  AssignNode(IdentifierNode *_var, ExpressionNode *_expr, int _lineNo, int _colNo)
-      : Node(Kind::Assign, _lineNo, _colNo), var(_var), expr(_expr) {}
+  AssignNode(IdentifierNode *_var, ExpressionNode *_expr, int _stmtNo, int _lineNo, int _colNo)
+      : Node(Kind::Assign, _lineNo, _colNo), var(_var), expr(_expr), stmtNo(_stmtNo) {}
 };
 
 class IfNode : public Node {
@@ -98,44 +99,50 @@ public:
   CondExpressionNode *cond;
   std::vector<Node *> thenStmtLst;
   std::vector<Node *> elseStmtLst;
+  int stmtNo;
 
   IfNode(CondExpressionNode *_cond, std::vector<Node *> _thenStmtLst,
-         std::vector<Node *> _elseStmtLst, int _lineNo, int _colNo)
+         std::vector<Node *> _elseStmtLst, int stmtNo, int _lineNo, int _colNo)
       : Node(Kind::If, _lineNo, _colNo), cond(_cond), thenStmtLst(_thenStmtLst),
-        elseStmtLst(_elseStmtLst) {}
+        elseStmtLst(_elseStmtLst), stmtNo(stmtNo) {}
 };
 
 class WhileNode : public Node {
 public:
   CondExpressionNode *cond;
   std::vector<Node *> stmtLst;
+  int stmtNo;
 
-  WhileNode(CondExpressionNode *_cond, std::vector<Node *> _stmtLst, int _lineNo, int _colNo)
-      : Node(Kind::While, _lineNo, _colNo), cond(_cond), stmtLst(_stmtLst) {}
+  WhileNode(CondExpressionNode *_cond, std::vector<Node *> _stmtLst, int _stmtNo, int _lineNo,
+            int _colNo)
+      : Node(Kind::While, _lineNo, _colNo), cond(_cond), stmtLst(_stmtLst), stmtNo(_stmtNo) {}
 };
 
 class ReadNode : public Node {
 public:
   IdentifierNode *var;
+  int stmtNo;
 
-  ReadNode(IdentifierNode *_var, int _lineNo, int _colNo)
-      : Node(Kind::Read, _lineNo, _colNo), var(_var) {}
+  ReadNode(IdentifierNode *_var, int _stmtNo, int _lineNo, int _colNo)
+      : Node(Kind::Read, _lineNo, _colNo), var(_var), stmtNo(_stmtNo) {}
 };
 
 class PrintNode : public Node {
 public:
   IdentifierNode *var;
+  int stmtNo;
 
-  PrintNode(IdentifierNode *_var, int _lineNo, int _colNo)
-      : Node(Kind::Print, _lineNo, _colNo), var(_var) {}
+  PrintNode(IdentifierNode *_var, int _stmtNo, int _lineNo, int _colNo)
+      : Node(Kind::Print, _lineNo, _colNo), stmtNo(_stmtNo), var(_var) {}
 };
 
 class CallNode : public Node {
 public:
   IdentifierNode *proc;
+  int stmtNo;
 
-  CallNode(IdentifierNode *_proc, int _lineNo, int _colNo)
-      : Node(Kind::Call, _lineNo, _colNo), proc(_proc) {}
+  CallNode(IdentifierNode *_proc, int _stmtNo, int _lineNo, int _colNo)
+      : Node(Kind::Call, _lineNo, _colNo), stmtNo(_stmtNo), proc(_proc) {}
 };
 
 class ProcedureNode : public Node {

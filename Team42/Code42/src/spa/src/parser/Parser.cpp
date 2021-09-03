@@ -240,6 +240,24 @@ ast::ExprOp exprOpFromToken(lexer::Token *t) {
   }
 }
 
+std::string exprOpStringFromToken(lexer::Token *t) {
+  switch (t->kind) {
+  case lexer::Kind::Plus:
+    return "+";
+  case lexer::Kind::Minus:
+    return "-";
+  case lexer::Kind::Multiply:
+    return "*";
+  case lexer::Kind::Divide:
+    return "/";
+  case lexer::Kind::Modulo:
+    return "%";
+  default:
+    throw "Expected op but got non-op kind at " + std::to_string(t->lineNo) + ":" +
+        std::to_string(t->colNo);
+  }
+}
+
 bool precedes(lexer::Token *t1, lexer::Token *t2) {
   // return true if t1 has greater or equal precedence than t2
   switch (t1->kind) {
@@ -265,14 +283,17 @@ ast::ExpressionNode *parser::parseExpression(lexer::BufferedLexer *lexer, State 
   // use shunting yard algorithm to parse expressions
   std::stack<ast::Node *> outputStack{};
   std::stack<lexer::Token *> operatorStack{};
+  std::stack<std::string> exprStringStack{};
 
   lexer::Token *t = lexer->peekNextToken();
   while (isExpressionToken(t)) {
     if (t->kind == lexer::Kind::Constant) {
       outputStack.push(new ast::ConstantNode{t->value, t->lineNo, t->colNo});
+      exprStringStack.push(t->value);
 
     } else if (t->kind == lexer::Kind::Identifier) {
       outputStack.push(new ast::IdentifierNode{t->value, t->lineNo, t->colNo});
+      exprStringStack.push(t->value);
 
     } else if (t->kind == lexer::Kind::LParen) {
       operatorStack.push(t);
@@ -296,7 +317,15 @@ ast::ExpressionNode *parser::parseExpression(lexer::BufferedLexer *lexer, State 
         outputStack.pop();
         ast::ExprOp exprOp = exprOpFromToken(op);
 
-        outputStack.push(new ast::ExpressionNode{exprOp, left, right, op->lineNo, op->colNo});
+        std::string exprString = exprStringStack.top();
+        exprStringStack.pop();
+        exprString += " " + exprStringStack.top();
+        exprStringStack.pop();
+        exprString += " " + exprOpStringFromToken(op);
+
+        outputStack.push(
+            new ast::ExpressionNode{exprOp, left, right, exprString, op->lineNo, op->colNo});
+        exprStringStack.push(exprString);
       }
 
       // flush matching (
@@ -318,7 +347,15 @@ ast::ExpressionNode *parser::parseExpression(lexer::BufferedLexer *lexer, State 
         outputStack.pop();
         ast::ExprOp exprOp = exprOpFromToken(op);
 
-        outputStack.push(new ast::ExpressionNode{exprOp, left, right, op->lineNo, op->colNo});
+        std::string exprString = exprStringStack.top();
+        exprStringStack.pop();
+        exprString = exprStringStack.top() + " " + exprString;
+        exprStringStack.pop();
+        exprString += " " + exprOpStringFromToken(op);
+
+        outputStack.push(
+            new ast::ExpressionNode{exprOp, left, right, exprString, op->lineNo, op->colNo});
+        exprStringStack.push(exprString);
       }
 
       operatorStack.push(t);
@@ -343,7 +380,15 @@ ast::ExpressionNode *parser::parseExpression(lexer::BufferedLexer *lexer, State 
     outputStack.pop();
     ast::ExprOp exprOp = exprOpFromToken(op);
 
-    outputStack.push(new ast::ExpressionNode{exprOp, left, right, op->lineNo, op->colNo});
+    std::string exprString = exprStringStack.top();
+    exprStringStack.pop();
+    exprString = exprStringStack.top() + " " + exprString;
+    exprStringStack.pop();
+    exprString += " " + exprOpStringFromToken(op);
+
+    outputStack.push(
+        new ast::ExpressionNode{exprOp, left, right, exprString, op->lineNo, op->colNo});
+    exprStringStack.push(exprString);
   }
 
   ast::Node *n = outputStack.top();
@@ -358,7 +403,17 @@ ast::ExpressionNode *parser::parseExpression(lexer::BufferedLexer *lexer, State 
     return res;
   }
 
-  return new ast::ExpressionNode{ast::ExprOp::Noop, n, nullptr, n->lineNo, n->colNo};
+  if (n->kind == ast::Kind::Constant) {
+    ast::ConstantNode *c = static_cast<ast::ConstantNode *>(n);
+    return new ast::ExpressionNode{ast::ExprOp::Noop, n, nullptr, c->value, n->lineNo, n->colNo};
+  }
+
+  if (n->kind == ast::Kind::Identifier) {
+    ast::IdentifierNode *i = static_cast<ast::IdentifierNode *>(n);
+    return new ast::ExpressionNode{ast::ExprOp::Noop, n, nullptr, i->name, n->lineNo, n->colNo};
+  }
+
+  throw parseError("expression, constant or identifier", n->lineNo, n->colNo);
 }
 
 ast::CondExpressionNode *parser::parseCondExpression(lexer::BufferedLexer *lexer, State *state) {

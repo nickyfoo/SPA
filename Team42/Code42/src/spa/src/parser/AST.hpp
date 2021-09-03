@@ -148,7 +148,7 @@ public:
   std::vector<ProcedureNode *> procedures;
 
   ProgramNode(std::vector<ProcedureNode *> _procedures, int _lineNo, int _colNo)
-      : Node(Kind::Procedure, _lineNo, _colNo), procedures(_procedures) {}
+      : Node(Kind::Program, _lineNo, _colNo), procedures(_procedures) {}
 };
 
 } // namespace ast

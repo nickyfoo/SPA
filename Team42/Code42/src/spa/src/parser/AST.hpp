@@ -59,9 +59,12 @@ public:
   ExprOp op;
   Node *left;
   Node *right;
+  std::string exprString;
 
-  ExpressionNode(ExprOp _op, Node *_left, Node *_right, int _lineNo, int _colNo)
-      : Node(Kind::Expression, _lineNo, _colNo), op(_op), left(_left), right(_right) {}
+  ExpressionNode(ExprOp _op, Node *_left, Node *_right, std::string _exprString, int _lineNo,
+                 int _colNo)
+      : Node(Kind::Expression, _lineNo, _colNo), op(_op), left(_left), right(_right),
+        exprString(_exprString) {}
 };
 
 class RelExpressionNode : public Node {

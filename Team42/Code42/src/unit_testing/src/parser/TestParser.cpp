@@ -54,6 +54,7 @@ TEST_CASE("Test parseExpression") {
 
   ExpressionNode *p = parseExpression(B, new parser::State{});
   REQUIRE(p->op == ast::ExprOp::Minus);
+  REQUIRE(p->exprString == "1 2 3 * + 1 -");
   REQUIRE(p->left->kind == ast::Kind::Expression);
   REQUIRE(p->right->kind == ast::Kind::Constant);
 
@@ -62,6 +63,7 @@ TEST_CASE("Test parseExpression") {
 
   ExpressionNode *l = static_cast<ExpressionNode *>(p->left);
   REQUIRE(l->op == ast::ExprOp::Plus);
+  REQUIRE(l->exprString == "1 2 3 * +");
   REQUIRE(l->left->kind == ast::Kind::Constant);
   REQUIRE(l->right->kind == ast::Kind::Expression);
 
@@ -70,6 +72,7 @@ TEST_CASE("Test parseExpression") {
 
   ExpressionNode *lr = static_cast<ExpressionNode *>(l->right);
   REQUIRE(lr->op == ast::ExprOp::Times);
+  REQUIRE(lr->exprString == "2 3 *");
   REQUIRE(lr->left->kind == ast::Kind::Constant);
   REQUIRE(lr->right->kind == ast::Kind::Constant);
 

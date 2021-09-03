@@ -137,10 +137,11 @@ public:
 
 class ProcedureNode : public Node {
 public:
+  std::string name;
   std::vector<Node *> stmtLst;
 
-  ProcedureNode(std::vector<Node *> _stmtLst, int _lineNo, int _colNo)
-      : Node(Kind::Procedure, _lineNo, _colNo), stmtLst(_stmtLst) {}
+  ProcedureNode(std::string _name, std::vector<Node *> _stmtLst, int _lineNo, int _colNo)
+      : name(_name), Node(Kind::Procedure, _lineNo, _colNo), stmtLst(_stmtLst) {}
 };
 
 class ProgramNode : public Node {

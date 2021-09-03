@@ -53,7 +53,7 @@ ast::ProcedureNode *parser::parseProcedure(lexer::BufferedLexer *lexer) {
   // statements
   std::vector<ast::Node *> stmtLst = parseStmtLst(lexer);
 
-  return new ast::ProcedureNode{stmtLst, startLine, startCol};
+  return new ast::ProcedureNode{procName, stmtLst, startLine, startCol};
 }
 
 ast::ReadNode *parser::parseRead(lexer::BufferedLexer *lexer) {

@@ -78,7 +78,7 @@ ast::ReadNode *parser::parseRead(lexer::BufferedLexer *lexer, State *state) {
     throw parseError(";", t->lineNo, t->colNo);
   }
 
-  return new ast::ReadNode{var, startLine, startCol, stmtNo};
+  return new ast::ReadNode{var, stmtNo, startLine, startCol};
 }
 
 ast::PrintNode *parser::parsePrint(lexer::BufferedLexer *lexer, State *state) {
@@ -103,7 +103,7 @@ ast::PrintNode *parser::parsePrint(lexer::BufferedLexer *lexer, State *state) {
     throw parseError(";", t->lineNo, t->colNo);
   }
 
-  return new ast::PrintNode{var, startLine, startCol, stmtNo};
+  return new ast::PrintNode{var, stmtNo, startLine, startCol};
 }
 
 ast::CallNode *parser::parseCall(lexer::BufferedLexer *lexer, State *state) {
@@ -128,7 +128,7 @@ ast::CallNode *parser::parseCall(lexer::BufferedLexer *lexer, State *state) {
     throw parseError(";", t->lineNo, t->colNo);
   }
 
-  return new ast::CallNode{var, startLine, startCol, stmtNo};
+  return new ast::CallNode{var, stmtNo, startLine, startCol};
 }
 
 ast::WhileNode *parser::parseWhile(lexer::BufferedLexer *lexer, State *state) {
@@ -145,7 +145,7 @@ ast::WhileNode *parser::parseWhile(lexer::BufferedLexer *lexer, State *state) {
   ast::CondExpressionNode *condExpr = parseCondExpression(lexer, state);
   std::vector<ast::Node *> stmtLst = parseStmtLst(lexer, state);
 
-  return new ast::WhileNode{condExpr, stmtLst, startLine, startCol, stmtNo};
+  return new ast::WhileNode{condExpr, stmtLst, stmtNo, startLine, startCol};
 }
 
 ast::IfNode *parser::parseIf(lexer::BufferedLexer *lexer, State *state) {
@@ -175,7 +175,7 @@ ast::IfNode *parser::parseIf(lexer::BufferedLexer *lexer, State *state) {
 
   std::vector<ast::Node *> elseStmtLst = parseStmtLst(lexer, state);
 
-  return new ast::IfNode{condExpr, thenStmtLst, elseStmtLst, startLine, startCol, stmtNo};
+  return new ast::IfNode{condExpr, thenStmtLst, elseStmtLst, stmtNo, startLine, startCol};
 }
 
 ast::AssignNode *parser::parseAssign(lexer::BufferedLexer *lexer, State *state) {
@@ -202,7 +202,7 @@ ast::AssignNode *parser::parseAssign(lexer::BufferedLexer *lexer, State *state) 
     throw parseError(";", t->lineNo, t->colNo);
   }
 
-  return new ast::AssignNode{var, expr, startLine, startCol, stmtNo};
+  return new ast::AssignNode{var, expr, stmtNo, startLine, startCol};
 }
 
 bool isExpressionToken(lexer::Token *t) {

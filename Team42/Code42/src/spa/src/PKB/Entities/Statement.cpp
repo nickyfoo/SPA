@@ -57,8 +57,9 @@ std::set<int>* Statement::getFollowers() {
 	return &Followers;
 }
 
-bool Statement::isStmt(ast::Node* node) {
-	switch (node->kind) {
+
+bool Statement::isStmtKind(ast::Kind kind) {
+	switch (kind) {
 	case ast::Assign:
 	case ast::If:
 	case ast::While:
@@ -69,6 +70,10 @@ bool Statement::isStmt(ast::Node* node) {
 	default:
 		return false;
 	}
+}
+
+bool Statement::isStmtNode(ast::Node* node) {
+	return isStmtKind(node->kind);
 }
 
 int Statement::getStmtNo(ast::Node* node) {

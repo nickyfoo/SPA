@@ -32,7 +32,8 @@ public:
 	void info();
 	std::set<int>* getFollowers();
 
-	static bool isStmt(ast::Node* node);
+	static bool isStmtKind(ast::Kind kind);
+	static bool isStmtNode(ast::Node* node);
 	static int getStmtNo(ast::Node* node);
 
 private:

@@ -13,7 +13,9 @@ void PKB::initialPass() {
 	
 	functions[ast::Identifier] = &UtilityFunctions::addVariable;
 	for (int i = 0; i < ast::NUM_KIND; i++){
-		if(Statement::isStmt(i)
+		if (Statement::isStmtKind((ast::Kind) i)) {
+			functions[i] = &UtilityFunctions::addStmt;
+		}
 
 	}
 	functions[ast::Assign] = &UtilityFunctions::addStmt;

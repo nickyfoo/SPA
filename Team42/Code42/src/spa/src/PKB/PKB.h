@@ -7,6 +7,7 @@
 #include <map>
 #include "UtilityFunctions.hpp"
 #include "FollowsFunctions.hpp"
+#include "ParentFunctions.hpp"
 
 class PKB {
 private:
@@ -17,7 +18,7 @@ public:
 	}
 	void initialPass(); 
 	void getFollows();
-
+	void getParent();
 
 	// API called from here
 	/*

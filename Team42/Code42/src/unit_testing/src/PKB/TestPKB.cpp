@@ -68,6 +68,23 @@ TEST_CASE("Test PKB::getFollows()") {
         Statement* s = StmtTable::getStatementByLineNo(i);
         // checking for NULL response
         if (!s) continue;
-        s->info();
+        s->FollowsInfo();
+    }
+}
+
+
+TEST_CASE("Test PKB::getParent()") {
+    BufferedLexer* B = new BufferedLexer(source.c_str());
+    State* s = new State{};
+    ProgramNode* p = parseProgram(B, s);
+    PKB pkb = PKB(p);
+    pkb.initialPass();
+    pkb.getParent();
+    StmtTable::printStmts();
+    for (int i = 1; i <= StmtTable::getLargestStmtNum() + 1; i++) {
+        Statement* s = StmtTable::getStatementByLineNo(i);
+        // checking for NULL response
+        if (!s) continue;
+        s->ParentInfo();
     }
 }

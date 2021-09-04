@@ -1,14 +1,10 @@
 #include "Statement.h"
 #include <iostream>
-int Statement::getLineNo() {
-	return _lineNo;
+int Statement::getStmtNo() {
+	return _stmtNo;
 }
 ast::Kind Statement::getKind() {
 	return _kind;
-}
-
-void Statement::addLineNo(int lineNo, std::set<int>&container) {
-	container.insert(lineNo);
 }
 
 void Statement::addFollower(int lineNo) {
@@ -24,6 +20,21 @@ void Statement::addFolloweeStar(int lineNo) {
 	FolloweesStar.insert(lineNo);
 }
 
+void Statement::addParent(int lineNo) {
+	Parents.insert(lineNo);
+}
+
+void Statement::addParentStar(int lineNo) {
+	ParentsStar.insert(lineNo);
+}
+void Statement::addChild(int lineNo) {
+	Children.insert(lineNo);
+}
+
+void Statement::addChildStar(int lineNo) {
+	ChildrenStar.insert(lineNo);
+}
+
 void Statement::setExprString(std::string exprString) {
 	_exprString = exprString;
 }
@@ -32,15 +43,8 @@ std::string Statement::getExprString() {
 	return _exprString;
 }
 
-
-void Statement::printFollowers() {
-	for (auto& x : Followers) {
-		std::cout << x << '\n';
-	}
-}
-
-void Statement::info() {
-	std::cout << "Statement " << _lineNo << " is followed by:\n";
+void Statement::FollowsInfo() {
+	std::cout << "Statement " << _stmtNo << " is followed by:\n";
 	std::cout << "Followers: ";
 	for (auto& x : Followers) {
 		std::cout << x << ' ';
@@ -49,7 +53,7 @@ void Statement::info() {
 	for (auto& x : FollowersStar) {
 		std::cout << x << ' ';
 	} std::cout << '\n';
-	std::cout << "Statement " << _lineNo << " is a followee of/follows:\n";
+	std::cout << "Statement " << _stmtNo << " is a followee of/follows:\n";
 	std::cout << "Followees: ";
 	for (auto& x : Followees) {
 		std::cout << x << ' ';
@@ -58,11 +62,37 @@ void Statement::info() {
 	for (auto& x : FolloweesStar) {
 		std::cout << x << ' ';
 	} std::cout << '\n';
+	std::cout << '\n';
+}
+void Statement::ParentInfo() {
+	std::cout << "Statement " << _stmtNo << " has parents:\n";
+	std::cout << "Parents: ";
+	for (auto& x : Parents) {
+		std::cout << x << ' ';
+	} std::cout << '\n';
+	std::cout << "ParentsStar: ";
+	for (auto& x : ParentsStar) {
+		std::cout << x << ' ';
+	} std::cout << '\n';
+	std::cout << "Statement " << _stmtNo << " has children:\n";
+	std::cout << "Children: ";
+	for (auto& x : Children) {
+		std::cout << x << ' ';
+	} std::cout << '\n';
+	std::cout << "ChildrenStar: ";
+	for (auto& x : ChildrenStar) {
+		std::cout << x << ' ';
+	} std::cout << '\n';
+	std::cout << '\n';
 }
 
 
 std::set<int>* Statement::getFollowers() {
 	return &Followers;
+}
+
+std::set<int>* Statement::getChildren() {
+	return &Children;
 }
 
 

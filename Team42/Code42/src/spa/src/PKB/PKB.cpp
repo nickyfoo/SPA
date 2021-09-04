@@ -34,3 +34,14 @@ void PKB::getFollows() {
 	StmtTable::processFollowsStar();
 }
 
+
+void PKB::getParent() {
+	std::vector<std::vector<void (*)(ast::Node* currentNode)>> functions(ast::NUM_KIND);
+	functions[ast::If].push_back(&ParentFunctions::processIfNode);
+	functions[ast::While].push_back(&ParentFunctions::processWhileNode);
+	ast::visit(root, functions);
+	StmtTable::processParent();
+	StmtTable::processParentStar();
+}
+
+

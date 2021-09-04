@@ -5,6 +5,7 @@
 std::map<int, Statement> StmtTable::table;
 int StmtTable::largestStmtNum = 0;
 std::set<std::pair<int, int>> StmtTable::Follows, StmtTable::Follows_star;
+std::set<std::pair<int, int>> StmtTable::Parent, StmtTable::Parent_star;
 std::map<ast::Kind, std::vector<Statement*>> StmtTable::typeToStatement;
 
 void StmtTable::addStmt(ast::Node* node){
@@ -57,6 +58,32 @@ void StmtTable::processFollowsStar() {
 	}
 }
 
+// Gets Follows relationship from Statements in preparation to get transitive closure.
+void StmtTable::processParent() {
+	for (auto& [lineNo, stmt] : table) {
+		for (auto& childLineNo : *(stmt.getChildren())) {
+			Parent.insert({ lineNo,childLineNo });
+		}
+	}
+}
+
+void StmtTable::processParentStar() {
+	int n = largestStmtNum + 1;
+	std::vector<std::vector<int>> d = TransitiveClosure::getTransitiveClosure(Parent, n);
+	for (int i = 0; i < n; i++) {
+		Statement* stmt = getStatementByLineNo(i);
+		if (stmt != NULL) {
+			for (int j = 0; j < n; j++) {
+				if (d[i][j] != TransitiveClosure::INF) {
+					stmt->addChildStar(j);
+					getStatementByLineNo(j)->addParentStar(i);
+				}
+			}
+		}
+	}
+}
+
+
 void StmtTable::printStmts() {
 	std::cout << "StmtTable size: " << table.size() << '\n';
 	for (auto&[k,x] : table) {
@@ -68,7 +95,8 @@ void StmtTable::printStmts() {
 
 void StmtTable::printStmtInfos() {
 	for (auto& [k, x] : table) {
-		x.info();
+		x.FollowsInfo();
+		x.ParentInfo();
 	}
 }
 

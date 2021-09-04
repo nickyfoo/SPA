@@ -9,17 +9,20 @@ class StmtTable {
 private:
 	static std::map<int,Statement> table;
 	static std::set<std::pair<int, int>> Follows, Follows_star;
+	static std::set<std::pair<int, int>> Parent, Parent_star;
 	static std::map<ast::Kind, std::vector<Statement*>> typeToStatement;
-	//largestStmtNum is used to compute the transitive closure
+	//largestStmtNum is used to compute the transitive closure (numNodes in the graph)
 	static int largestStmtNum;
+
 public:
 	static void addStmt(ast::Node* node);
 
-	
-	static void processFollows();
 
 	static int getLargestStmtNum();
+	static void processFollows();
 	static void processFollowsStar();
+	static void processParent();
+	static void processParentStar();
 
 	//API calls for PQL
 	static std::vector<Statement*> getStatements(ast::Kind type);

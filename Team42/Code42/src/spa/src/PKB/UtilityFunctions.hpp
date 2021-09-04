@@ -21,9 +21,15 @@ public:
 		StmtTable::addStmt(node);
 	}
 
+	static void addExprString(ast::Node* node) {
+		if (node->kind == ast::Assign) {
+			ast::AssignNode* castedAssignNode{ static_cast<ast::AssignNode*>(node) };
+			StmtTable::getStmt(castedAssignNode->stmtNo)->setExprString(castedAssignNode->expr->exprString);
+		}
+	}
+
 	static void addProc(ast::Node* node) {
 		ast::ProcedureNode* castedProcedureNode = (ast::ProcedureNode*) node;
-		//ProcTable::addProcedure(castedProcedureNode->name) todo: ProcedureNode has no name field
-		ProcTable::addProcedure("Procedure node of kind: " + to_string(castedProcedureNode->kind) + " lineno: "+ to_string(node->lineNo) + " colno: " + to_string(node->colNo));
+		ProcTable::addProcedure(castedProcedureNode->name);
 	}
 };

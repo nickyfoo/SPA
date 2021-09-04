@@ -63,6 +63,6 @@ void StmtTable::processFollowsStar() {
 
 void StmtTable::printStmts() {
 	for (auto&[k,x] : table) {
-		std::cout << k << ' ' << x.getType() << '\n';
+		std::cout << k << ' ' << x.getKind() << '\n';
 	}
 }

@@ -86,9 +86,13 @@ std::vector<Node*> ast::nextNodes(Node* node) {
 
 
 //currently can only take 1 function, can consider:vector of function pointers that is iterated over, or some other wrapper function thing
-void ast::visit(Node* node, std::vector<void (*)(Node* currentNode)>functions) {
+void ast::visit(Node* node, std::vector<std::vector<void (*)(Node* currentNode)>>functions) {
     // Execute the corresponding function taking the node as a parameter
-    if(node) functions[node->kind](node);
+    if (node) {
+        for (void (*func) (Node* currentNode) : functions[node->kind]) {
+            func(node);
+        }
+    }
     // Continue traversing the AST
     for (Node* n : nextNodes(node)) {
         if(n)visit(n, functions);

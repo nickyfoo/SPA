@@ -3,8 +3,8 @@
 int Statement::getLineNo() {
 	return _lineNo;
 }
-ast::Kind Statement::getType() {
-	return _type;
+ast::Kind Statement::getKind() {
+	return _kind;
 }
 
 void Statement::addLineNo(int lineNo, std::set<int>&container) {
@@ -22,6 +22,10 @@ void Statement::addFollowee(int lineNo) {
 }
 void Statement::addFolloweeStar(int lineNo) {
 	FolloweesStar.insert(lineNo);
+}
+
+void Statement::setExprString(std::string exprString) {
+	_exprString = exprString;
 }
 
 

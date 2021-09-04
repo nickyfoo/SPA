@@ -62,7 +62,10 @@ void StmtTable::processFollowsStar() {
 }
 
 void StmtTable::printStmts() {
+	std::cout << "StmtTable size: " << table.size() << '\n';
 	for (auto&[k,x] : table) {
-		std::cout << k << ' ' << x.getKind() << '\n';
+		std::cout << k << ' ' << x.getKind() << ' ';
+		if (x.getKind() == ast::Assign) std::cout << x.getExprString();
+		std::cout << '\n';
 	}
 }

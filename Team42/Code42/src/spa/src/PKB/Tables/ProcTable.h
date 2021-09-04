@@ -17,5 +17,5 @@ private:
 public:
 	static int addProcedure(string name);
 	static int getNumProcedures();
-	static void printProcedures();
+	static void printProcs();
 };

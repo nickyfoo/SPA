@@ -28,6 +28,10 @@ void Statement::setExprString(std::string exprString) {
 	_exprString = exprString;
 }
 
+std::string Statement::getExprString() {
+	return _exprString;
+}
+
 
 void Statement::printFollowers() {
 	for (auto& x : Followers) {

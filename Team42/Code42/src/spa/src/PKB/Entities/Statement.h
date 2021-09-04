@@ -39,6 +39,7 @@ public:
 	static bool isStmtKind(ast::Kind kind);
 	static bool isStmtNode(ast::Node* node);
 	static int getStmtNo(ast::Node* node);
+	std::string getExprString();
 
 
 

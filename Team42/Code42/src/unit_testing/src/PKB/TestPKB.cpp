@@ -52,13 +52,11 @@ TEST_CASE("Test PKB::initialPass()") {
     ProgramNode* p = parseProgram(B, s);
     PKB pkb = PKB(p);
     pkb.initialPass();
+
 }
 
 
 TEST_CASE("Test PKB::getFollows()") {
-
-
-
     BufferedLexer* B = new BufferedLexer(source.c_str());
     State* s = new State{};
     ProgramNode* p = parseProgram(B, s);

@@ -11,5 +11,5 @@ private:
 public:
 	static int addVariable(string name);
 	static int getNumVariables();
-	static void printVariables();
+	static void printVars();
 };

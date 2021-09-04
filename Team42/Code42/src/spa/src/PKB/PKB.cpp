@@ -20,11 +20,10 @@ void PKB::initialPass() {
 	functions[ast::Assign].push_back(&UtilityFunctions::addExprString);
 	functions[ast::Procedure].push_back(&UtilityFunctions::addProc);
 	ast::visit(root, functions);
-	cout << "StmtList size: " << StmtTable::getNumStmts() << '\n';
-	cout << "ProcTable size: " << ProcTable::getNumProcedures() << '\n';
-	ProcTable::printProcedures();
-	cout << "VarTable size: " << VarTable::getNumVariables() << '\n';
-	VarTable::printVariables();
+
+	StmtTable::printStmts();
+	ProcTable::printProcs();
+	VarTable::printVars();
 }
 
 void PKB::getFollows() {

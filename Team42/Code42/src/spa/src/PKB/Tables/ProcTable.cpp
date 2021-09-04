@@ -10,12 +10,8 @@ int ProcTable::addProcedure(std::string name) {
 		return it->second;
 	}
 	else {
-		std::cout << "procedure: " << name << " added\n";
 		int pos = table.size();
 		table.push_back(Procedure(name));
-		for (auto& x : table) {
-			cout << x._name << '\n';
-		}
 		procedureNameToIndex[name] = pos;
 		return pos;
 	}
@@ -26,7 +22,8 @@ int ProcTable::getNumProcedures() {
 	return procedureNameToIndex.size();
 }
 
-void ProcTable::printProcedures() {
+void ProcTable::printProcs() {
+	std::cout << "ProcTable size: " << table.size() << '\n';
 	for (Procedure&p: table) {
 		std::cout << p.getName() << '\n';
 	}

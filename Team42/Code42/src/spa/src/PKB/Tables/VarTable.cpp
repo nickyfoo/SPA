@@ -23,7 +23,8 @@ int VarTable::getNumVariables() {
 }
 
 
-void VarTable::printVariables() {
+void VarTable::printVars() {
+	cout << "VarTable size: " << variableNameToIndex.size() << '\n';
 	for (Variable& v : table) {
 		cout << v.getName() << "\n";
 	}

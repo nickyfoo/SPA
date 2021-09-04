@@ -22,15 +22,19 @@ public:
 	void addFollowerStar(int lineNo);
 	void addFollowee(int lineNo);
 	void addFolloweeStar(int lineNo);
-	void addParent(int lineNo);
-	void addParentStar(int lineNo);
-	void addChild(int lineNo);
-	void addChildStar(int lineNo);
+	//void addParent(int lineNo);
+	//void addParentStar(int lineNo);
+	//void addChild(int lineNo);
+	//void addChildStar(int lineNo);
 
 	void printFollowers();
 
 	void info();
 	std::set<int>* getFollowers();
+
+	static bool isStmt(ast::Node* node);
+	static int getStmtNo(ast::Node* node);
+
 private:
 	int _lineNo;
 	ast::Kind _type;

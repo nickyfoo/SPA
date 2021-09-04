@@ -1,5 +1,5 @@
 #pragma once
-#include "Variable.h";
+#include "../Entities/Variable.h"
 #include <map>
 #include <set>
 #include <vector>

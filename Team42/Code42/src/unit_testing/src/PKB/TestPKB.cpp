@@ -3,6 +3,7 @@
 #include <vector>
 #include "PKB.h"
 #include "catch.hpp"
+#include "Entities/Statement.h"
 
 using namespace std;
 using namespace lexer;
@@ -17,27 +18,33 @@ TEST_CASE("Test PKB::initialPass()") {
         "}";
 
     BufferedLexer* B = new BufferedLexer(source.c_str());
-    ProgramNode* p = parseProgram(B);
-    cout << "program passed to us has kind: " << p->kind << '\n';
+    State* s = new State{};
+    ProgramNode* p = parseProgram(B, s);
     PKB pkb = PKB(p);
     pkb.initialPass();
 }
 
 
 TEST_CASE("Test PKB::getFollows()") {
-    std::string source = "procedure main {\n"
-        "\tflag = flag;\n"
-        "\tflag2 = gg;\n"
-        "\tflag3 = hh;\n"
+    std::string source = "procedure main {"
+        "flag = 0;"
+        "call computeCentroid;"
+        "call printResults;"
         "}"
-        "procedure main2 {\n"
-        "\tmainer = 2;\n"
-        "\tmainer = mainer + 2;\n"
+        "procedure readPoint {"
+        "read x;"
+        "read y;"
+        "}"
+        "procedure printResults {"
+        "print flag;"
+        "print cenX;"
+        "print cenY;"
+        "print normSq;"
         "}";
 
-
     BufferedLexer* B = new BufferedLexer(source.c_str());
-    ProgramNode* p = parseProgram(B);
+    State* s = new State{};
+    ProgramNode* p = parseProgram(B, s);
     PKB pkb = PKB(p);
     pkb.initialPass();
     pkb.getFollows();

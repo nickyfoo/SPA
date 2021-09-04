@@ -1,9 +1,9 @@
 #pragma once
 #include "../parser/AST.hpp"
-#include "VarTable.h"
-#include "Statement.h"
-#include "ProcTable.h"
-#include "StmtTable.h"
+#include "Tables/VarTable.h"
+#include "Entities/Statement.h"
+#include "Tables/ProcTable.h"
+#include "Tables/StmtTable.h"
 
 class UtilityFunctions {
 public:
@@ -17,9 +17,8 @@ public:
 		return;
 	}
 
-	// Collect statements from procedure, if and while stmtList, 
 	static void addStmt(ast::Node* node) {
-		StmtTable::addStmt(node->lineNo, node->kind);
+		StmtTable::addStmt(node);
 	}
 
 	static void addProc(ast::Node* node) {

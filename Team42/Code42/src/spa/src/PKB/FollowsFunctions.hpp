@@ -1,42 +1,33 @@
 #pragma once
 #include "../parser/AST.hpp"
-#include "VarTable.h"
-#include "Statement.h"
-#include "ProcTable.h"
-#include "StmtTable.h"
+#include "Tables/VarTable.h"
+#include "Entities/Statement.h"
+#include "Tables/ProcTable.h"
+#include "Tables/StmtTable.h"
 #include <algorithm>
 
 class FollowsFunctions {
 public:
 	static void processProcedureNode(ast::Node* node) {
 		ast::ProcedureNode* castedProcedureNode = (ast::ProcedureNode*)node;
-		//todo: not sure how the stmtlst is organized/sorted, so I'll store line numbers for now and sort them
 		vector<int> lineNumbers;
+
 		for (ast::Node* n : castedProcedureNode->stmtLst) {
-			std::cout << "the line number is: " << n->lineNo << '\n';
-			lineNumbers.push_back(n->lineNo);
+			lineNumbers.push_back(Statement::getStmtNo(n));
 		}
 		sort(lineNumbers.begin(), lineNumbers.end());
-		std::cout << StmtTable::getNumStmts() << '\n';
-		cout << "LineNumbers:\n";
-		for (auto& x : lineNumbers) {
-			cout << x << '\n';
-		}
 		for (int i = 1; i < lineNumbers.size(); i++) {
-			std::cout << "Adding followers and followees\n";
 			StmtTable::getStmt(lineNumbers[i - 1])->addFollower(lineNumbers[i]);
-			std::cout << "added follower\n";
 			StmtTable::getStmt(lineNumbers[i])->addFollowee(lineNumbers[i - 1]);
 		}
 	}
 	
 	static void processIfNode(ast::Node* node) {
 		ast::IfNode* castedIfNode = (ast::IfNode*)node;
-		//todo: not sure how the stmtlst is organized/sorted, so I'll store line numbers for now and sort them
 		vector<int> thenLineNumbers, elseLineNumbers;
-		//todo: do this in a better way
+
 		for (ast::Node* n : castedIfNode->thenStmtLst) {
-			thenLineNumbers.push_back(n->lineNo);
+			thenLineNumbers.push_back(Statement::getStmtNo(n));
 		}
 		sort(thenLineNumbers.begin(), thenLineNumbers.end());
 		for (int i = 1; i < thenLineNumbers.size(); i++) {
@@ -45,7 +36,7 @@ public:
 		}
 
 		for (ast::Node* n : castedIfNode->thenStmtLst) {
-			elseLineNumbers.push_back(n->lineNo);
+			elseLineNumbers.push_back(Statement::getStmtNo(n));
 		}
 		sort(elseLineNumbers.begin(), elseLineNumbers.end());
 		for (int i = 1; i < elseLineNumbers.size(); i++) {
@@ -60,7 +51,7 @@ public:
 		//todo: not sure how the stmtlst is organized/sorted, so I'll store line numbers for now and sort them
 		vector<int> lineNumbers;
 		for (ast::Node* n : castedWhileNode->stmtLst) {
-			lineNumbers.push_back(n->lineNo);
+			lineNumbers.push_back(Statement::getStmtNo(n));
 		}
 		sort(lineNumbers.begin(), lineNumbers.end());
 		for (int i = 1; i < lineNumbers.size(); i++) {

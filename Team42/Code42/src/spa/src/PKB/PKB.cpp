@@ -1,4 +1,4 @@
-#include<stdio.h>
+#include <stdio.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -9,8 +9,13 @@ using namespace std;
 
 // Add variables, add statements
 void PKB::initialPass() {
-	functions.assign(ast::NUM_KIND, &UtilityFunctions::defaultFunction);
+	vector<void (*)(ast::Node* currentNode)> functions(ast::NUM_KIND, &UtilityFunctions::defaultFunction);
+	
 	functions[ast::Identifier] = &UtilityFunctions::addVariable;
+	for (int i = 0; i < ast::NUM_KIND; i++){
+		if(Statement::isStmt(i)
+
+	}
 	functions[ast::Assign] = &UtilityFunctions::addStmt;
 	functions[ast::If] = &UtilityFunctions::addStmt;
 	functions[ast::While] = &UtilityFunctions::addStmt;
@@ -27,7 +32,7 @@ void PKB::initialPass() {
 }
 
 void PKB::getFollows() {
-	functions.assign(ast::NUM_KIND, &UtilityFunctions::defaultFunction);
+	vector<void (*)(ast::Node* currentNode)> functions(ast::NUM_KIND, &UtilityFunctions::defaultFunction);
 	functions[ast::Procedure] = &FollowsFunctions::processProcedureNode;
 	functions[ast::If] = &FollowsFunctions::processIfNode;
 	functions[ast::While] = &FollowsFunctions::processWhileNode;

@@ -5,16 +5,16 @@
 std::map<int, Statement> StmtTable::table;
 int StmtTable::largestStmtNum = 0;
 std::set<std::pair<int, int>> StmtTable::Follows, StmtTable::Follows_star;
-std::set<int> StmtTable::WhileStatements, StmtTable::IfStatements, StmtTable::AssignmentStatements;
+std::map<ast::Kind, std::vector<Statement*>> StmtTable::typeToStatement;
 
-void StmtTable::addStmt(int lineNo, ast::Kind kind){
-	table[lineNo] = Statement(lineNo, kind);
-	largestStmtNum = max(largestStmtNum, lineNo);
-	if (kind == ast::While) WhileStatements.insert(lineNo);
-	else if (kind == ast::If) IfStatements.insert(lineNo);
-	else if (kind == ast::Assign) AssignmentStatements.insert(lineNo);
+void StmtTable::addStmt(ast::Node* node){
+	int stmtNo = Statement::getStmtNo(node);
+	if (stmtNo == 0) return; // Not a statement node
+	Statement s(stmtNo, node->kind);
+	table[stmtNo] = s;
+	typeToStatement[node->kind].push_back(&s);
+	largestStmtNum = max(largestStmtNum, stmtNo);
 };
-
 
 //todo: might want to add a check for valid lineNo..
 Statement* StmtTable::getStmt(int lineNo) {
@@ -27,7 +27,6 @@ Statement* StmtTable::getStmt(int lineNo) {
 		return NULL;
 	}
 }
-
 
 int StmtTable::getNumStmts() {
 	return table.size();
@@ -66,19 +65,4 @@ void StmtTable::printStmts() {
 	for (auto&[k,x] : table) {
 		std::cout << k << ' ' << x.getType() << '\n';
 	}
-	std::cout << "WhileStatements: ";
-	for (auto& x : WhileStatements) {
-		std::cout << x << '\n';
-	}
-	std::cout << '\n';
-	std::cout << "IfStatements: ";
-	for (auto& x : IfStatements) {
-		std::cout << x << '\n';
-	}
-	std::cout << '\n';
-	std::cout << "AssignmentStatements: ";
-	for (auto& x : AssignmentStatements) {
-		std::cout << x << '\n';
-	}
-	std::cout << '\n';
 }

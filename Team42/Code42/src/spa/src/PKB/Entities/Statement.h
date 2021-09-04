@@ -30,11 +30,12 @@ public:
 	//void addChild(int lineNo);
 	//void addChildStar(int lineNo);
 
-	void printFollowers();
 
 
 	void info();
+
 	std::set<int>* getFollowers();
+	void printFollowers();
 
 	static bool isStmtKind(ast::Kind kind);
 	static bool isStmtNode(ast::Node* node);

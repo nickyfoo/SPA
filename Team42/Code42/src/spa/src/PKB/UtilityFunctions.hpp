@@ -24,7 +24,7 @@ public:
 	static void addExprString(ast::Node* node) {
 		if (node->kind == ast::Assign) {
 			ast::AssignNode* castedAssignNode{ static_cast<ast::AssignNode*>(node) };
-			StmtTable::getStmt(castedAssignNode->stmtNo)->setExprString(castedAssignNode->expr->exprString);
+			StmtTable::getStatementByLineNo(castedAssignNode->stmtNo)->setExprString(castedAssignNode->expr->exprString);
 		}
 	}
 

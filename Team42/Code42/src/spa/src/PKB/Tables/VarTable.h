@@ -6,10 +6,10 @@
 
 class VarTable {
 private:
-	static vector<Variable> table;
-	static map<string, int> variableNameToIndex;
+	static std::vector<Variable> table;
+	static std::map<std::string, int> variableNameToIndex;
 public:
-	static int addVariable(string name);
+	static int addVariable(std::string name);
 	static int getNumVariables();
 	static void printVars();
 };

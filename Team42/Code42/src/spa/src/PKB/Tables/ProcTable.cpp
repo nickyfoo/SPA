@@ -1,11 +1,11 @@
 #include "ProcTable.h"
 #include <iostream>
 
-vector<Procedure> ProcTable::table;
-map<string, int> ProcTable::procedureNameToIndex;
+std::vector<Procedure> ProcTable::table;
+std::map<std::string, int> ProcTable::procedureNameToIndex;
 
 int ProcTable::addProcedure(std::string name) {
-	map<string, int>::iterator it = procedureNameToIndex.find(name);
+	std::map<std::string, int>::iterator it = procedureNameToIndex.find(name);
 	if (it != procedureNameToIndex.end()) {
 		return it->second;
 	}

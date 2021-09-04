@@ -1,11 +1,11 @@
 #include "VarTable.h"
 #include <iostream>
 
-vector<Variable> VarTable::table;
-map<string, int> VarTable::variableNameToIndex;
+std::vector<Variable> VarTable::table;
+std::map<std::string, int> VarTable::variableNameToIndex;
 
-int VarTable::addVariable(string name) {
-	map<string,int>::iterator it = variableNameToIndex.find(name);
+int VarTable::addVariable(std::string name) {
+	std::map<std::string,int>::iterator it = variableNameToIndex.find(name);
 	if(it!=variableNameToIndex.end()){
 		return it->second;
 	}
@@ -24,8 +24,8 @@ int VarTable::getNumVariables() {
 
 
 void VarTable::printVars() {
-	cout << "VarTable size: " << variableNameToIndex.size() << '\n';
+	std::cout << "VarTable size: " << variableNameToIndex.size() << '\n';
 	for (Variable& v : table) {
-		cout << v.getName() << "\n";
+		std::cout << v.getName() << "\n";
 	}
 }

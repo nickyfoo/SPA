@@ -10,29 +10,29 @@ class FollowsFunctions {
 public:
 	static void processProcedureNode(ast::Node* node) {
 		ast::ProcedureNode* castedProcedureNode = (ast::ProcedureNode*)node;
-		vector<int> lineNumbers;
+		std::vector<int> lineNumbers;
 
 		for (ast::Node* n : castedProcedureNode->stmtLst) {
 			lineNumbers.push_back(Statement::getStmtNo(n));
 		}
 		sort(lineNumbers.begin(), lineNumbers.end());
 		for (int i = 1; i < lineNumbers.size(); i++) {
-			StmtTable::getStmt(lineNumbers[i - 1])->addFollower(lineNumbers[i]);
-			StmtTable::getStmt(lineNumbers[i])->addFollowee(lineNumbers[i - 1]);
+			StmtTable::getStatementByLineNo(lineNumbers[i - 1])->addFollower(lineNumbers[i]);
+			StmtTable::getStatementByLineNo(lineNumbers[i])->addFollowee(lineNumbers[i - 1]);
 		}
 	}
 	
 	static void processIfNode(ast::Node* node) {
 		ast::IfNode* castedIfNode = (ast::IfNode*)node;
-		vector<int> thenLineNumbers, elseLineNumbers;
+		std::vector<int> thenLineNumbers, elseLineNumbers;
 
 		for (ast::Node* n : castedIfNode->thenStmtLst) {
 			thenLineNumbers.push_back(Statement::getStmtNo(n));
 		}
 		sort(thenLineNumbers.begin(), thenLineNumbers.end());
 		for (int i = 1; i < thenLineNumbers.size(); i++) {
-			StmtTable::getStmt(thenLineNumbers[i - 1])->addFollower(thenLineNumbers[i]);
-			StmtTable::getStmt(thenLineNumbers[i])->addFollowee(thenLineNumbers[i - 1]);
+			StmtTable::getStatementByLineNo(thenLineNumbers[i - 1])->addFollower(thenLineNumbers[i]);
+			StmtTable::getStatementByLineNo(thenLineNumbers[i])->addFollowee(thenLineNumbers[i - 1]);
 		}
 
 		for (ast::Node* n : castedIfNode->thenStmtLst) {
@@ -40,8 +40,8 @@ public:
 		}
 		sort(elseLineNumbers.begin(), elseLineNumbers.end());
 		for (int i = 1; i < elseLineNumbers.size(); i++) {
-			StmtTable::getStmt(elseLineNumbers[i - 1])->addFollower(elseLineNumbers[i]);
-			StmtTable::getStmt(elseLineNumbers[i])->addFollowee(elseLineNumbers[i - 1]);
+			StmtTable::getStatementByLineNo(elseLineNumbers[i - 1])->addFollower(elseLineNumbers[i]);
+			StmtTable::getStatementByLineNo(elseLineNumbers[i])->addFollowee(elseLineNumbers[i - 1]);
 		}
 
 	}
@@ -49,14 +49,14 @@ public:
 	static void processWhileNode(ast::Node* node) {
 		ast::WhileNode* castedWhileNode = (ast::WhileNode*)node;
 		//todo: not sure how the stmtlst is organized/sorted, so I'll store line numbers for now and sort them
-		vector<int> lineNumbers;
+		std::vector<int> lineNumbers;
 		for (ast::Node* n : castedWhileNode->stmtLst) {
 			lineNumbers.push_back(Statement::getStmtNo(n));
 		}
 		sort(lineNumbers.begin(), lineNumbers.end());
 		for (int i = 1; i < lineNumbers.size(); i++) {
-			StmtTable::getStmt(lineNumbers[i - 1])->addFollower(lineNumbers[i]);
-			StmtTable::getStmt(lineNumbers[i])->addFollowee(lineNumbers[i - 1]);
+			StmtTable::getStatementByLineNo(lineNumbers[i - 1])->addFollower(lineNumbers[i]);
+			StmtTable::getStatementByLineNo(lineNumbers[i])->addFollowee(lineNumbers[i - 1]);
 		}
 	}
 };

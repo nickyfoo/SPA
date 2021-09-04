@@ -5,11 +5,9 @@
 #include "PKB.h"
 #include "../parser/AST.hpp"
 
-using namespace std;
-
 // Add variables, add statements
 void PKB::initialPass() {
-	vector<vector<void (*)(ast::Node* currentNode)>> functions(ast::NUM_KIND);
+	std::vector<std::vector<void (*)(ast::Node* currentNode)>> functions(ast::NUM_KIND);
 	
 	functions[ast::Identifier].push_back(&UtilityFunctions::addVariable);
 	for (int i = 0; i < ast::NUM_KIND; i++){
@@ -27,7 +25,7 @@ void PKB::initialPass() {
 }
 
 void PKB::getFollows() {
-	vector<vector<void (*)(ast::Node* currentNode)>> functions(ast::NUM_KIND);
+	std::vector<std::vector<void (*)(ast::Node* currentNode)>> functions(ast::NUM_KIND);
 	functions[ast::Procedure].push_back(&FollowsFunctions::processProcedureNode);
 	functions[ast::If].push_back(&FollowsFunctions::processIfNode);
 	functions[ast::While].push_back(&FollowsFunctions::processWhileNode);

@@ -8,8 +8,6 @@
 #include "UtilityFunctions.hpp"
 #include "FollowsFunctions.hpp"
 
-using namespace std;
-
 class PKB {
 private:
 	ast::Node* root;

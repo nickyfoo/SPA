@@ -1,8 +1,8 @@
 #include "TransitiveClosure.h"
 
 //getting transitive closure from FloydWarshall
-vector<vector<int>> TransitiveClosure::getTransitiveClosure(set<pair<int, int>> al, int n) {
-	vector<vector<int>> d(n, vector<int>(n, INF));
+std::vector<std::vector<int>> TransitiveClosure::getTransitiveClosure(std::set<std::pair<int, int>> al, int n) {
+	std::vector<std::vector<int>> d(n, std::vector<int>(n, INF));
 	for (auto& [u, v] : al) {
 		d[u][v] = 1;
 	}

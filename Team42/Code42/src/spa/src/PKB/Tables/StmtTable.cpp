@@ -13,11 +13,11 @@ void StmtTable::addStmt(ast::Node* node){
 	Statement s(stmtNo, node->kind);
 	table[stmtNo] = s;
 	typeToStatement[node->kind].push_back(&s);
-	largestStmtNum = max(largestStmtNum, stmtNo);
+	largestStmtNum = std::max(largestStmtNum, stmtNo);
 };
 
 //todo: might want to add a check for valid lineNo..
-Statement* StmtTable::getStmt(int lineNo) {
+Statement* StmtTable::getStatementByLineNo(int lineNo) {
 	std::map<int, Statement>::iterator it = table.find(lineNo);
 	if (it != table.end()) {
 		return &(it->second);
@@ -26,10 +26,6 @@ Statement* StmtTable::getStmt(int lineNo) {
 		//probably not a good idea to return NULL, but works for now.
 		return NULL;
 	}
-}
-
-int StmtTable::getNumStmts() {
-	return table.size();
 }
 
 int StmtTable::getLargestStmtNum() {
@@ -49,12 +45,12 @@ void StmtTable::processFollowsStar() {
 	int n = largestStmtNum + 1;
 	std::vector<std::vector<int>> d = TransitiveClosure::getTransitiveClosure(Follows,n);
 	for (int i = 0; i < n; i++) {
-		Statement* stmt = getStmt(i);
+		Statement* stmt = getStatementByLineNo(i);
 		if (stmt != NULL) {
 			for (int j = 0; j < n; j++) {
 				if (d[i][j] != TransitiveClosure::INF) {
 					stmt->addFollowerStar(j);
-					getStmt(j)->addFolloweeStar(i);
+					getStatementByLineNo(j)->addFolloweeStar(i);
 				}
 			}
 		}
@@ -68,4 +64,14 @@ void StmtTable::printStmts() {
 		if (x.getKind() == ast::Assign) std::cout << x.getExprString();
 		std::cout << '\n';
 	}
+}
+
+void StmtTable::printStmtInfos() {
+	for (auto& [k, x] : table) {
+		x.info();
+	}
+}
+
+std::vector<Statement*> StmtTable::getStatements(ast::Kind type) {
+	return typeToStatement[type];
 }

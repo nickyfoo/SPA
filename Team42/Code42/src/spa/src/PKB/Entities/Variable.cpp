@@ -1,5 +1,5 @@
 #include "Variable.h"
 
-string Variable::getName() {
+std::string Variable::getName() {
 	return _name;
 }

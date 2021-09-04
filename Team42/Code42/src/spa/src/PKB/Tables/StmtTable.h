@@ -10,29 +10,22 @@ private:
 	static std::map<int,Statement> table;
 	static std::set<std::pair<int, int>> Follows, Follows_star;
 	static std::map<ast::Kind, std::vector<Statement*>> typeToStatement;
+	//largestStmtNum is used to compute the transitive closure
 	static int largestStmtNum;
 public:
 	static void addStmt(ast::Node* node);
 
-	static Statement* getStmt(int lineNo);
-	
-	static int getNumStmts();
 	
 	static void processFollows();
-	static void processFollowsStar();
-
-	static void printStmts();
 
 	static int getLargestStmtNum();
+	static void processFollowsStar();
 
-		//todo: 
-	//vector<Statement*> getWhile
+	//API calls for PQL
+	static std::vector<Statement*> getStatements(ast::Kind type);
+	static Statement* getStatementByLineNo(int lineNo);
 
-	/*
-		Statement s;
-		Select s;
-
-		return a ptr to vector<Statment*>
-
-	*/
+	//Debug functions
+	static void printStmts();
+	void printStmtInfos();
 };

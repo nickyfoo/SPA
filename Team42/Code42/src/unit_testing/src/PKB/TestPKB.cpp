@@ -52,7 +52,6 @@ TEST_CASE("Test PKB::initialPass()") {
     ProgramNode* p = parseProgram(B, s);
     PKB pkb = PKB(p);
     pkb.initialPass();
-
 }
 
 
@@ -66,7 +65,7 @@ TEST_CASE("Test PKB::getFollows()") {
     cout << "done stuff\n";
     StmtTable::printStmts();
     for (int i = 1; i <= StmtTable::getLargestStmtNum()+1; i++) {
-        Statement* s = StmtTable::getStmt(i);
+        Statement* s = StmtTable::getStatementByLineNo(i);
         // checking for NULL response
         if (!s) continue;
         s->info();

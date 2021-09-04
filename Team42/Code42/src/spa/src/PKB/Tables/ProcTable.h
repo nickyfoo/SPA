@@ -6,8 +6,6 @@
 #include "Entities/Procedure.h"
 #include <map>
 
-using namespace std;
-
 class ProcTable {
 
 private: 
@@ -15,7 +13,7 @@ private:
 	static std::map<std::string, int> procedureNameToIndex;
 
 public:
-	static int addProcedure(string name);
+	static int addProcedure(std::string name);
 	static int getNumProcedures();
 	static void printProcs();
 };

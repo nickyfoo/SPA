@@ -4,11 +4,12 @@
 #include <set>
 #include <vector>
 
-class VariableTable {
+class VarTable {
 private:
-	static set<string> uniqueVariables;
 	static vector<Variable> table;
 	static map<string, int> variableNameToIndex;
 public:
 	static int addVariable(string name);
+	static int getNumVariables();
+	static void printVariables();
 };

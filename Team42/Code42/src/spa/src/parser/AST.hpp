@@ -18,7 +18,7 @@ namespace ast {
         Call,
         Procedure,
         Program,
-        NUM_KIND = Program
+        NUM_KIND
 };
 
 enum ExprOp { Plus, Minus, Times, Divide, Modulo, Noop };
@@ -152,7 +152,7 @@ public:
   std::vector<ProcedureNode *> procedures;
 
   ProgramNode(std::vector<ProcedureNode *> _procedures, int _lineNo, int _colNo)
-      : Node(Kind::Procedure, _lineNo, _colNo), procedures(_procedures) {}
+      : Node(Kind::Program, _lineNo, _colNo), procedures(_procedures) {}
 };
 
 std::vector<Node*> nextNodes(Node* node);

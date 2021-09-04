@@ -13,4 +13,5 @@ public:
 		_index = index;
 		_name = name;
 	}
+	string getName();
 };

@@ -82,3 +82,46 @@ TEST_CASE("Test parseExpression") {
   ConstantNode *lrr = static_cast<ConstantNode *>(lr->right);
   REQUIRE(lrr->value == "3");
 }
+
+TEST_CASE("Test parseProgram 2") {
+  std::string source = "procedure main {"
+                       "flag = 0;"
+                       "call computeCentroid;"
+                       "call printResults;"
+                       "}"
+                       "procedure readPoint {"
+                       "read x;"
+                       "read y;"
+                       "}"
+                       "procedure printResults {"
+                       "print flag;"
+                       "print cenX;"
+                       "print cenY;"
+                       "print normSq;"
+                       "}"
+                       "procedure computeCentroid {"
+                       "count = 0;"
+                       "cenX = 0;"
+                       "cenY = 0;"
+                       "call readPoint;"
+                       "while((x != 0) && (y != 0)) {"
+                       "count = count+1;"
+                       "cenX = cenX + x;"
+                       "cenY = cenY + y;"
+                       "call readPoint;"
+                       "}"
+                       "if (count == 0) then {"
+                       "flag = 1;"
+                       "} else {"
+                       "cenX = cenX / count;"
+                       "cenY = cenY / count;"
+                       "}"
+                       "normSq = cenX * cenX + cenY * cenY;"
+                       "}";
+
+  BufferedLexer *B = new BufferedLexer(source.c_str());
+  State *s = new State{};
+  ProgramNode *p = parseProgram(B, s);
+
+  REQUIRE(p->procedures.size() == 4);
+}

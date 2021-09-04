@@ -498,16 +498,22 @@ ast::RelExpressionNode *parser::parseRelExpression(lexer::BufferedLexer *lexer, 
   switch (t->kind) {
   case lexer::Kind::Gt:
     op = ast::RelExprOp::Gt;
+    break;
   case lexer::Kind::Gte:
     op = ast::RelExprOp::Gte;
+    break;
   case lexer::Kind::Lt:
     op = ast::RelExprOp::Lt;
+    break;
   case lexer::Kind::Lte:
     op = ast::RelExprOp::Lte;
+    break;
   case lexer::Kind::Eq:
     op = ast::RelExprOp::Eq;
+    break;
   case lexer::Kind::Neq:
     op = ast::RelExprOp::Neq;
+    break;
   default:
     throw parseError(">, >=, <, <=, ==, !=", t->lineNo, t->colNo);
   }

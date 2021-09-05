@@ -7,6 +7,7 @@ int StmtTable::largestStmtNum = 0;
 std::set<std::pair<int, int>> StmtTable::Follows, StmtTable::Follows_star;
 std::set<std::pair<int, int>> StmtTable::Parent, StmtTable::Parent_star;
 std::map<ast::Kind, std::vector<Statement*>> StmtTable::typeToStatement;
+std::vector<Statement*> StmtTable::allStatements;
 
 void StmtTable::addStmt(ast::Node* node){
 	int stmtNo = Statement::getStmtNo(node);
@@ -14,6 +15,7 @@ void StmtTable::addStmt(ast::Node* node){
 	Statement s(stmtNo, node->kind);
 	table[stmtNo] = s;
 	typeToStatement[node->kind].push_back(&s);
+	allStatements.push_back(&s);
 	largestStmtNum = std::max(largestStmtNum, stmtNo);
 };
 
@@ -102,4 +104,9 @@ void StmtTable::printStmtInfos() {
 
 std::vector<Statement*> StmtTable::getStatements(ast::Kind type) {
 	return typeToStatement[type];
+}
+
+
+std::vector<Statement*> StmtTable::getAllStatements() {
+	return allStatements;
 }

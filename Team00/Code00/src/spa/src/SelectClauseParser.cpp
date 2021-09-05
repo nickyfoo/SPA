@@ -109,6 +109,7 @@ Pattern* SelectClauseParser::getPatternClause(std::string pattern_statement) {
     if (pattern_clauses.size() > 3) {
         return nullptr;
     }
+
     std::string synonym = pattern_clauses.at(0);
     std::string left_ref = pattern_clauses.at(1);
     std::string right_ref = pattern_clauses.at(2);
@@ -117,7 +118,7 @@ Pattern* SelectClauseParser::getPatternClause(std::string pattern_statement) {
             || synonym_to_entity->find(synonym)->second->getType() != EntityType::Assign) {
         return nullptr;
     }
-    if ((synonym_to_entity->find(left_ref) != synonym_to_entity->end() && synonym_to_entity->find(left_ref)->second->getType() != EntityType::Variable)
+    if ((synonym_to_entity->find(left_ref) != synonym_to_entity->end() && synonym_to_entity->find(left_ref)->second->getType() == EntityType::Variable)
         || isValidIdentifier(left_ref)) {
         Entity* left;
 
@@ -192,7 +193,9 @@ std::vector<std::string> SelectClauseParser::splitSelect(std::string& s) {
     }
     s.erase(remove(s.begin(), s.end(), '\n'), s.end());
     s.erase(remove(s.begin(), s.end(), ' '), s.end());
-    if (s.at(0) == '<' && s.at(s.length() - 1) == '>') {
+    if (s.empty()) {
+        return {};
+    } else if (s.at(0) == '<' && s.at(s.length() - 1) == '>') {
         return splitTokensByDelimiter(s.substr(1, s.length() - 2), ",");
     } else {
         return std::vector<std::string>{s};
@@ -216,13 +219,12 @@ std::vector<std::string> SelectClauseParser::splitTokensByDelimiter(std::string 
 }
 
 // splits by such that, pattern and with
-// returns an empty vector if it is invalid
-std::tuple<std::string, std::vector<std::string>, std::vector<std::string>> SelectClauseParser::splitTokensByClauses(std::string input)
+std::tuple<std::string, std::vector<std::string>, std::vector<std::string>> SelectClauseParser::splitTokensByClauses(const std::string& input)
 {
     std::string such_that_delim = "such that ";
     std::string pattern_delim = "pattern ";
     std::vector<std::string> delimiters{such_that_delim, pattern_delim};
-    select_clause = "";
+    std::string select_clause;
     std::vector<std::string> such_that_clauses;
     std::vector<std::string> pattern_clauses;
 
@@ -231,33 +233,78 @@ std::tuple<std::string, std::vector<std::string>, std::vector<std::string>> Sele
     bool last_found_such_that = false;
     bool last_found_pattern = false;
 
-    while (input.find(such_that_delim) != std::string::npos || input.find(pattern_delim) != std::string::npos) {
-        pos = std::min(input.find(such_that_delim), input.find(pattern_delim)); // find the earliest clause
-        token = input.substr(0, pos);
-        if (!last_found_such_that && !last_found_pattern) {
-            select_clause = token;
-        } else if (last_found_such_that) {
+    std::stringstream ss;
+    // first pass to remove all whitespaces within brackets and before brackets
+    bool whitespace_found = true;
+    bool open_bracket_found = false;
+    for (char c : input) {
+        if (c == ' ') {
+            if (!whitespace_found) {
+                ss << c;
+                whitespace_found = true;
+            }
+        } else if (c == '(' || c == '<') {
+            std::string curr_ss = ss.str();
+            if (curr_ss.at(curr_ss.length() - 1) == ' ') {
+                ss.str("");
+                ss << curr_ss.substr(0, curr_ss.length() - 1);
+            }
+            ss << c;
+            open_bracket_found = true;
+            whitespace_found = true;
+        } else if (c == ')' || c == '>') {
+            ss << c;
+            open_bracket_found = false;
+            whitespace_found = false;
+        } else {
+            ss << c;
+            if (!open_bracket_found) {
+                whitespace_found = false;
+            }
+        }
+    }
+
+    std::string clean_input = ss.str();
+    pos = clean_input.find(' ');
+    if (pos == std::string::npos) { // find first whitespace
+        return make_tuple(select_clause, such_that_clauses, pattern_clauses);
+    }
+
+    pos = clean_input.find(' ', pos + 1);
+    if (pos == std::string::npos) { // find second white space
+        select_clause = clean_input;
+        return make_tuple(select_clause, such_that_clauses, pattern_clauses);
+    }
+
+    select_clause = clean_input.substr(0, pos); // adds the select clause
+    clean_input.erase(0, pos);
+
+    while (clean_input.find(such_that_delim) != std::string::npos || clean_input.find(pattern_delim) != std::string::npos) {
+        pos = std::min(clean_input.find(such_that_delim), clean_input.find(pattern_delim)); // find the earliest clause
+        token = clean_input.substr(0, pos);
+        if (last_found_such_that) {
             such_that_clauses.push_back(token);
         } else if (last_found_pattern) {
             pattern_clauses.push_back(token);
         }
 
-        if (input.substr(pos, such_that_delim.length()) == such_that_delim) {
-            input.erase(0, pos + such_that_delim.length());
+        if (clean_input.substr(pos, such_that_delim.length()) == such_that_delim) {
+            clean_input.erase(0, pos + such_that_delim.length());
             last_found_such_that = true;
             last_found_pattern = false;
-        } else if (input.substr(pos, pattern_delim.length()) == pattern_delim) {
-            input.erase(0, pos + pattern_delim.length());
+        } else if (clean_input.substr(pos, pattern_delim.length()) == pattern_delim) {
+            clean_input.erase(0, pos + pattern_delim.length());
             last_found_pattern = true;
             last_found_such_that = false;
         }
     }
     if (!last_found_such_that && !last_found_pattern) {
-        select_clause = input;
-    } else if (last_found_such_that) {
-        such_that_clauses.push_back(input);
+        select_clause.append(clean_input); // error
+    }
+    if (last_found_such_that) {
+        such_that_clauses.push_back(clean_input);
     } else if (last_found_pattern) {
-        pattern_clauses.push_back(input);
+        pattern_clauses.push_back(clean_input);
     }
 
     return make_tuple(select_clause, such_that_clauses, pattern_clauses);

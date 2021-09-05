@@ -26,7 +26,7 @@ private:
     static std::vector<std::string> splitSelect(std::string& select_clause);
     static std::vector<std::string> splitTokensByDelimiter(std::string input, const std::string& delimiter);
     static std::vector<std::string> splitTokensByMultipleDelimiters(const std::string& input, const std::string& delimiters);
-    std::tuple<std::string, std::vector<std::string>, std::vector<std::string>> splitTokensByClauses(std::string input);
+    static std::tuple<std::string, std::vector<std::string>, std::vector<std::string>> splitTokensByClauses(const std::string& input);
     static bool isValidIdentifier(std::string str);
     static bool isInteger(std::string& str);
 

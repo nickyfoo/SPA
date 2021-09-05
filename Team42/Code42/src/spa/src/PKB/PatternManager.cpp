@@ -94,15 +94,16 @@ std::string PatternManager::getPostfixExpr(std::string infixExpr) {
 
 bool PatternManager::checkAssignmentRhs(Statement* assignmentStmt, std::string pattern, bool isPartialMatch) {
     try {
-        std::cout << "checkAssignmentRhs" << "\n";
+        std::cout << "\n";
         std::string postfixPattern = getPostfixExpr(pattern);
-        std::cout << "pattern: " << pattern << " postfixPattern: " << postfixPattern << "\n";
+        postfixPattern.pop_back();
         std::string assignmentExpr = assignmentStmt->getExprString();
-        std::cout << "infix: " << pattern << "\n";
-        std::cout << "postfix: " << postfixPattern << "\n";
+        // std::cout << "assignmentExpr: " << assignmentExpr << "\n";
+        // std::cout << "postfixPattern: " << postfixPattern << " --> " << (assignmentExpr == postfixPattern) << "\n";
         if (isPartialMatch) {
             return assignmentExpr.find(postfixPattern) != std::string::npos;
         } else {
+
             return assignmentExpr == postfixPattern;
         }
 

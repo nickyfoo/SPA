@@ -24,32 +24,48 @@ void SelectClauseParser::setSelectClause(unordered_map<string, Entity*> *synonym
 
 PQLQuery *SelectClauseParser::getClauses()
 {
-    vector<string> tokens = splitTokensByDelimiter(select_clause, " such that ");
+    std::cout << "here1" << std::flush;
+    tuple<string, vector<string>, vector<string>> clauses = splitTokensByClauses(select_clause);
+    std::cout << "here2" << std::flush;
+    string select_clause = std::get<0>(clauses);
+    vector<string> such_that_clauses = std::get<1>(clauses);
+    vector<string> pattern_clauses = std::get<2>(clauses);
 
-    bool valid_syntax;
-    vector<Entity*> *select = new vector<Entity*>();
-    vector<Relationship*> *such_that = new vector<Relationship*>();
+    std::cout << "select is " << select_clause << "\n" << std::flush;
+    for (string such_that : such_that_clauses) {
+        std::cout << "such that is " << such_that << "\n" << std::flush;
+    }
+    for (string pattern : pattern_clauses) {
+        std::cout << "pattern is " << pattern << "\n" << std::flush;
+    }
 
-    string select_statement = tokens.at(0);
-    vector<string> select_clauses = splitTokensByDelimiter(select_statement, " ");
-    valid_syntax = select_clauses.at(0) == "Select" && select_clauses.size() == 2
-            && (synonym_to_entity->find(select_clauses.at(1)) != synonym_to_entity->end());
+    vector<Entity*> *select_ret = new vector<Entity*>();
+    vector<Relationship*> *such_that_ret = new vector<Relationship*>();
+    vector<Pattern*> *pattern_ret = new vector<Pattern*>();
 
-    if (valid_syntax) {
-        select->push_back(synonym_to_entity->at(select_clauses.at(1) ));
-    } else {
+    vector<string> select_clauses = splitSelect(select_clause);
+    if (select_clauses.empty()) { // invalid select syntax
         return nullptr;
     }
-    if (valid_syntax && tokens.size() > 1) {
-        Relationship* relationship = getRelationshipStatementClause(tokens.at(1));
+    for (string select_clause : select_clauses) {
+        if (synonym_to_entity->find(select_clause) == synonym_to_entity->end()) { // not found in hashmap
+            return nullptr;
+        } else {
+            select_ret->push_back(synonym_to_entity->at(select_clause));
+        }
+    }
+    for (string such_that_clause : such_that_clauses) {
+        Relationship* relationship = getRelationshipStatementClause(such_that_clause);
         if (relationship == nullptr) {
             return nullptr;
         }
-        such_that->push_back(relationship);
+        such_that_ret->push_back(relationship);
     }
 
-    PQLQuery* ret = new PQLQuery(select, such_that, synonym_to_entity);
+
+    PQLQuery* ret = new PQLQuery(select_ret, such_that_ret, pattern_ret, synonym_to_entity);
     return ret;
+
 }
 
 Relationship* SelectClauseParser::getRelationshipStatementClause(string relationship_statement) {
@@ -120,6 +136,38 @@ bool SelectClauseParser::isInteger(string& s) {
     return !s.empty() && it == s.end();
 }
 
+vector<string> SelectClauseParser::splitSelect(string& s) {
+    const std::string WHITESPACE = " \n\r\t\f\v";
+    size_t pos = s.find_first_not_of(WHITESPACE);
+    if (pos == std::string::npos) {
+        return vector<string>();
+    } else {
+        s.erase(0, pos);
+    }
+
+    const std::string SELECT_DELIM = "Select";
+    bool found_select = false;
+    pos = 0;
+    string token;
+
+    while ((pos = s.find(SELECT_DELIM)) != string::npos) {
+        if (found_select) { // two select clauses found
+            return vector<string>();
+        }
+        token = s.substr(0, pos);
+        s.erase(0, pos + SELECT_DELIM.length());
+        found_select = true;
+
+    }
+    s.erase(remove(s.begin(), s.end(), '\n'), s.end());
+    s.erase(remove(s.begin(), s.end(), ' '), s.end());
+    if (s.at(0) == '<' && s.at(s.length() - 1) == '>') {
+        return splitTokensByDelimiter(s.substr(1, s.length() - 2), ",");
+    } else {
+        return vector<string>{s};
+    }
+}
+
 vector<string> SelectClauseParser::splitTokensByDelimiter(string input, string delimiter)
 {
     vector<string> tokens;
@@ -134,6 +182,54 @@ vector<string> SelectClauseParser::splitTokensByDelimiter(string input, string d
     }
     tokens.push_back(input);
     return tokens;
+}
+
+// splits by such that, pattern and with
+// returns an empty vector if it is invalid
+tuple<string, vector<string>, vector<string>> SelectClauseParser::splitTokensByClauses(string input)
+{
+    string such_that_delim = "such that ";
+    string pattern_delim = "pattern ";
+    vector<string> delimiters{such_that_delim, pattern_delim};
+    select_clause = "";
+    vector<string> such_that_clauses;
+    vector<string> pattern_clauses;
+
+    size_t pos = 0;
+    string token;
+    bool last_found_such_that = false;
+    bool last_found_pattern = false;
+
+    while ((pos = input.find(such_that_delim)) != string::npos || (pos = input.find(pattern_delim)) != string::npos) {
+        pos = min(input.find(such_that_delim), input.find(pattern_delim));
+        token = input.substr(0, pos);
+        if (!last_found_such_that && !last_found_pattern) {
+            select_clause = token;
+        } else if (last_found_such_that) {
+            such_that_clauses.push_back(token);
+        } else if (last_found_pattern) {
+            pattern_clauses.push_back(token);
+        }
+
+        if (input.substr(pos, such_that_delim.length()) == such_that_delim) {
+            input.erase(0, pos + such_that_delim.length());
+            last_found_such_that = true;
+            last_found_pattern = false;
+        } else if (input.substr(pos, pattern_delim.length()) == pattern_delim) {
+            input.erase(0, pos + pattern_delim.length());
+            last_found_pattern = true;
+            last_found_such_that = false;
+        }
+    }
+    if (!last_found_such_that && !last_found_pattern) {
+        select_clause = input;
+    } else if (last_found_such_that) {
+        such_that_clauses.push_back(input);
+    } else if (last_found_pattern) {
+        pattern_clauses.push_back(input);
+    }
+
+    return make_tuple(select_clause, such_that_clauses, pattern_clauses);
 }
 
 vector<string> SelectClauseParser::splitTokensByMultipleDelimiters(string input, string delimiters)

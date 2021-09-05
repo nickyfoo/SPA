@@ -26,8 +26,10 @@ private:
     SelectClauseParser();
     bool checkValidSyntax();
     Relationship* getRelationshipStatementClause(string relationship_statement);
+    vector<string> splitSelect(string& select_clause);
     vector<string> splitTokensByDelimiter(string input, string delimiter);
     vector<string> splitTokensByMultipleDelimiters(string input, string delimiters);
+    tuple<string, vector<string>, vector<string>> splitTokensByClauses(string input);
     bool isValidIdentifier(string str);
     bool isInteger(string& str);
 

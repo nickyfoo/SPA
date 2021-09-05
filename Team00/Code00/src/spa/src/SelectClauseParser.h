@@ -25,7 +25,8 @@ private:
     string select_clause;
     SelectClauseParser();
     bool checkValidSyntax();
-    Relationship* getRelationshipStatementClause(string relationship_statement);
+    Relationship* getRelationshipClause(string relationship_statement);
+    Pattern* getPatternClause(string pattern_statement);
     vector<string> splitSelect(string& select_clause);
     vector<string> splitTokensByDelimiter(string input, string delimiter);
     vector<string> splitTokensByMultipleDelimiters(string input, string delimiters);

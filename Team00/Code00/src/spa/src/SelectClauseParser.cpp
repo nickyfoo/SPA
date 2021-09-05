@@ -24,20 +24,10 @@ void SelectClauseParser::setSelectClause(unordered_map<string, Entity*> *synonym
 
 PQLQuery *SelectClauseParser::getClauses()
 {
-    std::cout << "here1" << std::flush;
     tuple<string, vector<string>, vector<string>> clauses = splitTokensByClauses(select_clause);
-    std::cout << "here2" << std::flush;
     string select_clause = std::get<0>(clauses);
     vector<string> such_that_clauses = std::get<1>(clauses);
     vector<string> pattern_clauses = std::get<2>(clauses);
-
-    std::cout << "select is " << select_clause << "\n" << std::flush;
-    for (string such_that : such_that_clauses) {
-        std::cout << "such that is " << such_that << "\n" << std::flush;
-    }
-    for (string pattern : pattern_clauses) {
-        std::cout << "pattern is " << pattern << "\n" << std::flush;
-    }
 
     vector<Entity*> *select_ret = new vector<Entity*>();
     vector<Relationship*> *such_that_ret = new vector<Relationship*>();
@@ -54,26 +44,37 @@ PQLQuery *SelectClauseParser::getClauses()
             select_ret->push_back(synonym_to_entity->at(select_clause));
         }
     }
+
     for (string such_that_clause : such_that_clauses) {
-        Relationship* relationship = getRelationshipStatementClause(such_that_clause);
+        Relationship* relationship = getRelationshipClause(such_that_clause);
         if (relationship == nullptr) {
             return nullptr;
         }
         such_that_ret->push_back(relationship);
     }
 
+    for (string pattern_clause : pattern_clauses) {
+        Pattern* pattern = getPatternClause(pattern_clause);
+        if (pattern == nullptr) {
+            return nullptr;
+        }
+        pattern_ret->push_back(pattern);
+    }
 
     PQLQuery* ret = new PQLQuery(select_ret, such_that_ret, pattern_ret, synonym_to_entity);
     return ret;
 
 }
 
-Relationship* SelectClauseParser::getRelationshipStatementClause(string relationship_statement) {
+Relationship* SelectClauseParser::getRelationshipClause(string relationship_statement) {
     relationship_statement.erase(remove(relationship_statement.begin(), relationship_statement.end(),
                                         ' '), relationship_statement.end());
     vector<string> relationship_clauses = splitTokensByMultipleDelimiters(relationship_statement, "(,)");
-    Relationship* relationship = new Relationship(relationship_clauses.at(0));
+    if (relationship_clauses.size() > 3) {
+        return nullptr;
+    }
 
+    Relationship* relationship = new Relationship(relationship_clauses.at(0));
     string left_ref = relationship_clauses.at(1);
     string right_ref = relationship_clauses.at(2);
     if ((synonym_to_entity->find(left_ref) != synonym_to_entity->end() || isValidIdentifier(left_ref) || isInteger(left_ref))
@@ -81,7 +82,6 @@ Relationship* SelectClauseParser::getRelationshipStatementClause(string relation
             && relationship->getType() != RelationshipType::None) {
         Entity* left;
         Entity* right;
-
         if (synonym_to_entity->find(left_ref) != synonym_to_entity->end()) {
             left = synonym_to_entity->at(left_ref);
         } else {
@@ -101,29 +101,63 @@ Relationship* SelectClauseParser::getRelationshipStatementClause(string relation
     return nullptr;
 }
 
+Pattern* SelectClauseParser::getPatternClause(string pattern_statement) {
+    pattern_statement.erase(remove(pattern_statement.begin(), pattern_statement.end(),
+                                   ' '), pattern_statement.end());
+    vector<string> pattern_clauses = splitTokensByMultipleDelimiters(pattern_statement, "(,)");
+    if (pattern_clauses.size() > 3) {
+        return nullptr;
+    }
+    string synonym = pattern_clauses.at(0);
+    string left_ref = pattern_clauses.at(1);
+    string right_ref = pattern_clauses.at(2);
+    Pattern* pattern = new Pattern(synonym);
+    if (synonym_to_entity->find(synonym) == synonym_to_entity->end()
+            || synonym_to_entity->find(synonym)->second->getType() != EntityType::Assign) {
+        return nullptr;
+    }
+    if ((synonym_to_entity->find(left_ref) != synonym_to_entity->end() && synonym_to_entity->find(left_ref)->second->getType() != EntityType::Variable)
+        || isValidIdentifier(left_ref)) {
+        Entity* left;
+
+        if (synonym_to_entity->find(left_ref) != synonym_to_entity->end()) {
+            left = synonym_to_entity->at(left_ref);
+        } else {
+            left = new Entity(left_ref);
+        }
+
+        string right = right_ref;
+
+        if (pattern->setRef(left, right)) {
+            return pattern;
+        }
+    }
+    return nullptr;
+}
+
 // Function that returns true if str
 // is a valid identifier
-bool SelectClauseParser::isValidIdentifier(string str)
-{
-    if (str == "_")
+bool SelectClauseParser::isValidIdentifier(string str) {
+    if (str == "_") {
         return true;
+    }
 
-    if (str[0] != '\'' && str[str.length() - 1] != '\'')
+    if (!((str[0] == '\'' && str[str.length() - 1] == '\'') || (str[0] == '\"' && str[str.length() - 1] == '\"'))) {
         return false;
+    }
 
     // If first character is invalid
-    if (!((str[1] >= 'a' && str[1] <= 'z')
-    || (str[1] >= 'A' && str[1] <= 'Z')
-    || str[1] == '_'))
+    if (!((str[1] >= 'a' && str[1] <= 'z') || (str[1] >= 'A' && str[1] <= 'Z') || str[1] == '_')) {
         return false;
+    }
+
 
     // Traverse the string for the rest of the characters
     for (int i = 2; i < str.length() - 1; i++) {
-        if (!((str[i] >= 'a' && str[i] <= 'z')
-        || (str[i] >= 'A' && str[i] <= 'Z')
-        || (str[i] >= '0' && str[i] <= '9')
-        || str[i] == '_'))
+        if (!((str[i] >= 'a' && str[i] <= 'z') || (str[i] >= 'A' && str[i] <= 'Z') ||
+        (str[i] >= '0' && str[i] <= '9') || str[i] == '_')) {
             return false;
+        }
     }
 
     // String is a valid identifier

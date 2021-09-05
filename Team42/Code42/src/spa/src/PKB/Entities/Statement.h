@@ -9,9 +9,7 @@ public:
 		_kind = type;
 	}
 	
-	Statement() {
-
-	};
+	Statement() {};
 
 	//Getters
 	int getStmtNo();
@@ -26,7 +24,7 @@ public:
 	//todo: refactor into void addLineNo(int lineNo, set<int> list)
 
 
-	void Statement::setExprString(std::string exprString);
+	void setExprString(std::string exprString);
 
 	void addFollower(int lineNo);
 	void addFollowerStar(int lineNo);

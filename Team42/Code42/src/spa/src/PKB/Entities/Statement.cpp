@@ -1,5 +1,6 @@
 #include "Statement.h"
 #include <iostream>
+
 int Statement::getStmtNo() {
 	return _stmtNo;
 }
@@ -23,14 +24,13 @@ void Statement::addFolloweeStar(int lineNo) {
 void Statement::addParent(int lineNo) {
 	Parents.insert(lineNo);
 }
-
 void Statement::addParentStar(int lineNo) {
 	ParentsStar.insert(lineNo);
 }
+
 void Statement::addChild(int lineNo) {
 	Children.insert(lineNo);
 }
-
 void Statement::addChildStar(int lineNo) {
 	ChildrenStar.insert(lineNo);
 }

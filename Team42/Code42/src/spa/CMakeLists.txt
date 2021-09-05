@@ -7,6 +7,3 @@ target_include_directories(spa PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/src/PKB
     ${CMAKE_CURRENT_SOURCE_DIR}/src/PKB/Entities
     ${CMAKE_CURRENT_SOURCE_DIR}/src/PKB/Table)
-
-
-

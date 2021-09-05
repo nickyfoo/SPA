@@ -4,21 +4,21 @@
 #include <vector>
 
 namespace ast {
-    enum Kind {
-        Identifier,
-        Constant,
-        Expression,
-        RelExpression,
-        CondExpression,
-        Assign,
-        If,
-        While,
-        Read,
-        Print,
-        Call,
-        Procedure,
-        Program,
-        NUM_KIND
+enum Kind {
+    Identifier,
+    Constant,
+    Expression,
+    RelExpression,
+    CondExpression,
+    Assign,
+    If,
+    While,
+    Read,
+    Print,
+    Call,
+    Procedure,
+    Program,
+    NUM_KIND
 };
 
 enum ExprOp { Plus, Minus, Times, Divide, Modulo, Noop };

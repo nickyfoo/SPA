@@ -1,6 +1,6 @@
 #include "TransitiveClosure.h"
 
-//getting transitive closure from FloydWarshall
+// Getting transitive closure from Floyd Warshall
 std::vector<std::vector<int>> TransitiveClosure::getTransitiveClosure(std::set<std::pair<int, int>> al, int n) {
 	std::vector<std::vector<int>> d(n, std::vector<int>(n, INF));
 	for (auto& [u, v] : al) {

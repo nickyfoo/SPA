@@ -8,8 +8,7 @@ int ProcTable::addProcedure(std::string name) {
 	std::map<std::string, int>::iterator it = procedureNameToIndex.find(name);
 	if (it != procedureNameToIndex.end()) {
 		return it->second;
-	}
-	else {
+	} else {
 		int pos = table.size();
 		table.push_back(Procedure(name));
 		procedureNameToIndex[name] = pos;

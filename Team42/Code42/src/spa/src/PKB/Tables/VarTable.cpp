@@ -17,11 +17,9 @@ int VarTable::addVariable(std::string name) {
 	}
 };
 
-
 int VarTable::getNumVariables() {
 	return variableNameToIndex.size();
 }
-
 
 void VarTable::printVars() {
 	std::cout << "VarTable size: " << variableNameToIndex.size() << '\n';

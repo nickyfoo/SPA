@@ -20,6 +20,9 @@ public:
 	void getFollows();
 	void getParent();
 
+	std::vector<Statement*> getStatements(ast::Kind type);
+	std::vector<Statement*> getAllStatements();
+
 	// API called from here
 	/*
 	//todo: add issue about enums/discuss with people

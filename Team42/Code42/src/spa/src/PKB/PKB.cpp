@@ -44,4 +44,10 @@ void PKB::getParent() {
 	StmtTable::processParentStar();
 }
 
+std::vector<Statement*> PKB::getStatements(ast::Kind type) {
+    return StmtTable::getStatements(type);
+}
 
+std::vector<Statement*> PKB::getAllStatements() {
+    return StmtTable::getAllStatements();
+}

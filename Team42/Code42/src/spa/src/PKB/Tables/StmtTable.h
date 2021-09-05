@@ -25,12 +25,12 @@ public:
 	static void processParent();
 	static void processParentStar();
 
-	//API calls for PQL
+	// API calls for PQL
 	static std::vector<Statement*> getStatements(ast::Kind type);
 	static Statement* getStatementByLineNo(int lineNo);
 	static std::vector<Statement*> getAllStatements();
 
-	//Debug functions
+	// Debug functions
 	static void printStmts();
 	void printStmtInfos();
 };

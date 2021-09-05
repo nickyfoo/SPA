@@ -103,7 +103,6 @@ bool Relationship::setRef(Entity* left_ref, Entity* right_ref)
             }
         default:
             return false;
-        return false;
     }
 }
 
@@ -111,7 +110,7 @@ RelationshipType Relationship::getType() {
     return this->type;
 }
 
-string Relationship::getTypeStr() {
+std::string Relationship::getTypeStr() {
     switch (this->type) {
         case RelationshipType::Follows:
             return "Follows";

@@ -4,21 +4,17 @@
 #include "Pattern.h"
 #include "Relationship.h"
 
-using namespace std;
-
 class PQLQuery {
 public:
-    PQLQuery(vector<Entity*> *return_entities, vector<Relationship*> *relationships, vector<Pattern*> *patterns,
-             unordered_map<string, Entity*> *synonym_to_entities);
-    void setQueryEntities(vector<Entity*> *entities);
-    void setQueryRelationships(vector<Relationship*> *relationships);
-    vector<Entity*> *getQueryEntities();
-    vector<Relationship*> *getQueryRelationships();
-    vector<Pattern*> *getQueryPatterns();
-    unordered_map<string, Entity*> *getSynonymToEntities();
+    PQLQuery(std::vector<Entity*> *return_entities, std::vector<Relationship*> *relationships,
+             std::vector<Pattern*> *patterns, std::unordered_map<std::string, Entity*> *synonym_to_entities);
+    std::vector<Entity*> *getQueryEntities();
+    std::vector<Relationship*> *getQueryRelationships();
+    std::vector<Pattern*> *getQueryPatterns();
+    std::unordered_map<std::string, Entity*> *getSynonymToEntities();
 private:
-    vector<Entity*> *entities;
-    vector<Relationship*> *relationships;
-    vector<Pattern*> *patterns;
-    unordered_map<string, Entity*> *synonym_to_entities;
+    std::vector<Entity*> *entities;
+    std::vector<Relationship*> *relationships;
+    std::vector<Pattern*> *patterns;
+    std::unordered_map<std::string, Entity*> *synonym_to_entities;
 };

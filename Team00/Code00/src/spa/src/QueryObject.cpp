@@ -1,11 +1,11 @@
 #include "QueryObject.h"
 
-QueryObject::QueryObject(string input)
+QueryObject::QueryObject(std::string input)
 {
-    vector<string> *entities;
-    string select_clause;
+    std::vector<std::string> *entities;
+    std::string select_clause;
     tie(entities, select_clause) = splitEntitiesAndSelectClause(input);
-    unordered_map<string, Entity*> *entities_map = getEntitiesMap(entities);
+    std::unordered_map<std::string, Entity*> *entities_map = getEntitiesMap(entities);
     if (entities_map == nullptr) {
         this->clauses = nullptr;
         return;
@@ -20,28 +20,28 @@ PQLQuery *QueryObject::getPQLQuery()
     return this->clauses;
 }
 
-tuple<vector<string>*, string> QueryObject::splitEntitiesAndSelectClause(string input) {
-    string delimiter = ";";
-    vector<string> *entities = new vector<string>();
+std::tuple<std::vector<std::string>*, std::string> QueryObject::splitEntitiesAndSelectClause(std::string input) {
+    std::string delimiter = ";";
+    std::vector<std::string> *entities = new std::vector<std::string>();
     size_t pos = 0;
-    string token;
-    while ((pos = input.find(delimiter)) != string::npos) {
+    std::string token;
+    while ((pos = input.find(delimiter)) != std::string::npos) {
         token = input.substr(0, pos);
         entities->push_back(token);
         input.erase(0, pos + delimiter.length());
     }
-    string select_clause = input;
-    return tuple(entities, select_clause);
+    std::string select_clause = input;
+    return std::tuple(entities, select_clause);
 }
 
-unordered_map<string, Entity*> *QueryObject::getEntitiesMap(vector<string> *entities)
+std::unordered_map<std::string, Entity*> *QueryObject::getEntitiesMap(std::vector<std::string> *entities)
 {
     EntityDeclarationParser *ep = ep->getInstance();
     ep->setEntities(entities);
     return ep->getEntitiesMap();
 }
 
-PQLQuery *QueryObject::getSelectClause(unordered_map<string, Entity*> *entities_map, string select_clause)
+PQLQuery *QueryObject::getSelectClause(std::unordered_map<std::string, Entity*> *entities_map, std::string select_clause)
 {
     SelectClauseParser *scp = scp->getInstance();
     scp->setSelectClause(entities_map, select_clause);

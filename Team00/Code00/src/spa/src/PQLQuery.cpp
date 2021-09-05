@@ -1,34 +1,25 @@
 #include "PQLQuery.h"
 
-PQLQuery::PQLQuery(vector<Entity*> *return_entities, vector<Relationship*> *relationships, vector<Pattern*> *patterns,
-                   unordered_map<string, Entity*> *synonym_to_entities) {
+PQLQuery::PQLQuery(std::vector<Entity*> *return_entities, std::vector<Relationship*> *relationships,
+                   std::vector<Pattern*> *patterns, std::unordered_map<std::string, Entity*> *synonym_to_entities) {
     this->entities = return_entities;
     this->relationships = relationships;
     this->patterns = patterns;
     this->synonym_to_entities = synonym_to_entities;
 }
 
-void PQLQuery::setQueryEntities(vector<Entity*> *entities) {
-    this->entities = entities;
-}
-
-void PQLQuery::setQueryRelationships(vector<Relationship*> *relationships) {
-    this->relationships = relationships;
-}
-
-vector<Entity*> *PQLQuery::getQueryEntities() {
+std::vector<Entity*> *PQLQuery::getQueryEntities() {
     return this->entities;
 }
 
-vector<Relationship*> *PQLQuery::getQueryRelationships() {
+std::vector<Relationship*> *PQLQuery::getQueryRelationships() {
     return this->relationships;
 }
 
-vector<Pattern*> *PQLQuery::getQueryPatterns() {
+std::vector<Pattern*> *PQLQuery::getQueryPatterns() {
     return this->patterns;
 }
 
-
-unordered_map<string, Entity*> *PQLQuery::getSynonymToEntities() {
+std::unordered_map<std::string, Entity*> *PQLQuery::getSynonymToEntities() {
     return this->synonym_to_entities;
 }

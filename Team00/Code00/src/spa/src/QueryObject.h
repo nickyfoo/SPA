@@ -10,17 +10,15 @@
 #include "SelectClauseParser.h"
 #include "EntityDeclarationParser.h"
 
-using namespace std;
-
 class QueryObject {
 public:
-    QueryObject(string input);
+    QueryObject(std::string input);
     PQLQuery *getPQLQuery();
 private:
-    unordered_map<string, Entity> synToEntity;
-    string selectClause;
+    std::unordered_map<std::string, Entity> synToEntity;
+    std::string selectClause;
     PQLQuery *clauses;
-    tuple<vector<string>*, string> splitEntitiesAndSelectClause(string input);
-    unordered_map<string, Entity*> *getEntitiesMap(vector<string> *entities);
-    PQLQuery *getSelectClause(unordered_map<string, Entity*> *entities_map, string select_clause);
+    std::tuple<std::vector<std::string>*, std::string> splitEntitiesAndSelectClause(std::string input);
+    std::unordered_map<std::string, Entity*> *getEntitiesMap(std::vector<std::string> *entities);
+    PQLQuery *getSelectClause(std::unordered_map<std::string, Entity*> *entities_map, std::string select_clause);
 };

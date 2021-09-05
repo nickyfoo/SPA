@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
     if (clause == nullptr) {
         std::cout << "Invalid PQL Query!" << "\n";
     } else {
-        for (Entity* entity: *clause->getQueryEntities()) {
+        for (EntityDeclaration* entity: *clause->getQueryEntities()) {
             std::cout << "Select: " << entity->getValue() << "\n";
         }
         std::cout << "\n" << std::flush;

@@ -7,18 +7,18 @@
 #include <tuple>
 #include <unordered_map>
 #include <vector>
-#include "Entity.h"
+#include "EntityDeclaration.h"
 #include "Relationship.h"
 #include "PQLQuery.h"
 
 class SelectClauseParser {
 public:
     static SelectClauseParser *getInstance();
-    void setSelectClause(std::unordered_map<std::string, Entity*> *synonym_to_entity, std::string select_clause);
+    void setSelectClause(std::unordered_map<std::string, EntityDeclaration*> *synonym_to_entity, std::string select_clause);
     PQLQuery *getClauses();
 private:
     static SelectClauseParser *instance;
-    std::unordered_map<std::string, Entity*> *synonym_to_entity;
+    std::unordered_map<std::string, EntityDeclaration*> *synonym_to_entity;
     std::string select_clause;
     SelectClauseParser();
     Relationship* getRelationshipClause(std::string relationship_statement);

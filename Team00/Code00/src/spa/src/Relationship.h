@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "Entity.h"
+#include "EntityDeclaration.h"
 
 enum class RelationshipType {
     Follows,
@@ -15,13 +15,13 @@ enum class RelationshipType {
 class Relationship {
 public:
     explicit Relationship(const std::string& type);
-    bool setRef(Entity* left_ref, Entity* right_ref);
+    bool setRef(EntityDeclaration* left_ref, EntityDeclaration* right_ref);
     RelationshipType getType();
     std::string getTypeStr();
-    Entity* getLeftRef();
-    Entity* getRightRef();
+    EntityDeclaration* getLeftRef();
+    EntityDeclaration* getRightRef();
 private:
     RelationshipType type;
-    Entity* left_ref;
-    Entity* right_ref;
+    EntityDeclaration* left_ref;
+    EntityDeclaration* right_ref;
 };

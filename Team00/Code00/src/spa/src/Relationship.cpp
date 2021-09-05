@@ -23,7 +23,7 @@ Relationship::Relationship(const std::string& type)
 
 }
 
-bool Relationship::setRef(Entity* left_ref, Entity* right_ref)
+bool Relationship::setRef(EntityDeclaration* left_ref, EntityDeclaration* right_ref)
 {
     switch(this->type) {
         case RelationshipType::Follows: case RelationshipType::FollowsT:
@@ -81,10 +81,10 @@ std::string Relationship::getTypeStr() {
     }
 }
 
-Entity* Relationship::getLeftRef() {
+EntityDeclaration* Relationship::getLeftRef() {
     return this->left_ref;
 }
 
-Entity* Relationship::getRightRef() {
+EntityDeclaration* Relationship::getRightRef() {
     return this->right_ref;
 }

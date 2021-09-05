@@ -8,7 +8,7 @@ Pattern::Pattern(std::string& synonym)
     this->partial_pattern = false;
 }
 
-bool Pattern::setRef(Entity* left_ref, std::string& right_ref) {
+bool Pattern::setRef(EntityDeclaration* left_ref, std::string& right_ref) {
     this->left_ref = left_ref;
     return isValidRightRef(right_ref);
 }
@@ -17,7 +17,7 @@ std::string Pattern::getSynonym() {
     return this->synonym;
 }
 
-Entity* Pattern::getLeftRef() {
+EntityDeclaration* Pattern::getLeftRef() {
     return this->left_ref;
 }
 

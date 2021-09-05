@@ -15,7 +15,7 @@ SelectClauseParser *SelectClauseParser::getInstance() {
     return instance;
 }
 
-void SelectClauseParser::setSelectClause(std::unordered_map<std::string, Entity*> *synonym_to_entity, std::string select_clause)
+void SelectClauseParser::setSelectClause(std::unordered_map<std::string, EntityDeclaration*> *synonym_to_entity, std::string select_clause)
 {
     this->synonym_to_entity = synonym_to_entity;
     select_clause.erase(remove(select_clause.begin(), select_clause.end(),
@@ -30,7 +30,7 @@ PQLQuery *SelectClauseParser::getClauses()
     std::vector<std::string> such_that_clauses = std::get<1>(clauses);
     std::vector<std::string> pattern_clauses = std::get<2>(clauses);
 
-    auto *select_ret = new std::vector<Entity*>();
+    auto *select_ret = new std::vector<EntityDeclaration*>();
     auto *such_that_ret = new std::vector<Relationship*>();
     auto *pattern_ret = new std::vector<Pattern*>();
 
@@ -81,18 +81,18 @@ Relationship* SelectClauseParser::getRelationshipClause(std::string relationship
     if ((synonym_to_entity->find(left_ref) != synonym_to_entity->end() || isValidIdentifier(left_ref) || isInteger(left_ref))
             && (synonym_to_entity->find(right_ref) != synonym_to_entity->end() || isValidIdentifier(right_ref) || isInteger(right_ref))
             && relationship->getType() != RelationshipType::None) {
-        Entity* left;
-        Entity* right;
+        EntityDeclaration* left;
+        EntityDeclaration* right;
         if (synonym_to_entity->find(left_ref) != synonym_to_entity->end()) {
             left = synonym_to_entity->at(left_ref);
         } else {
-            left = new Entity(left_ref);
+            left = new EntityDeclaration(left_ref);
         }
 
         if (synonym_to_entity->find(right_ref) != synonym_to_entity->end()) {
             right = synonym_to_entity->at(right_ref);
         } else {
-            right = new Entity(right_ref);
+            right = new EntityDeclaration(right_ref);
         }
 
         if (relationship->setRef(left, right)) {
@@ -120,12 +120,12 @@ Pattern* SelectClauseParser::getPatternClause(std::string pattern_statement) {
     }
     if ((synonym_to_entity->find(left_ref) != synonym_to_entity->end() && synonym_to_entity->find(left_ref)->second->getType() == EntityType::Variable)
         || isValidIdentifier(left_ref)) {
-        Entity* left;
+        EntityDeclaration* left;
 
         if (synonym_to_entity->find(left_ref) != synonym_to_entity->end()) {
             left = synonym_to_entity->at(left_ref);
         } else {
-            left = new Entity(left_ref);
+            left = new EntityDeclaration(left_ref);
         }
 
         if (pattern->setRef(left, right_ref)) {

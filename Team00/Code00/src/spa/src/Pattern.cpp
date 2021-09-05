@@ -1,33 +1,35 @@
 #include "Pattern.h"
-#include <iostream>
 
-Pattern::Pattern(std::string synonym)
+Pattern::Pattern(std::string& synonym)
 {
     this->synonym = synonym;
+    this->left_ref = nullptr;
+    this->right_ref = "";
+    this->partial_pattern = false;
 }
 
-bool Pattern::setRef(Entity* left_ref, string right_ref) {
+bool Pattern::setRef(Entity* left_ref, std::string& right_ref) {
     this->left_ref = left_ref;
     return isValidRightRef(right_ref);
 }
 
-string Pattern::getSynonym() {
+std::string Pattern::getSynonym() {
     return this->synonym;
-};
+}
 
 Entity* Pattern::getLeftRef() {
     return this->left_ref;
 }
 
-string Pattern::getRightRef() {
+std::string Pattern::getRightRef() {
     return this->right_ref;
 }
 
-bool Pattern::isPartialPattern() {
+bool Pattern::isPartialPattern() const {
     return this->partial_pattern;
 }
 
-bool Pattern::isValidRightRef(string right_ref) {
+bool Pattern::isValidRightRef(std::string right_ref) {
     if (right_ref == "_") {
         this->right_ref = right_ref;
         return true;

@@ -7,9 +7,9 @@
 int main(int argc, char *argv[]) {
     std::stringstream ss;
     ss << "stmt s; variable v; assign a; Select s pattern a(_,   _) such that Modifies(s, 'a') such that Uses(s, v)";
-    std:: cout << "PQL Query to process is: " << ss.str() << "\n" << std::flush;
+    std::cout << "PQL Query to process is: " << ss.str() << "\n" << std::flush;
 
-    QueryObject* query = new QueryObject(ss.str());
+    auto* query = new QueryObject(ss.str());
     PQLQuery *clause = query->getPQLQuery();
 
     if (clause == nullptr) {

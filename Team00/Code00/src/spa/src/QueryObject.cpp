@@ -22,8 +22,8 @@ PQLQuery *QueryObject::getPQLQuery()
 
 std::tuple<std::vector<std::string>*, std::string> QueryObject::splitEntitiesAndSelectClause(std::string input) {
     std::string delimiter = ";";
-    std::vector<std::string> *entities = new std::vector<std::string>();
-    size_t pos = 0;
+    auto *entities = new std::vector<std::string>();
+    size_t pos;
     std::string token;
     while ((pos = input.find(delimiter)) != std::string::npos) {
         token = input.substr(0, pos);
@@ -36,14 +36,14 @@ std::tuple<std::vector<std::string>*, std::string> QueryObject::splitEntitiesAnd
 
 std::unordered_map<std::string, Entity*> *QueryObject::getEntitiesMap(std::vector<std::string> *entities)
 {
-    EntityDeclarationParser *ep = ep->getInstance();
+    EntityDeclarationParser *ep = EntityDeclarationParser::getInstance();
     ep->setEntities(entities);
     return ep->getEntitiesMap();
 }
 
-PQLQuery *QueryObject::getSelectClause(std::unordered_map<std::string, Entity*> *entities_map, std::string select_clause)
+PQLQuery *QueryObject::getSelectClause(std::unordered_map<std::string, Entity*> *entities_map, std::string& select_clause)
 {
-    SelectClauseParser *scp = scp->getInstance();
+    SelectClauseParser *scp = SelectClauseParser::getInstance();
     scp->setSelectClause(entities_map, select_clause);
     return scp->getClauses();
 }

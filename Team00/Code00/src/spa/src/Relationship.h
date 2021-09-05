@@ -14,10 +14,10 @@ enum class RelationshipType {
 
 class Relationship {
 public:
-    Relationship(string type);
+    explicit Relationship(const std::string& type);
     bool setRef(Entity* left_ref, Entity* right_ref);
     RelationshipType getType();
-    string getTypeStr();
+    std::string getTypeStr();
     Entity* getLeftRef();
     Entity* getRightRef();
 private:

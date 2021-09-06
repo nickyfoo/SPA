@@ -11,18 +11,17 @@ std::string PatternManager::getPostfixExpr(std::string infixExpr) {
 
     std::string::iterator it;
     for (it = infixExpr.begin(); it != infixExpr.end(); ++it) {
-        switch (*it) {
-            case 'A' ... 'z':
-            {
+        if (std::isalpha(*it)) {
+            soutput << *it;
+            while (std::isalnum(*std::next(it, 1))) {
+                std::advance(it, 1);
                 soutput << *it;
-                while (std::isalnum(*std::next(it, 1))) {
-                    std::advance(it, 1);
-                    soutput << *it;
-                }
-
-                soutput << ' ';
-                break;
             }
+
+            soutput << ' ';
+            continue;
+        }
+        switch (*it) {
             case '(':
                 ops.push(*it);
                 break;

@@ -44,4 +44,14 @@ void PKB::getParent() {
 	StmtTable::processParentStar();
 }
 
+std::vector<Statement*> PKB::getAllStatements() {
+    return StmtTable::getAllStatements();
+}
 
+std::vector<Variable*> PKB::getAllVariables() {
+    return VarTable::getAllVariables();
+}
+
+std::vector<Procedure*> PKB::getAllProcedures() {
+    return ProcTable::getAllProcedures();
+}

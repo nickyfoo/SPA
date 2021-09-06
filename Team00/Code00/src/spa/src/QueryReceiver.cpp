@@ -6,7 +6,9 @@
 // Temp main class to test the PQL Query
 int main(int argc, char *argv[]) {
     std::stringstream ss;
-    ss << "assign pattern; variable select;\nSelect pattern pattern pattern (select, _) such that Uses (pattern, select)";
+//    ss << "assign pattern; variable select;\nSelect pattern pattern pattern (select, _) such that Uses (pattern, select)";
+ss << "assign pattern; variable select;"
+      "Select pattern pattern pattern (select, _) such that such that Uses (pattern, select)";
     std::cout << "PQL Query to process is: " << ss.str() << "\n" << std::flush;
 
     auto* query = new QueryObject(ss.str());

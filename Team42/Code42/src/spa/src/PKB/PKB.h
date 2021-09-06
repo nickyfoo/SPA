@@ -12,6 +12,7 @@
 class PKB {
 private:
 	ast::Node* root;
+
 public:
 	PKB(ast::Node* programRoot) {
 		root = programRoot;

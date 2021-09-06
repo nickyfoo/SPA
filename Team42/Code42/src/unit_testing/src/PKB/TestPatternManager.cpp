@@ -29,6 +29,23 @@ TEST_CASE("PatternManager 1st Test") {
 
 }
 
+TEST_CASE("PatternManager 2nd Test") {
+    // Which of the patterns match this assignment statement?
+    // x = v + x * y + z * t
+    Statement s1(1, ast::Assign);
+    s1.setExprString("v x y * + z t * +");
+
+    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "v + x * y + z * t", false) == true);
+    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "v", false) == false);
+    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "v", true) == true);
+    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "x * y", true) == true);
+    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "v + x", true) == false);
+    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "v + x * y", true) == true);
+    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "y + z * t", true) == false);
+    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "x * y + z * t", true) == false);
+    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "v + x * y + z * t", true) == true);
+}
+
 TEST_CASE("Test PatternManager checkAssignmentRhs") {
     std::string source = "procedure main {"
                          "flag = 0;"
@@ -73,7 +90,6 @@ TEST_CASE("Test PatternManager checkAssignmentRhs") {
     pkb.initialPass();
     vector<Statement*> assignmentStmts = pkb.getStatements(ast::Assign);
     std::string pattern = "cenX * cenX + cenY * cenY";
-
     std::cout << "---------- PatternManager checkAssignmentRhs" << "\n";
     std::cout << "checking for " << pattern << "\n";
     for (Statement* stmt : assignmentStmts) {

@@ -5,38 +5,46 @@
 #include <stack>
 #include <sstream>
 
+auto checkNextChar(bool isIdent);
+
+// Returns a curried function that checks for validity of the next character
+// depending on the type of variable.
+auto checkNextChar(bool isIdent) {
+    return [=](char c) {
+        return isIdent ? std::isalnum(c) : std::isdigit(c);
+    };
+}
+
+// Returns an infix expression in postfix notation
 std::string PatternManager::getPostfixExpr(std::string infixExpr) {
     try {
         std::stack<char> ops;
-        std::stringstream soutput;
-
+        std::stringstream output;
         std::string::iterator it;
-        for (it = infixExpr.begin(); it != infixExpr.end(); ++it) {
-            if (std::isalpha(*it)) {
-                soutput << *it;
-                while (std::isalnum(*std::next(it, 1))) {
-                    std::advance(it, 1);
-                    soutput << *it;
-                }
 
-                soutput << ' ';
-                continue;
-            } else if (std::isdigit(*it)) {
-                soutput << *it;
-                while (std::isdigit(*std::next(it, 1))) {
+        for (it = infixExpr.begin(); it != infixExpr.end(); ++it) {
+            if (std::isalnum(*it)) {
+                // Flag for whether variable is an identifier or a constant
+                bool isIdent = std::isalpha(*it);
+                output << *it;
+
+                // Advance iterator if next character is valid
+                while (std::next(it, 1) != infixExpr.end() &&
+                       checkNextChar(isIdent)(*std::next(it, 1))) {
                     std::advance(it, 1);
-                    soutput << *it;
+                    output << *it;
                 }
-                soutput << ' ';
+                output << ' ';
                 continue;
             }
+
             switch (*it) {
                 case '(':
                     ops.push(*it);
                     break;
                 case ')':
                     while (ops.top() != '(' && !ops.empty()) {
-                        soutput << ops.top() << ' ';
+                        output << ops.top() << ' ';
                         ops.pop();
                     }
                     break;
@@ -53,20 +61,22 @@ std::string PatternManager::getPostfixExpr(std::string infixExpr) {
                     std::unordered_map<char, int>::const_iterator lastOps = opsMap.find(ops.top());
                     std::unordered_map<char, int>::const_iterator newOps = opsMap.find(*it);
                     if (newOps->second < lastOps->second) {
+                        // Case 1: New operand has a higher precedence than the top of the stack
                         ops.push(*it);
                     } else if (newOps->second > lastOps->second) {
-                        while (newOps->second > lastOps->second && !ops.empty()) {
-                            soutput << ops.top() << ' ';
+                        // Case 2: New operand has a lower precedence than the top of the stack
+                        while (newOps->second >= lastOps->second && !ops.empty()) {
+                            // Pop stack while precedence of the new operand is lte the top of the stack
+                            output << ops.top() << ' ';
                             ops.pop();
                             if (ops.empty()) break;
                             lastOps = opsMap.find(ops.top());
                         }
-
                         ops.push(*it);
                     } else {
-                        // if in the same level, pop the ops and add it to the output
-                        // push new operand in
-                        soutput << ops.top() << ' ';
+                        // Case 3: New operand has a same precedence as the top of the stack
+                        // Pop the ops, add it to the output and push the new operand
+                        output << ops.top() << ' ';
                         ops.pop();
                         ops.push(*it);
                     }
@@ -84,10 +94,10 @@ std::string PatternManager::getPostfixExpr(std::string infixExpr) {
                 ops.pop();
                 continue;
             }
-            soutput << ops.top() << ' ';
+            output << ops.top() << ' ';
             ops.pop();
         }
-        return soutput.str();
+        return output.str();
     } catch (std::invalid_argument e) {
         std::cerr << e.what() << std::endl;
 
@@ -99,8 +109,8 @@ bool PatternManager::checkAssignmentRhs(Statement* assignmentStmt, std::string p
     std::string postfixPattern = getPostfixExpr(pattern);
     postfixPattern.pop_back();
     std::string assignmentExpr = assignmentStmt->getExprString();
-     std::cout << "assignmentExpr: " << assignmentExpr << "\n";
-     std::cout << "postfixPattern: " << postfixPattern << " --> " << (assignmentExpr == postfixPattern) << "\n";
+    // std::cout << "assignmentExpr: " << assignmentExpr << "\n";
+    // std::cout << "postfixPattern: " << postfixPattern << " --> " << (assignmentExpr == postfixPattern) << "\n";
     if (isPartialMatch) {
         return assignmentExpr.find(postfixPattern) != std::string::npos;
     } else {

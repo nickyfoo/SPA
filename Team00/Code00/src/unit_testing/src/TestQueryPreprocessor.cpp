@@ -262,7 +262,7 @@ TEST_CASE("32. Modifies clause with assignment and statement") {
     REQUIRE(clause == nullptr);
 }
 
-TEST_CASE("33. Modifies clause with assignment and statement number") {
+TEST_CASE("33. Modifies clause with unknown variable") {
     std::string ss = "assign assign; stmt s;\n"
                 "Select assign such that Modifies(pn, 50)";
     auto* query = new QueryObject(ss);

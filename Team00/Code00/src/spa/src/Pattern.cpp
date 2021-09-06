@@ -62,6 +62,9 @@ bool Pattern::isValidRightRef(std::string right_ref) {
             }
         }
     }
+    if(!expectingExp && right_ref != "") {
+        return false;
+    }
     this->right_ref = right_ref;
     return true;
 }

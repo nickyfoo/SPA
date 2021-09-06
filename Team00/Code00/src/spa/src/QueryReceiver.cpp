@@ -7,8 +7,10 @@
 int main(int argc, char *argv[]) {
     std::stringstream ss;
 //    ss << "assign pattern; variable select;\nSelect pattern pattern pattern (select, _) such that Uses (pattern, select)";
-ss << "assign pattern; variable select;"
-      "Select pattern pattern pattern (select, _) such that such that Uses (pattern, select)";
+//ss << "assign pattern; variable select;"
+//      "Select pattern pattern pattern (select, _) such that such that Uses (pattern, select)";
+ss << "assign assign; stmt s;\n"
+      "Select assign such that Modifies(pn, 50)";
     std::cout << "PQL Query to process is: " << ss.str() << "\n" << std::flush;
 
     auto* query = new QueryObject(ss.str());
@@ -21,10 +23,19 @@ ss << "assign pattern; variable select;"
             std::cout << "Select: " << entity << "\n";
         }
         std::cout << "\n" << std::flush;
-        for (Relationship* relationship: *clause->getQueryRelationships()) {
-            std::cout << "Relationship type: " << relationship->getTypeStr() << "\n";
-            std::cout << "Left ref: " << relationship->getLeftRef()->getValue();
-            std::cout << " Right ref: " << relationship->getRightRef()->getValue() << "\n";
+        for (SuchThatClause* relationship: *clause->getQueryRelationships()) {
+            std::cout << "SuchThatClause type: " << relationship->getTypeStr() << "\n";
+            if (relationship->getLeftRef()->getType() == SuchThatRefType::Statement) {
+                std::cout << "Left ref: " << relationship->getLeftRef()->getStmtRef().getValue();
+            } else if (relationship->getLeftRef()->getType() == SuchThatRefType::Entity) {
+                std::cout << "Left ref: " << relationship->getLeftRef()->getEntRef().getValue();
+            }
+
+            if (relationship->getRightRef()->getType() == SuchThatRefType::Statement) {
+                std::cout << "Right ref: " << relationship->getRightRef()->getStmtRef().getValue();
+            } else if (relationship->getRightRef()->getType() == SuchThatRefType::Entity) {
+                std::cout << "Right ref: " << relationship->getRightRef()->getEntRef().getValue();
+            }
         }
         std::cout << "\n" << std::flush;
         for (Pattern* pattern: *clause->getQueryPatterns()) {

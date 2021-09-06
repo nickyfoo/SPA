@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <vector>
 #include "EntityDeclaration.h"
-#include "Relationship.h"
+#include "SuchThatClause.h"
 #include "PQLQuery.h"
 
 class SelectClauseParser {
@@ -21,7 +21,8 @@ private:
     std::unordered_map<std::string, EntityDeclaration*> *synonym_to_entity;
     std::string select_clause;
     SelectClauseParser();
-    Relationship* getRelationshipClause(std::string relationship_statement);
+    SuchThatRef* makeSuchThatRef(SuchThatClause *relationship, std::string ref);
+    SuchThatClause* getRelationshipClause(std::string relationship_statement);
     Pattern* getPatternClause(std::string pattern_statement);
     static std::vector<std::string> splitSelect(std::string& select_clause);
     static std::vector<std::string> splitTokensByDelimiter(std::string input, const std::string& delimiter);

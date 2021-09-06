@@ -1,5 +1,5 @@
 #include "SelectClauseParser.h"
-#include "Relationship.h"
+#include "SuchThatClause.h"
 #include <iostream>
 #include <tuple>
 
@@ -31,7 +31,7 @@ PQLQuery *SelectClauseParser::getClauses()
     std::vector<std::string> pattern_clauses = std::get<2>(clauses);
 
     auto *select_ret = new std::vector<std::string>();
-    auto *such_that_ret = new std::vector<Relationship*>();
+    auto *such_that_ret = new std::vector<SuchThatClause*>();
     auto *pattern_ret = new std::vector<Pattern*>();
 
     std::vector<std::string> select_clauses = splitSelect(select_clause);
@@ -47,7 +47,7 @@ PQLQuery *SelectClauseParser::getClauses()
     }
 
     for (const std::string& such_that_clause : such_that_clauses) {
-        Relationship* relationship = getRelationshipClause(such_that_clause);
+        SuchThatClause* relationship = getRelationshipClause(such_that_clause);
         if (relationship == nullptr) {
             return nullptr;
         }
@@ -67,46 +67,41 @@ PQLQuery *SelectClauseParser::getClauses()
 
 }
 
-Relationship* SelectClauseParser::getRelationshipClause(std::string relationship_statement) {
-    if (relationship_statement == "") {
+SuchThatClause* SelectClauseParser::getRelationshipClause(std::string relationship_statement) {
+    if (relationship_statement.empty()) {
         return nullptr;
     }
     relationship_statement.erase(remove(relationship_statement.begin(), relationship_statement.end(),
                                         ' '), relationship_statement.end());
+
     std::vector<std::string> relationship_clauses = splitTokensByMultipleDelimiters(relationship_statement, "(,)");
-    if (relationship_clauses.size() > 3) {
+    if (relationship_clauses.size() > 3) { // should only contain RelRef, left_ref and right_ref
         return nullptr;
     }
 
-    auto* relationship = new Relationship(relationship_clauses.at(0));
+    auto* relationship = new SuchThatClause(relationship_clauses.at(0));
+    if (relationship->getType() == RelRef::None) { // invalid relation
+        return nullptr;
+    }
+
     std::string left_ref = relationship_clauses.at(1);
     std::string right_ref = relationship_clauses.at(2);
-    if ((synonym_to_entity->find(left_ref) != synonym_to_entity->end() || isValidIdentifier(left_ref) || isInteger(left_ref))
-            && (synonym_to_entity->find(right_ref) != synonym_to_entity->end() || isValidIdentifier(right_ref) || isInteger(right_ref))
-            && relationship->getType() != RelationshipType::None) {
-        EntityDeclaration* left;
-        EntityDeclaration* right;
-        if (synonym_to_entity->find(left_ref) != synonym_to_entity->end()) {
-            left = synonym_to_entity->at(left_ref);
-        } else {
-            left = new EntityDeclaration(left_ref);
-        }
+    SuchThatRef* left_such_that_ref = makeSuchThatRef(relationship, left_ref);
+    SuchThatRef* right_such_that_ref = makeSuchThatRef(relationship, right_ref);
 
-        if (synonym_to_entity->find(right_ref) != synonym_to_entity->end()) {
-            right = synonym_to_entity->at(right_ref);
-        } else {
-            right = new EntityDeclaration(right_ref);
-        }
+    if (left_such_that_ref == nullptr || right_such_that_ref == nullptr) {
+        return nullptr;
+    }
 
-        if (relationship->setRef(left, right)) {
-            return relationship;
-        }
+    if (relationship->setRef(left_such_that_ref, right_such_that_ref)) {
+        return relationship;
     }
     return nullptr;
+
 }
 
 Pattern* SelectClauseParser::getPatternClause(std::string pattern_statement) {
-    if (pattern_statement == "") {
+    if (pattern_statement.empty()) {
         return nullptr;
     }
     pattern_statement.erase(remove(pattern_statement.begin(), pattern_statement.end(),
@@ -138,6 +133,48 @@ Pattern* SelectClauseParser::getPatternClause(std::string pattern_statement) {
             return pattern;
         }
     }
+    return nullptr;
+}
+
+SuchThatRef* SelectClauseParser::makeSuchThatRef(SuchThatClause *such_that_clause, std::string ref) {
+    SuchThatRef* ret;
+    StmtRef stmt_ref;
+    EntRef ent_ref;
+
+    // existing synonym
+    if (synonym_to_entity->find(ref) != synonym_to_entity->end()) {
+        EntityType entity_type = synonym_to_entity->find(ref)->second->getType();
+        switch(entity_type) {
+            case EntityType::Assign: case EntityType::Call: case EntityType::If: case EntityType::Print: case EntityType::Read: case EntityType::Stmt: case EntityType::While: {
+                stmt_ref.setSynonym(ref);
+                ret = new SuchThatRef(stmt_ref);
+                break;
+            }
+            case EntityType::Constant: case EntityType::Procedure: case EntityType::Variable: {
+                ent_ref.setSynonym(ref);
+                ret = new SuchThatRef(ent_ref);
+                break;
+            }
+            default:
+                return nullptr;
+        }
+    } else if (isInteger(ref)) { // statement number
+        stmt_ref.setStmtNum(std::stoi(ref));
+        ret = new SuchThatRef(stmt_ref);
+    } else if (ref == "_") { // wild card
+        stmt_ref.setWildCard();
+        ret = new SuchThatRef(stmt_ref);
+    } else if (isValidIdentifier(ref)) {
+        ent_ref.setArgument(ref);
+        ret = new SuchThatRef(ent_ref);
+    } else {
+        return nullptr;
+    }
+
+    if (ret->getType() != SuchThatRefType::None) { // invalid syntax
+        return ret;
+    }
+
     return nullptr;
 }
 

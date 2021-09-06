@@ -20,6 +20,14 @@ std::string PatternManager::getPostfixExpr(std::string infixExpr) {
 
             soutput << ' ';
             continue;
+        } else if (std::isdigit(*it)) {
+            soutput << *it;
+            while (std::isdigit(*std::next(it, 1))) {
+                std::advance(it, 1);
+                soutput << *it;
+            }
+            soutput << ' ';
+            continue;
         }
         switch (*it) {
             case '(':
@@ -76,7 +84,7 @@ std::string PatternManager::getPostfixExpr(std::string infixExpr) {
             case ' ':
                 break;
             default:
-                throw std::invalid_argument("Expression is not valid");
+                std::cout << "Expression is not valid";
         }
     }
 
@@ -92,22 +100,16 @@ std::string PatternManager::getPostfixExpr(std::string infixExpr) {
 }
 
 bool PatternManager::checkAssignmentRhs(Statement* assignmentStmt, std::string pattern, bool isPartialMatch) {
-    try {
-        std::cout << "\n";
-        std::string postfixPattern = getPostfixExpr(pattern);
-        postfixPattern.pop_back();
-        std::string assignmentExpr = assignmentStmt->getExprString();
-        // std::cout << "assignmentExpr: " << assignmentExpr << "\n";
-        // std::cout << "postfixPattern: " << postfixPattern << " --> " << (assignmentExpr == postfixPattern) << "\n";
-        if (isPartialMatch) {
-            return assignmentExpr.find(postfixPattern) != std::string::npos;
-        } else {
+    std::cout << "\n";
+    std::string postfixPattern = getPostfixExpr(pattern);
+    postfixPattern.pop_back();
+    std::string assignmentExpr = assignmentStmt->getExprString();
+     std::cout << "assignmentExpr: " << assignmentExpr << "\n";
+     std::cout << "postfixPattern: " << postfixPattern << " --> " << (assignmentExpr == postfixPattern) << "\n";
+    if (isPartialMatch) {
+        return assignmentExpr.find(postfixPattern) != std::string::npos;
+    } else {
 
-            return assignmentExpr == postfixPattern;
-        }
-
-    } catch (std::invalid_argument e) {
-        std::cerr << e.what() << std::endl;
-        return EXIT_FAILURE;
+        return assignmentExpr == postfixPattern;
     }
 }

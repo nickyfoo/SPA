@@ -14,16 +14,17 @@
 class SelectClauseParser {
 public:
     static SelectClauseParser *getInstance();
-    void setSelectClause(std::unordered_map<std::string, EntityDeclaration*> *synonym_to_entity, std::string select_clause);
+    void setSelectClause(std::unordered_map<std::string, EntityDeclaration*> *syn_to_ent, std::string select_clause);
     PQLQuery *getClauses();
 private:
     static SelectClauseParser *instance;
     std::unordered_map<std::string, EntityDeclaration*> *synonym_to_entity;
-    std::string select_clause;
+    std::string select_statement;
     SelectClauseParser();
     SuchThatRef* makeSuchThatRef(SuchThatClause *relationship, std::string ref);
+    PatternClause* makePatternRef(std::string& synonym, std::string left_ref, std::string right_ref);
     SuchThatClause* getRelationshipClause(std::string relationship_statement);
-    Pattern* getPatternClause(std::string pattern_statement);
+    PatternClause* getPatternClause(std::string pattern_statement);
     static std::vector<std::string> splitSelect(std::string& select_clause);
     static std::vector<std::string> splitTokensByDelimiter(std::string input, const std::string& delimiter);
     static std::vector<std::string> splitTokensByMultipleDelimiters(const std::string& input, const std::string& delimiters);

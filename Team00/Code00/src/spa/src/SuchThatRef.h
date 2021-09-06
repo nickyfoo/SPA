@@ -10,8 +10,8 @@ enum class SuchThatRefType {
 class SuchThatRef {
 public:
     SuchThatRef();
-    SuchThatRef(EntRef entity_ref);
-    SuchThatRef(StmtRef stmt_ref);
+    explicit SuchThatRef(EntRef entity_ref);
+    explicit SuchThatRef(StmtRef stmt_ref);
 
     SuchThatRefType getType();
     EntRef getEntRef();

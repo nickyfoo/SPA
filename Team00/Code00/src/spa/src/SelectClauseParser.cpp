@@ -1,5 +1,6 @@
 #include "SelectClauseParser.h"
 #include "SuchThatClause.h"
+//#include "ExpressionSpec.h"
 #include <iostream>
 #include <tuple>
 
@@ -15,24 +16,24 @@ SelectClauseParser *SelectClauseParser::getInstance() {
     return instance;
 }
 
-void SelectClauseParser::setSelectClause(std::unordered_map<std::string, EntityDeclaration*> *synonym_to_entity, std::string select_clause)
+void SelectClauseParser::setSelectClause(std::unordered_map<std::string, EntityDeclaration*> *syn_to_ent, std::string select_clause)
 {
-    this->synonym_to_entity = synonym_to_entity;
+    this->synonym_to_entity = syn_to_ent;
     select_clause.erase(remove(select_clause.begin(), select_clause.end(),
                                         '\n'), select_clause.end());
-    this->select_clause = select_clause;
+    this->select_statement = select_clause;
 }
 
 PQLQuery *SelectClauseParser::getClauses()
 {
-    std::tuple<std::string, std::vector<std::string>, std::vector<std::string>> clauses = splitTokensByClauses(select_clause);
+    std::tuple<std::string, std::vector<std::string>, std::vector<std::string>> clauses = splitTokensByClauses(select_statement);
     std::string select_clause = std::get<0>(clauses);
     std::vector<std::string> such_that_clauses = std::get<1>(clauses);
     std::vector<std::string> pattern_clauses = std::get<2>(clauses);
 
     auto *select_ret = new std::vector<std::string>();
     auto *such_that_ret = new std::vector<SuchThatClause*>();
-    auto *pattern_ret = new std::vector<Pattern*>();
+    auto *pattern_ret = new std::vector<PatternClause*>();
 
     std::vector<std::string> select_clauses = splitSelect(select_clause);
     if (select_clauses.empty()) { // invalid select syntax
@@ -55,7 +56,7 @@ PQLQuery *SelectClauseParser::getClauses()
     }
 
     for (const std::string& pattern_clause : pattern_clauses) {
-        Pattern* pattern = getPatternClause(pattern_clause);
+        PatternClause* pattern = getPatternClause(pattern_clause);
         if (pattern == nullptr) {
             return nullptr;
         }
@@ -100,7 +101,7 @@ SuchThatClause* SelectClauseParser::getRelationshipClause(std::string relationsh
 
 }
 
-Pattern* SelectClauseParser::getPatternClause(std::string pattern_statement) {
+PatternClause* SelectClauseParser::getPatternClause(std::string pattern_statement) {
     if (pattern_statement.empty()) {
         return nullptr;
     }
@@ -110,30 +111,41 @@ Pattern* SelectClauseParser::getPatternClause(std::string pattern_statement) {
     if (pattern_clauses.size() > 3) {
         return nullptr;
     }
-
     std::string synonym = pattern_clauses.at(0);
     std::string left_ref = pattern_clauses.at(1);
     std::string right_ref = pattern_clauses.at(2);
-    auto* pattern = new Pattern(synonym);
-    if (synonym_to_entity->find(synonym) == synonym_to_entity->end()
-            || synonym_to_entity->find(synonym)->second->getType() != EntityType::Assign) {
+    auto* pattern = makePatternRef(synonym, left_ref, right_ref);
+    if (pattern == nullptr) {
         return nullptr;
     }
-    if ((synonym_to_entity->find(left_ref) != synonym_to_entity->end() && synonym_to_entity->find(left_ref)->second->getType() == EntityType::Variable)
-        || isValidIdentifier(left_ref)) {
-        EntityDeclaration* left;
+    return pattern;
+}
 
-        if (synonym_to_entity->find(left_ref) != synonym_to_entity->end()) {
-            left = synonym_to_entity->at(left_ref);
-        } else {
-            left = new EntityDeclaration(left_ref);
-        }
-
-        if (pattern->setRef(left, right_ref)) {
-            return pattern;
-        }
+PatternClause* SelectClauseParser::makePatternRef(std::string& synonym, std::string left_ref, std::string right_ref) {
+    PatternClause* ret;
+    auto* entRef = new EntRef();
+    if ((synonym_to_entity->find(synonym) != synonym_to_entity->end())
+        && (synonym_to_entity->find(synonym)->second->getType() == EntityType::Assign)) {
+        ret = new PatternClause(synonym_to_entity->find(synonym)->second);
+    } else {
+        return nullptr;
     }
-    return nullptr;
+    if ((synonym_to_entity->find(left_ref) != synonym_to_entity->end())
+    && (synonym_to_entity->find(left_ref)->second->getType() == EntityType::Variable)) {
+        entRef->setSynonym(left_ref);
+    } else if (left_ref == "_") {
+        entRef->setWildCard();
+    } else if (isValidIdentifier(left_ref)) {
+        entRef->setArgument(left_ref);
+    } else {
+        return nullptr;
+    }
+    if (ret->setRef(entRef, right_ref)) {
+        return ret;
+    } else {
+        return nullptr;
+    }
+
 }
 
 SuchThatRef* SelectClauseParser::makeSuchThatRef(SuchThatClause *such_that_clause, std::string ref) {

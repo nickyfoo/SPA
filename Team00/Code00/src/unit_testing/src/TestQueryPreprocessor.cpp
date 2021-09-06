@@ -358,7 +358,7 @@ TEST_CASE("44. Standard pattern clause") {
     REQUIRE(clause != nullptr);
 }
 
-TEST_CASE("45. Pattern clause with partial pattern") {
+TEST_CASE("45. PatternClause clause with partial pattern") {
     std::string ss = "assign a;\n"
                      "Select a pattern a ( 'normSq' , _'cenX * cenX'_)";
     auto* query = new QueryObject(ss);
@@ -366,7 +366,7 @@ TEST_CASE("45. Pattern clause with partial pattern") {
     REQUIRE(clause != nullptr);
 }
 
-TEST_CASE("46. Pattern clause with different variable name") {
+TEST_CASE("46. PatternClause clause with different variable name") {
     std::string ss = "assign newa;\n"
                      "Select newa pattern newa( 'normSq' , _'cenX * cenX'_)";
     auto* query = new QueryObject(ss);
@@ -425,6 +425,22 @@ TEST_CASE("52. Extra such that") {
 TEST_CASE("53. Strange such that") {
     std::string ss = "assign pattern; variable select;"
                      "Select pattern pattern pattern (select, _) such that (,)    such that Uses (pattern, select)";
+    auto* query = new QueryObject(ss);
+    PQLQuery *clause = query->getPQLQuery();
+    REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("54. Bad Pattern ending with symbol") {
+    std::string ss = "assign a;"
+                     "Select a pattern a ( _ , 'x+y*')";
+    auto* query = new QueryObject(ss);
+    PQLQuery *clause = query->getPQLQuery();
+    REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("55. Bad Pattern with two symbols") {
+    std::string ss = "assign a;"
+                     "Select a pattern a ( _ , 'x+*y')";
     auto* query = new QueryObject(ss);
     PQLQuery *clause = query->getPQLQuery();
     REQUIRE(clause == nullptr);

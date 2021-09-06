@@ -19,8 +19,8 @@ enum class RelRef {
 class SuchThatClause {
 public:
     explicit SuchThatClause(const std::string& type);
-    bool setRef(SuchThatRef* left_ref, SuchThatRef* right_ref);
-    void setType(RelRef type);
+    bool setRef(SuchThatRef* left, SuchThatRef* right);
+    void setType(RelRef rel);
     RelRef getType();
     std::string getTypeStr();
     SuchThatRef* getLeftRef();

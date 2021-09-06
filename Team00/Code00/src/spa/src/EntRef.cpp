@@ -4,19 +4,20 @@ EntRef::EntRef() {
     this->type = EntRefType::None;
 }
 
-void EntRef::setSynonym(std::string& synonym) {
+void EntRef::setSynonym(std::string& syn) {
     this->type = EntRefType::Synonym;
-    this->synonym = synonym;
+    this->synonym = syn;
 }
 
-void EntRef::setArgument(std::string& argument) {
+void EntRef::setArgument(std::string& arg) {
     this->type = EntRefType::Argument;
-    this->argument = argument;
+    this->argument = arg;
 }
 
 void EntRef::setWildCard() {
     this->type = EntRefType::WildCard;
 }
+
 EntRefType EntRef::getType() {
     return this->type;
 }

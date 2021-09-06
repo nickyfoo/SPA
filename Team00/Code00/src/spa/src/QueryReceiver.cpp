@@ -9,8 +9,8 @@ int main(int argc, char *argv[]) {
 //    ss << "assign pattern; variable select;\nSelect pattern pattern pattern (select, _) such that Uses (pattern, select)";
 //ss << "assign pattern; variable select;"
 //      "Select pattern pattern pattern (select, _) such that such that Uses (pattern, select)";
-ss << "assign assign; stmt s;\n"
-      "Select assign such that Modifies(pn, 50)";
+ss << "assign a;\n"
+      "Select a pattern a ( _ , 'count + 1')";
     std::cout << "PQL Query to process is: " << ss.str() << "\n" << std::flush;
 
     auto* query = new QueryObject(ss.str());
@@ -38,11 +38,11 @@ ss << "assign assign; stmt s;\n"
             }
         }
         std::cout << "\n" << std::flush;
-        for (Pattern* pattern: *clause->getQueryPatterns()) {
-            std::cout << "Pattern synonym: " << pattern->getSynonym() << "\n";
-            std::cout << "Is partial pattern? " << (pattern->isPartialPattern() ? "Yes" : "No") << "\n";
+        for (PatternClause* pattern: *clause->getQueryPatterns()) {
+            std::cout << "PatternClause synonym: " << pattern->getSynonym()->getValue() << "\n";
+            std::cout << "Is partial pattern? " << (pattern->getRightRef()->isPartialPattern() ? "Yes" : "No") << "\n";
             std::cout << "Left ref: " << pattern->getLeftRef()->getValue();
-            std::cout << " Right ref: " << pattern->getRightRef() << "\n";
+            std::cout << " Right ref: " << (pattern->getRightRef()->isWildCard() ? "_" : pattern->getRightRef()->getExpression()) << "\n";
         }
     }
 }

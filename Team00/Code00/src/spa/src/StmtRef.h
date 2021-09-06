@@ -10,13 +10,13 @@ enum class StmtRefType {
 class StmtRef {
 public:
     StmtRef();
-    void setSynonym(std::string& synonym);
-    void setStmtNum(int stmt_num);
+    void setSynonym(std::string& syn);
+    void setStmtNum(int line_num);
     void setWildCard();
 
     StmtRefType getType();
     std::string getSynonym();
-    int getStmtNum();
+    int getStmtNum() const;
     std::string getValue();
 
 private:

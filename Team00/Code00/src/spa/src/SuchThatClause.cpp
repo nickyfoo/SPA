@@ -26,75 +26,40 @@ SuchThatClause::SuchThatClause(const std::string& type)
 
 }
 
-//bool SuchThatClause::setRef(SuchThatRef* left_ref, SuchThatRef* right_ref)
-//{
-//    switch(this->type) {
-//        case RelRef::Follows: case RelRef::FollowsT:
-//            case RelRef::Parent: case RelRef::ParentT:
-//            if ((left_ref->getType() == EntityType::Assign || left_ref->getType() == EntityType::Print ||
-//            left_ref->getType() == EntityType::If || left_ref->getType() == EntityType::While ||
-//            left_ref->getType() == EntityType::Call || left_ref->getType() == EntityType::Stmt ||
-//            left_ref->isStmtNum() || left_ref->isWildCard())
-//            && (right_ref->getType() == EntityType::Assign || right_ref->getType() == EntityType::Print ||
-//            right_ref->getType() == EntityType::If || right_ref->getType() == EntityType::While ||
-//            right_ref->getType() == EntityType::Call || right_ref->getType() == EntityType::Stmt ||
-//            right_ref->isStmtNum() || right_ref->isWildCard())) {
-//                this->left_ref = left_ref;
-//                this->right_ref = right_ref;
-//                return true;
-//            }
-//        case RelRef::Uses: case RelRef::Modifies:
-//            if ((left_ref->getType() == EntityType::Assign || left_ref->getType() == EntityType::Print ||
-//                    left_ref->getType() == EntityType::If || left_ref->getType() == EntityType::While ||
-//                    left_ref->getType() == EntityType::Procedure || left_ref->getType() == EntityType::Call ||
-//                    left_ref->getType() == EntityType::Stmt || left_ref->getType() == EntityType::Argument)
-//                    && (right_ref->getType() == EntityType::Variable || right_ref->getType() == EntityType::Argument)) {
-//                if (left_ref->getValue() == "_" || right_ref->isStmtNum()) {
-//                    return false;
-//                }
-//                this->left_ref = left_ref;
-//                this->right_ref = right_ref;
-//                return true;
-//            }
-//        default:
-//            return false;
-//    }
-//}
-
-bool SuchThatClause::setRef(SuchThatRef* left_ref, SuchThatRef* right_ref) {
+bool SuchThatClause::setRef(SuchThatRef* left, SuchThatRef* right) {
     switch(this->type) {
         case RelRef::Follows: case RelRef::FollowsT: case RelRef::Parent: case RelRef::ParentT:
-            if (left_ref->getType() == SuchThatRefType::Statement && right_ref->getType() == SuchThatRefType::Statement) {
-                this->left_ref = left_ref;
-                this->right_ref = right_ref;
+            if (left->getType() == SuchThatRefType::Statement && right->getType() == SuchThatRefType::Statement) {
+                this->left_ref = left;
+                this->right_ref = right;
                 return true;
             }
         case RelRef::Uses:
-            if (right_ref->getType() == SuchThatRefType::Entity) {
-                if (left_ref->getType() == SuchThatRefType::Statement
-                && left_ref->getStmtRef().getType() != StmtRefType::WildCard) {
-                    this->left_ref = left_ref;
-                    this->right_ref = right_ref;
+            if (right->getType() == SuchThatRefType::Entity) {
+                if (left->getType() == SuchThatRefType::Statement
+                    && left->getStmtRef().getType() != StmtRefType::WildCard) {
+                    this->left_ref = left;
+                    this->right_ref = right;
                     this->type = RelRef::UsesS;
                     return true;
-                } else if (left_ref->getType() == SuchThatRefType::Entity && left_ref->getEntRef().getType() != EntRefType::WildCard) {
-                    this->left_ref = left_ref;
-                    this->right_ref = right_ref;
+                } else if (left->getType() == SuchThatRefType::Entity && left->getEntRef().getType() != EntRefType::WildCard) {
+                    this->left_ref = left;
+                    this->right_ref = right;
                     this->type = RelRef::UsesP;
                     return true;
                 }
             }
         case RelRef::Modifies:
-            if (right_ref->getType() == SuchThatRefType::Entity) {
-                if (left_ref->getType() == SuchThatRefType::Statement
-                && left_ref->getStmtRef().getType() != StmtRefType::WildCard) {
-                    this->left_ref = left_ref;
-                    this->right_ref = right_ref;
+            if (right->getType() == SuchThatRefType::Entity) {
+                if (left->getType() == SuchThatRefType::Statement
+                    && left->getStmtRef().getType() != StmtRefType::WildCard) {
+                    this->left_ref = left;
+                    this->right_ref = right;
                     this->type = RelRef::ModifiesS;
                     return true;
-                } else if (left_ref->getType() == SuchThatRefType::Entity && left_ref->getEntRef().getType() != EntRefType::WildCard) {
-                    this->left_ref = left_ref;
-                    this->right_ref = right_ref;
+                } else if (left->getType() == SuchThatRefType::Entity && left->getEntRef().getType() != EntRefType::WildCard) {
+                    this->left_ref = left;
+                    this->right_ref = right;
                     this->type = RelRef::ModifiesP;
                     return true;
                 }
@@ -105,8 +70,8 @@ bool SuchThatClause::setRef(SuchThatRef* left_ref, SuchThatRef* right_ref) {
     return false;
 }
 
-void SuchThatClause::setType(RelRef type) {
-    this->type = type;
+void SuchThatClause::setType(RelRef rel) {
+    this->type = rel;
 }
 
 RelRef SuchThatClause::getType() {

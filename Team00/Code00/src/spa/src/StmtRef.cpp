@@ -5,14 +5,14 @@ StmtRef::StmtRef() {
     this->stmt_num = -1;
 }
 
-void StmtRef::setSynonym(std::string& synonym) {
+void StmtRef::setSynonym(std::string& syn) {
     this->type = StmtRefType::Synonym;
-    this->synonym = synonym;
+    this->synonym = syn;
 }
 
-void StmtRef::setStmtNum(int stmt_num) {
+void StmtRef::setStmtNum(int line_num) {
     this->type = StmtRefType::StmtNum;
-    this->stmt_num = stmt_num;
+    this->stmt_num = line_num;
 }
 
 void StmtRef::setWildCard() {
@@ -27,7 +27,7 @@ std::string StmtRef::getSynonym() {
     return this->synonym;
 }
 
-int StmtRef::getStmtNum() {
+int StmtRef::getStmtNum() const {
     return this->stmt_num;
 }
 

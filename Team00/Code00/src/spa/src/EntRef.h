@@ -1,3 +1,4 @@
+#pragma once
 #include <string>
 
 enum class EntRefType {
@@ -10,8 +11,8 @@ enum class EntRefType {
 class EntRef {
 public:
     EntRef();
-    void setSynonym(std::string& synonym);
-    void setArgument(std::string& argument);
+    void setSynonym(std::string& syn);
+    void setArgument(std::string& arg);
     void setWildCard();
 
     EntRefType getType();

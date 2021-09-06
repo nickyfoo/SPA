@@ -1,7 +1,7 @@
 #include "ProcTable.h"
 #include <iostream>
 
-std::vector<Procedure> ProcTable::table;
+std::vector<Procedure*> ProcTable::table;
 std::map<std::string, int> ProcTable::procedureNameToIndex;
 
 int ProcTable::addProcedure(std::string name) {
@@ -10,20 +10,24 @@ int ProcTable::addProcedure(std::string name) {
 		return it->second;
 	} else {
 		int pos = table.size();
-		table.push_back(Procedure(name));
+		Procedure* p = new Procedure(name);
+		table.push_back(p);
 		procedureNameToIndex[name] = pos;
 		return pos;
 	}
 }
 
-
 int ProcTable::getNumProcedures() {
 	return procedureNameToIndex.size();
 }
 
+std::vector<Procedure*> ProcTable::getAllProcedures() {
+    return table;
+}
+
 void ProcTable::printProcs() {
 	std::cout << "ProcTable size: " << table.size() << '\n';
-	for (Procedure&p: table) {
-		std::cout << p.getName() << '\n';
+	for (Procedure* p: table) {
+		std::cout << p->getName() << '\n';
 	}
 }

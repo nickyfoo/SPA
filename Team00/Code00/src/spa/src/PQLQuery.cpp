@@ -1,6 +1,6 @@
 #include "PQLQuery.h"
 
-PQLQuery::PQLQuery(std::vector<EntityDeclaration*> *return_entities, std::vector<Relationship*> *relationships,
+PQLQuery::PQLQuery(std::vector<std::string> *return_entities, std::vector<Relationship*> *relationships,
                    std::vector<Pattern*> *patterns, std::unordered_map<std::string, EntityDeclaration*> *synonym_to_entities) {
     this->entities = return_entities;
     this->relationships = relationships;
@@ -8,7 +8,7 @@ PQLQuery::PQLQuery(std::vector<EntityDeclaration*> *return_entities, std::vector
     this->synonym_to_entities = synonym_to_entities;
 }
 
-std::vector<EntityDeclaration*> *PQLQuery::getQueryEntities() {
+std::vector<std::string> *PQLQuery::getQueryEntities() {
     return this->entities;
 }
 

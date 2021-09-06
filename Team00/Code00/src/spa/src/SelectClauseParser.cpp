@@ -30,7 +30,7 @@ PQLQuery *SelectClauseParser::getClauses()
     std::vector<std::string> such_that_clauses = std::get<1>(clauses);
     std::vector<std::string> pattern_clauses = std::get<2>(clauses);
 
-    auto *select_ret = new std::vector<EntityDeclaration*>();
+    auto *select_ret = new std::vector<std::string>();
     auto *such_that_ret = new std::vector<Relationship*>();
     auto *pattern_ret = new std::vector<Pattern*>();
 
@@ -42,7 +42,7 @@ PQLQuery *SelectClauseParser::getClauses()
         if (synonym_to_entity->find(select) == synonym_to_entity->end()) { // not found in hashmap
             return nullptr;
         } else {
-            select_ret->push_back(synonym_to_entity->at(select));
+            select_ret->push_back(select);
         }
     }
 
@@ -68,6 +68,9 @@ PQLQuery *SelectClauseParser::getClauses()
 }
 
 Relationship* SelectClauseParser::getRelationshipClause(std::string relationship_statement) {
+    if (relationship_statement == "") {
+        return nullptr;
+    }
     relationship_statement.erase(remove(relationship_statement.begin(), relationship_statement.end(),
                                         ' '), relationship_statement.end());
     std::vector<std::string> relationship_clauses = splitTokensByMultipleDelimiters(relationship_statement, "(,)");
@@ -103,6 +106,9 @@ Relationship* SelectClauseParser::getRelationshipClause(std::string relationship
 }
 
 Pattern* SelectClauseParser::getPatternClause(std::string pattern_statement) {
+    if (pattern_statement == "") {
+        return nullptr;
+    }
     pattern_statement.erase(remove(pattern_statement.begin(), pattern_statement.end(),
                                    ' '), pattern_statement.end());
     std::vector<std::string> pattern_clauses = splitTokensByMultipleDelimiters(pattern_statement, "(,)");

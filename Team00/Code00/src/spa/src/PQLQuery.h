@@ -6,14 +6,14 @@
 
 class PQLQuery {
 public:
-    PQLQuery(std::vector<EntityDeclaration*> *return_entities, std::vector<Relationship*> *relationships,
+    PQLQuery(std::vector<std::string> *return_entities, std::vector<Relationship*> *relationships,
              std::vector<Pattern*> *patterns, std::unordered_map<std::string, EntityDeclaration*> *synonym_to_entities);
-    std::vector<EntityDeclaration*> *getQueryEntities();
+    std::vector<std::string> *getQueryEntities();
     std::vector<Relationship*> *getQueryRelationships();
     std::vector<Pattern*> *getQueryPatterns();
     std::unordered_map<std::string, EntityDeclaration*> *getSynonymToEntities();
 private:
-    std::vector<EntityDeclaration*> *entities;
+    std::vector<std::string> *entities;
     std::vector<Relationship*> *relationships;
     std::vector<Pattern*> *patterns;
     std::unordered_map<std::string, EntityDeclaration*> *synonym_to_entities;

@@ -17,8 +17,8 @@ ss << "assign pattern; variable select;"
     if (clause == nullptr) {
         std::cout << "Invalid PQL Query!" << "\n";
     } else {
-        for (EntityDeclaration* entity: *clause->getQueryEntities()) {
-            std::cout << "Select: " << entity->getValue() << "\n";
+        for (std::string entity: *clause->getQueryEntities()) {
+            std::cout << "Select: " << entity << "\n";
         }
         std::cout << "\n" << std::flush;
         for (Relationship* relationship: *clause->getQueryRelationships()) {

@@ -422,7 +422,7 @@ TEST_CASE("52. Extra such that") {
     REQUIRE(clause == nullptr);
 }
 
-TEST_CASE("52. Extra such that") {
+TEST_CASE("53. Strange such that") {
     std::string ss = "assign pattern; variable select;"
                      "Select pattern pattern pattern (select, _) such that (,)    such that Uses (pattern, select)";
     auto* query = new QueryObject(ss);

@@ -1,5 +1,5 @@
-#include "QueryObject.h"
-#include "PQLQuery.h"
+#include "PQL/QueryObject.h"
+#include "PQL/PQLQuery.h"
 #include "catch.hpp"
 
 TEST_CASE("1. Standard select") {
@@ -444,4 +444,12 @@ TEST_CASE("55. Bad Pattern with two symbols") {
     auto* query = new QueryObject(ss);
     PQLQuery *clause = query->getPQLQuery();
     REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("56. Pattern keyword inside pattern") {
+    std::string ss = "assign a;"
+                     "Select a pattern a ( _ , ' pattern ')";
+    auto* query = new QueryObject(ss);
+    PQLQuery *clause = query->getPQLQuery();
+    REQUIRE(clause != nullptr);
 }

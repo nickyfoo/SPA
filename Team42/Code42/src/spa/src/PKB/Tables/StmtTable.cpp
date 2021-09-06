@@ -2,12 +2,12 @@
 #include <iostream>
 #include "TransitiveClosure.h"
 
-std::map<int, Statement*> StmtTable::table;
 int StmtTable::largestStmtNum = 0;
+std::map<int, Statement*> StmtTable::table;
+std::vector<Statement*> StmtTable::allStatements;
+std::map<ast::Kind, std::vector<Statement*>> StmtTable::typeToStatement;
 std::set<std::pair<int, int>> StmtTable::Follows, StmtTable::Follows_star;
 std::set<std::pair<int, int>> StmtTable::Parent, StmtTable::Parent_star;
-std::map<ast::Kind, std::vector<Statement*>> StmtTable::typeToStatement;
-std::vector<Statement*> StmtTable::allStatements;
 
 void StmtTable::addStmt(ast::Node* node){
 	int stmtNo = Statement::getStmtNo(node);
@@ -105,7 +105,6 @@ void StmtTable::printStmtInfos() {
 std::vector<Statement*> StmtTable::getStatements(ast::Kind type) {
 	return typeToStatement[type];
 }
-
 
 std::vector<Statement*> StmtTable::getAllStatements() {
 	return allStatements;

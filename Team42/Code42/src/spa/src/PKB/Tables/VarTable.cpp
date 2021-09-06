@@ -1,7 +1,7 @@
 #include "VarTable.h"
 #include <iostream>
 
-std::vector<Variable> VarTable::table;
+std::vector<Variable*> VarTable::table;
 std::map<std::string, int> VarTable::variableNameToIndex;
 
 int VarTable::addVariable(std::string name) {
@@ -11,21 +11,24 @@ int VarTable::addVariable(std::string name) {
 	}
 	else {
 		int pos = table.size();
-		table.push_back(Variable(pos, name));
+		Variable* v = new Variable(pos, name);
+		table.push_back(v);
 		variableNameToIndex[name] = pos;
 		return pos;
 	}
 };
 
-
 int VarTable::getNumVariables() {
 	return variableNameToIndex.size();
 }
 
+std::vector<Variable*> VarTable::getAllVariables() {
+    return table;
+}
 
 void VarTable::printVars() {
 	std::cout << "VarTable size: " << variableNameToIndex.size() << '\n';
-	for (Variable& v : table) {
-		std::cout << v.getName() << "\n";
+	for (Variable* v : table) {
+		std::cout << v->getName() << "\n";
 	}
 }

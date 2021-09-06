@@ -9,11 +9,12 @@
 class ProcTable {
 
 private: 
-	static std::vector<Procedure> table;
+	static std::vector<Procedure*> table;
 	static std::map<std::string, int> procedureNameToIndex;
 
 public:
 	static int addProcedure(std::string name);
 	static int getNumProcedures();
+	static std::vector<Procedure*> getAllProcedures();
 	static void printProcs();
 };

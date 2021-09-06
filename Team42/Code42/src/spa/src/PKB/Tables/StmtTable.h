@@ -7,7 +7,7 @@
 
 class StmtTable {
 private:
-	static std::map<int,Statement> table;
+	static std::map<int,Statement*> table;
 	static std::set<std::pair<int, int>> Follows, Follows_star;
 	static std::set<std::pair<int, int>> Parent, Parent_star;
 	static std::map<ast::Kind, std::vector<Statement*>> typeToStatement;

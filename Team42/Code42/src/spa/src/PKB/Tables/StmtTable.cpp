@@ -2,7 +2,7 @@
 #include <iostream>
 #include "TransitiveClosure.h"
 
-std::map<int, Statement> StmtTable::table;
+std::map<int, Statement*> StmtTable::table;
 int StmtTable::largestStmtNum = 0;
 std::set<std::pair<int, int>> StmtTable::Follows, StmtTable::Follows_star;
 std::set<std::pair<int, int>> StmtTable::Parent, StmtTable::Parent_star;
@@ -12,18 +12,18 @@ std::vector<Statement*> StmtTable::allStatements;
 void StmtTable::addStmt(ast::Node* node){
 	int stmtNo = Statement::getStmtNo(node);
 	if (stmtNo == 0) return; // Not a statement node
-	Statement s(stmtNo, node->kind);
+	Statement* s = new Statement(stmtNo, node->kind);
 	table[stmtNo] = s;
-	typeToStatement[node->kind].push_back(&s);
-	allStatements.push_back(&s);
+	typeToStatement[node->kind].push_back(s);
+	allStatements.push_back(s);
 	largestStmtNum = std::max(largestStmtNum, stmtNo);
 };
 
 //todo: might want to add a check for valid lineNo..
 Statement* StmtTable::getStatementByLineNo(int lineNo) {
-	std::map<int, Statement>::iterator it = table.find(lineNo);
+	std::map<int, Statement*>::iterator it = table.find(lineNo);
 	if (it != table.end()) {
-		return &(it->second);
+		return it->second;
 	}
 	else {
 		//probably not a good idea to return NULL, but works for now.
@@ -38,7 +38,7 @@ int StmtTable::getLargestStmtNum() {
 // Gets Follows relationship from Statements in preparation to get transitive closure.
 void StmtTable::processFollows() {
 	for (auto& [lineNo, stmt] : table) {
-		for (auto& followerLineNo : *(stmt.getFollowers())) {
+		for (auto& followerLineNo : *(stmt->getFollowers())) {
 			Follows.insert({ lineNo,followerLineNo });
 		}
 	}
@@ -63,7 +63,7 @@ void StmtTable::processFollowsStar() {
 // Gets Follows relationship from Statements in preparation to get transitive closure.
 void StmtTable::processParent() {
 	for (auto& [lineNo, stmt] : table) {
-		for (auto& childLineNo : *(stmt.getChildren())) {
+		for (auto& childLineNo : *(stmt->getChildren())) {
 			Parent.insert({ lineNo,childLineNo });
 		}
 	}
@@ -89,16 +89,16 @@ void StmtTable::processParentStar() {
 void StmtTable::printStmts() {
 	std::cout << "StmtTable size: " << table.size() << '\n';
 	for (auto&[k,x] : table) {
-		std::cout << k << ' ' << x.getKind() << ' ';
-		if (x.getKind() == ast::Assign) std::cout << x.getExprString();
+		std::cout << k << ": " << x->getKind() << ' ';
+		if (x->getKind() == ast::Assign) std::cout << x->getExprString();
 		std::cout << '\n';
 	}
 }
 
 void StmtTable::printStmtInfos() {
 	for (auto& [k, x] : table) {
-		x.FollowsInfo();
-		x.ParentInfo();
+		x->FollowsInfo();
+		x->ParentInfo();
 	}
 }
 

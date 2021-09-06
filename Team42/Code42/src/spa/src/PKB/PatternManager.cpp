@@ -47,38 +47,28 @@ std::string PatternManager::getPostfixExpr(std::string infixExpr) {
                 {
                     if (ops.empty() || ops.top() == '(') {
                         ops.push(*it);
-                    } else {
-                        std::unordered_map<char, int>::const_iterator lastOps = opsMap.find(ops.top());
-                        std::unordered_map<char, int>::const_iterator newOps = opsMap.find(*it);
-                        if (newOps->second < lastOps->second) {
-                            ops.push(*it);
-                        } else if (newOps->second > lastOps->second) {
+                        break;
+                    }
+
+                    std::unordered_map<char, int>::const_iterator lastOps = opsMap.find(ops.top());
+                    std::unordered_map<char, int>::const_iterator newOps = opsMap.find(*it);
+                    if (newOps->second < lastOps->second) {
+                        ops.push(*it);
+                    } else if (newOps->second > lastOps->second) {
+                        while (newOps->second > lastOps->second && !ops.empty()) {
                             soutput << ops.top() << ' ';
                             ops.pop();
-                            if (ops.empty()) {
-                                ops.push(*it);
-                                break;
-                            }
-                            do {
-                                lastOps = opsMap.find(ops.top());
-                                if (newOps->second > lastOps->second) {
-                                    soutput << ops.top() << ' ';
-                                    ops.pop();
-                                } else if (newOps->second < lastOps->second) {
-                                    ops.push(*it);
-                                } else {
-                                    soutput << ops.top() << ' ';
-                                    ops.pop();
-                                    ops.push(*it);
-                                }
-                            } while (lastOps->second < newOps->second && !ops.empty());
-                        } else {
-                            // if in the same level, pop the ops and add it to the output
-                            // push new operand in
-                            soutput << ops.top() << ' ';
-                            ops.pop();
-                            ops.push(*it);
+                            if (ops.empty()) break;
+                            lastOps = opsMap.find(ops.top());
                         }
+
+                        ops.push(*it);
+                    } else {
+                        // if in the same level, pop the ops and add it to the output
+                        // push new operand in
+                        soutput << ops.top() << ' ';
+                        ops.pop();
+                        ops.push(*it);
                     }
                     break;
                 }

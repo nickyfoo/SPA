@@ -25,6 +25,7 @@ TEST_CASE("PatternManager 1st Test") {
     Statement s2(1, ast::Assign);
     s2.setExprString("count 1 +");
     REQUIRE(PatternManager::checkAssignmentRhs(&s2, "count 1 +", false) == true);
+    REQUIRE(PatternManager::checkAssignmentRhs(&s2, "count", true) == true);
 
 }
 

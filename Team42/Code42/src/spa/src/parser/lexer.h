@@ -39,43 +39,43 @@ enum class TokenType {
 
 class Token {
  public:
-  TokenType kind;
-  std::string value;
-  int lineNo;
-  int colNo;
+  TokenType kind_;
+  std::string value_;
+  int line_no_;
+  int col_no_;
 
-  Token(TokenType kind, std::string value, int lineNo, int colNo);
+  Token(TokenType kind, std::string value, int line_no, int col_no);
 };
 
 class Lexer {
  private:
-  const char *source;
-  int curLine;
-  int curCol;
-  const char *curCharPointer;
+  const char *source_;
+  int cur_line_;
+  int cur_col_;
+  const char *cur_char_pointer_;
 
-  void advanceCharPointer();
-  const Token *constantOrUnknown();
-  const Token *identifierOrKeyword();
-  const Token *gtOrGte();
-  const Token *ltOrLte();
-  const Token *equalOrEq();
-  const Token *notOrNeq();
-  const Token *andOrUnknown();
-  const Token *orOrUnknown();
+  void AdvanceCharPointer();
+  const Token *ConstantOrUnknown();
+  const Token *IdentifierOrKeyword();
+  const Token *GtOrGte();
+  const Token *LtOrLte();
+  const Token *EqualOrEq();
+  const Token *NotOrNeq();
+  const Token *AndOrUnknown();
+  const Token *OrOrUnknown();
 
  public:
   explicit Lexer(const char *source);
-  const Token *getNextToken();
+  const Token *GetNextToken();
 };
 
 class BufferedLexer {
  private:
-  Lexer *lexer;
-  const Token *nextToken;
+  Lexer *lexer_;
+  const Token *next_token_;
 
  public:
   explicit BufferedLexer(const char *source);
-  const Token *getNextToken();
-  const Token *peekNextToken();
+  const Token *GetNextToken();
+  const Token *PeekNextToken();
 };

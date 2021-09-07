@@ -35,10 +35,10 @@ TEST_CASE("Lexer 1st Test") {
   for (int i = 0; i < num_expected_tokens; i++) {
     const Token *t = L.GetNextToken();
     const Token *e = expected_tokens[i];
-    REQUIRE(t->kind == e->kind);
-    REQUIRE(t->value == e->value);
-    REQUIRE(t->line_no == e->line_no);
-    REQUIRE(t->col_no == e->col_no);
+    REQUIRE(t->kind_ == e->kind_);
+    REQUIRE(t->value_ == e->value_);
+    REQUIRE(t->line_no_ == e->line_no_);
+    REQUIRE(t->col_no_ == e->col_no_);
   }
 
   BufferedLexer B(source.c_str());
@@ -46,18 +46,18 @@ TEST_CASE("Lexer 1st Test") {
     if (i % 2 == 0) {
       const Token *t = B.PeekNextToken();
       const Token *e = expected_tokens[i];
-      REQUIRE(t->kind == e->kind);
-      REQUIRE(t->value == e->value);
-      REQUIRE(t->line_no == e->line_no);
-      REQUIRE(t->col_no == e->col_no);
+      REQUIRE(t->kind_ == e->kind_);
+      REQUIRE(t->value_ == e->value_);
+      REQUIRE(t->line_no_ == e->line_no_);
+      REQUIRE(t->col_no_ == e->col_no_);
       B.GetNextToken();
     } else {
       const Token *t = B.GetNextToken();
       const Token *e = expected_tokens[i];
-      REQUIRE(t->kind == e->kind);
-      REQUIRE(t->value == e->value);
-      REQUIRE(t->line_no == e->line_no);
-      REQUIRE(t->col_no == e->col_no);
+      REQUIRE(t->kind_ == e->kind_);
+      REQUIRE(t->value_ == e->value_);
+      REQUIRE(t->line_no_ == e->line_no_);
+      REQUIRE(t->col_no_ == e->col_no_);
     }
   }
 }

@@ -2,25 +2,25 @@
 
 BufferedLexer::BufferedLexer(const char *source) {
   // this implementation of BufferedLexer uses Lexer
-  this->lexer = new Lexer(source);
-  this->next_token = nullptr;
+  this->lexer_ = new Lexer(source);
+  this->next_token_ = nullptr;
 }
 
 const Token *BufferedLexer::GetNextToken() {
-  if (next_token != nullptr) {
-    const Token *tmp = next_token;
-    next_token = nullptr;
+  if (next_token_ != nullptr) {
+    const Token *tmp = next_token_;
+    next_token_ = nullptr;
     return tmp;
   }
 
-  return lexer->GetNextToken();
+  return lexer_->GetNextToken();
 }
 
 const Token *BufferedLexer::PeekNextToken() {
-  if (next_token != nullptr) {
-    return next_token;
+  if (next_token_ != nullptr) {
+    return next_token_;
   }
 
-  next_token = lexer->GetNextToken();
-  return next_token;
+  next_token_ = lexer_->GetNextToken();
+  return next_token_;
 }

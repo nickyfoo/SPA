@@ -39,20 +39,20 @@ enum class TokenType {
 
 class Token {
  public:
-  TokenType kind;
-  std::string value;
-  int line_no;
-  int col_no;
+  TokenType kind_;
+  std::string value_;
+  int line_no_;
+  int col_no_;
 
   Token(TokenType kind, std::string value, int line_no, int col_no);
 };
 
 class Lexer {
  private:
-  const char *source;
-  int cur_line;
-  int cur_col;
-  const char *cur_char_pointer;
+  const char *source_;
+  int cur_line_;
+  int cur_col_;
+  const char *cur_char_pointer_;
 
   void AdvanceCharPointer();
   const Token *ConstantOrUnknown();
@@ -71,8 +71,8 @@ class Lexer {
 
 class BufferedLexer {
  private:
-  Lexer *lexer;
-  const Token *next_token;
+  Lexer *lexer_;
+  const Token *next_token_;
 
  public:
   explicit BufferedLexer(const char *source);

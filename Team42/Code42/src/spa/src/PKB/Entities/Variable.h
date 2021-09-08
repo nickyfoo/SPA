@@ -1,7 +1,8 @@
 #pragma once
 #include <string>
+#include "Entity.hpp"
 
-class Variable {
+class Variable : public Entity {
  public:
   Variable(int index, std::string name);
 

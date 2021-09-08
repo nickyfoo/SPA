@@ -7,6 +7,7 @@
 class StmtTable {
  public:
   StmtTable();
+
   ~StmtTable();
 
   // Adds a statement to the table.

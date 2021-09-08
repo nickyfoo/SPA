@@ -1,8 +1,9 @@
 #pragma once
 #include "AST.hpp"
+#include "Entity.hpp"
 #include <set>
 
-class Statement {
+class Statement : public Entity {
  public:
   Statement(int line_no, ast::Kind type);
 

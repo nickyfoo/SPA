@@ -8,6 +8,7 @@
 #include "Tables/ProcTable.h"
 #include "Tables/StmtTable.h"
 #include "Tables/VarTable.h"
+#include "Tables/ConstTable.h"
 
 class PKB {
  public:
@@ -83,4 +84,6 @@ class PKB {
   StmtTable stmt_table_;
   // Table of variables in the program.
   VarTable var_table_;
+  // Table of constants in the program.
+  ConstTable const_table_;
 };

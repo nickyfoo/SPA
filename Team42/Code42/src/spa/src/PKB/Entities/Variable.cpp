@@ -5,7 +5,7 @@ Variable::Variable(int index, std::string name) {
   this->name_ = name;
 }
 
-Variable::~Variable() {}
+Variable::~Variable() = default;
 
 std::string Variable::GetName() {
   return name_;

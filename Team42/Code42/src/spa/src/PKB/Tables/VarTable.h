@@ -24,5 +24,5 @@ class VarTable {
  private:
   std::vector<Variable> table_;
   std::vector<Variable *> all_variables_;
-  std::map<std::string, int> variableNameToIndex;
+  std::map<std::string, int> name_to_index_;
 };

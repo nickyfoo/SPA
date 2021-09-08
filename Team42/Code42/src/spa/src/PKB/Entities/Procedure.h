@@ -1,10 +1,11 @@
 #pragma once
 #include <string>
 #include <set>
+#include "Entity.hpp"
 
-class Procedure {
+class Procedure : public Entity {
  public:
-  Procedure(std::string name);
+  explicit Procedure(std::string name);
 
   ~Procedure();
 

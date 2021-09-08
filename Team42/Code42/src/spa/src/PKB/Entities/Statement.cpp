@@ -6,9 +6,9 @@ Statement::Statement(int line_no, ast::Kind type) {
   this->kind_ = type;
 }
 
-Statement::Statement() {}
+Statement::Statement() = default;
 
-Statement::~Statement() {}
+Statement::~Statement() = default;
 
 int Statement::GetStmtNo() {
   return stmt_no_;

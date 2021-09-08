@@ -5,13 +5,16 @@
 #include <vector>
 
 class VarTable {
-private:
-	static std::vector<Variable*> table;
-	static std::map<std::string, int> variableNameToIndex;
-
 public:
-	static int addVariable(std::string name);
-	static int getNumVariables();
-	static void printVars();
-	static std::vector<Variable*> getAllVariables();
+    VarTable();
+    ~VarTable();
+
+	int addVariable(std::string name);
+	int getNumVariables();
+	void printVars();
+	std::vector<Variable*> getAllVariables();
+
+private:
+    std::vector<Variable*> table;
+    std::map<std::string, int> variableNameToIndex;
 };

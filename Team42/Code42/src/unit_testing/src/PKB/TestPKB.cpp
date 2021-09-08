@@ -1,11 +1,9 @@
 #include "Parser.h"
-#include <string>
 #include <vector>
 #include "PKB.h"
 #include "catch.hpp"
 #include "Entities/Statement.h"
 
-using namespace std;
 using namespace lexer;
 using namespace parser;
 using namespace ast;
@@ -59,13 +57,13 @@ TEST_CASE("Test PKB::getFollows()") {
     BufferedLexer* B = new BufferedLexer(source.c_str());
     State* s = new State{};
     ProgramNode* p = parseProgram(B, s);
+
     PKB pkb = PKB(p);
     pkb.initialPass();
     pkb.getFollows();
-    cout << "done stuff\n";
-    StmtTable::printStmts();
-    for (int i = 1; i <= StmtTable::getLargestStmtNum()+1; i++) {
-        Statement* s = StmtTable::getStatementByLineNo(i);
+    pkb.printStmts();
+    for (int i = 1; i <= pkb.getLargestStmtNum() + 1; i++) {
+        Statement* s = pkb.getStatementByLineNo(i);
         // checking for NULL response
         if (!s) continue;
         s->FollowsInfo();
@@ -80,9 +78,9 @@ TEST_CASE("Test PKB::getParent()") {
     PKB pkb = PKB(p);
     pkb.initialPass();
     pkb.getParent();
-    StmtTable::printStmts();
-    for (int i = 1; i <= StmtTable::getLargestStmtNum() + 1; i++) {
-        Statement* s = StmtTable::getStatementByLineNo(i);
+    pkb.printStmts();
+    for (int i = 1; i <= pkb.getLargestStmtNum() + 1; i++) {
+        Statement* s = pkb.getStatementByLineNo(i);
         // checking for NULL response
         if (!s) continue;
         s->ParentInfo();

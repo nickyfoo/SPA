@@ -1,8 +1,9 @@
 #include "VarTable.h"
 #include <iostream>
 
-std::vector<Variable*> VarTable::table;
-std::map<std::string, int> VarTable::variableNameToIndex;
+VarTable::VarTable() {}
+
+VarTable::~VarTable() {}
 
 int VarTable::addVariable(std::string name) {
 	std::map<std::string,int>::iterator it = variableNameToIndex.find(name);

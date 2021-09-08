@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 namespace ast {
     enum Kind {
@@ -168,7 +169,7 @@ public:
 
 std::vector<Node*> nextNodes(Node* node);
 
-void visit(Node* node, std::vector<std::vector<void (*)(Node* currentNode)>>functions);
+void visit(Node* node, std::map<ast::Kind, std::vector<std::function<void(ast::Node* currentNode)>>>  functions);
 
 void visitWithAncestors(Node* node, std::vector<Node*>& ancestorList, std::vector<void (*) (Node* currentNode, std::vector<Node*>ancestorList)> functions);
 

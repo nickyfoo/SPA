@@ -85,14 +85,14 @@ std::vector<Node*> ast::nextNodes(Node* node) {
 }
 
 
-void ast::visit(Node* node, std::vector<std::vector<void (*)(Node* currentNode)>>functions) {
+void ast::visit(Node* node, std::map<ast::Kind, std::vector<std::function<void(ast::Node* currentNode)>>> functions) {
     // todo: throw an error
-    if (functions.size() != ast::NUM_KIND) {
+    if (node == nullptr) {
         return;
     }
     // Execute the corresponding function taking the node as a parameter
     if (node) {
-        for (void (*func) (Node* currentNode) : functions[node->kind]) {
+        for (auto func : functions[node->kind]) {
             func(node);
         }
     }

@@ -4,35 +4,51 @@
 #include <set>
 #include <vector>
 
-
 class StmtTable {
-public:
-    StmtTable();
-    ~StmtTable();
+ public:
+  StmtTable();
+  ~StmtTable();
 
-	void addStmt(ast::Node* node);
+  // Adds a statement to the table.
+  void AddStatement(ast::Node *node);
 
-	int getLargestStmtNum();
-	void processFollows();
-	void processFollowsStar();
-	void processParent();
-	void processParentStar();
+  // Get total number of statements.
+  int GetNumStatements();
+  // Gets all statements of the given type.
+  std::vector<Statement *> GetStatements(ast::Kind type);
+  // Gets the statement by line number.
+  Statement* GetStatement(int line_no);
+  // Gets all statements.
+  std::vector<Statement *> GetAllStatements();
 
-	// API calls for PQL
-	std::vector<Statement*> getStatements(ast::Kind type);
-	Statement* getStatementByLineNo(int lineNo);
-	std::vector<Statement*> getAllStatements();
+  // Gets Follows relationship from Statements in preparation to get
+  // transitive closure.
+  void ProcessFollows();
+  // Gets Follows_Star relationship using transitive closure.
+  void ProcessFollowsStar();
+  // Gets Parents relationship from Statements in preparation to get
+  // transitive closure.
+  void ProcessParent();
+  // Gets Parents_Star relationship using transitive closure.
+  void ProcessParentStar();
 
-	// Debug functions
-	void printStmts();
-	void printStmtInfos();
+  // Prints entity information of all statements.
+  void PrintStatements();
+  // Prints relationship information of all statements.
+  void PrintStatementDetails();
 
-private:
-    // Largest number of statements in the graph
-    int largestStmtNum;
-    std::map<int, Statement> table;
-    std::vector<Statement*> allStatements;
-    std::map<ast::Kind, std::vector<Statement*>> typeToStatement;
-    std::set<std::pair<int, int>> Follows, Follows_star;
-    std::set<std::pair<int, int>> Parent, Parent_star;
+ private:
+  // Number of statements in the table.
+  int num_statements_;
+  // Table mapping each line number to its corresponding statement.
+  std::map<int, Statement> table_;
+  // Table of all statements.
+  std::vector<Statement *> all_statements_;
+  // Table mapping each statement type to a list of its corresponding
+  // statements.
+  std::map<ast::Kind, std::vector<Statement *>> type_to_statement_;
+  // for <v1, v2> in follows_, Follows(v1, v2) is true.
+  std::set<std::pair<int, int>> follows_, follows_star_;
+  // for <v1, v2> in parent_, Parent(v1, v2) is true.
+  std::set<std::pair<int, int>> parent_, parent_star_;
 };

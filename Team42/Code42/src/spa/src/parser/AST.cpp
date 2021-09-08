@@ -86,7 +86,7 @@ std::vector<Node*> ast::nextNodes(Node* node) {
 
 
 void ast::visit(Node* node, std::map<ast::Kind, std::vector<std::function<void(ast::Node* currentNode)>>> functions) {
-    // todo: throw an error
+    // TODO: throw an error
     if (node == nullptr) {
         return;
     }

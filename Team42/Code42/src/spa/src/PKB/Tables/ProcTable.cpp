@@ -1,35 +1,35 @@
 #include "ProcTable.h"
 #include <iostream>
 
-ProcTable::ProcTable() {}
+ProcTable::ProcTable() = default;
 
-ProcTable::~ProcTable() {}
+ProcTable::~ProcTable() = default;
 
-int ProcTable::addProcedure(std::string name) {
-	std::map<std::string, int>::iterator it = procedureNameToIndex.find(name);
-	if (it != procedureNameToIndex.end()) {
-		return it->second;
-	}
-	else {
-		int pos = table.size();
-		Procedure* p = new Procedure(name);
-		table.push_back(p);
-		procedureNameToIndex[name] = pos;
-		return pos;
-	}
+int ProcTable::AddProcedure(const std::string& name) {
+  auto it = name_to_index_.find(name);
+  if (it != name_to_index_.end()) {
+    return it->second;
+  } else {
+    int pos = table_.size();
+    Procedure p(name);
+    table_.push_back(p);
+    all_procedures_.push_back(&table_[pos]);
+    name_to_index_[name] = pos;
+    return pos;
+  }
 }
 
-int ProcTable::getNumProcedures() {
-	return procedureNameToIndex.size();
+int ProcTable::GetNumProcedures() {
+  return name_to_index_.size();
 }
 
-std::vector<Procedure*> ProcTable::getAllProcedures() {
-    return table;
+std::vector<Procedure *> ProcTable::GetAllProcedures() {
+  return all_procedures_;
 }
 
-void ProcTable::printProcs() {
-	std::cout << "ProcTable size: " << table.size() << '\n';
-	for (Procedure* p: table) {
-		std::cout << p->getName() << '\n';
-	}
+void ProcTable::PrintProcedures() {
+  std::cout << "ProcTable size: " << table_.size() << '\n';
+  for (Procedure p: table_) {
+    std::cout << p.GetName() << '\n';
+  }
 }

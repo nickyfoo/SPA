@@ -10,55 +10,77 @@
 #include "Tables/VarTable.h"
 
 class PKB {
-public:
-    inline static const std::vector<ast::Kind> validStmts = {
-            ast::Assign,
-            ast::If,
-            ast::While,
-            ast::Read,
-            ast::Print,
-            ast::Call
-    };
-    PKB(ast::Node* programRoot);
-	~PKB();
+ public:
+  // List of valid kinds of statements
+  inline static const std::vector<ast::Kind> kValidStmts = {
+      ast::Assign,
+      ast::If,
+      ast::While,
+      ast::Read,
+      ast::Print,
+      ast::Call
+  };
 
-	void initialPass(); 
-	void getFollows();
-	void getParent();
+  PKB(ast::Node *programRoot);
 
-	std::vector<Variable*> getAllVariables();
-	std::vector<Procedure*> getAllProcedures();
+  ~PKB();
 
-	void addVariable(ast::Node* node);
-	void addStmt(ast::Node* node);
-	void addExprString(ast::Node* node);
-	void addProc(ast::Node* node);
+  // Populates the tables with entities and relationships from AST.
+  void Initialise();
 
-	void followsProcessProcedureNode(ast::Node* node);
-	void followsProcessIfNode(ast::Node* node);
-	void followsProcessWhileNode(ast::Node* node);
+  // Adds a procedure to the procedures table.
+  void AddProcedure(ast::Node *node);
+  // Adds a statement to the statements table.
+  void AddStatement(ast::Node *node);
+  // Adds a postfix expression string to the table.
+  void AddExprString(ast::Node *node);
+  // Adds a variable to the variables table.
+  void AddVariable(ast::Node *node);
 
-	void parentProcessIfNode(ast::Node* node);
-	void parentProcessWhileNode(ast::Node* node);
+  // Gets all procedures in the program.
+  std::vector<Procedure *> GetAllProcedures();
 
-	// Statement table
-	Statement* getStatementByLineNo(int lineNo);
-	std::vector<Statement*> getAllStatements();
-	std::vector<Statement*> getStatements(ast::Kind type);
-	void printStmts();
-	int getLargestStmtNum();
+  // Gets the total number of statements in the statement table.
+  int GetNumStatements();
+  // Gets all statements in the statement table.
+  std::vector<Statement*> GetAllStatements();
+  // Gets all statements of the given type.
+  std::vector<Statement*> GetStatements(ast::Kind type);
+  // Gets a statement by its corresponding line number.
+  Statement* GetStatement(int line_no);
 
-	// API called from here
-	/*
-	//todo: add issue about enums/discuss with people
-	vector<Statement*> getStatements(ast::kind type);
-	Statement* getStatementbyLineNo(lineNo);
+  // Gets all variables in the program.
+  std::vector<Variable *> GetAllVariables();
 
-	*/
+  // Process and store Follows relationships for the AST procedure node.
+  void followsProcessProcedureNode(ast::Node *node);
+  // Process and store Follows relationships for the AST if node.
+  void followsProcessIfNode(ast::Node *node);
+  // Process and store Follows relationships for the AST while node.
+  void followsProcessWhileNode(ast::Node *node);
 
-private:
-    ast::Node* root;
-    ProcTable procTable;
-    StmtTable stmtTable;
-    VarTable varTable;
+  // Process and store Parent relationships for the AST if node.
+  void parentProcessIfNode(ast::Node *node);
+  // Process and store Parent relationships for the AST while node.
+  void parentProcessWhileNode(ast::Node *node);
+
+  // Prints information of statements in the statement table.
+  void PrintStatements();
+
+ private:
+  // Extracts entities from the AST root node and stores them in the PKB.
+  void ExtractEntities();
+  // Extracts Follows/Follows_Star relationships in the AST.
+  void GetFollows();
+  // Extracts Parent/Parent_Star relationships in the AST.
+  void GetParent();
+
+  // Root AST node of the program.
+  ast::Node *root_;
+  // Table of procedures in the program.
+  ProcTable proc_table_;
+  // Table of statements in the program.
+  StmtTable stmt_table_;
+  // Table of variables in the program.
+  VarTable var_table_;
 };

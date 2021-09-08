@@ -43,27 +43,26 @@ std::string source = "procedure main {"
 "normSq = cenX * cenX + cenY * cenY;"
 "}";
 
-TEST_CASE("Test PKB::initialPass()") {
+TEST_CASE("Test PKB::Initialise()") {
 
     BufferedLexer* B = new BufferedLexer(source.c_str());
     State* s = new State{};
     ProgramNode* p = parseProgram(B, s);
     PKB pkb = PKB(p);
-    pkb.initialPass();
+    pkb.Initialise();
 }
 
 
-TEST_CASE("Test PKB::getFollows()") {
+TEST_CASE("Test PKB::GetFollows()") {
     BufferedLexer* B = new BufferedLexer(source.c_str());
     State* s = new State{};
     ProgramNode* p = parseProgram(B, s);
 
     PKB pkb = PKB(p);
-    pkb.initialPass();
-    pkb.getFollows();
-    pkb.printStmts();
-    for (int i = 1; i <= pkb.getLargestStmtNum() + 1; i++) {
-        Statement* s = pkb.getStatementByLineNo(i);
+    pkb.Initialise();
+    pkb.PrintStatements();
+    for (int i = 1; i <= pkb.GetNumStatements() + 1; i++) {
+      Statement* s = pkb.GetStatement(i);
         // checking for NULL response
         if (!s) continue;
         s->FollowsInfo();
@@ -71,16 +70,15 @@ TEST_CASE("Test PKB::getFollows()") {
 }
 
 
-TEST_CASE("Test PKB::getParent()") {
+TEST_CASE("Test PKB::GetParent()") {
     BufferedLexer* B = new BufferedLexer(source.c_str());
     State* s = new State{};
     ProgramNode* p = parseProgram(B, s);
     PKB pkb = PKB(p);
-    pkb.initialPass();
-    pkb.getParent();
-    pkb.printStmts();
-    for (int i = 1; i <= pkb.getLargestStmtNum() + 1; i++) {
-        Statement* s = pkb.getStatementByLineNo(i);
+    pkb.Initialise();
+    pkb.PrintStatements();
+    for (int i = 1; i <= pkb.GetNumStatements() + 1; i++) {
+      Statement* s = pkb.GetStatement(i);
         // checking for NULL response
         if (!s) continue;
         s->ParentInfo();

@@ -2,14 +2,19 @@
 #include <string>
 
 class Variable {
-private:
-	int _index;
-	std::string _name;
+ public:
+  Variable(int index, std::string name);
 
-public:
-	Variable(int index, std::string name) {
-		_index = index;
-		_name = name;
-	}
-	std::string getName();
+  ~Variable();
+
+  // Gets the index mapping to the variable.
+  int GetIndex();
+  // Gets the name of the variable.
+  std::string GetName();
+
+ private:
+  // Mapped index of variable.
+  int index_;
+  // Name of variable.
+  std::string name_;
 };

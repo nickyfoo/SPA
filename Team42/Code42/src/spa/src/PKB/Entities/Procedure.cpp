@@ -1,6 +1,11 @@
 #include "Procedure.h"
-#include <iostream>
 
-std::string Procedure::getName() {
-	return _name;
+Procedure::Procedure(std::string name) {
+  this->name_ = name;
+}
+
+Procedure::~Procedure() {}
+
+std::string Procedure::GetName() {
+  return name_;
 }

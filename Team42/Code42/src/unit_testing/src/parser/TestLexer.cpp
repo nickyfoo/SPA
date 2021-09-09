@@ -1,17 +1,16 @@
-#include "lexer.h"
 #include <string>
 #include <vector>
 
 #include "catch.hpp"
-
-using namespace std;
+#include "lexer.h"
 
 TEST_CASE("Lexer 1st Test") {
-  std::string source = "procedure main {\n"
-                       "\tflag = 0;\n"
-                       "\tcall computeCentroid;\n"
-                       "\tcall printResults;\n"
-                       "}";
+  std::string source =
+      "procedure main {\n"
+      "\tflag = 0;\n"
+      "\tcall computeCentroid;\n"
+      "\tcall printResults;\n"
+      "}";
 
   int num_expected_tokens = 14;
   const Token *expected_tokens[] = {

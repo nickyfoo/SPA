@@ -1,4 +1,3 @@
-#include "ctype.h"
 #include "lexer.h"
 
 Lexer::Lexer(const char *source) {

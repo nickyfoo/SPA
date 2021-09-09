@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <unordered_map>
 #include <string>
-#include "Entities/Statement.h"
+#include "entities/statement.h"
 
 class PatternManager {
  public:

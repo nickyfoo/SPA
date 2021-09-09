@@ -9,6 +9,7 @@
 #include "tables/stmt_table.h"
 #include "tables/var_table.h"
 #include "tables/const_table.h"
+#include "pattern_manager.h"
 
 class PKB {
  public:

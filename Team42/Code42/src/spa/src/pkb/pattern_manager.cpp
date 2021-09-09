@@ -1,4 +1,4 @@
-#include "PatternManager.h"
+#include "pattern_manager.h"
 
 #include <iostream>
 #include <unordered_map>

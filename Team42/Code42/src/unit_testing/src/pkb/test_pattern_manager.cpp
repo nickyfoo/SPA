@@ -1,9 +1,8 @@
 #include "Parser.h"
 #include <vector>
-#include "PKB.h"
-#include "PatternManager.h"
+#include "pkb.h"
 #include "catch.hpp"
-#include "Entities/Statement.h"
+#include "entities/statement.h"
 
 using namespace std;
 using namespace lexer;

@@ -8,7 +8,7 @@ using namespace lexer;
 using namespace parser;
 using namespace ast;
 
-std::string source = "procedure main {"
+std::string test_program = "procedure main {"
 "flag = 0;"
 "call computeCentroid;"
 "call printResults;"
@@ -43,9 +43,9 @@ std::string source = "procedure main {"
 "normSq = cenX * cenX + cenY * cenY;"
 "}";
 
-TEST_CASE("Test pkb::Initialise()") {
+TEST_CASE("Test PKB::Initialise()") {
 
-    BufferedLexer* B = new BufferedLexer(source.c_str());
+    BufferedLexer* B = new BufferedLexer(test_program.c_str());
     State* s = new State{};
     ProgramNode* p = parseProgram(B, s);
     PKB pkb = PKB(p);
@@ -53,8 +53,8 @@ TEST_CASE("Test pkb::Initialise()") {
 }
 
 
-TEST_CASE("Test pkb::GetFollows()") {
-    BufferedLexer* B = new BufferedLexer(source.c_str());
+TEST_CASE("Test PKB::GetFollows()") {
+    BufferedLexer* B = new BufferedLexer(test_program.c_str());
     State* s = new State{};
     ProgramNode* p = parseProgram(B, s);
 
@@ -70,8 +70,8 @@ TEST_CASE("Test pkb::GetFollows()") {
 }
 
 
-TEST_CASE("Test pkb::GetParent()") {
-    BufferedLexer* B = new BufferedLexer(source.c_str());
+TEST_CASE("Test PKB::GetParent()") {
+    BufferedLexer* B = new BufferedLexer(test_program.c_str());
     State* s = new State{};
     ProgramNode* p = parseProgram(B, s);
     PKB pkb = PKB(p);

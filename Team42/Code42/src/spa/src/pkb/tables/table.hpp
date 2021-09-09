@@ -2,7 +2,7 @@
 
 #include <set>
 
-#include "../Entities/Entity.hpp"
+#include "../entities/entity.hpp"
 
 class Table {
  public:

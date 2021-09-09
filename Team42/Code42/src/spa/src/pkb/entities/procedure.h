@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <set>
-#include "Entity.hpp"
+#include "entity.hpp"
 
 class Procedure : public Entity {
  public:

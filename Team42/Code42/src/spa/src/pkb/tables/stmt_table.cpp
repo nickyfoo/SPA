@@ -1,4 +1,4 @@
-#include "StmtTable.h"
+#include "stmt_table.h"
 #include <iostream>
 
 StmtTable::StmtTable() {

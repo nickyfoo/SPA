@@ -1,4 +1,4 @@
-#include "Procedure.h"
+#include "procedure.h"
 
 Procedure::Procedure(std::string name) {
   this->name_ = name;

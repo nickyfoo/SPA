@@ -5,11 +5,10 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "Tables/ProcTable.h"
-#include "Tables/StmtTable.h"
-#include "Tables/VarTable.h"
-#include "Tables/ConstTable.h"
-#include "PatternManager.h"
+#include "tables/proc_table.h"
+#include "tables/stmt_table.h"
+#include "tables/var_table.h"
+#include "tables/const_table.h"
 
 class PKB {
  public:
@@ -65,7 +64,7 @@ class PKB {
   void PrintStatements();
 
  private:
-  // Extracts entities from the AST root node and stores them in the PKB.
+  // Extracts entities from the AST root node and stores them in the pkb.
   void ExtractEntities();
   // Extracts Follows/Follows_Star relationships in the AST.
   void GetFollows();

@@ -1,8 +1,8 @@
 #include "Parser.h"
 #include <vector>
-#include "PKB.h"
+#include "pkb.h"
 #include "catch.hpp"
-#include "Entities/Statement.h"
+#include "entities/statement.h"
 
 using namespace lexer;
 using namespace parser;
@@ -43,7 +43,7 @@ std::string source = "procedure main {"
 "normSq = cenX * cenX + cenY * cenY;"
 "}";
 
-TEST_CASE("Test PKB::Initialise()") {
+TEST_CASE("Test pkb::Initialise()") {
 
     BufferedLexer* B = new BufferedLexer(source.c_str());
     State* s = new State{};
@@ -53,7 +53,7 @@ TEST_CASE("Test PKB::Initialise()") {
 }
 
 
-TEST_CASE("Test PKB::GetFollows()") {
+TEST_CASE("Test pkb::GetFollows()") {
     BufferedLexer* B = new BufferedLexer(source.c_str());
     State* s = new State{};
     ProgramNode* p = parseProgram(B, s);
@@ -70,7 +70,7 @@ TEST_CASE("Test PKB::GetFollows()") {
 }
 
 
-TEST_CASE("Test PKB::GetParent()") {
+TEST_CASE("Test pkb::GetParent()") {
     BufferedLexer* B = new BufferedLexer(source.c_str());
     State* s = new State{};
     ProgramNode* p = parseProgram(B, s);

@@ -3,8 +3,8 @@
 #include <set>
 #include <string>
 #include <vector>
-#include "Entities/Constant.h"
-#include "Table.hpp"
+#include "entities/constant.h"
+#include "table.hpp"
 #include <map>
 
 class ConstTable : public Table {

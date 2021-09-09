@@ -3,7 +3,7 @@ file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h" "${CMAKE_CURRENT_SOURCE_
 add_library(spa ${srcs} ${headers})
 # this makes the headers accessible for other projects which uses spa lib
 target_include_directories(spa PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/parser
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/PKB
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/PKB/Entities
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/PKB/Table)
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/parser
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/pkb
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/pkb/entities
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/pkb/tables)

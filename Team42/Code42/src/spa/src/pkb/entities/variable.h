@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "Entity.hpp"
+#include "entity.hpp"
 
 class Variable : public Entity {
  public:

@@ -1,6 +1,6 @@
 #pragma once
 #include "AST.hpp"
-#include "Entity.hpp"
+#include "entity.hpp"
 #include <set>
 
 class Statement : public Entity {

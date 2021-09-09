@@ -1,4 +1,4 @@
-#include "Statement.h"
+#include "statement.h"
 #include <iostream>
 
 Statement::Statement(int line_no, ast::Kind type) {

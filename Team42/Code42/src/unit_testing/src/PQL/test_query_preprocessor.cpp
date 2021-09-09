@@ -8,6 +8,9 @@ TEST_CASE("1. Standard select") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "s");
+    REQUIRE(clause->get_query_relationships()->size() == 0);
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("2. No entity found") {
@@ -40,6 +43,9 @@ TEST_CASE("5. Additional spaces in select statement") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "s");
+    REQUIRE(clause->get_query_relationships()->size() == 0);
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("6. Wrong such that keyword") {
@@ -72,6 +78,12 @@ TEST_CASE("9. Follows clause with 2 statements") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "s1");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    REQUIRE(clause->get_query_relationships()->at(0)->get_type() == RelRef::Follows);
+    REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
+    REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_stmt_ref().get_synonym() == "s2");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("10. Follows clause with 1 statement and 1 statement number") {
@@ -80,6 +92,12 @@ TEST_CASE("10. Follows clause with 1 statement and 1 statement number") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "s1");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    REQUIRE(clause->get_query_relationships()->at(0)->get_type() == RelRef::Follows);
+    REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
+    REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_stmt_ref().get_stmt_num() == 2);
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("11. Follows clause with 1 statement number and 1 statement") {
@@ -88,6 +106,12 @@ TEST_CASE("11. Follows clause with 1 statement number and 1 statement") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "s1");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    REQUIRE(clause->get_query_relationships()->at(0)->get_type() == RelRef::Follows);
+    REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_stmt_ref().get_stmt_num() == 1);
+    REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_stmt_ref().get_synonym() == "s2");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("12. Follows clause with 1 statement and invalid entity") {
@@ -104,6 +128,13 @@ TEST_CASE("13. Follows* clause with 2 statements") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "s1");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::FollowsT);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
+    REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_synonym() == "s2");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 
@@ -113,6 +144,13 @@ TEST_CASE("14. Follows* clause with 1 statement and 1 statement number") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "s1");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::FollowsT);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
+    REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_stmt_num() == 2);
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 
@@ -122,6 +160,13 @@ TEST_CASE("15. Follows* clause with additional spaces") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "s1");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::FollowsT);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
+    REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_synonym() == "s2");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("16. Parent with string argument_") {
@@ -138,6 +183,13 @@ TEST_CASE("17. Parent clause with 2 statements") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "s1");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::Parent);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
+    REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_synonym() == "s2");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("18. Parent clause with 1 statement and 1 statement number") {
@@ -146,6 +198,13 @@ TEST_CASE("18. Parent clause with 1 statement and 1 statement number") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "s1");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::Parent);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
+    REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_stmt_num() == 2);
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("19. Parent clause with 1 statement number and 1 statement") {
@@ -154,6 +213,13 @@ TEST_CASE("19. Parent clause with 1 statement number and 1 statement") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "s1");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::Parent);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_stmt_num() == 1);
+    REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_synonym() == "s2");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("20. Parent clause with 1 statement and invalid entity") {
@@ -170,6 +236,13 @@ TEST_CASE("21. Parent* clause with 2 statements") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "s1");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::ParentT);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
+    REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_synonym() == "s2");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 
@@ -179,6 +252,13 @@ TEST_CASE("22. Parent* clause with 1 statement and 1 statement number") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "s1");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::ParentT);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
+    REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_stmt_num() == 2);
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 
@@ -188,6 +268,13 @@ TEST_CASE("23. Parent* clause with additional spaces") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "s1");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::ParentT);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
+    REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_synonym() == "s2");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("24. Modifies clause with assignment and variable") {
@@ -196,6 +283,13 @@ TEST_CASE("24. Modifies clause with assignment and variable") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "a");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::ModifiesS);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "a");
+    REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("25. Modifies clause with print and variable") {
@@ -204,6 +298,13 @@ TEST_CASE("25. Modifies clause with print and variable") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "pn");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::ModifiesS);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "pn");
+    REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("26. Modifies clause with if and variable") {
@@ -212,6 +313,13 @@ TEST_CASE("26. Modifies clause with if and variable") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "ifs");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::ModifiesS);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "ifs");
+    REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("27. Modifies clause with while and variable") {
@@ -220,6 +328,13 @@ TEST_CASE("27. Modifies clause with while and variable") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "whiles");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::ModifiesS);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "whiles");
+    REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("28. Modifies clause with procedure and variable") {
@@ -228,6 +343,13 @@ TEST_CASE("28. Modifies clause with procedure and variable") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "proc");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::ModifiesP);
+    REQUIRE(relationship->get_left_ref()->get_ent_ref().get_synonym() == "proc");
+    REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("29. Modifies clause with call and variable") {
@@ -236,6 +358,13 @@ TEST_CASE("29. Modifies clause with call and variable") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "calls");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::ModifiesS);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "calls");
+    REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("30. Modifies clause with statement and variable") {
@@ -244,6 +373,13 @@ TEST_CASE("30. Modifies clause with statement and variable") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "s");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::ModifiesS);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s");
+    REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("31. Modifies clause with statement number and variable") {
@@ -252,6 +388,13 @@ TEST_CASE("31. Modifies clause with statement number and variable") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "v");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::ModifiesS);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_stmt_num() == 2);
+    REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("32. Modifies clause with assignment and statement") {
@@ -276,6 +419,13 @@ TEST_CASE("34. Uses clause with assignment and variable") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "a");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::UsesS);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "a");
+    REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("35. Uses clause with print and variable") {
@@ -284,6 +434,13 @@ TEST_CASE("35. Uses clause with print and variable") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "pn");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::UsesS);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "pn");
+    REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("36. Uses clause with if and variable") {
@@ -292,6 +449,13 @@ TEST_CASE("36. Uses clause with if and variable") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "ifs");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::UsesS);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "ifs");
+    REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("37. Uses clause with while and variable") {
@@ -308,6 +472,13 @@ TEST_CASE("38. Uses clause with procedure and variable") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "proc");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::UsesP);
+    REQUIRE(relationship->get_left_ref()->get_ent_ref().get_synonym() == "proc");
+    REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("39. Uses clause with call and variable") {
@@ -316,6 +487,13 @@ TEST_CASE("39. Uses clause with call and variable") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "calls");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::UsesS);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "calls");
+    REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("40. Uses clause with statement and variable") {
@@ -324,6 +502,13 @@ TEST_CASE("40. Uses clause with statement and variable") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "s");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::UsesS);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s");
+    REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("41. Uses clause with statement number and variable") {
@@ -332,6 +517,13 @@ TEST_CASE("41. Uses clause with statement number and variable") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "v");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::UsesS);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_stmt_num() == 2);
+    REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
+    REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
 TEST_CASE("42. Uses clause with assignment and statement") {
@@ -356,6 +548,14 @@ TEST_CASE("44. Standard pattern clause") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "a");
+    REQUIRE(clause->get_query_relationships()->size() == 0);
+    REQUIRE(clause->get_query_patterns()->size() == 1);
+    PatternClause *pattern = clause->get_query_patterns()->at(0);
+    REQUIRE(pattern->get_synonym()->getSynonym() == "a");
+    REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::WildCard);
+    REQUIRE(pattern->get_right_ref()->get_expression() == "count+1");
+    REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
 }
 
 TEST_CASE("45. PatternClause clause with partial pattern") {
@@ -364,6 +564,15 @@ TEST_CASE("45. PatternClause clause with partial pattern") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "a");
+    REQUIRE(clause->get_query_relationships()->size() == 0);
+    REQUIRE(clause->get_query_patterns()->size() == 1);
+    PatternClause *pattern = clause->get_query_patterns()->at(0);
+    REQUIRE(pattern->get_synonym()->getSynonym() == "a");
+    REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Argument);
+    REQUIRE(pattern->get_left_ref()->get_argument() == "normSq");
+    REQUIRE(pattern->get_right_ref()->get_expression() == "cenX*cenX");
+    REQUIRE(pattern->get_right_ref()->IsPartialPattern() == true);
 }
 
 TEST_CASE("46. PatternClause clause with different variable name") {
@@ -372,6 +581,15 @@ TEST_CASE("46. PatternClause clause with different variable name") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "newa");
+    REQUIRE(clause->get_query_relationships()->size() == 0);
+    REQUIRE(clause->get_query_patterns()->size() == 1);
+    PatternClause *pattern = clause->get_query_patterns()->at(0);
+    REQUIRE(pattern->get_synonym()->getSynonym() == "newa");
+    REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Argument);
+    REQUIRE(pattern->get_left_ref()->get_argument() == "normSq");
+    REQUIRE(pattern->get_right_ref()->get_expression() == "cenX*cenX");
+    REQUIRE(pattern->get_right_ref()->IsPartialPattern() == true);
 }
 
 TEST_CASE("47. Queries with one pattern clause and one such that") {
@@ -380,6 +598,20 @@ TEST_CASE("47. Queries with one pattern clause and one such that") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "w");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause* relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::ParentT);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "w");
+    REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_synonym() == "a");
+
+    REQUIRE(clause->get_query_patterns()->size() == 1);
+    PatternClause *pattern = clause->get_query_patterns()->at(0);
+    REQUIRE(pattern->get_synonym()->getSynonym() == "a");
+    REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Argument);
+    REQUIRE(pattern->get_left_ref()->get_argument() == "count");
+    REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
+    REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
 }
 
 TEST_CASE("48. Queries with one pattern clause and one such that") {
@@ -388,6 +620,20 @@ TEST_CASE("48. Queries with one pattern clause and one such that") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "a");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause* relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::UsesS);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "a");
+    REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
+
+    REQUIRE(clause->get_query_patterns()->size() == 1);
+    PatternClause *pattern = clause->get_query_patterns()->at(0);
+    REQUIRE(pattern->get_synonym()->getSynonym() == "a");
+    REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Synonym);
+    REQUIRE(pattern->get_left_ref()->get_synonym() == "v");
+    REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
+    REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
 }
 
 TEST_CASE("49. Queries that use and modify the same variable") {
@@ -396,6 +642,19 @@ TEST_CASE("49. Queries that use and modify the same variable") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "a");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause* relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::UsesS);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "a");
+    REQUIRE(relationship->get_right_ref()->get_ent_ref().get_argument() == "x");
+
+    REQUIRE(clause->get_query_patterns()->size() == 1);
+    PatternClause *pattern = clause->get_query_patterns()->at(0);
+    REQUIRE(pattern->get_synonym()->getSynonym() == "a");
+    REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Argument);
+    REQUIRE(pattern->get_left_ref()->get_argument() == "x");
+    REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
 }
 
 TEST_CASE("50. Complex queries with keywords as variable name") {
@@ -405,6 +664,20 @@ TEST_CASE("50. Complex queries with keywords as variable name") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "pattern");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause* relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::UsesS);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "pattern");
+    REQUIRE(relationship->get_right_ref()->get_ent_ref().get_argument() == "x");
+
+    REQUIRE(clause->get_query_patterns()->size() == 1);
+    PatternClause *pattern = clause->get_query_patterns()->at(0);
+    REQUIRE(pattern->get_synonym()->getSynonym() == "pattern");
+    REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Argument);
+    REQUIRE(pattern->get_left_ref()->get_argument() == "x");
+    REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
+    REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
 }
 
 TEST_CASE("51. Complex queries with keywords as variable name") {
@@ -414,6 +687,20 @@ TEST_CASE("51. Complex queries with keywords as variable name") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "pattern");
+    REQUIRE(clause->get_query_relationships()->size() == 1);
+    SuchThatClause* relationship = clause->get_query_relationships()->at(0);
+    REQUIRE(relationship->get_type() == RelRef::UsesS);
+    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "pattern");
+    REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "select");
+
+    REQUIRE(clause->get_query_patterns()->size() == 1);
+    PatternClause *pattern = clause->get_query_patterns()->at(0);
+    REQUIRE(pattern->get_synonym()->getSynonym() == "pattern");
+    REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Synonym);
+    REQUIRE(pattern->get_left_ref()->get_synonym() == "select");
+    REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
+    REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
 }
 
 TEST_CASE("52. Extra such that") {
@@ -456,6 +743,15 @@ TEST_CASE("56. Pattern keyword inside pattern") {
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "a");
+    REQUIRE(clause->get_query_relationships()->size() == 0);
+
+    REQUIRE(clause->get_query_patterns()->size() == 1);
+    PatternClause *pattern = clause->get_query_patterns()->at(0);
+    REQUIRE(pattern->get_synonym()->getSynonym() == "a");
+    REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::WildCard);
+    REQUIRE(pattern->get_right_ref()->get_expression() == "pattern");
+    REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
 }
 
 TEST_CASE("57. Weird select clauses_") {

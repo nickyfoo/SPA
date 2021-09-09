@@ -147,7 +147,7 @@ PatternClause *SelectClauseParser::MakePatternRef(const std::string& synonym,
     } else if (left_ref == "_") {
         entRef->set_wild_card();
     } else if (IsValidIdentifier(left_ref)) {
-        entRef->set_argument(left_ref);
+        entRef->set_argument(left_ref.substr(1, left_ref.length() - 2));
     } else {
         return nullptr;
     }
@@ -196,7 +196,7 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRef(
         stmt_ref.set_wild_card();
         ret = new SuchThatRef(stmt_ref);
     } else if (IsValidIdentifier(ref)) {
-        ent_ref.set_argument(ref);
+        ent_ref.set_argument(ref.substr(1, ref.length() - 2));
         ret = new SuchThatRef(ent_ref);
     } else {
         return nullptr;

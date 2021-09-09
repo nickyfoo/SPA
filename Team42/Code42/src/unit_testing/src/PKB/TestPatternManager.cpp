@@ -14,18 +14,18 @@ TEST_CASE("PatternManager 1st Test") {
     Statement s1(1, ast::Assign);
     s1.SetExprString("cenX cenX * cenY cenY * +");
 
-    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "cenX * cenX + cenY * cenY", false) == true);
-    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "cenX * cenX + cenY * cenY", true) == true);
-    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "cenX * cenX", true) == true);
-    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "cenY * cenY", true) == true);
-    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "cenX * cenX", false) == false);
-    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "cenY * cenY", false) == false);
-    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "cenX + cenY", true) == false);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "cenX * cenX + cenY * cenY", false) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "cenX * cenX + cenY * cenY", true) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "cenX * cenX", true) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "cenY * cenY", true) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "cenX * cenX", false) == false);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "cenY * cenY", false) == false);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "cenX + cenY", true) == false);
 
     Statement s2(1, ast::Assign);
     s2.SetExprString("count 1 +");
-    REQUIRE(PatternManager::TestAssignmentPattern(&s2, "count 1 +", false) == true);
-    REQUIRE(PatternManager::TestAssignmentPattern(&s2, "count", true) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "count 1 +", false) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "count", true) == true);
 
 }
 
@@ -35,15 +35,15 @@ TEST_CASE("PatternManager 2nd Test") {
     Statement s1(1, ast::Assign);
     s1.SetExprString("v x y * + z t * +");
 
-    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "v + x * y + z * t", false) == true);
-    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "v", false) == false);
-    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "v", true) == true);
-    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "x * y", true) == true);
-    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "v + x", true) == false);
-    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "v + x * y", true) == true);
-    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "y + z * t", true) == false);
-    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "x * y + z * t", true) == false);
-    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "v + x * y + z * t", true) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "v + x * y + z * t", false) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "v", false) == false);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "v", true) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "x * y", true) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "v + x", true) == false);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "v + x * y", true) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "y + z * t", true) == false);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "x * y + z * t", true) == false);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "v + x * y + z * t", true) == true);
 }
 
 TEST_CASE("Test PatternManager TestAssignmentPattern") {
@@ -93,7 +93,7 @@ TEST_CASE("Test PatternManager TestAssignmentPattern") {
     std::cout << "---------- PatternManager TestAssignmentPattern" << "\n";
     std::cout << "checking for " << pattern << "\n";
     for (Statement* stmt : assignment_stmts) {
-      bool matchesPattern = PatternManager::TestAssignmentPattern(stmt, pattern, false);
+      bool matchesPattern = PKB::TestAssignmentPattern(stmt, pattern, false);
 
         std::string exprString = stmt->GetExprString();
         if (matchesPattern) {

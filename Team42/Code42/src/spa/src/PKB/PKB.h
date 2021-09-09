@@ -27,6 +27,8 @@ class PKB {
   void AddExprString(ast::Node *node);
   // Adds a variable to the variables table.
   void AddVariable(ast::Node *node);
+  // Adds a constant to the variables table.
+  void AddConstant(ast::Node *node);
 
   // Gets all procedures in the program.
   std::vector<Procedure *> GetAllProcedures();

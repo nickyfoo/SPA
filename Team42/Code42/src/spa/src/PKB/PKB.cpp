@@ -34,6 +34,11 @@ void PKB::AddVariable(ast::Node *node) {
   var_table_.AddVariable(castedIdentifierNode->name);
 }
 
+void PKB::AddConstant(ast::Node *node) {
+  ast::ConstantNode *castedConstantNode = (ast::ConstantNode *) node;
+  const_table_.AddConstant(std::stoi(castedConstantNode->value));
+}
+
 std::vector<Procedure *> PKB::GetAllProcedures() {
   return proc_table_.GetAllProcedures();
 }
@@ -145,6 +150,7 @@ void PKB::ExtractEntities() {
   for (auto it = begin(StmtTable::kValidStmts); it != end(StmtTable::kValidStmts); ++it) {
     functions[*it].push_back([this](ast::Node *node) { PKB::AddStatement(node); });
   }
+  functions[ast::Constant].push_back([this](ast::Node *node) { PKB::AddConstant(node); });
   functions[ast::Assign].push_back([this](ast::Node *node) { PKB::AddExprString(node); });
   functions[ast::Procedure].push_back([this](ast::Node *node) { PKB::AddProcedure(node); });
 
@@ -153,6 +159,7 @@ void PKB::ExtractEntities() {
   stmt_table_.PrintStatements();
   proc_table_.PrintProcedures();
   var_table_.PrintVariables();
+  const_table_.PrintConstants();
 }
 
 void PKB::GetFollows() {

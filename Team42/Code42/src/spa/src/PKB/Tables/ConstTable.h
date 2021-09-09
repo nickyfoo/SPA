@@ -19,6 +19,9 @@ class ConstTable : public Table {
   // Get all constants.
   std::vector<Constant *> GetAllConstants();
 
+  // Prints all constants in the table.
+  void PrintConstants();
+
  private:
   // Table mapping each constant value to its corresponding constant.
   std::map<int, Constant> table_;

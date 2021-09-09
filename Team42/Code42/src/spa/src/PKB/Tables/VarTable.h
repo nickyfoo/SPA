@@ -12,7 +12,7 @@ class VarTable : public Table {
   ~VarTable();
 
   // Adds a variable to the table.
-  int AddVariable(const std::string& name);
+  int AddVariable(const std::string &name);
 
   // Get total number of variables.
   int GetNumVariables();

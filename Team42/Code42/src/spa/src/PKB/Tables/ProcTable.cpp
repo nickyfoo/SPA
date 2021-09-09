@@ -5,7 +5,7 @@ ProcTable::ProcTable() = default;
 
 ProcTable::~ProcTable() = default;
 
-int ProcTable::AddProcedure(const std::string& name) {
+int ProcTable::AddProcedure(const std::string &name) {
   auto it = name_to_index_.find(name);
   if (it != name_to_index_.end()) {
     return it->second;

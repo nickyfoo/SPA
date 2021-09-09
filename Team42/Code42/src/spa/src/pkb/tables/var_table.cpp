@@ -1,4 +1,4 @@
-#include "VarTable.h"
+#include "var_table.h"
 #include <iostream>
 
 VarTable::VarTable() = default;

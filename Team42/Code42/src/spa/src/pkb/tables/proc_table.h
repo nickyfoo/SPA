@@ -3,8 +3,8 @@
 #include <set>
 #include <string>
 #include <vector>
-#include "Entities/Procedure.h"
-#include "Table.hpp"
+#include "entities/procedure.h"
+#include "table.hpp"
 #include <map>
 
 class ProcTable : public Table {

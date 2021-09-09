@@ -1,4 +1,4 @@
-#include "ConstTable.h"
+#include "const_table.h"
 #include <iostream>
 
 ConstTable::ConstTable() = default;

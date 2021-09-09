@@ -1,4 +1,4 @@
-#include "ProcTable.h"
+#include "proc_table.h"
 #include <iostream>
 
 ProcTable::ProcTable() = default;

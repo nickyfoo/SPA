@@ -1,4 +1,4 @@
-#include "Constant.h"
+#include "constant.h"
 
 Constant::Constant() {
   this->value_ = -1;

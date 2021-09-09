@@ -1,6 +1,6 @@
 #pragma once
-#include "Entities/Statement.h"
-#include "Table.hpp"
+#include "entities/statement.h"
+#include "table.hpp"
 #include <map>
 #include <set>
 #include <vector>

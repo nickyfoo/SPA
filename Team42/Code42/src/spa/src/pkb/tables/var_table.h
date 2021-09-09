@@ -1,6 +1,6 @@
 #pragma once
-#include "../Entities/Variable.h"
-#include "Table.hpp"
+#include "../entities/variable.h"
+#include "table.hpp"
 #include <map>
 #include <set>
 #include <vector>

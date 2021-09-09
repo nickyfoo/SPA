@@ -1,4 +1,3 @@
-#include "ctype.h"
 #include "lexer.h"
 
 Lexer::Lexer(const char *source) {
@@ -85,8 +84,8 @@ const Token *Lexer::GetNextToken() {
       res = new Token(TokenType::Modulo, "", cur_line_, cur_col_);
       break;
     default:
-      res = new Token(TokenType::Unknown, std::string(1, cur_char_pointer_[0]),
-                      cur_line_, cur_col_);
+      res =
+          new Token(TokenType::Unknown, std::string(1, cur_char_pointer_[0]), cur_line_, cur_col_);
   }
   AdvanceCharPointer();
   return res;

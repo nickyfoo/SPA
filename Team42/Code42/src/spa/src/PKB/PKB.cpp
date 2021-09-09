@@ -142,14 +142,12 @@ void PKB::ExtractEntities() {
   std::map<ast::Kind, std::vector<std::function<void(ast::Node *)>>> functions;
 
   functions[ast::Identifier].push_back([this](ast::Node *node) { PKB::AddVariable(node); });
-  for (int i = ast::Identifier; i < ast::NUM_KIND; i++) {
-    if (std::find(kValidStmts.begin(), kValidStmts.end(), i) != kValidStmts.end()) {
-      functions[(ast::Kind) i].push_back([this](ast::Node *node) { PKB::AddStatement(node); });
-    }
+  for (auto it = begin(StmtTable::kValidStmts); it != end(StmtTable::kValidStmts); ++it) {
+    functions[*it].push_back([this](ast::Node *node) { PKB::AddStatement(node); });
   }
-
   functions[ast::Assign].push_back([this](ast::Node *node) { PKB::AddExprString(node); });
   functions[ast::Procedure].push_back([this](ast::Node *node) { PKB::AddProcedure(node); });
+
   ast::visit(root_, functions);
 
   stmt_table_.PrintStatements();

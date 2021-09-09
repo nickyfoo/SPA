@@ -1,11 +1,22 @@
 #pragma once
 #include "Entities/Statement.h"
+#include "Table.hpp"
 #include <map>
 #include <set>
 #include <vector>
 
-class StmtTable {
+class StmtTable : public Table {
  public:
+  // List of valid kinds of statements
+  inline static const std::vector<ast::Kind> kValidStmts = {
+      ast::Assign,
+      ast::If,
+      ast::While,
+      ast::Read,
+      ast::Print,
+      ast::Call
+  };
+
   StmtTable();
 
   ~StmtTable();

@@ -9,14 +9,13 @@ int ProcTable::AddProcedure(const std::string& name) {
   auto it = name_to_index_.find(name);
   if (it != name_to_index_.end()) {
     return it->second;
-  } else {
-    int pos = table_.size();
-    Procedure p(name);
-    table_.push_back(p);
-    all_procedures_.push_back(&table_[pos]);
-    name_to_index_[name] = pos;
-    return pos;
   }
+  int pos = table_.size();
+  Procedure p(name);
+  table_.push_back(p);
+  all_procedures_.push_back(&table_[pos]);
+  name_to_index_[name] = pos;
+  return pos;
 }
 
 int ProcTable::GetNumProcedures() {

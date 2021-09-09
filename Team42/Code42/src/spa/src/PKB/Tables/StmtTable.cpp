@@ -1,6 +1,5 @@
 #include "StmtTable.h"
 #include <iostream>
-#include "TransitiveClosure.h"
 
 StmtTable::StmtTable() {
     num_statements_ = 0;
@@ -47,13 +46,13 @@ void StmtTable::ProcessFollows() {
 
 void StmtTable::ProcessFollowsStar() {
     int n = num_statements_ + 1;
-    std::vector<std::vector<int>> d = TransitiveClosure::getTransitiveClosure(follows_, n);
+    std::vector<std::vector<int>> d = GetTransitiveClosure(follows_, n);
     for (int i = 0; i < n; i++) {
         Statement* stmt = GetStatement(i);
         if (stmt == nullptr) continue;
 
         for (int j = 0; j < n; j++) {
-            if (d[i][j] != TransitiveClosure::INF) {
+          if (d[i][j] != kInf) {
                 stmt->AddFollowerStar(j);
                 GetStatement(j)->AddFolloweeStar(i);
             }
@@ -72,13 +71,13 @@ void StmtTable::ProcessParent() {
 
 void StmtTable::ProcessParentStar() {
     int n = num_statements_ + 1;
-    std::vector<std::vector<int>> d = TransitiveClosure::getTransitiveClosure(parent_, n);
+    std::vector<std::vector<int>> d = GetTransitiveClosure(parent_, n);
     for (int i = 0; i < n; i++) {
         Statement *stmt = GetStatement(i);
         if (stmt == nullptr) continue;
 
         for (int j = 0; j < n; j++) {
-            if (d[i][j] != TransitiveClosure::INF) {
+          if (d[i][j] != kInf) {
                 stmt->AddChildStar(j);
                 GetStatement(j)->AddParentStar(i);
             }

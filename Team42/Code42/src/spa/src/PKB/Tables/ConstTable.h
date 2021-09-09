@@ -4,9 +4,10 @@
 #include <string>
 #include <vector>
 #include "Entities/Constant.h"
+#include "Table.hpp"
 #include <map>
 
-class ConstTable {
+class ConstTable : public Table {
  public:
   ConstTable();
 

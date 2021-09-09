@@ -12,16 +12,6 @@
 
 class PKB {
  public:
-  // List of valid kinds of statements
-  inline static const std::vector<ast::Kind> kValidStmts = {
-      ast::Assign,
-      ast::If,
-      ast::While,
-      ast::Read,
-      ast::Print,
-      ast::Call
-  };
-
   PKB(ast::Node *programRoot);
 
   ~PKB();

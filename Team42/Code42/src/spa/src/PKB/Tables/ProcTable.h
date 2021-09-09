@@ -4,9 +4,10 @@
 #include <string>
 #include <vector>
 #include "Entities/Procedure.h"
+#include "Table.hpp"
 #include <map>
 
-class ProcTable {
+class ProcTable : public Table {
  public:
   ProcTable();
 

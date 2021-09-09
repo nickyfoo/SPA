@@ -3,17 +3,22 @@
 
 #include "ast.h"
 
-CondExpressionNode::CondExpressionNode(CondExprOp op, Node *left, Node *right,
-                                       int line_no, int col_no) {
-  if (left->kind() != NodeType::RelExpression &&
-      left->kind() != NodeType::CondExpression) {
+CondExpressionNode::CondExpressionNode(CondExprOp op, Node *left, Node *right, LocInfo loc)
+    : Node(loc) {
+  if (left == nullptr ||
+      left->kind() != NodeType::RelExpression && left->kind() != NodeType::CondExpression) {
     throw std::invalid_argument(
         "CondExpressionNode: expected left to be RelExpression or "
         "CondExpression");
   }
 
-  if (right->kind() != NodeType::RelExpression &&
-      right->kind() != NodeType::CondExpression) {
+  if (op == CondExprOp::Not && right != nullptr) {
+    throw std::invalid_argument("CondExpressionNode: (Not) expected right to be nullptr");
+  }
+
+  if (op != CondExprOp::Not &&
+      (right == nullptr ||
+       right->kind() != NodeType::RelExpression && right->kind() != NodeType::CondExpression)) {
     throw std::invalid_argument(
         "CondExpressionNode: expected right to be RelExpression or "
         "CondExpression");
@@ -22,15 +27,9 @@ CondExpressionNode::CondExpressionNode(CondExprOp op, Node *left, Node *right,
   this->op_ = op;
   this->left_ = left;
   this->right_ = right;
-  this->line_no_ = line_no;
-  this->col_no_ = col_no;
 }
 
 NodeType CondExpressionNode::kind() { return NodeType::CondExpression; }
-
-int CondExpressionNode::line_no() { return this->line_no_; }
-
-int CondExpressionNode::col_no() { return this->col_no_; }
 
 CondExprOp CondExpressionNode::op() { return this->op_; }
 
@@ -42,6 +41,11 @@ Node *CondExpressionNode::left() {
 }
 
 Node *CondExpressionNode::right() {
+  if (this->op_ == CondExprOp::Not) {
+    assert(this->right_ == nullptr);
+    return nullptr;
+  }
+
   assert(this->right_->kind() == NodeType::RelExpression ||
          this->right_->kind() == NodeType::CondExpression);
 

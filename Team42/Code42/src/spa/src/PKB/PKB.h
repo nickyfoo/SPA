@@ -36,26 +36,26 @@ class PKB {
   // Gets the total number of statements in the statement table.
   int GetNumStatements();
   // Gets all statements in the statement table.
-  std::vector<Statement*> GetAllStatements();
+  std::vector<Statement *> GetAllStatements();
   // Gets all statements of the given type.
-  std::vector<Statement*> GetStatements(ast::Kind type);
+  std::vector<Statement *> GetStatements(ast::Kind type);
   // Gets a statement by its corresponding line number.
-  Statement* GetStatement(int line_no);
+  Statement *GetStatement(int line_no);
 
   // Gets all variables in the program.
   std::vector<Variable *> GetAllVariables();
 
   // Process and store Follows relationships for the AST procedure node.
-  void followsProcessProcedureNode(ast::Node *node);
+  void FollowsProcessProcedureNode(ast::Node *node);
   // Process and store Follows relationships for the AST if node.
-  void followsProcessIfNode(ast::Node *node);
+  void FollowsProcessIfNode(ast::Node *node);
   // Process and store Follows relationships for the AST while node.
-  void followsProcessWhileNode(ast::Node *node);
+  void FollowsProcessWhileNode(ast::Node *node);
 
   // Process and store Parent relationships for the AST if node.
-  void parentProcessIfNode(ast::Node *node);
+  void ParentProcessIfNode(ast::Node *node);
   // Process and store Parent relationships for the AST while node.
-  void parentProcessWhileNode(ast::Node *node);
+  void ParentProcessWhileNode(ast::Node *node);
 
   // Prints information of statements in the statement table.
   void PrintStatements();

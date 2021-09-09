@@ -5,7 +5,7 @@ VarTable::VarTable() = default;
 
 VarTable::~VarTable() = default;
 
-int VarTable::AddVariable(const std::string& name) {
+int VarTable::AddVariable(const std::string &name) {
   auto it = name_to_index_.find(name);
   if (it != name_to_index_.end()) {
     return it->second;

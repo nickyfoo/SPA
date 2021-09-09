@@ -29,7 +29,7 @@ class StmtTable : public Table {
   // Gets all statements of the given type.
   std::vector<Statement *> GetStatements(ast::Kind type);
   // Gets the statement by line number.
-  Statement* GetStatement(int line_no);
+  Statement *GetStatement(int line_no);
   // Gets all statements.
   std::vector<Statement *> GetAllStatements();
 

@@ -11,8 +11,8 @@ enum class EntRefType {
 class EntRef {
  public:
     EntRef();
-    void set_synonym(const std::string& syn);
-    void set_argument(const std::string& arg);
+    void set_synonym(const std::string &syn);
+    void set_argument(const std::string &arg);
     void set_wild_card();
 
     EntRefType get_type();

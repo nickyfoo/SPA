@@ -1,7 +1,7 @@
 #include "such_that_clause.h"
 #include "entity_declaration.h"
 
-SuchThatClause::SuchThatClause(const std::string& type) {
+SuchThatClause::SuchThatClause(const std::string &type) {
     if (type == "Follows") {
         this->type_ = RelRef::Follows;
     } else if (type == "Follows*") {
@@ -22,7 +22,7 @@ SuchThatClause::SuchThatClause(const std::string& type) {
     this->right_ref_ = nullptr;
 }
 
-bool SuchThatClause::set_ref(SuchThatRef* left, SuchThatRef* right) {
+bool SuchThatClause::set_ref(SuchThatRef *left, SuchThatRef *right) {
     switch (this->type_) {
       case RelRef::Follows:
       case RelRef::FollowsT:
@@ -105,10 +105,10 @@ std::string SuchThatClause::get_type_str() {
     }
 }
 
-SuchThatRef* SuchThatClause::get_left_ref() {
+SuchThatRef *SuchThatClause::get_left_ref() {
     return this->left_ref_;
 }
 
-SuchThatRef* SuchThatClause::get_right_ref() {
+SuchThatRef *SuchThatClause::get_right_ref() {
     return this->right_ref_;
 }

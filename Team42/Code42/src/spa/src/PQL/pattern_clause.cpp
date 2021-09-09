@@ -1,25 +1,25 @@
 #include "pattern_clause.h"
 
-PatternClause::PatternClause(EntityDeclaration* synonym) {
+PatternClause::PatternClause(EntityDeclaration *synonym) {
     this->synonym_ = synonym;
     this->left_ref_ = nullptr;
     this->right_ref_ = nullptr;
 }
 
-bool PatternClause::set_ref(EntRef* left, const std::string& right) {
+bool PatternClause::set_ref(EntRef *left, const std::string &right) {
     this->left_ref_ = left;
     return IsValidRightRef(right);
 }
 
-EntityDeclaration* PatternClause::get_synonym() {
+EntityDeclaration *PatternClause::get_synonym() {
     return this->synonym_;
 }
 
-EntRef* PatternClause::get_left_ref() {
+EntRef *PatternClause::get_left_ref() {
     return this->left_ref_;
 }
 
-ExpressionSpec* PatternClause::get_right_ref() {
+ExpressionSpec *PatternClause::get_right_ref() {
     return this->right_ref_;
 }
 

@@ -7,7 +7,7 @@ SelectClauseParser::SelectClauseParser() {
     this->synonym_to_entity_ = nullptr;
 }
 
-SelectClauseParser* SelectClauseParser::instance = nullptr;
+SelectClauseParser *SelectClauseParser::instance = nullptr;
 
 SelectClauseParser *SelectClauseParser::getInstance() {
     if (!instance)
@@ -40,7 +40,7 @@ PQLQuery *SelectClauseParser::get_clauses() {std::tuple<std::string,
     if (select_clauses.empty()) {  // invalid select syntax
         return nullptr;
     }
-    for (const std::string& select : select_clauses) {
+    for (const std::string &select : select_clauses) {
         // not found in hashmap
         if (synonym_to_entity_->find(select) == synonym_to_entity_->end()) {
             return nullptr;
@@ -49,8 +49,8 @@ PQLQuery *SelectClauseParser::get_clauses() {std::tuple<std::string,
         }
     }
 
-    for (const std::string& such_that_clause : such_that_clauses) {
-        SuchThatClause* relationship = MakeSuchThatClause(such_that_clause);
+    for (const std::string &such_that_clause : such_that_clauses) {
+        SuchThatClause *relationship = MakeSuchThatClause(such_that_clause);
         if (relationship == nullptr) {
             return nullptr;
         }
@@ -58,14 +58,14 @@ PQLQuery *SelectClauseParser::get_clauses() {std::tuple<std::string,
     }
 
     for (const std::string& pattern_clause : pattern_clauses) {
-        PatternClause* pattern = MakePatternClause(pattern_clause);
+        PatternClause *pattern = MakePatternClause(pattern_clause);
         if (pattern == nullptr) {
             return nullptr;
         }
         pattern_ret->push_back(pattern);
     }
 
-    auto* ret = new PQLQuery(select_ret, such_that_ret,
+    auto *ret = new PQLQuery(select_ret, such_that_ret,
                              pattern_ret, synonym_to_entity_);
     return ret;
 }
@@ -94,8 +94,8 @@ SuchThatClause* SelectClauseParser::MakeSuchThatClause(
 
     std::string left_ref = relationship_clauses.at(1);
     std::string right_ref = relationship_clauses.at(2);
-    SuchThatRef* left_such_that_ref = MakeSuchThatRef(relationship, left_ref);
-    SuchThatRef* right_such_that_ref = MakeSuchThatRef(relationship, right_ref);
+    SuchThatRef *left_such_that_ref = MakeSuchThatRef(relationship, left_ref);
+    SuchThatRef *right_such_that_ref = MakeSuchThatRef(relationship, right_ref);
 
     if (left_such_that_ref == nullptr || right_such_that_ref == nullptr) {
         return nullptr;
@@ -107,7 +107,7 @@ SuchThatClause* SelectClauseParser::MakeSuchThatClause(
     return nullptr;
 }
 
-PatternClause* SelectClauseParser::MakePatternClause(
+PatternClause *SelectClauseParser::MakePatternClause(
         std::string pattern_statement) {
     if (pattern_statement.empty()) {
         return nullptr;
@@ -123,18 +123,18 @@ PatternClause* SelectClauseParser::MakePatternClause(
     std::string synonym = pattern_clauses.at(0);
     std::string left_ref = pattern_clauses.at(1);
     std::string right_ref = pattern_clauses.at(2);
-    auto* pattern = MakePatternRef(synonym, left_ref, right_ref);
+    auto *pattern = MakePatternRef(synonym, left_ref, right_ref);
     if (pattern == nullptr) {
         return nullptr;
     }
     return pattern;
 }
 
-PatternClause* SelectClauseParser::MakePatternRef(const std::string& synonym,
+PatternClause *SelectClauseParser::MakePatternRef(const std::string& synonym,
                                                   std::string left_ref,
                                                   std::string right_ref) {
-    PatternClause* ret;
-    auto* entRef = new EntRef();
+    PatternClause *ret;
+    auto *entRef = new EntRef();
     if ((synonym_to_entity_->find(synonym) != synonym_to_entity_->end())
     && (synonym_to_entity_->at(synonym)->getType() == EntityType::Assign)) {
         ret = new PatternClause(synonym_to_entity_->find(synonym)->second);
@@ -158,9 +158,9 @@ PatternClause* SelectClauseParser::MakePatternRef(const std::string& synonym,
     }
 }
 
-SuchThatRef* SelectClauseParser::MakeSuchThatRef(
+SuchThatRef *SelectClauseParser::MakeSuchThatRef(
         SuchThatClause *relationship, std::string ref) {
-    SuchThatRef* ret;
+    SuchThatRef *ret;
     StmtRef stmt_ref;
     EntRef ent_ref;
 
@@ -285,7 +285,7 @@ std::vector<std::string> SelectClauseParser::SplitSelect(
 }
 
 std::vector<std::string> SelectClauseParser::SplitTokensByDelimiter(
-        std::string input, const std::string& delimiter) {
+        std::string input, const std::string &delimiter) {
     std::vector<std::string> tokens;
     size_t pos;
     std::string token;
@@ -302,7 +302,7 @@ std::vector<std::string> SelectClauseParser::SplitTokensByDelimiter(
 
 // splits by such that, pattern and with
 std::tuple<std::string, std::vector<std::string>, std::vector<std::string>>
-SelectClauseParser::SplitTokensByClauses(const std::string& input) {
+SelectClauseParser::SplitTokensByClauses(const std::string &input) {
     std::string such_that_delim = "such that ";
     std::string pattern_delim = "pattern ";
     std::vector<std::string> delimiters{such_that_delim, pattern_delim};
@@ -398,7 +398,7 @@ SelectClauseParser::SplitTokensByClauses(const std::string& input) {
 }
 
 std::vector<std::string>SelectClauseParser::SplitTokensByMultipleDelimiters(
-        const std::string& input, const std::string& delimiters) {
+        const std::string &input, const std::string &delimiters) {
     std::stringstream input_stream;
     input_stream << input;
     std::vector<std::string> tokens;

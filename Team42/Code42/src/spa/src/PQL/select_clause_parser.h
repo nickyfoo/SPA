@@ -24,20 +24,20 @@ class SelectClauseParser {
     std::unordered_map<std::string, EntityDeclaration*> *synonym_to_entity_;
     std::string select_statement_;
     SelectClauseParser();
-    SuchThatRef* MakeSuchThatRef(SuchThatClause *relationship, std::string ref);
-    PatternClause* MakePatternRef(const std::string& synonym,
+    SuchThatRef *MakeSuchThatRef(SuchThatClause *relationship, std::string ref);
+    PatternClause *MakePatternRef(const std::string &synonym,
                                   std::string left_ref,
                                   std::string right_ref);
-    SuchThatClause* MakeSuchThatClause(std::string relationship_statement);
-    PatternClause* MakePatternClause(std::string pattern_statement);
+    SuchThatClause *MakeSuchThatClause(std::string relationship_statement);
+    PatternClause *MakePatternClause(std::string pattern_statement);
     static std::vector<std::string> SplitSelect(std::string select_clause);
     static std::vector<std::string> SplitTokensByDelimiter(
             std::string input, const std::string& delimiter);
     static std::vector<std::string> SplitTokensByMultipleDelimiters(
-            const std::string& input, const std::string& delimiters);
+            const std::string &input, const std::string &delimiters);
     static std::tuple<std::string, std::vector<std::string>,
             std::vector<std::string>> SplitTokensByClauses(
-            const std::string& input);
-    static bool IsValidIdentifier(const std::string& str);
-    static bool IsInteger(const std::string& str);
+            const std::string &input);
+    static bool IsValidIdentifier(const std::string &str);
+    static bool IsInteger(const std::string &str);
 };

@@ -18,15 +18,15 @@ enum class RelRef {
 
 class SuchThatClause {
  public:
-    explicit SuchThatClause(const std::string& type);
-    bool set_ref(SuchThatRef* left, SuchThatRef* right);
+    explicit SuchThatClause(const std::string &type);
+    bool set_ref(SuchThatRef *left, SuchThatRef *right);
     void set_type(RelRef rel);
     RelRef get_type();
     std::string get_type_str();
-    SuchThatRef* get_left_ref();
-    SuchThatRef* get_right_ref();
+    SuchThatRef *get_left_ref();
+    SuchThatRef *get_right_ref();
  private:
     RelRef type_;
-    SuchThatRef* left_ref_;
-    SuchThatRef* right_ref_;
+    SuchThatRef *left_ref_;
+    SuchThatRef *right_ref_;
 };

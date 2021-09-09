@@ -23,5 +23,5 @@ class QueryPreprocessor {
             *MakeEntitiesMap(std::vector<std::string> *entities);
     static PQLQuery *MakePQLQuery(
             std::unordered_map<std::string, EntityDeclaration*> *entities_map,
-            const std::string& select_clause);
+            const std::string &select_clause);
 };

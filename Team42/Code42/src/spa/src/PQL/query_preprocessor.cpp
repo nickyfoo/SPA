@@ -14,7 +14,7 @@ QueryPreprocessor::QueryPreprocessor(std::string input) {
     this->clauses_ = pqlquery;
 }
 
-PQLQuery *QueryPreprocessor::get_pql_query() {
+PQLQuery* QueryPreprocessor::get_pql_query() {
     return this->clauses_;
 }
 
@@ -43,7 +43,7 @@ std::unordered_map<std::string, EntityDeclaration*>
 
 PQLQuery *QueryPreprocessor::MakePQLQuery(std::unordered_map<std::string,
                                              EntityDeclaration*> *entities_map,
-                                          const std::string& select_clause) {
+                                          const std::string &select_clause) {
     SelectClauseParser *scp = SelectClauseParser::getInstance();
     scp->set_select_clause(entities_map, select_clause);
     return scp->get_clauses();

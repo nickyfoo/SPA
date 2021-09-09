@@ -9,7 +9,7 @@ std::string ExpressionSpec::get_expression() {
     return this->expression_;
 }
 
-void ExpressionSpec::set_expression(const std::string& str) {
+void ExpressionSpec::set_expression(const std::string &str) {
     this->expression_ = str;
 }
 

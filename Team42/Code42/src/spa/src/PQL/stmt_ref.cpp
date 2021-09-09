@@ -5,7 +5,7 @@ StmtRef::StmtRef() {
     this->stmt_num_ = -1;
 }
 
-void StmtRef::set_synonym(const std::string& syn) {
+void StmtRef::set_synonym(const std::string &syn) {
     this->type_ = StmtRefType::Synonym;
     this->synonym_ = syn;
 }

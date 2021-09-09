@@ -12,20 +12,20 @@ using namespace ast;
 
 TEST_CASE("PatternManager 1st Test") {
     Statement s1(1, ast::Assign);
-    s1.setExprString("cenX cenX * cenY cenY * +");
+    s1.SetExprString("cenX cenX * cenY cenY * +");
 
-    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "cenX * cenX + cenY * cenY", false) == true);
-    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "cenX * cenX + cenY * cenY", true) == true);
-    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "cenX * cenX", true) == true);
-    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "cenY * cenY", true) == true);
-    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "cenX * cenX", false) == false);
-    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "cenY * cenY", false) == false);
-    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "cenX + cenY", true) == false);
+    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "cenX * cenX + cenY * cenY", false) == true);
+    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "cenX * cenX + cenY * cenY", true) == true);
+    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "cenX * cenX", true) == true);
+    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "cenY * cenY", true) == true);
+    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "cenX * cenX", false) == false);
+    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "cenY * cenY", false) == false);
+    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "cenX + cenY", true) == false);
 
     Statement s2(1, ast::Assign);
-    s2.setExprString("count 1 +");
-    REQUIRE(PatternManager::checkAssignmentRhs(&s2, "count 1 +", false) == true);
-    REQUIRE(PatternManager::checkAssignmentRhs(&s2, "count", true) == true);
+    s2.SetExprString("count 1 +");
+    REQUIRE(PatternManager::TestAssignmentPattern(&s2, "count 1 +", false) == true);
+    REQUIRE(PatternManager::TestAssignmentPattern(&s2, "count", true) == true);
 
 }
 
@@ -33,20 +33,20 @@ TEST_CASE("PatternManager 2nd Test") {
     // Which of the patterns match this assignment statement?
     // x = v + x * y + z * t
     Statement s1(1, ast::Assign);
-    s1.setExprString("v x y * + z t * +");
+    s1.SetExprString("v x y * + z t * +");
 
-    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "v + x * y + z * t", false) == true);
-    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "v", false) == false);
-    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "v", true) == true);
-    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "x * y", true) == true);
-    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "v + x", true) == false);
-    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "v + x * y", true) == true);
-    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "y + z * t", true) == false);
-    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "x * y + z * t", true) == false);
-    REQUIRE(PatternManager::checkAssignmentRhs(&s1, "v + x * y + z * t", true) == true);
+    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "v + x * y + z * t", false) == true);
+    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "v", false) == false);
+    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "v", true) == true);
+    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "x * y", true) == true);
+    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "v + x", true) == false);
+    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "v + x * y", true) == true);
+    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "y + z * t", true) == false);
+    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "x * y + z * t", true) == false);
+    REQUIRE(PatternManager::TestAssignmentPattern(&s1, "v + x * y + z * t", true) == true);
 }
 
-TEST_CASE("Test PatternManager checkAssignmentRhs") {
+TEST_CASE("Test PatternManager TestAssignmentPattern") {
     std::string source = "procedure main {"
                          "flag = 0;"
                          "call computeCentroid;"
@@ -87,15 +87,15 @@ TEST_CASE("Test PatternManager checkAssignmentRhs") {
     State* s = new State{};
     ProgramNode* p = parseProgram(B, s);
     PKB pkb = PKB(p);
-    pkb.initialPass();
-    vector<Statement*> assignmentStmts = pkb.getStatements(ast::Assign);
+    pkb.Initialise();
+    vector<Statement*> assignment_stmts = pkb.GetStatements(ast::Assign);
     std::string pattern = "cenX * cenX + cenY * cenY";
-    std::cout << "---------- PatternManager checkAssignmentRhs" << "\n";
+    std::cout << "---------- PatternManager TestAssignmentPattern" << "\n";
     std::cout << "checking for " << pattern << "\n";
-    for (Statement* stmt : assignmentStmts) {
-        bool matchesPattern = PatternManager::checkAssignmentRhs(stmt, pattern, false);
+    for (Statement* stmt : assignment_stmts) {
+      bool matchesPattern = PatternManager::TestAssignmentPattern(stmt, pattern, false);
 
-        std::string exprString = stmt->getExprString();
+        std::string exprString = stmt->GetExprString();
         if (matchesPattern) {
             std::cout << exprString;
             std::cout << " matches \n";

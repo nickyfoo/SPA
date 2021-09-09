@@ -41,6 +41,9 @@ class PKB {
   std::vector<Statement*> GetStatements(ast::Kind type);
   // Gets a statement by its corresponding line number.
   Statement* GetStatement(int line_no);
+  // Tests the RHS of assignment statement against the given pattern.
+  // Returns true if pattern matches.
+  bool TestAssignmentPattern(Statement *statement, std::string pattern, bool is_partial_match);
 
   // Gets all variables in the program.
   std::vector<Variable *> GetAllVariables();

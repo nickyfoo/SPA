@@ -1,15 +1,22 @@
 #pragma once
 
-#include <stdio.h>
+#include <cstdio>
 #include <unordered_map>
 #include <string>
 #include "Entities/Statement.h"
 
 class PatternManager {
-public:
-    static bool checkAssignmentRhs(Statement* assignmentStmt, std::string pattern, bool isPartialMatch);
+ public:
+  // Tests the assignment expression against the given pattern.
+  // Returns true if pattern matches.
+  static bool TestAssignmentPattern(Statement *assignment_stmt, std::string pattern, bool is_partial_match);
 
-private:
-    inline static const std::unordered_map<char, int> opsMap = {{'(', 1}, {')', 1}, {'*', 2}, {'/', 2}, {'+', 3}, {'-', 3}};
-    static std::string getPostfixExpr(std::string infixExpr);
+ private:
+  // Map of operands to its order of precedence.
+  inline static const std::unordered_map<char, int>
+      kOpsMap = {{'(', 1}, {')', 1},
+                 {'*', 2}, {'/', 2},
+                 {'+', 3}, {'-', 3}};
+  // Gets the postfix expression from an infix expression string.
+  static std::string GetPostfixExpr(std::string infix_expr);
 };

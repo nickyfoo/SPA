@@ -1,111 +1,103 @@
 #include "StmtTable.h"
 #include <iostream>
-#include "TransitiveClosure.h"
 
-int StmtTable::largestStmtNum = 0;
-std::map<int, Statement*> StmtTable::table;
-std::vector<Statement*> StmtTable::allStatements;
-std::map<ast::Kind, std::vector<Statement*>> StmtTable::typeToStatement;
-std::set<std::pair<int, int>> StmtTable::Follows, StmtTable::Follows_star;
-std::set<std::pair<int, int>> StmtTable::Parent, StmtTable::Parent_star;
-
-void StmtTable::addStmt(ast::Node* node){
-	int stmtNo = Statement::getStmtNo(node);
-	if (stmtNo == 0) return; // Not a statement node
-	Statement* s = new Statement(stmtNo, node->kind);
-	table[stmtNo] = s;
-	typeToStatement[node->kind].push_back(s);
-	allStatements.push_back(s);
-	largestStmtNum = std::max(largestStmtNum, stmtNo);
-};
-
-//todo: might want to add a check for valid lineNo..
-Statement* StmtTable::getStatementByLineNo(int lineNo) {
-	std::map<int, Statement*>::iterator it = table.find(lineNo);
-	if (it != table.end()) {
-		return it->second;
-	}
-	else {
-		//probably not a good idea to return NULL, but works for now.
-		return NULL;
-	}
+StmtTable::StmtTable() {
+    num_statements_ = 0;
 }
 
-int StmtTable::getLargestStmtNum() {
-	return largestStmtNum;
+StmtTable::~StmtTable() = default;
+
+void StmtTable::AddStatement(ast::Node *node) {
+    int stmt_no = Statement::GetStmtNo(node);
+    // Return if statement number is invalid
+    if (stmt_no == 0) return;
+    Statement s(stmt_no, node->kind);
+    table_[stmt_no] = s;
+    type_to_statement_[node->kind].push_back(&table_[stmt_no]);
+    all_statements_.push_back(&table_[stmt_no]);
+    num_statements_ = std::max(num_statements_, stmt_no);
 }
 
-// Gets Follows relationship from Statements in preparation to get transitive closure.
-void StmtTable::processFollows() {
-	for (auto& [lineNo, stmt] : table) {
-		for (auto& followerLineNo : *(stmt->getFollowers())) {
-			Follows.insert({ lineNo,followerLineNo });
-		}
-	}
+int StmtTable::GetNumStatements() {
+    return num_statements_;
 }
 
-void StmtTable::processFollowsStar() {
-	int n = largestStmtNum + 1;
-	std::vector<std::vector<int>> d = TransitiveClosure::getTransitiveClosure(Follows,n);
-	for (int i = 0; i < n; i++) {
-		Statement* stmt = getStatementByLineNo(i);
-		if (stmt != NULL) {
-			for (int j = 0; j < n; j++) {
-				if (d[i][j] != TransitiveClosure::INF) {
-					stmt->addFollowerStar(j);
-					getStatementByLineNo(j)->addFolloweeStar(i);
-				}
-			}
-		}
-	}
+std::vector<Statement *> StmtTable::GetStatements(ast::Kind type) {
+    return type_to_statement_[type];
 }
 
-// Gets Follows relationship from Statements in preparation to get transitive closure.
-void StmtTable::processParent() {
-	for (auto& [lineNo, stmt] : table) {
-		for (auto& childLineNo : *(stmt->getChildren())) {
-			Parent.insert({ lineNo,childLineNo });
-		}
-	}
+Statement *StmtTable::GetStatement(int line_no) {
+    auto it = table_.find(line_no);
+    if (it == table_.end()) return nullptr;
+    return &(it->second);
 }
 
-void StmtTable::processParentStar() {
-	int n = largestStmtNum + 1;
-	std::vector<std::vector<int>> d = TransitiveClosure::getTransitiveClosure(Parent, n);
-	for (int i = 0; i < n; i++) {
-		Statement* stmt = getStatementByLineNo(i);
-		if (stmt != NULL) {
-			for (int j = 0; j < n; j++) {
-				if (d[i][j] != TransitiveClosure::INF) {
-					stmt->addChildStar(j);
-					getStatementByLineNo(j)->addParentStar(i);
-				}
-			}
-		}
-	}
+std::vector<Statement *> StmtTable::GetAllStatements() {
+    return all_statements_;
+}
+
+void StmtTable::ProcessFollows() {
+    for (auto&[line_no, stmt] : table_) {
+        for (auto &followerLineNo : *(stmt.GetFollowers())) {
+            follows_.insert({line_no, followerLineNo});
+        }
+    }
+}
+
+void StmtTable::ProcessFollowsStar() {
+    int n = num_statements_ + 1;
+    std::vector<std::vector<int>> d = GetTransitiveClosure(follows_, n);
+    for (int i = 0; i < n; i++) {
+        Statement* stmt = GetStatement(i);
+        if (stmt == nullptr) continue;
+
+        for (int j = 0; j < n; j++) {
+          if (d[i][j] != kInf) {
+                stmt->AddFollowerStar(j);
+                GetStatement(j)->AddFolloweeStar(i);
+            }
+        }
+    }
+}
+
+// Gets Follow relationship from Statements in preparation to get transitive closure.
+void StmtTable::ProcessParent() {
+    for (auto&[line_no, stmt] : table_) {
+        for (auto &childLineNo : *(stmt.GetChildren())) {
+            parent_.insert({line_no, childLineNo});
+        }
+    }
+}
+
+void StmtTable::ProcessParentStar() {
+    int n = num_statements_ + 1;
+    std::vector<std::vector<int>> d = GetTransitiveClosure(parent_, n);
+    for (int i = 0; i < n; i++) {
+        Statement *stmt = GetStatement(i);
+        if (stmt == nullptr) continue;
+
+        for (int j = 0; j < n; j++) {
+          if (d[i][j] != kInf) {
+                stmt->AddChildStar(j);
+                GetStatement(j)->AddParentStar(i);
+            }
+        }
+    }
 }
 
 
-void StmtTable::printStmts() {
-	std::cout << "StmtTable size: " << table.size() << '\n';
-	for (auto&[k,x] : table) {
-		std::cout << k << ": " << x->getKind() << ' ';
-		if (x->getKind() == ast::Assign) std::cout << x->getExprString();
-		std::cout << '\n';
-	}
+void StmtTable::PrintStatements() {
+    std::cout << "StmtTable size: " << table_.size() << '\n';
+    for (auto&[k, x] : table_) {
+        std::cout << k << ": " << x.GetKind() << ' ';
+        if (x.GetKind() == ast::Assign) std::cout << x.GetExprString();
+        std::cout << '\n';
+    }
 }
 
-void StmtTable::printStmtInfos() {
-	for (auto& [k, x] : table) {
-		x->FollowsInfo();
-		x->ParentInfo();
-	}
-}
-
-std::vector<Statement*> StmtTable::getStatements(ast::Kind type) {
-	return typeToStatement[type];
-}
-
-std::vector<Statement*> StmtTable::getAllStatements() {
-	return allStatements;
+void StmtTable::PrintStatementDetails() {
+    for (auto&[k, x] : table_) {
+        x.FollowsInfo();
+        x.ParentInfo();
+    }
 }

@@ -4,17 +4,31 @@
 #include <string>
 #include <vector>
 #include "Entities/Procedure.h"
+#include "Table.hpp"
 #include <map>
 
-class ProcTable {
+class ProcTable : public Table {
+ public:
+  ProcTable();
 
-private: 
-	static std::vector<Procedure*> table;
-	static std::map<std::string, int> procedureNameToIndex;
+  ~ProcTable();
 
-public:
-	static int addProcedure(std::string name);
-	static int getNumProcedures();
-	static std::vector<Procedure*> getAllProcedures();
-	static void printProcs();
+  // Adds a procedure to the table.
+  int AddProcedure(const std::string& name);
+
+  // Get total number of procedures.
+  int GetNumProcedures();
+  // Get all procedures.
+  std::vector<Procedure *> GetAllProcedures();
+
+  // Prints information of all procedures.
+  void PrintProcedures();
+
+ private:
+  // Table of all procedures.
+  std::vector<Procedure> table_;
+  // Table of pointers to all procedures.
+  std::vector<Procedure *> all_procedures_;
+  // Table mapping each procedure name to its corresponding index.
+  std::map<std::string, int> name_to_index_;
 };

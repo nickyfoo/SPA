@@ -1,34 +1,34 @@
 #include "VarTable.h"
 #include <iostream>
 
-std::vector<Variable*> VarTable::table;
-std::map<std::string, int> VarTable::variableNameToIndex;
+VarTable::VarTable() = default;
 
-int VarTable::addVariable(std::string name) {
-	std::map<std::string,int>::iterator it = variableNameToIndex.find(name);
-	if(it!=variableNameToIndex.end()){
-		return it->second;
-	}
-	else {
-		int pos = table.size();
-		Variable* v = new Variable(pos, name);
-		table.push_back(v);
-		variableNameToIndex[name] = pos;
-		return pos;
-	}
+VarTable::~VarTable() = default;
+
+int VarTable::AddVariable(const std::string& name) {
+  auto it = name_to_index_.find(name);
+  if (it != name_to_index_.end()) {
+    return it->second;
+  }
+  int pos = table_.size();
+  Variable v(pos, name);
+  table_.push_back(v);
+  all_variables_.push_back(&table_[pos]);
+  name_to_index_[name] = pos;
+  return pos;
 };
 
-int VarTable::getNumVariables() {
-	return variableNameToIndex.size();
+int VarTable::GetNumVariables() {
+  return name_to_index_.size();
 }
 
-std::vector<Variable*> VarTable::getAllVariables() {
-    return table;
+std::vector<Variable *> VarTable::GetAllVariables() {
+  return all_variables_;
 }
 
-void VarTable::printVars() {
-	std::cout << "VarTable size: " << variableNameToIndex.size() << '\n';
-	for (Variable* v : table) {
-		std::cout << v->getName() << "\n";
-	}
+void VarTable::PrintVariables() {
+  std::cout << "VarTable size: " << name_to_index_.size() << '\n';
+  for (Variable v : table_) {
+    std::cout << v.GetName() << "\n";
+  }
 }

@@ -1,59 +1,68 @@
 #pragma once
 #include "AST.hpp"
+#include "Entity.hpp"
 #include <set>
 
-class Statement {
-public:
-	Statement(int lineNo, ast::Kind type) {
-		_stmtNo = lineNo;
-		_kind = type;
-	}
-	
-	Statement() {};
+class Statement : public Entity {
+ public:
+  Statement(int line_no, ast::Kind type);
 
-	//Getters
-	int getStmtNo();
-	ast::Kind getKind();
-	//todo: Only applicable for AssignStatement for now, need to add if/while
-	std::string getExprString(); 
+  Statement();
 
-	std::set<int>* getFollowers();
-	std::set<int>* getChildren();
+  ~Statement();
 
+  // Gets the statement number.
+  int GetStmtNo();
+  // Gets the statement number of the given ast node.
+  static int GetStmtNo(ast::Node *node);
+  // Gets the kind of statement.
+  ast::Kind GetKind();
+  // Gets the postfix expression string of an assignment statement.
+  std::string GetExprString();
+  // Gets the statements which follows before this statement.
+  std::set<int> *GetFollowers();
+  // Gets the statements which this statement parents.
+  std::set<int> *GetChildren();
 
-	//todo: refactor into void addLineNo(int lineNo, set<int> list)
+  // Sets the postfix expression string of this statement.
+  void SetExprString(std::string expr_string);
 
+  // Adds a statement that follows before this statement.
+  void AddFollower(int line_no);
+  // Adds a statement that follows_star before this statement.
+  void AddFollowerStar(int line_no);
+  // Adds a statement that follows after this statement.
+  void AddFollowee(int line_no);
+  // Adds a statement that follows_star after this statement.
+  void AddFolloweeStar(int line_no);
+  // Adds a statement that parents this statement.
+  void AddParent(int line_no);
+  // Adds a statement that parents_star this statement.
+  void AddParentStar(int line_no);
+  // Adds a statement that this statement parents.
+  void AddChild(int line_no);
+  // Adds a statement that this statement parents_star.
+  void AddChildStar(int line_no);
 
-	void setExprString(std::string exprString);
+  // Prints the follows information for this statement.
+  void FollowsInfo();
+  // Prints the parents information for this statement.
+  void ParentInfo();
 
-	void addFollower(int lineNo);
-	void addFollowerStar(int lineNo);
-	void addFollowee(int lineNo);
-	void addFolloweeStar(int lineNo);
-	void addParent(int lineNo);
-	void addParentStar(int lineNo);
-	void addChild(int lineNo);
-	void addChildStar(int lineNo);
+ private:
+  // Statement number in program.
+  int stmt_no_;
+  // Postfix expression string. Currently, only valid in assignment statements.
+  std::string expr_string_;
+  // Kind of statement.
+  ast::Kind kind_;
 
-	//Debug functions
-	void FollowsInfo();
-	void ParentInfo();
-
-	static bool isStmtKind(ast::Kind kind);
-	static bool isStmtNode(ast::Node* node);
-	static int getStmtNo(ast::Node* node);
-
-
-
-private:
-	int _stmtNo;
-	std::string _exprString = "";
-	ast::Kind _kind;
-
-	// for v in Followers, Follows(this, v) is true.
-	// for v in Followees, Follows(v, this) is true.
-	std::set<int> Followers, FollowersStar, Followees, FolloweesStar;
-	// for v in Parents, Parent(v, this) is true.
-	// for v in Children, Parent(this, v) is true.
-	std::set<int> Parents, ParentsStar, Children, ChildrenStar;
+  // for v in followers_, Follows(this, v) is true.
+  std::set<int> followers_, followers_star_;
+  // for v in followees_, Follows(v, this) is true.
+  std::set<int> followees_, followees_star_;
+  // for v in parents_, Parent(v, this) is true.
+  std::set<int> parents_, parents_star_;
+  // for v in children_, Parent(this, v) is true.
+  std::set<int> children_, children_star_;
 };

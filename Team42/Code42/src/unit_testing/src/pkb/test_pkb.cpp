@@ -8,79 +8,75 @@ using namespace lexer;
 using namespace parser;
 using namespace ast;
 
-std::string source = "procedure main {"
-"flag = 0;"
-"call computeCentroid;"
-"call printResults;"
-"}"
-"procedure readPoint {"
-"read x;"
-"read y;"
-"}"
-"procedure printResults {"
-"print flag;"
-"print cenX;"
-"print cenY;"
-"print normSq;"
-"}"
-"procedure computeCentroid {"
-"count = 0;"
-"cenX = 0;"
-"cenY = 0;"
-"call readPoint;"
-"while((x != 0) && (y != 0)) {"
-"count = count+1;"
-"cenX = cenX + x;"
-"cenY = cenY + y;"
-"call readPoint;"
-"}"
-"if (count == 0) then {"
-"flag = 1;"
-"} else {"
-"cenX = cenX / count;"
-"cenY = cenY / count;"
-"}"
-"normSq = cenX * cenX + cenY * cenY;"
-"}";
+std::string source = "procedure main {\n"
+                     "\tflag = 0;\n"
+                     "\tcall computeCentroid;\n"
+                     "\tcall printResults;\n"
+                     "}\n"
+                     "procedure readPoint {\n"
+                     "\tread x;\n"
+                     "\tread y;\n"
+                     "}\n"
+                     "procedure printResults {\n"
+                     "\tprint flag;\n"
+                     "\tprint cenX;\n"
+                     "\tprint cenY;\n"
+                     "\tprint normSq;\n"
+                     "}\n"
+                     "procedure computeCentroid {\n"
+                     "\tcount = 0;\n"
+                     "\tcenX = 0;\n"
+                     "\tcenY = 0;\n"
+                     "\tcall readPoint;\n"
+                     "\twhile((x != 0) && (y != 0)) {\n"
+                     "\t\tcount = count+1;\n"
+                     "\t\tcenX = cenX + x;\n"
+                     "\t\tcenY = cenY + y;\n"
+                     "\t\tcall readPoint;\n"
+                     "\t}\n"
+                     "\tif (count == 0) then {\n"
+                     "\t\tflag = 1;\n"
+                     "\t} else {\n"
+                     "\t\tcenX = cenX / count;\n"
+                     "\t\tcenY = cenY / count;\n"
+                     "\t}\n"
+                     "\tnormSq = cenX * cenX + cenY * cenY;\n"
+                     "}";
 
 TEST_CASE("Test pkb::Initialise()") {
 
-    BufferedLexer* B = new BufferedLexer(source.c_str());
-    State* s = new State{};
-    ProgramNode* p = parseProgram(B, s);
-    PKB pkb = PKB(p);
-    pkb.Initialise();
+  BufferedLexer B(source.c_str());
+  State s{};
+  ProgramNode *p = parseProgram(&B, &s);
+  PKB pkb = PKB(p);
+  pkb.PrintStatements();
 }
-
 
 TEST_CASE("Test pkb::GetFollows()") {
-    BufferedLexer* B = new BufferedLexer(source.c_str());
-    State* s = new State{};
-    ProgramNode* p = parseProgram(B, s);
+  BufferedLexer B(source.c_str());
+  State s{};
+  ProgramNode *p = parseProgram(&B, &s);
 
-    PKB pkb = PKB(p);
-    pkb.Initialise();
-    pkb.PrintStatements();
-    for (int i = 1; i <= pkb.GetNumStatements() + 1; i++) {
-      Statement* s = pkb.GetStatement(i);
-        // checking for NULL response
-        if (!s) continue;
-        s->FollowsInfo();
-    }
+  PKB pkb = PKB(p);
+  pkb.PrintStatements();
+  for (int i = 1; i <= pkb.GetNumStatements() + 1; i++) {
+    Statement *stmt = pkb.GetStatement(i);
+    // checking for NULL response
+    if (!stmt) continue;
+    stmt->FollowsInfo();
+  }
 }
 
-
 TEST_CASE("Test pkb::GetParent()") {
-    BufferedLexer* B = new BufferedLexer(source.c_str());
-    State* s = new State{};
-    ProgramNode* p = parseProgram(B, s);
-    PKB pkb = PKB(p);
-    pkb.Initialise();
-    pkb.PrintStatements();
-    for (int i = 1; i <= pkb.GetNumStatements() + 1; i++) {
-      Statement* s = pkb.GetStatement(i);
-        // checking for NULL response
-        if (!s) continue;
-        s->ParentInfo();
-    }
+  BufferedLexer B(source.c_str());
+  State s{};
+  ProgramNode *p = parseProgram(&B, &s);
+  PKB pkb = PKB(p);
+  pkb.PrintStatements();
+  for (int i = 1; i <= pkb.GetNumStatements() + 1; i++) {
+    Statement *stmt = pkb.GetStatement(i);
+    // checking for NULL response
+    if (!stmt) continue;
+    stmt->ParentInfo();
+  }
 }

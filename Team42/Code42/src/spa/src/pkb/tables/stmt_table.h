@@ -26,12 +26,12 @@ class StmtTable : public Table {
 
   // Get total number of statements.
   int GetNumStatements();
+  // Gets all statements.
+  std::vector<Statement *> GetAllStatements();
   // Gets all statements of the given type.
   std::vector<Statement *> GetStatements(ast::Kind type);
   // Gets the statement by line number.
   Statement *GetStatement(int line_no);
-  // Gets all statements.
-  std::vector<Statement *> GetAllStatements();
 
   // Gets Follows relationship from Statements in preparation to get
   // transitive closure.

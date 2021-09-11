@@ -2,7 +2,4 @@
 
 #include "AST.hpp"
 
-class Entity {
- public:
-  Entity() {}
-};
+class Entity {};

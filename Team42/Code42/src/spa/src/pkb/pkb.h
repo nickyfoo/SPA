@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdio.h>
+#include <cstdio>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -12,12 +12,9 @@
 
 class PKB {
  public:
-  PKB(ast::Node *programRoot);
+  explicit PKB(ast::Node *programRoot);
 
   ~PKB();
-
-  // Populates the tables with entities and relationships from AST.
-  void Initialise();
 
   // Adds a procedure to the procedures table.
   void AddProcedure(ast::Node *node);
@@ -32,6 +29,8 @@ class PKB {
 
   // Gets all procedures in the program.
   std::vector<Procedure *> GetAllProcedures();
+  // Gets a procedure by its procedure name.
+  Procedure *GetProcedure(std::string &name);
 
   // Gets the total number of statements in the statement table.
   int GetNumStatements();
@@ -45,6 +44,22 @@ class PKB {
   // Gets all variables in the program.
   std::vector<Variable *> GetAllVariables();
 
+  // Gets all constants in the program.
+  std::vector<Constant *> GetAllConstants();
+
+  // Prints information of statements in the statement table.
+  void PrintStatements();
+
+ private:
+  // Populates the tables with entities and relationships from AST.
+  void Initialise();
+  // Extracts entities from the AST root node and stores them in the pkb.
+  void ExtractEntities();
+  // Extracts Follows/Follows_Star relationships in the AST.
+  void GetFollows();
+  // Extracts Parent/Parent_Star relationships in the AST.
+  void GetParent();
+
   // Process and store Follows relationships for the AST procedure node.
   void FollowsProcessProcedureNode(ast::Node *node);
   // Process and store Follows relationships for the AST if node.
@@ -56,17 +71,6 @@ class PKB {
   void ParentProcessIfNode(ast::Node *node);
   // Process and store Parent relationships for the AST while node.
   void ParentProcessWhileNode(ast::Node *node);
-
-  // Prints information of statements in the statement table.
-  void PrintStatements();
-
- private:
-  // Extracts entities from the AST root node and stores them in the pkb.
-  void ExtractEntities();
-  // Extracts Follows/Follows_Star relationships in the AST.
-  void GetFollows();
-  // Extracts Parent/Parent_Star relationships in the AST.
-  void GetParent();
 
   // Root AST node of the program.
   ast::Node *root_;

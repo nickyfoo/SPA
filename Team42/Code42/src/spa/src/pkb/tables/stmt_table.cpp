@@ -22,6 +22,10 @@ int StmtTable::GetNumStatements() {
   return num_statements_;
 }
 
+std::vector<Statement *> StmtTable::GetAllStatements() {
+  return all_statements_;
+}
+
 std::vector<Statement *> StmtTable::GetStatements(ast::Kind type) {
   return type_to_statement_[type];
 }
@@ -30,10 +34,6 @@ Statement *StmtTable::GetStatement(int line_no) {
   auto it = table_.find(line_no);
   if (it == table_.end()) return nullptr;
   return &(it->second);
-}
-
-std::vector<Statement *> StmtTable::GetAllStatements() {
-  return all_statements_;
 }
 
 void StmtTable::ProcessFollows() {

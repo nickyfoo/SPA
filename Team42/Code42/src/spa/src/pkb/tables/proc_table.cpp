@@ -26,6 +26,11 @@ std::vector<Procedure *> ProcTable::GetAllProcedures() {
   return all_procedures_;
 }
 
+Procedure *ProcTable::GetProcedure(std::string &name) {
+  int index = name_to_index_[name];
+  return all_procedures_[index];
+}
+
 void ProcTable::PrintProcedures() {
   std::cout << "ProcTable size: " << table_.size() << '\n';
   for (Procedure p: table_) {

@@ -20,6 +20,8 @@ class ProcTable : public Table {
   int GetNumProcedures();
   // Get all procedures.
   std::vector<Procedure *> GetAllProcedures();
+  // Gets a procedure by its procedure name.
+  Procedure *GetProcedure(std::string &name);
 
   // Prints information of all procedures.
   void PrintProcedures();

@@ -11,7 +11,7 @@ enum class StmtRefType {
 class StmtRef {
  public:
     StmtRef();
-    void set_synonym(const std::string& syn);
+    void set_synonym(const std::string &syn);
     void set_stmt_num(int line_num);
     void set_wild_card();
 

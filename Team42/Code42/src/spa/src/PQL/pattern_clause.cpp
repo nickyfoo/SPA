@@ -1,12 +1,12 @@
 #include "pattern_clause.h"
 
-PatternClause::PatternClause(EntityDeclaration* synonym) {
+PatternClause::PatternClause(EntityDeclaration *synonym) {
     this->synonym_ = synonym;
     this->left_ref_ = nullptr;
     this->right_ref_ = nullptr;
 }
 
-bool PatternClause::set_ref(EntRef* left, const std::string& right) {
+bool PatternClause::set_ref(EntRef *left, const std::string &right) {
     this->left_ref_ = left;
     return IsValidRightRef(right);
 }

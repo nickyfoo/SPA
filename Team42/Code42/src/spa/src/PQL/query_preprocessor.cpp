@@ -43,7 +43,7 @@ std::unordered_map<std::string, EntityDeclaration*>
 
 PQLQuery *QueryPreprocessor::MakePQLQuery(std::unordered_map<std::string,
                                              EntityDeclaration*> *entities_map,
-                                          const std::string& select_clause) {
+                                          const std::string &select_clause) {
     SelectClauseParser *scp = SelectClauseParser::getInstance();
     scp->set_select_clause(entities_map, select_clause);
     return scp->get_clauses();

@@ -4,12 +4,12 @@ EntRef::EntRef() {
     this->type_ = EntRefType::None;
 }
 
-void EntRef::set_synonym(const std::string& syn) {
+void EntRef::set_synonym(const std::string &syn) {
     this->type_ = EntRefType::Synonym;
     this->synonym_ = syn;
 }
 
-void EntRef::set_argument(const std::string& arg) {
+void EntRef::set_argument(const std::string &arg) {
     this->type_ = EntRefType::Argument;
     this->argument_ = arg;
 }

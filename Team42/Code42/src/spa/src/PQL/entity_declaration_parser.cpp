@@ -60,10 +60,10 @@ std::string EntityDeclarationParser::trim(std::string str) {
 }
 
 bool EntityDeclarationParser::AddToEntitiesMap(
-        std::unordered_map<std::string, EntityDeclaration *> *entities_map,
+        std::unordered_map<std::string, EntityDeclaration*> *entities_map,
         std::vector<std::string> *synonyms,
         EntityType entity_type) {
-    for (const std::string& synonym : *synonyms) {
+    for (const std::string &synonym : *synonyms) {
         auto *entity_obj =
                 new EntityDeclaration(entity_type,
                                       synonym);

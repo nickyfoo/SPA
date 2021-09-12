@@ -14,10 +14,12 @@ class EntityDeclarationParser {
     EntityType CheckEntityType(std::string type);
     bool IsValidSynonym(std::vector<std::string> tokens,
                         std::vector<std::string> *synonyms);
-    std::vector<std::string> SplitString(std::string str, std::string delimiter);
-    bool AddToEntitiesMap(std::unordered_map<std::string, EntityDeclaration *> *entities_map,
-                          std::vector<std::string> *synonyms,
-                          EntityType entity_type);
+    std::vector<std::string> SplitString(std::string str,
+                                         std::string delimiter);
+    bool AddToEntitiesMap(
+            std::unordered_map<std::string, EntityDeclaration *> *entities_map,
+            std::vector<std::string> *synonyms,
+            EntityType entity_type);
     std::string trim(std::string str);
 
  public:

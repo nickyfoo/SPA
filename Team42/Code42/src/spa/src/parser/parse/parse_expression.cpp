@@ -1,3 +1,4 @@
+#include <iostream>
 #include <stack>
 #include <stdexcept>
 
@@ -37,8 +38,8 @@ ExprOp ExprOpFromToken(const Token *t) {
       return ExprOp::Modulo;
     default:
       throw std::invalid_argument(
-          "ExprOpFromToken: expected token kind to be Plus, Minus, Multiply, Times, Divide or "
-          "Modulo");
+          "ExprOpFromToken: expected token kind to be Plus, Minus, Multiply, "
+          "Times, Divide or Modulo");
   }
 }
 
@@ -59,6 +60,35 @@ std::string ExprOpToString(ExprOp op) {
   }
 }
 
+bool Precedes(const Token *op1, const Token *op2) {
+  // return true if t1 has greater or equal precedence than t2
+  switch (op1->kind_) {
+    case TokenType::Multiply:
+    case TokenType::Divide:
+    case TokenType::Modulo:
+      return true;
+
+    case TokenType::Plus:
+    case TokenType::Minus:
+      switch (op2->kind_) {
+        case TokenType::Plus:
+        case TokenType::Minus:
+          return true;
+
+        case TokenType::Multiply:
+        case TokenType::Divide:
+        case TokenType::Modulo:
+          return false;
+
+        default:
+          throw std::invalid_argument("Precedes: invalid operator token for op2");
+      }
+
+    default:
+      throw std::invalid_argument("Precedes: invalid operator token for op1");
+  }
+}
+
 ConstantNode *MakeConstantNodeFromToken(const Token *t) {
   return new ConstantNode(t->value_, LocInfo{.line_no = t->line_no_, .col_no = t->col_no_});
 };
@@ -67,45 +97,67 @@ IdentifierNode *MakeIdentifierNodeFromToken(const Token *t) {
   return new IdentifierNode(t->value_, LocInfo{.line_no = t->line_no_, .col_no = t->col_no_});
 };
 
+void PopExpressionNodeFromStacks(const Token *op, std::stack<Node *> *result_stack,
+                                 std::stack<std::string> *expr_str_stack) {
+  ExprOp expr_op = ExprOpFromToken(op);
+  std::string expr_op_str = ExprOpToString(expr_op);
+
+  if (result_stack->size() < 2) {
+    std::string err_msg = StringFormat("expected operand after %s", expr_op_str.c_str());
+  }
+
+  // create op string of new node
+  std::string right_str = expr_str_stack->top();
+  expr_str_stack->pop();
+  std::string left_str = expr_str_stack->top();
+  expr_str_stack->pop();
+
+  // create new node
+  Node *right = result_stack->top();
+  result_stack->pop();
+  Node *left = result_stack->top();
+  result_stack->pop();
+
+  std::string expr_str = StringFormat("%s %s %s", left_str.c_str(), right_str.c_str(), expr_op_str.c_str());
+  LocInfo loc = LocInfo{.line_no = left->line_no(), .col_no = left->col_no()};
+
+  result_stack->push(new ExpressionNode(expr_op, left, right, expr_str, loc));
+  expr_str_stack->push(expr_str);
+}
+
 void ProcessRightParen(const Token *right_paren, std::stack<Node *> *result_stack,
                        std::stack<std::string> *expr_str_stack,
                        std::stack<const Token *> *operator_stack) {
+  // clear remaning operators before the LParen
   const Token *op;
   while (!operator_stack->empty() && (op = operator_stack->top())->kind_ != TokenType::LParen) {
+    PopExpressionNodeFromStacks(op, result_stack, expr_str_stack);
     operator_stack->pop();
-
-    if (operator_stack->empty()) {
-      // we are at the last element of the operator_stack, but still no LParen token
-      throw ParseException("no matching parenthesis", right_paren->line_no_, right_paren->col_no_);
-    }
-
-    // clear remaning operators before the LParen
-    ExprOp expr_op = ExprOpFromToken(op);
-
-    // gen op string of new node
-    std::string expr_op_str = ExprOpToString(expr_op);
-    std::string left_str = expr_str_stack->top();
-    expr_str_stack->pop();
-    std::string right_str = expr_str_stack->top();
-    expr_str_stack->pop();
-
-    // gen new node
-    Node *right = result_stack->top();
-    result_stack->pop();
-    Node *left = result_stack->top();
-    result_stack->pop();
-
-    std::string expr_str = StringFormat("%s %s %s", left_str, right_str, expr_op_str);
-    ExpressionNode *sub_result = new ExpressionNode(expr_op, left, right, expr_str,
-
-    result_stack->push()
   }
+
+  // we expect a LParen at the top of the operator queue
+  if (operator_stack->empty()) {
+    throw ParseException("matching parenthesis not found", right_paren->line_no_,
+                         right_paren->col_no_);
+  }
+
+  operator_stack->pop();
 }
 
-void ProcessOperator(std::stack<Node *> *result_stack, std::stack<std::string> *expr_str_stack,
-                     std::stack<const Token *> *operator_stack) {}
+void ProcessOperator(const Token *op, std::stack<Node *> *result_stack,
+                     std::stack<std::string> *expr_str_stack,
+                     std::stack<const Token *> *operator_stack) {
+  // clear operators with higher precedence
+  const Token *top;
+  while (!operator_stack->empty() && (top = operator_stack->top())->kind_ != TokenType::LParen &&
+         Precedes(top, op)) {
+    PopExpressionNodeFromStacks(top, result_stack, expr_str_stack);
+    operator_stack->pop();
+  }
+  operator_stack->push(op);
+}
 
-ExpressionNode *ParseExpression(BufferedLexer *lexer, ParseState *state) {
+Node *ParseExpression(BufferedLexer *lexer, ParseState *state) {
   // use shunting yard algorithm to parse expressions
   std::stack<Node *> result_stack{};
   std::stack<std::string> expr_str_stack{};
@@ -117,20 +169,24 @@ ExpressionNode *ParseExpression(BufferedLexer *lexer, ParseState *state) {
       case TokenType::Constant:
         result_stack.push(MakeConstantNodeFromToken(next_token));
         expr_str_stack.push(next_token->value_);
+        break;
 
       case TokenType::Identifier:
         result_stack.push(MakeIdentifierNodeFromToken(next_token));
         expr_str_stack.push(next_token->value_);
+        break;
 
       case TokenType::LParen:
         operator_stack.push(next_token);
+        break;
 
       case TokenType::RParen:
         ProcessRightParen(next_token, &result_stack, &expr_str_stack, &operator_stack);
+        break;
 
       default:
-        // must be an opoerator
-        ProcessOperator(&result_stack, &expr_str_stack, &operator_stack);
+        // must be an operator
+        ProcessOperator(next_token, &result_stack, &expr_str_stack, &operator_stack);
     }
 
     // flush token
@@ -138,133 +194,20 @@ ExpressionNode *ParseExpression(BufferedLexer *lexer, ParseState *state) {
     next_token = lexer->PeekNextToken();
   }
 
-  lexer::Token *t = lexer->peekNextToken();
-  while (isExpressionToken(t)) {
-    if (t->kind == lexer::Kind::Constant) {
-      outputStack.push(new ast::ConstantNode{t->value, t->lineNo, t->colNo});
-      exprStringStack.push(t->value);
-
-    } else if (t->kind == lexer::Kind::Identifier) {
-      outputStack.push(new ast::IdentifierNode{t->value, t->lineNo, t->colNo});
-      exprStringStack.push(t->value);
-
-    } else if (t->kind == lexer::Kind::LParen) {
-      operatorStack.push(t);
-
-    } else if (t->kind == lexer::Kind::RParen) {
-      lexer::Token *op;
-      while (!operatorStack.empty() && (op = operatorStack.top())->kind != lexer::Kind::LParen) {
-        operatorStack.pop();
-
-        if (operatorStack.empty()) {
-          throw parseError("matching parenthesis", t->lineNo, t->colNo);
-        }
-
-        if (outputStack.size() < 2) {
-          throw parseError("missing operand", op->lineNo, op->colNo);
-        }
-
-        ast::Node *right = outputStack.top();
-        outputStack.pop();
-        ast::Node *left = outputStack.top();
-        outputStack.pop();
-        ast::ExprOp exprOp = exprOpFromToken(op);
-
-        std::string exprString = exprStringStack.top();
-        exprStringStack.pop();
-        exprString += " " + exprStringStack.top();
-        exprStringStack.pop();
-        exprString += " " + exprOpStringFromToken(op);
-
-        outputStack.push(
-            new ast::ExpressionNode{exprOp, left, right, exprString, op->lineNo, op->colNo});
-        exprStringStack.push(exprString);
-      }
-
-      // flush matching (
-      operatorStack.pop();
-    } else {
-      // t is an operator
-      lexer::Token *op;
-      while (!operatorStack.empty() && (op = operatorStack.top())->kind != lexer::Kind::LParen &&
-             precedes(op, t)) {
-        operatorStack.pop();
-
-        if (outputStack.size() < 2) {
-          throw parseError("missing operand", op->lineNo, op->colNo);
-        }
-
-        ast::Node *right = outputStack.top();
-        outputStack.pop();
-        ast::Node *left = outputStack.top();
-        outputStack.pop();
-        ast::ExprOp exprOp = exprOpFromToken(op);
-
-        std::string exprString = exprStringStack.top();
-        exprStringStack.pop();
-        exprString = exprStringStack.top() + " " + exprString;
-        exprStringStack.pop();
-        exprString += " " + exprOpStringFromToken(op);
-
-        outputStack.push(
-            new ast::ExpressionNode{exprOp, left, right, exprString, op->lineNo, op->colNo});
-        exprStringStack.push(exprString);
-      }
-
-      operatorStack.push(t);
-    }
-
-    // flush the token and peek next
-    lexer->getNextToken();
-    t = lexer->peekNextToken();
+  // now we clear all outstanding operators and sub-results
+  // flush the token and peek next
+  while (!operator_stack.empty()) {
+    const Token *op = operator_stack.top();
+    PopExpressionNodeFromStacks(op, &result_stack, &expr_str_stack);
+    operator_stack.pop();
   }
 
-  while (!operatorStack.empty()) {
-    lexer::Token *op = operatorStack.top();
-    operatorStack.pop();
-
-    if (outputStack.size() < 2) {
-      throw parseError("missing operand", op->lineNo, op->colNo);
-    }
-
-    ast::Node *right = outputStack.top();
-    outputStack.pop();
-    ast::Node *left = outputStack.top();
-    outputStack.pop();
-    ast::ExprOp exprOp = exprOpFromToken(op);
-
-    std::string exprString = exprStringStack.top();
-    exprStringStack.pop();
-    exprString = exprStringStack.top() + " " + exprString;
-    exprStringStack.pop();
-    exprString += " " + exprOpStringFromToken(op);
-
-    outputStack.push(
-        new ast::ExpressionNode{exprOp, left, right, exprString, op->lineNo, op->colNo});
-    exprStringStack.push(exprString);
+  // now we should only have one tree in the results stack
+  Node *final_res = result_stack.top();
+  result_stack.pop();
+  if (result_stack.size() > 0) {
+    throw ParseException("unexpected expression found", final_res->line_no(), final_res->col_no());
   }
 
-  ast::Node *n = outputStack.top();
-  outputStack.pop();
-
-  if (outputStack.size() > 0) {
-    throw parseError("dangling operand", outputStack.top()->lineNo, outputStack.top()->colNo);
-  }
-
-  if (n->kind == ast::Kind::Expression) {
-    ast::ExpressionNode *res = static_cast<ast::ExpressionNode *>(n);
-    return res;
-  }
-
-  if (n->kind == ast::Kind::Constant) {
-    ast::ConstantNode *c = static_cast<ast::ConstantNode *>(n);
-    return new ast::ExpressionNode{ast::ExprOp::Noop, n, nullptr, c->value, n->lineNo, n->colNo};
-  }
-
-  if (n->kind == ast::Kind::Identifier) {
-    ast::IdentifierNode *i = static_cast<ast::IdentifierNode *>(n);
-    return new ast::ExpressionNode{ast::ExprOp::Noop, n, nullptr, i->name, n->lineNo, n->colNo};
-  }
-
-  throw parseError("expression, constant or identifier", n->lineNo, n->colNo);
+  return final_res;
 }

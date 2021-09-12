@@ -39,7 +39,7 @@ IfNode *ParseIf(BufferedLexer *lexer, ParseState *state);
 
 AssignNode *ParseAssign(BufferedLexer *lexer, ParseState *state);
 
-ExpressionNode *ParseExpression(BufferedLexer *lexer, ParseState *state);
+Node *ParseExpression(BufferedLexer *lexer, ParseState *state);
 
 CondExpressionNode *ParseCondExpression(BufferedLexer *lexer, ParseState *state);
 

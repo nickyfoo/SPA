@@ -12,11 +12,14 @@ PatternQueryManager::PatternQueryManager(std::unordered_map<std::string, std::ve
 }
 
 void PatternQueryManager::evaluatePatterns() {
-    // Iterating through relationships_ and evaluating one by one. For basic requirements, there will be only 1 relationship.
+    // Iterating through patterns_ and evaluating one by one. For basic requirements, there will be only 1 pattern.
     for (PatternClause *pattern : *patterns_) {
         ManagePatterns(pattern);
     }
 }
+
+//pattern synonym(left_ent, right_ent)
+// pattern a(v, _)
 
 void PatternQueryManager::ManagePatterns(PatternClause *pattern) {
     EntityDeclaration *synonym = pattern->get_synonym();
@@ -28,13 +31,19 @@ void PatternQueryManager::ManagePatterns(PatternClause *pattern) {
     for (int i = 0; i < entity_vec->size(); i++) {
         auto *assign = (Statement*) &synonym_to_entity_result_->at(entity_vec->at(i));
         if (left_ent->get_type() == EntRefType::Synonym) {
-            if (!assign->getModifiesAssign(left_ent->get_synonym()) ||
-            !PKB.checkAssignmentRhs(assign, pattern_to_check, is_partial_pattern)) {
-                entity_vec->erase(entity_vec.begin() + i);
-                i--;
+            vector<Entity*> *variable_vec = &synonym_to_entity_result_->at(left_ent->get_synonym());
+            bool found_var = false;
+            for (int j = 0; j < variable_vec->size(); j++) {
+                auto* variable = (Variable*) &variable_vec->at(j);
+                if (!assign->getModifies()->count(variable->get_name()) ||
+                !PKB.checkAssignmentRhs(assign, pattern_to_check, is_partial_pattern)) {
+                    entity_vec->erase(entity_vec.begin() + i);
+                    i--;
+                    break;
+                }
             }
         } else if (left_ent->get_type() == EntRefType::Argument) {
-            if (!assign->getModifiesAssign(left_ent->get_argument()) ||
+            if (!assign->getModifies()->count(left_ent->get_argument()) ||
             !PKB.checkAssignmentRhs(assign, pattern_to_check, is_partial_pattern)) {
                 entity_vec->erase(entity_vec.begin() + i);
                 i--;

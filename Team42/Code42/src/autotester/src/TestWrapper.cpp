@@ -1,4 +1,6 @@
 #include "TestWrapper.h"
+#include "../../spa/src/PQL/pql_query.h"
+#include "../../spa/src/PQL/query_preprocessor.h"
 
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;
@@ -28,4 +30,11 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results){
 
   // store the answers to the query in the results list (it is initially empty)
   // each result must be a string.
+
+  auto* query_preprocessor = new QueryPreprocessor(query);
+  PQLQuery *clause = query_preprocessor->get_pql_query();
+  QueryEvaluator query_evaluator = new QueryEvaluator(*clause);
+  std::vector<std::string> res = query_evaluator.evaluate();
+  std::copy(res.begin(), res.end(), std::back_inserter(results));
+
 }

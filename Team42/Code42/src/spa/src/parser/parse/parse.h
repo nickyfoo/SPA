@@ -6,7 +6,7 @@
 #include "ast.h"
 #include "lexer.h"
 
-enum IdentifierType { ProcedureType, VariableType };
+enum class IdentifierType { ProcedureType, VariableType };
 
 class ParseState {
  public:

@@ -154,5 +154,5 @@ TEST_CASE("TestParseProgram 1") {
   BufferedLexer *lexer = new BufferedLexer(source.c_str());
   ProgramNode *res = ParseProgram(lexer, new ParseState{});
 
-  REQUIRE(res->procedures().size() == 4);
+  REQUIRE(res->get_procedures().size() == 4);
 }

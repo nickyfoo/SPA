@@ -6,8 +6,8 @@ ProcedureNode::ProcedureNode(std::string name, std::vector<StatementNode *> stmt
   this->stmt_lst_ = stmt_lst;
 }
 
-NodeType ProcedureNode::kind() { return NodeType::Procedure; }
+NodeType ProcedureNode::get_kind() { return NodeType::Procedure; }
 
-std::string ProcedureNode::name() { return this->name_; }
+std::string ProcedureNode::get_name() { return this->name_; }
 
-std::vector<StatementNode *> ProcedureNode::stmt_lst() { return this->stmt_lst_; }
+std::vector<StatementNode *> ProcedureNode::get_stmt_lst() { return this->stmt_lst_; }

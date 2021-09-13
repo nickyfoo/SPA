@@ -119,7 +119,7 @@ void PopExpressionNodeFromStacks(const Token *op, std::stack<Node *> *result_sta
   result_stack->pop();
 
   std::string expr_str = StringFormat("%s %s %s", left_str.c_str(), right_str.c_str(), expr_op_str.c_str());
-  LocInfo loc = LocInfo{.line_no = left->line_no(), .col_no = left->col_no()};
+  LocInfo loc = LocInfo{.line_no = left->get_line_no(), .col_no = left->get_col_no()};
 
   result_stack->push(new ExpressionNode(expr_op, left, right, expr_str, loc));
   expr_str_stack->push(expr_str);
@@ -212,7 +212,7 @@ Node *ParseExpression(BufferedLexer *lexer, ParseState *state) {
   Node *final_res = result_stack.top();
   result_stack.pop();
   if (result_stack.size() > 0) {
-    throw ParseException("unexpected expression found", final_res->line_no(), final_res->col_no());
+    throw ParseException("unexpected expression found", final_res->get_line_no(), final_res->get_col_no());
   }
 
   return final_res;

@@ -5,17 +5,17 @@
 
 RelExpressionNode::RelExpressionNode(RelExprOp op, Node *left, Node *right, LocInfo loc)
     : Node(loc) {
-  if (left == nullptr || left->kind() != NodeType::Expression &&
-                             left->kind() != NodeType::Constant &&
-                             left->kind() != NodeType::Identifier) {
+  if (left == nullptr || left->get_kind() != NodeType::Expression &&
+                             left->get_kind() != NodeType::Constant &&
+                             left->get_kind() != NodeType::Identifier) {
     throw std::invalid_argument(
         "RelExpressionNode: expected left to be Expression, Constant or "
         "Identifier");
   }
 
-  if (right == nullptr || right->kind() != NodeType::Expression &&
-                              right->kind() != NodeType::Constant &&
-                              right->kind() != NodeType::Identifier) {
+  if (right == nullptr || right->get_kind() != NodeType::Expression &&
+                              right->get_kind() != NodeType::Constant &&
+                              right->get_kind() != NodeType::Identifier) {
     throw std::invalid_argument(
         "RelExpressionNode: expected right to be Expression, Constant or "
         "Identifier");
@@ -26,21 +26,21 @@ RelExpressionNode::RelExpressionNode(RelExprOp op, Node *left, Node *right, LocI
   this->right_ = right;
 }
 
-NodeType RelExpressionNode::kind() { return NodeType::RelExpression; }
+NodeType RelExpressionNode::get_kind() { return NodeType::RelExpression; }
 
-RelExprOp RelExpressionNode::op() { return this->op_; }
+RelExprOp RelExpressionNode::get_op() { return this->op_; }
 
-Node *RelExpressionNode::left() {
-  assert(this->left_->kind() == NodeType::Expression || this->left_->kind() == NodeType::Constant ||
-         this->left_->kind() == NodeType::Identifier);
+Node *RelExpressionNode::get_left() {
+  assert(this->left_->get_kind() == NodeType::Expression || this->left_->get_kind() == NodeType::Constant ||
+         this->left_->get_kind() == NodeType::Identifier);
 
   return this->left_;
 }
 
-Node *RelExpressionNode::right() {
-  assert(this->right_->kind() == NodeType::Expression ||
-         this->right_->kind() == NodeType::Constant ||
-         this->right_->kind() == NodeType::Identifier);
+Node *RelExpressionNode::get_right() {
+  assert(this->right_->get_kind() == NodeType::Expression ||
+         this->right_->get_kind() == NodeType::Constant ||
+         this->right_->get_kind() == NodeType::Identifier);
 
   return this->right_;
 }

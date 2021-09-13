@@ -4,6 +4,6 @@ CallNode::CallNode(IdentifierNode *proc, int stmt_no, LocInfo loc) : StatementNo
   this->proc_ = proc;
 }
 
-NodeType CallNode::kind() { return NodeType::Call; }
+NodeType CallNode::get_kind() { return NodeType::Call; }
 
-IdentifierNode *CallNode::proc() { return this->proc_; }
+IdentifierNode *CallNode::get_proc() { return this->proc_; }

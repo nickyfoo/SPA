@@ -1,8 +1,6 @@
 #include "constant.h"
 
-Constant::Constant() {
-  this->value_ = -1;
-}
+Constant::Constant() {}
 
 Constant::Constant(int value) {
   this->value_ = value;

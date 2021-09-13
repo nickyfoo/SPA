@@ -5,7 +5,7 @@ class Constant : public Entity {
  public:
   Constant();
 
-  Constant(int value);
+  explicit Constant(int value);
 
   ~Constant();
 

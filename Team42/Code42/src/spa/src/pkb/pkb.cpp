@@ -10,7 +10,7 @@ PKB::PKB(Node *programRoot) {
 PKB::~PKB() = default;
 
 void PKB::AddProcedure(Node *node) {
-  auto *procedure_node = (ProcedureNode *) node;
+  auto *procedure_node = dynamic_cast<ProcedureNode *>(node);
   proc_table_.AddProcedure(procedure_node->get_name());
 }
 
@@ -20,22 +20,22 @@ void PKB::AddStatement(Node *node) {
 
 void PKB::AddExprString(Node *node) {
   if (node->get_kind() == NodeType::Assign) {
-    auto *assign_node = (AssignNode *) node;
+    auto *assign_node = dynamic_cast<AssignNode *>(node);
     switch (assign_node->get_kind()) {
       case NodeType::Expression: {
-        auto *expression_node = (ExpressionNode *) assign_node->expr();
+        auto *expression_node = dynamic_cast<ExpressionNode *>(assign_node->expr());
         std::string expr_string = expression_node->get_expr_string();
         stmt_table_.get_statement(assign_node->get_stmt_no())->set_expr_string(expr_string);
         break;
       }
       case NodeType::Constant: {
-        auto *constant_node = (ConstantNode *) assign_node->expr();
+        auto *constant_node = dynamic_cast<ConstantNode *>(assign_node->expr());
         std::string expr_string = constant_node->get_expr_string();
         stmt_table_.get_statement(assign_node->get_stmt_no())->set_expr_string(expr_string);
         break;
       }
       case NodeType::Identifier: {
-        auto *identifier_node = (IdentifierNode *) assign_node->expr();
+        auto *identifier_node = dynamic_cast<IdentifierNode *>(assign_node->expr());
         std::string expr_string = identifier_node->get_expr_string();
         stmt_table_.get_statement(assign_node->get_stmt_no())->set_expr_string(expr_string);
         break;
@@ -48,12 +48,12 @@ void PKB::AddExprString(Node *node) {
 }
 
 void PKB::AddVariable(Node *node) {
-  auto *identifier_node = (IdentifierNode *) node;
+  auto *identifier_node = dynamic_cast<IdentifierNode *>(node);
   var_table_.AddVariable(identifier_node->get_name());
 }
 
 void PKB::AddConstant(Node *node) {
-  auto *constant_node = (ConstantNode *) node;
+  auto *constant_node = dynamic_cast<ConstantNode *>(node);
   const_table_.AddConstant(std::stoi(constant_node->get_value()));
 }
 
@@ -148,7 +148,7 @@ void PKB::GetParent() {
 }
 
 void PKB::FollowsProcessProcedureNode(Node *node) {
-  auto *procedure_node = (ProcedureNode *) node;
+  auto *procedure_node = dynamic_cast<ProcedureNode *>(node);
   std::vector<int> line_no;
 
   for (Node *n : procedure_node->get_stmt_lst()) {
@@ -162,7 +162,7 @@ void PKB::FollowsProcessProcedureNode(Node *node) {
 }
 
 void PKB::FollowsProcessIfNode(Node *node) {
-  auto *if_node = (IfNode *) node;
+  auto *if_node = dynamic_cast<IfNode *>(node);
   std::vector<int> then_line_nos, else_line_nos;
 
   for (Node *n : if_node->get_then_stmt_lst()) {
@@ -185,7 +185,7 @@ void PKB::FollowsProcessIfNode(Node *node) {
 }
 
 void PKB::FollowsProcessWhileNode(Node *node) {
-  auto *while_node = (WhileNode *) node;
+  auto *while_node = dynamic_cast<WhileNode *>(node);
   // TODO: Line numbers are stored and sorted at the moment
   //  as it is not clear how it statement list is organised / sorted
   std::vector<int> line_nos;
@@ -200,7 +200,7 @@ void PKB::FollowsProcessWhileNode(Node *node) {
 }
 
 void PKB::ParentProcessIfNode(Node *node) {
-  auto *if_node = (IfNode *) node;
+  auto *if_node = dynamic_cast<IfNode *>(node);
   Statement *if_statement = stmt_table_.get_statement(if_node->get_stmt_no());
   for (Node *n : if_node->get_then_stmt_lst()) {
     if_statement->AddChild(Statement::get_stmt_no(n));
@@ -216,7 +216,7 @@ void PKB::ParentProcessIfNode(Node *node) {
 }
 
 void PKB::ParentProcessWhileNode(Node *node) {
-  auto *while_node = (WhileNode *) node;
+  auto *while_node = dynamic_cast<WhileNode *>(node);
   Statement *while_statement = stmt_table_.get_statement(while_node->get_stmt_no());
   for (Node *n : while_node->get_stmt_list()) {
     while_statement->AddChild(Statement::get_stmt_no(n));

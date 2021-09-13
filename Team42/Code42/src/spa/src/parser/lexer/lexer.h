@@ -48,6 +48,10 @@ class Token {
 };
 
 class Lexer {
+ public:
+  explicit Lexer(const char *source);
+  const Token *GetNextToken();
+
  private:
   const char *source_;
   int cur_line_;
@@ -63,19 +67,15 @@ class Lexer {
   const Token *NotOrNeq();
   const Token *AndOrUnknown();
   const Token *OrOrUnknown();
-
- public:
-  explicit Lexer(const char *source);
-  const Token *GetNextToken();
 };
 
 class BufferedLexer {
- private:
-  Lexer *lexer_;
-  const Token *next_token_;
-
  public:
   explicit BufferedLexer(const char *source);
   const Token *GetNextToken();
   const Token *PeekNextToken();
+
+ private:
+  Lexer *lexer_;
+  const Token *next_token_;
 };

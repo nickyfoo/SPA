@@ -15,12 +15,12 @@ class ParseState {
 };
 
 class ParseException : public std::exception {
- private:
-  std::string msg_;
-
  public:
   ParseException(std::string error, int line_no, int col_no);
   virtual const char *what() const noexcept;
+
+ private:
+  std::string msg_;
 };
 
 ProgramNode *ParseProgram(BufferedLexer *lexer, ParseState *state);

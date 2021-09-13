@@ -25,10 +25,10 @@ ExpressionSpec* PatternClause::get_right_ref() {
 
 bool PatternClause::IsValidRightRef(std::string ref) {
     bool partial_pattern;
-    auto* expSpec = new ExpressionSpec();
+    auto *exp_spec = new ExpressionSpec();
     if (ref == "_") {
-        expSpec->set_wild_card();
-        this->right_ref_ = expSpec;
+        exp_spec->set_wild_card();
+        this->right_ref_ = exp_spec;
         return true;
     }
 
@@ -47,7 +47,7 @@ bool PatternClause::IsValidRightRef(std::string ref) {
 
     ref = ref.substr(1, ref.length() - 2);  // remove ""
     bool expecting_exp = false;
-    for (char& c : ref) {
+    for (char &c : ref) {
         if (!expecting_exp && IsExp(c)) {
             return false;
         } else {
@@ -65,10 +65,10 @@ bool PatternClause::IsValidRightRef(std::string ref) {
         return false;
     }
 
-    expSpec->set_expression(ref);
-    expSpec->set_partial_pattern(partial_pattern);
+    exp_spec->set_expression(ref);
+    exp_spec->set_partial_pattern(partial_pattern);
 
-    this->right_ref_ = expSpec;
+    this->right_ref_ = exp_spec;
     return true;
 }
 

@@ -10,8 +10,8 @@ QueryPreprocessor::QueryPreprocessor(std::string input) {
         this->clauses_ = nullptr;
         return;
     }
-    PQLQuery *pqlquery = MakePQLQuery(entities_map, select_clause);
-    this->clauses_ = pqlquery;
+    PQLQuery *pql_query = MakePQLQuery(entities_map, select_clause);
+    this->clauses_ = pql_query;
 }
 
 PQLQuery *QueryPreprocessor::get_pql_query() {
@@ -36,15 +36,15 @@ std::tuple<std::vector<std::string>*, std::string>
 std::unordered_map<std::string, EntityDeclaration*>
         *QueryPreprocessor::MakeEntitiesMap(
                 std::vector<std::string> *entities) {
-    EntityDeclarationParser *ep = EntityDeclarationParser::getInstance();
-    ep->setEntities(entities);
-    return ep->getEntitiesMap();
+    EntityDeclarationParser *ep = EntityDeclarationParser::get_instance();
+    ep->set_entities(entities);
+    return ep->get_entities_map();
 }
 
 PQLQuery *QueryPreprocessor::MakePQLQuery(std::unordered_map<std::string,
                                              EntityDeclaration*> *entities_map,
                                           const std::string &select_clause) {
-    SelectClauseParser *scp = SelectClauseParser::getInstance();
+    SelectClauseParser *scp = SelectClauseParser::get_instance();
     scp->set_select_clause(entities_map, select_clause);
     return scp->get_clauses();
 }

@@ -9,7 +9,7 @@ SelectClauseParser::SelectClauseParser() {
 
 SelectClauseParser *SelectClauseParser::instance = nullptr;
 
-SelectClauseParser *SelectClauseParser::getInstance() {
+SelectClauseParser *SelectClauseParser::get_instance() {
     if (!instance)
         instance = new SelectClauseParser;
     return instance;
@@ -50,7 +50,7 @@ PQLQuery *SelectClauseParser::get_clauses() {std::tuple<std::string,
     }
 
     for (const std::string &such_that_clause : such_that_clauses) {
-        SuchThatClause* relationship = MakeSuchThatClause(such_that_clause);
+        SuchThatClause *relationship = MakeSuchThatClause(such_that_clause);
         if (relationship == nullptr) {
             return nullptr;
         }
@@ -58,7 +58,7 @@ PQLQuery *SelectClauseParser::get_clauses() {std::tuple<std::string,
     }
 
     for (const std::string &pattern_clause : pattern_clauses) {
-        PatternClause* pattern = MakePatternClause(pattern_clause);
+        PatternClause *pattern = MakePatternClause(pattern_clause);
         if (pattern == nullptr) {
             return nullptr;
         }
@@ -136,13 +136,13 @@ PatternClause *SelectClauseParser::MakePatternRef(const std::string &synonym,
     PatternClause *ret;
     auto *entRef = new EntRef();
     if ((synonym_to_entity_->find(synonym) != synonym_to_entity_->end())
-    && (synonym_to_entity_->at(synonym)->getType() == EntityType::Assign)) {
+    && (synonym_to_entity_->at(synonym)->get_type() == EntityType::Assign)) {
         ret = new PatternClause(synonym_to_entity_->find(synonym)->second);
     } else {
         return nullptr;
     }
     if ((synonym_to_entity_->find(left_ref) != synonym_to_entity_->end()) &&
-        (synonym_to_entity_->at(left_ref)->getType() == EntityType::Variable)) {
+        (synonym_to_entity_->at(left_ref)->get_type() == EntityType::Variable)) {
         entRef->set_synonym(left_ref);
     } else if (left_ref == "_") {
         entRef->set_wild_card();
@@ -166,7 +166,7 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRef(
 
     // existing synonym_
     if (synonym_to_entity_->find(ref) != synonym_to_entity_->end()) {
-        EntityType entity_type = synonym_to_entity_->at(ref)->getType();
+        EntityType entity_type = synonym_to_entity_->at(ref)->get_type();
         switch (entity_type) {
           case EntityType::Assign:
           case EntityType::Call:
@@ -303,9 +303,9 @@ std::vector<std::string> SelectClauseParser::SplitTokensByDelimiter(
 // splits by such that, pattern and with
 std::tuple<std::string, std::vector<std::string>, std::vector<std::string>>
 SelectClauseParser::SplitTokensByClauses(const std::string &input) {
-    std::string such_that_delim = "such that ";
-    std::string pattern_delim = "pattern ";
-    std::vector<std::string> delimiters{such_that_delim, pattern_delim};
+    std::string SUCH_THAT_DELIM = "such that ";
+    std::string PATTERN_DELIM = "pattern ";
+    std::vector<std::string> delimiters{SUCH_THAT_DELIM, PATTERN_DELIM};
     std::string select_clause;
     std::vector<std::string> such_that_clauses;
     std::vector<std::string> pattern_clauses;
@@ -361,11 +361,11 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
     select_clause = clean_input.substr(0, pos);  // adds the select clause
     clean_input.erase(0, pos);
 
-    while ( clean_input.find(such_that_delim) != std::string::npos
-    || clean_input.find(pattern_delim) != std::string::npos) {
+    while (clean_input.find(SUCH_THAT_DELIM) != std::string::npos
+    || clean_input.find(PATTERN_DELIM) != std::string::npos) {
         // find the earliest clause
-        pos = std::min(clean_input.find(such_that_delim),
-                       clean_input.find(pattern_delim));
+        pos = std::min(clean_input.find(SUCH_THAT_DELIM),
+                       clean_input.find(PATTERN_DELIM));
         token = clean_input.substr(0, pos);
         if (last_found_such_that) {
             such_that_clauses.push_back(token);
@@ -373,14 +373,14 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
             pattern_clauses.push_back(token);
         }
 
-        if (clean_input.substr(pos, such_that_delim.length())
-        == such_that_delim) {
-            clean_input.erase(0, pos + such_that_delim.length());
+        if (clean_input.substr(pos, SUCH_THAT_DELIM.length())
+            == SUCH_THAT_DELIM) {
+            clean_input.erase(0, pos + SUCH_THAT_DELIM.length());
             last_found_such_that = true;
             last_found_pattern = false;
-        } else if (clean_input.substr(pos, pattern_delim.length())
-        == pattern_delim) {
-            clean_input.erase(0, pos + pattern_delim.length());
+        } else if (clean_input.substr(pos, PATTERN_DELIM.length())
+                   == PATTERN_DELIM) {
+            clean_input.erase(0, pos + PATTERN_DELIM.length());
             last_found_pattern = true;
             last_found_such_that = false;
         }

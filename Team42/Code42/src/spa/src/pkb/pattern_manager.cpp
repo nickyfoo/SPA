@@ -11,7 +11,9 @@ auto CheckNextChar(bool is_ident);
 // depending on the type of variable.
 auto CheckNextChar(bool is_ident) {
   return [=](char c) {
-    return is_ident ? std::isalnum(c) : std::isdigit(c);
+    return is_ident
+           ? std::isalpha(c) || std::isdigit(c)
+           : std::isdigit(c);
   };
 }
 
@@ -22,7 +24,7 @@ std::string PatternManager::GetPostfixExpr(std::string infix_expr) {
   std::string::iterator it;
   try {
     for (it = infix_expr.begin(); it != infix_expr.end(); ++it) {
-      if (std::isalnum(*it)) {
+      if (std::isalpha(*it) || std::isdigit(*it)) {
         // Flag for whether variable is an identifier or a constant
         bool is_ident = std::isalpha(*it);
         output << *it;

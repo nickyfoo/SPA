@@ -266,3 +266,4 @@ inline bool IsProgramEqual(ProgramNode *p1, ProgramNode *p2) {
 
   return metadata_equal && proc_lst_equal;
 }
+

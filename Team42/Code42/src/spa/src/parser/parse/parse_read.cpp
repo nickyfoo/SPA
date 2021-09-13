@@ -25,3 +25,4 @@ ReadNode *ParseRead(BufferedLexer *lexer, ParseState *state) {
 
   return new ReadNode(var, stmt_no, LocInfo{.line_no=start_line, .col_no=start_col});
 }
+

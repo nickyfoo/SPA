@@ -27,3 +27,4 @@ AssignNode *ParseAssign(BufferedLexer *lexer, ParseState *state) {
 
   return new AssignNode(var, expr, stmt_no, LocInfo{.line_no = start_line, .col_no = start_col});
 }
+

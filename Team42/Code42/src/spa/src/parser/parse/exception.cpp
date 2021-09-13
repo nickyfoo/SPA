@@ -8,3 +8,4 @@ ParseException::ParseException(std::string error, int line_no, int col_no) {
 }
 
 const char *ParseException::what() const noexcept { return this->msg_.c_str(); }
+

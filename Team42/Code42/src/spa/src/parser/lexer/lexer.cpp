@@ -221,3 +221,4 @@ const Token *Lexer::OrOrUnknown() {
 
   return new Token(TokenType::Unknown, "|", cur_line_, cur_col_ - 1);
 }
+

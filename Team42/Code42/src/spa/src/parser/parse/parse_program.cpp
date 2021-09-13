@@ -19,3 +19,4 @@ ProgramNode *ParseProgram(BufferedLexer *lexer, ParseState *state) {
 
   return new ProgramNode(procedures, LocInfo{.line_no=start_line, .col_no=start_col});
 }
+

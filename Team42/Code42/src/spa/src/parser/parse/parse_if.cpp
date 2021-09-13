@@ -30,3 +30,4 @@ IfNode *ParseIf(BufferedLexer *lexer, ParseState *state) {
   return new IfNode(cond, then_stmt_lst, else_stmt_lst, stmt_no,
                     LocInfo{.line_no = start_line, .col_no = start_col});
 }
+

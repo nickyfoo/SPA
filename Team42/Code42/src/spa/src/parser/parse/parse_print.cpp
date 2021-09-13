@@ -25,3 +25,4 @@ PrintNode *ParsePrint(BufferedLexer *lexer, ParseState *state) {
 
   return new PrintNode(var, stmt_no, LocInfo{.line_no = start_line, .col_no = start_col});
 }
+

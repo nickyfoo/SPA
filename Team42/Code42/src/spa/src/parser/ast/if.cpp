@@ -28,3 +28,4 @@ Node *IfNode::get_cond() {
 std::vector<StatementNode *> IfNode::get_then_stmt_lst() { return this->then_stmt_lst_; }
 
 std::vector<StatementNode *> IfNode::get_else_stmt_lst() { return this->else_stmt_lst_; }
+

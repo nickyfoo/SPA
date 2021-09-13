@@ -24,3 +24,4 @@ CallNode *ParseCall(BufferedLexer *lexer, ParseState *state) {
 
   return new CallNode(var, stmt_no, LocInfo{.line_no = start_line, .col_no = start_col});
 }
+

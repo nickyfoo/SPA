@@ -44,3 +44,4 @@ Node *RelExpressionNode::get_right() {
 
   return this->right_;
 }
+

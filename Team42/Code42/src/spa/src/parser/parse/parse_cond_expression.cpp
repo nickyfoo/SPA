@@ -65,3 +65,4 @@ Node *ParseCondExpression(BufferedLexer *lexer, ParseState *state) {
 
   return new CondExpressionNode(op, left, right, LocInfo{.line_no=start_line, .col_no=start_col});
 }
+

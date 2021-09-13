@@ -1,7 +1,7 @@
 #include "statement.h"
 #include <iostream>
 
-Statement::Statement(int line_no, ast::Kind type) {
+Statement::Statement(int line_no, NodeType type) {
   this->stmt_no_ = line_no;
   this->kind_ = type;
 }
@@ -10,35 +10,35 @@ Statement::Statement() = default;
 
 Statement::~Statement() = default;
 
-int Statement::GetStmtNo() {
+int Statement::get_stmt_no() {
   return stmt_no_;
 }
 
-int Statement::GetStmtNo(ast::Node *node) {
-  switch (node->kind) {
-    case ast::Assign: {
-      ast::AssignNode *castedAssignNode{static_cast<ast::AssignNode *>(node)};
-      return castedAssignNode->stmtNo;
+int Statement::get_stmt_no(Node *node) {
+  switch (node->get_kind()) {
+    case NodeType::Assign: {
+      AssignNode *assign_node{static_cast<AssignNode *>(node)};
+      return assign_node->get_stmt_no();
     }
-    case ast::If: {
-      ast::IfNode *castedIfNode{static_cast<ast::IfNode *>(node)};
-      return castedIfNode->stmtNo;
+    case NodeType::If: {
+      IfNode *if_node{static_cast<IfNode *>(node)};
+      return if_node->get_stmt_no();
     }
-    case ast::While: {
-      ast::WhileNode *castedWhileNode{static_cast<ast::WhileNode *>(node)};
-      return castedWhileNode->stmtNo;
+    case NodeType::While: {
+      WhileNode *while_node{static_cast<WhileNode *>(node)};
+      return while_node->get_stmt_no();
     }
-    case ast::Read: {
-      ast::ReadNode *castedReadNode{static_cast<ast::ReadNode *>(node)};
-      return castedReadNode->stmtNo;
+    case NodeType::Read: {
+      ReadNode *read_node{static_cast<ReadNode *>(node)};
+      return read_node->get_stmt_no();
     }
-    case ast::Print: {
-      ast::PrintNode *castedPrintNode{static_cast<ast::PrintNode *>(node)};
-      return castedPrintNode->stmtNo;
+    case NodeType::Print: {
+      PrintNode *print_node{static_cast<PrintNode *>(node)};
+      return print_node->get_stmt_no();
     }
-    case ast::Call: {
-      ast::CallNode *castedCallNode{static_cast<ast::CallNode *>(node)};
-      return castedCallNode->stmtNo;
+    case NodeType::Call: {
+      CallNode *call_node{static_cast<CallNode *>(node)};
+      return call_node->get_stmt_no();
     }
     default: {
       return 0;
@@ -46,24 +46,48 @@ int Statement::GetStmtNo(ast::Node *node) {
   }
 };
 
-ast::Kind Statement::GetKind() {
+NodeType Statement::get_kind() {
   return kind_;
 }
 
-std::string Statement::GetExprString() {
+std::string Statement::get_expr_string() {
   // TODO: Only applicable for AssignStatement for now, need to add if/while
   return expr_string_;
 }
 
-std::set<int> *Statement::GetFollowers() {
+std::set<int> *Statement::get_followers() {
   return &followers_;
 }
 
-std::set<int> *Statement::GetChildren() {
+std::set<int> *Statement::get_followers_star() {
+  return &followers_star_;
+}
+
+std::set<int> *Statement::get_followees() {
+  return &followees_;
+}
+
+std::set<int> *Statement::get_followees_star() {
+  return &followees_star_;
+}
+
+std::set<int> *Statement::get_parents() {
+  return &parents_;
+}
+
+std::set<int> *Statement::get_parents_star() {
+  return &parents_star_;
+}
+
+std::set<int> *Statement::get_children() {
   return &children_;
 }
 
-void Statement::SetExprString(std::string expr_string) {
+std::set<int> *Statement::get_children_star() {
+  return &children_star_;
+}
+
+void Statement::set_expr_string(std::string expr_string) {
   this->expr_string_ = expr_string;
 }
 

@@ -10,7 +10,7 @@ class Procedure : public Entity {
   ~Procedure();
 
   // Gets the name of procedure.
-  std::string GetName();
+  std::string get_name();
 
  private:
   // Name of procedure.

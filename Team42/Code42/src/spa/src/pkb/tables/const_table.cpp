@@ -14,13 +14,13 @@ void ConstTable::AddConstant(int value) {
   }
 }
 
-std::vector<Constant *> ConstTable::GetAllConstants() {
+std::vector<Constant *> ConstTable::get_all_constants() {
   return all_constants_;
 }
 
 void ConstTable::PrintConstants() {
   std::cout << "ConstTable size: " << table_.size() << '\n';
   for (auto&[k, x] : table_) {
-    std::cout << x.GetValue() << '\n';
+    std::cout << x.get_value() << '\n';
   }
 }

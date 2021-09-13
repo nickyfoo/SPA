@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdio.h>
+#include <cstdio>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -13,58 +13,51 @@
 
 class PKB {
  public:
-  PKB(ast::Node *programRoot);
+  explicit PKB(Node *programRoot);
 
   ~PKB();
 
-  // Populates the tables with entities and relationships from AST.
-  void Initialise();
-
   // Adds a procedure to the procedures table.
-  void AddProcedure(ast::Node *node);
+  void AddProcedure(Node *node);
   // Adds a statement to the statements table.
-  void AddStatement(ast::Node *node);
+  void AddStatement(Node *node);
   // Adds a postfix expression string to the table.
-  void AddExprString(ast::Node *node);
+  void AddExprString(Node *node);
   // Adds a variable to the variables table.
-  void AddVariable(ast::Node *node);
+  void AddVariable(Node *node);
   // Adds a constant to the variables table.
-  void AddConstant(ast::Node *node);
+  void AddConstant(Node *node);
 
   // Gets all procedures in the program.
-  std::vector<Procedure *> GetAllProcedures();
+  std::vector<Procedure *> get_all_procedures();
+  // Gets a procedure by its procedure name.
+  Procedure *get_procedure(std::string &name);
 
   // Gets the total number of statements in the statement table.
-  int GetNumStatements();
+  int get_num_statements();
   // Gets all statements in the statement table.
-  std::vector<Statement *> GetAllStatements();
+  std::vector<Statement *> get_all_statements();
   // Gets all statements of the given type.
-  std::vector<Statement *> GetStatements(ast::Kind type);
+  std::vector<Statement *> get_statements(NodeType type);
   // Gets a statement by its corresponding line number.
-  Statement *GetStatement(int line_no);
+  Statement *get_statement(int line_no);
+
+  // Gets all variables in the program.
+  std::vector<Variable *> get_all_variables();
+
+  // Gets all constants in the program.
+  std::vector<Constant *> get_all_constants();
+
   // Tests the RHS of assignment statement against the given pattern.
   // Returns true if pattern matches.
   static bool TestAssignmentPattern(Statement *statement, std::string pattern, bool is_partial_match);
-
-  // Gets all variables in the program.
-  std::vector<Variable *> GetAllVariables();
-
-  // Process and store Follows relationships for the AST procedure node.
-  void FollowsProcessProcedureNode(ast::Node *node);
-  // Process and store Follows relationships for the AST if node.
-  void FollowsProcessIfNode(ast::Node *node);
-  // Process and store Follows relationships for the AST while node.
-  void FollowsProcessWhileNode(ast::Node *node);
-
-  // Process and store Parent relationships for the AST if node.
-  void ParentProcessIfNode(ast::Node *node);
-  // Process and store Parent relationships for the AST while node.
-  void ParentProcessWhileNode(ast::Node *node);
 
   // Prints information of statements in the statement table.
   void PrintStatements();
 
  private:
+  // Populates the tables with entities and relationships from AST.
+  void Initialise();
   // Extracts entities from the AST root node and stores them in the pkb.
   void ExtractEntities();
   // Extracts Follows/Follows_Star relationships in the AST.
@@ -72,8 +65,20 @@ class PKB {
   // Extracts Parent/Parent_Star relationships in the AST.
   void GetParent();
 
+  // Process and store Follows relationships for the AST procedure node.
+  void FollowsProcessProcedureNode(Node *node);
+  // Process and store Follows relationships for the AST if node.
+  void FollowsProcessIfNode(Node *node);
+  // Process and store Follows relationships for the AST while node.
+  void FollowsProcessWhileNode(Node *node);
+
+  // Process and store Parent relationships for the AST if node.
+  void ParentProcessIfNode(Node *node);
+  // Process and store Parent relationships for the AST while node.
+  void ParentProcessWhileNode(Node *node);
+
   // Root AST node of the program.
-  ast::Node *root_;
+  Node *root_;
   // Table of procedures in the program.
   ProcTable proc_table_;
   // Table of statements in the program.

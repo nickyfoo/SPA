@@ -1,8 +1,5 @@
 #pragma once
 
-#include "AST.hpp"
+#include "ast.h"
 
-class Entity {
- public:
-  Entity() {}
-};
+class Entity {};

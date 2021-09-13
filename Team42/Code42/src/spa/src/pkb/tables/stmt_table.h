@@ -8,25 +8,26 @@
 class StmtTable : public Table {
  public:
   // List of valid kinds of statements
-  inline static const std::vector<ast::Kind> kValidStmts = {
-      ast::Assign, ast::If, ast::While,
-      ast::Read, ast::Print, ast::Call};
+  inline static const std::vector<NodeType> kValidStmts = {
+      NodeType::Assign, NodeType::If, NodeType::While,
+      NodeType::Read, NodeType::Print, NodeType::Call
+  };
 
   StmtTable();
 
   ~StmtTable();
 
   // Adds a statement to the table.
-  void AddStatement(ast::Node *node);
+  void AddStatement(Node *node);
 
   // Get total number of statements.
-  int GetNumStatements();
-  // Gets all statements of the given type.
-  std::vector<Statement *> GetStatements(ast::Kind type);
-  // Gets the statement by line number.
-  Statement *GetStatement(int line_no);
+  int get_num_statements();
   // Gets all statements.
-  std::vector<Statement *> GetAllStatements();
+  std::vector<Statement *> get_all_statements();
+  // Gets all statements of the given type.
+  std::vector<Statement *> get_statements(NodeType type);
+  // Gets the statement by line number.
+  Statement *get_statement(int line_no);
 
   // Gets Follows relationship from Statements in preparation to get
   // transitive closure.
@@ -53,7 +54,7 @@ class StmtTable : public Table {
   std::vector<Statement *> all_statements_;
   // Table mapping each statement type to a list of its corresponding
   // statements.
-  std::map<ast::Kind, std::vector<Statement *>> type_to_statement_;
+  std::map<NodeType, std::vector<Statement *>> type_to_statement_;
   // for <v1, v2> in follows_, Follows(v1, v2) is true.
   std::set<std::pair<int, int>> follows_, follows_star_;
   // for <v1, v2> in parent_, Parent(v1, v2) is true.

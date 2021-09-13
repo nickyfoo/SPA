@@ -18,15 +18,15 @@ class PKB {
   ~PKB();
 
   // Adds a procedure to the procedures table.
-  void AddProcedure(Node *node);
+  void AddProcedure(Node *node, std::vector<Node *> ancestor_list);
   // Adds a statement to the statements table.
-  void AddStatement(Node *node);
+  void AddStatement(Node *node, std::vector<Node *> ancestor_list);
   // Adds a postfix expression string to the table.
-  void AddExprString(Node *node);
+  void AddExprString(Node *node, std::vector<Node *> ancestor_list);
   // Adds a variable to the variables table.
-  void AddVariable(Node *node);
+  void AddVariable(Node *node, std::vector<Node *> ancestor_list);
   // Adds a constant to the variables table.
-  void AddConstant(Node *node);
+  void AddConstant(Node *node, std::vector<Node *> ancestor_list);
   
   // Gets the total number of procedures in the procedure table
   int PKB::get_num_procedures();

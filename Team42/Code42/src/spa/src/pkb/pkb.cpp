@@ -10,16 +10,16 @@ PKB::PKB(Node *programRoot) {
 
 PKB::~PKB() = default;
 
-void PKB::AddProcedure(Node *node) {
+void PKB::AddProcedure(Node *node, std::vector<Node *> ancestor_list) {
   auto *procedure_node = dynamic_cast<ProcedureNode *>(node);
   proc_table_.AddProcedure(procedure_node->get_name());
 }
 
-void PKB::AddStatement(Node *node) {
+void PKB::AddStatement(Node *node, std::vector<Node *> ancestor_list) {
   stmt_table_.AddStatement(node);
 }
 
-void PKB::AddExprString(Node *node) {
+void PKB::AddExprString(Node *node, std::vector<Node *> ancestor_list) {
   if (node->get_kind() == NodeType::Assign) {
     auto *assign_node = dynamic_cast<AssignNode *>(node);
     // SUS
@@ -49,12 +49,14 @@ void PKB::AddExprString(Node *node) {
   }
 }
 
-void PKB::AddVariable(Node *node) {
+void PKB::AddVariable(Node *node, std::vector<Node *> ancestor_list) {
   auto *identifier_node = dynamic_cast<IdentifierNode *>(node);
-  var_table_.AddVariable(identifier_node->get_name());
+  if (ancestor_list.back()->get_kind() != NodeType::Call) {
+    var_table_.AddVariable(identifier_node->get_name());
+  }
 }
 
-void PKB::AddConstant(Node *node) {
+void PKB::AddConstant(Node *node, std::vector<Node *> ancestor_list) {
   auto *constant_node = dynamic_cast<ConstantNode *>(node);
   const_table_.AddConstant(std::stoi(constant_node->get_value()));
 }
@@ -123,13 +125,28 @@ void PKB::Initialise() {
 }
 
 void PKB::ExtractEntities() {
-  auto extract_variable = [this](Node *node) { PKB::AddVariable(node); };
-  auto extract_constant = [this](Node *node) { PKB::AddConstant(node); };
-  auto extract_statement = [this](Node *node) { PKB::AddStatement(node); };
-  auto extract_expr_string = [this](Node *node) { PKB::AddExprString(node); };
-  auto extract_procedure = [this](Node *node) { PKB::AddProcedure(node); };
+  auto extract_variable = [this](Node *node,
+                                 std::vector<Node *> ancestor_list) {
+    PKB::AddVariable(node, ancestor_list);
+  };
+  auto extract_constant = [this](Node *node,
+                                 std::vector<Node *> ancestor_list) {
+    PKB::AddConstant(node, ancestor_list);
+  };
+  auto extract_statement = [this](Node *node,
+                                  std::vector<Node *> ancestor_list) {
+    PKB::AddStatement(node, ancestor_list);
+  };
+  auto extract_expr_string = [this](Node *node,
+                                    std::vector<Node *> ancestor_list) {
+    PKB::AddExprString(node, ancestor_list);
+  };
+  auto extract_procedure = [this](Node *node,
+                                  std::vector<Node *> ancestor_list) {
+    PKB::AddProcedure(node, ancestor_list);
+  };
 
-  std::map<NodeType, std::vector<std::function<void(Node *)>>> functions = {
+  std::map<NodeType, std::vector<std::function<void(Node *, std::vector<Node *>)>>> functions = {
       {NodeType::Identifier, {extract_variable}},
       {NodeType::Constant, {extract_constant}},
       {NodeType::Assign, {extract_statement, extract_expr_string}},
@@ -141,7 +158,8 @@ void PKB::ExtractEntities() {
       {NodeType::Procedure, {extract_procedure}},
   };
 
-  Visit(root_, functions);
+  std::vector<Node *> ancestors;
+  VisitWithAncestors(root_, ancestors, functions);
 
   stmt_table_.PrintStatements();
   proc_table_.PrintProcedures();
@@ -203,14 +221,16 @@ void PKB::ExtractUsesModifies() {
 }
 
 void PKB::ExtractCalls() {
+  auto extract_calls_for_call_node = 
+    [this](Node *node, std::vector<Node *> ancestor_list) {
+    PKB::CallsProcessCallNode(node, ancestor_list);
+  };
+      
   std::map<
       NodeType,
       std::vector<std::function<void(Node *, std::vector<Node *>)>>>
       functions = {
-          {NodeType::Call,
-           {[this](Node *node, std::vector<Node *> ancestorList) {
-             PKB::CallsProcessCallNode(node, ancestorList);
-           }}},
+          {NodeType::Call, {extract_calls_for_call_node}},
       };
   std::vector<Node *> ancestors;
   VisitWithAncestors(root_, ancestors, functions);

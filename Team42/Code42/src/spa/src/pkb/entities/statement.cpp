@@ -1,5 +1,6 @@
 #include "statement.h"
 #include <iostream>
+#include <sstream>
 
 Statement::Statement(int line_no, NodeType type) {
   this->stmt_no_ = line_no;
@@ -21,6 +22,25 @@ NodeType Statement::get_kind() {
 std::string Statement::get_expr_string() {
   // TODO: Only applicable for AssignStatement for now, need to add if/while
   return expr_string_;
+}
+
+// TODO: would be nice if AST had a vector/set of variables used while generating postfix
+std::vector<std::string> Statement::get_vars_from_expr_string() {
+  std::string var;
+  std::vector<std::string> ans;
+  std::stringstream ss(expr_string_);
+  while (getline(ss, var, ' ')) {
+    // Check if first letter is LETTER according to grammar
+    bool valid = isalpha(var[0]);
+    for (auto &c : var) {
+      if (!isalnum(c)) {
+        valid = false;
+        break;
+      }
+    }
+    if (valid) ans.push_back(var);
+  }
+  return ans;
 }
 
 std::set<int> *Statement::get_followers() {
@@ -53,6 +73,13 @@ std::set<int> *Statement::get_children() {
 
 std::set<int> *Statement::get_children_star() {
   return &children_star_;
+}
+std::set<std::string> *Statement::get_uses() { 
+  return &uses_; 
+}
+
+std::set<std::string> *Statement::get_modifies() { 
+  return &modifies_; 
 }
 
 void Statement::set_expr_string(std::string expr_string) {
@@ -89,6 +116,14 @@ void Statement::AddChild(int line_no) {
 
 void Statement::AddChildStar(int line_no) {
   children_star_.insert(line_no);
+}
+
+void Statement::AddUses(std::string var_name) { 
+  uses_.insert(var_name); 
+}
+
+void Statement::AddModifies(std::string var_name) {
+  modifies_.insert(var_name);
 }
 
 void Statement::FollowsInfo() {
@@ -136,6 +171,24 @@ void Statement::ParentInfo() {
   std::cout << '\n';
   std::cout << "ChildrenStar: ";
   for (auto &x : children_star_) {
+    std::cout << x << ' ';
+  }
+  std::cout << '\n' << '\n';
+}
+
+void Statement::UsesInfo() {
+  std::cout << "Statement " << stmt_no_ << " uses:\n";
+  std::cout << "Uses: ";
+  for (auto &x : uses_) {
+    std::cout << x << ' ';
+  }
+  std::cout << '\n' << '\n';
+}
+
+void Statement::ModifiesInfo() {
+  std::cout << "Statement " << stmt_no_ << " modifies:\n";
+  std::cout << "Modifies: ";
+  for (auto &x : modifies_) {
     std::cout << x << ' ';
   }
   std::cout << '\n' << '\n';

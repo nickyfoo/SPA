@@ -18,15 +18,17 @@ class VarTable : public Table {
   int get_num_variables();
   // Get all variables.
   std::vector<Variable *> get_all_variables();
+  // Get variable by name.
+  Variable *get_variable(std::string var_name);
 
   // Prints information of all variables.
   void PrintVariables();
+  // Prints relationship information of all variables.
+  void PrintVariableDetails();
 
  private:
   // Table of all variables.
   std::vector<Variable> table_;
-  // Table of pointers to all variables.
-  std::vector<Variable *> all_variables_;
   // Table mapping each variable name to its corresponding index.
   std::map<std::string, int> name_to_index_;
 };

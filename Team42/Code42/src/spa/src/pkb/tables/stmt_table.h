@@ -50,8 +50,6 @@ class StmtTable : public Table {
   int num_statements_;
   // Table mapping each line number to its corresponding statement.
   std::map<int, Statement> table_;
-  // Table of all statements.
-  std::vector<Statement *> all_statements_;
   // Table mapping each statement type to a list of its corresponding
   // statements.
   std::map<NodeType, std::vector<Statement *>> type_to_statement_;

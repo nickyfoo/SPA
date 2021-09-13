@@ -15,7 +15,6 @@ void StmtTable::AddStatement(Node *node) {
   Statement s(stmt_no, stmt_node->get_kind());
   table_[stmt_no] = s;
   type_to_statement_[stmt_node->get_kind()].push_back(&table_[stmt_no]);
-  all_statements_.push_back(&table_[stmt_no]);
   num_statements_ = std::max(num_statements_, stmt_no);
 }
 
@@ -24,7 +23,11 @@ int StmtTable::get_num_statements() {
 }
 
 std::vector<Statement *> StmtTable::get_all_statements() {
-  return all_statements_;
+  std::vector<Statement *> ans;
+  for (auto &[stmt_no, stmt] : table_) {
+    ans.push_back(&stmt);
+  }
+  return ans;
 }
 
 std::vector<Statement *> StmtTable::get_statements(NodeType type) {

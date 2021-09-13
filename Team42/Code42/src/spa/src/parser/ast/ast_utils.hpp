@@ -357,7 +357,7 @@ inline std::vector<Node *> NextNodes(Node *node) {
   return next_nodes;
 }
 
-inline void Visit(Node *node, std::map<NodeType, std::vector<std::function<void(Node *currentNode)>>> functions) {
+inline void Visit(Node *node, std::map<NodeType, std::vector<std::function<void(Node *)>>> functions) {
   // TODO: throw an error
   if (node == nullptr) return;
 
@@ -369,3 +369,23 @@ inline void Visit(Node *node, std::map<NodeType, std::vector<std::function<void(
     if (n) Visit(n, functions);
   }
 }
+inline void VisitWithAncestors(
+  Node *node, 
+  std::vector<Node *>& ancestor_list, 
+  std::map<NodeType, 
+  std::vector<std::function<void(Node *currentNode, std::vector<Node *>ancestorList)>>>&functions) {
+  if (node) {
+    for (auto func : functions[node->get_kind()]) {
+      func(node, ancestor_list);
+    }
+  }
+
+  ancestor_list.push_back(node);
+  for (Node *n : NextNodes(node)) {
+    if (n) {
+      VisitWithAncestors(n, ancestor_list, functions);
+    }
+  }
+  ancestor_list.pop_back();
+}
+

@@ -72,3 +72,40 @@ TEST_CASE("Test pkb::GetParent()") {
     if (stmt) stmt->ParentInfo();
   }
 }
+
+TEST_CASE("Test pkb::ExtractCalls()") {
+  BufferedLexer lexer(source.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  pkb.PrintProcedures();
+  std::vector<Procedure *> procedures = pkb.get_all_procedures();
+  for (auto&proc:procedures){
+    proc->CallsInfo();
+  }
+}
+
+TEST_CASE("Test pkb::ExtractUsesModifies()") {
+  BufferedLexer lexer(source.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  pkb.PrintStatements();
+  pkb.PrintProcedures();
+  pkb.PrintVariables();
+  std::vector<Statement *> statements = pkb.get_all_statements();
+  for (auto &stmt : statements) {
+    stmt->UsesInfo();
+    stmt->ModifiesInfo();
+  }
+  std::vector<Procedure *> procedures = pkb.get_all_procedures();
+  for (auto &proc : procedures) {
+    proc->UsesInfo();
+    proc->ModifiesInfo();
+  }
+  std::vector<Variable *> variables = pkb.get_all_variables();
+  for (auto &var : variables) {
+    var->UsesInfo();
+    var->ModifiesInfo();
+  }
+}

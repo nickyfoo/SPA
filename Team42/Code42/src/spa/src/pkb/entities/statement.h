@@ -17,6 +17,8 @@ class Statement : public Entity {
   NodeType get_kind();
   // Gets the postfix expression string of an assignment statement.
   std::string get_expr_string();
+  // Gets the variables in the expr_string_.
+  std::vector<std::string> get_vars_from_expr_string();
   // Gets the statements which follows before this statement.
   std::set<int> *get_followers();
   // Gets the statements which follows star before this statement.
@@ -33,6 +35,10 @@ class Statement : public Entity {
   std::set<int> *get_children();
   // Gets the statements which this statement parents star.
   std::set<int> *get_children_star();
+  // Gets the variables which this statement uses.
+  std::set<std::string> *get_uses();
+  // Gets the variables which this statement modifies.
+  std::set<std::string> *get_modifies();
 
   // Sets the postfix expression string of this statement.
   void set_expr_string(std::string expr_string);
@@ -53,11 +59,19 @@ class Statement : public Entity {
   void AddChild(int line_no);
   // Adds a statement that this statement parents_star.
   void AddChildStar(int line_no);
+  // Adds a variable that this statement uses.
+  void AddUses(std::string var_name);
+  // Adds a variable that this statement modifies.
+  void AddModifies(std::string var_name);
 
   // Prints the follows information for this statement.
   void FollowsInfo();
   // Prints the parents information for this statement.
   void ParentInfo();
+  // Prints the variables used by this statement.
+  void UsesInfo();
+  // Prints the variables modified by this statement.
+  void ModifiesInfo();
 
  private:
   // Statement number in program.
@@ -75,4 +89,9 @@ class Statement : public Entity {
   std::set<int> parents_, parents_star_;
   // for v in children_, Parent(this, v) is true.
   std::set<int> children_, children_star_;
+
+  // for var in uses_, Uses(this, var) is true.
+  std::set<std::string> uses_;
+  // for var in modifies_, Modifies(this, var) is true.
+  std::set<std::string> modifies_;
 };

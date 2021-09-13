@@ -10,12 +10,15 @@ void ConstTable::AddConstant(int value) {
   if (it == table_.end()) {
     Constant c(value);
     table_[value] = c;
-    all_constants_.push_back(&table_[value]);
   }
 }
 
 std::vector<Constant *> ConstTable::get_all_constants() {
-  return all_constants_;
+  std::vector<Constant *> ans;
+  for (auto &[stmt_no, stmt] : table_) {
+    ans.push_back(&stmt);
+  }
+  return ans;
 }
 
 void ConstTable::PrintConstants() {

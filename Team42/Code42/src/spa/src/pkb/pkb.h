@@ -27,7 +27,9 @@ class PKB {
   void AddVariable(Node *node);
   // Adds a constant to the variables table.
   void AddConstant(Node *node);
-
+  
+  // Gets the total number of procedures in the procedure table
+  int PKB::get_num_procedures();
   // Gets all procedures in the program.
   std::vector<Procedure *> get_all_procedures();
   // Gets a procedure by its procedure name.
@@ -54,6 +56,10 @@ class PKB {
 
   // Prints information of statements in the statement table.
   void PrintStatements();
+  // Prints information of procedures in the procedure table.
+  void PrintProcedures();
+  // Prints information of variables in the variable table.
+  void PrintVariables();
 
  private:
   // Populates the tables with entities and relationships from AST.
@@ -61,9 +67,15 @@ class PKB {
   // Extracts entities from the AST root node and stores them in the pkb.
   void ExtractEntities();
   // Extracts Follows/Follows_Star relationships in the AST.
-  void GetFollows();
+  void ExtractFollows();
   // Extracts Parent/Parent_Star relationships in the AST.
-  void GetParent();
+  void ExtractParent();
+  // Extracts direct Uses relationships in the AST.
+  void ExtractUsesModifies();
+  // Extracts Calls/Calls* relationships in the AST.
+  void ExtractCalls();
+  // Updates procs_using_ and procs_modifying_ in var_table_.
+  void UpdateVarTableWithProcs();
 
   // Process and store Follows relationships for the AST procedure node.
   void FollowsProcessProcedureNode(Node *node);
@@ -76,6 +88,17 @@ class PKB {
   void ParentProcessIfNode(Node *node);
   // Process and store Parent relationships for the AST while node.
   void ParentProcessWhileNode(Node *node);
+
+  // Process and store Uses/Modifies relationships for the AST assign node.
+  void UsesModifiesProcessAssignNode(Node *node, std::vector<Node *> &ancestorList);
+  // Process and store Uses/Modifies relationships for the AST read node.
+  void UsesModifiesProcessReadNode(Node *node, std::vector<Node *> &ancestorList);
+  // Process and store Uses/Modifies relationships for the AST print node.
+  void UsesModifiesProcessPrintNode(Node *node, std::vector<Node *> &ancestorList);
+
+  
+  // Process and store Calls relationships for the AST call node.
+  void CallsProcessCallNode(Node *node, std::vector<Node *> &ancestorList);
 
   // Root AST node of the program.
   Node *root_;

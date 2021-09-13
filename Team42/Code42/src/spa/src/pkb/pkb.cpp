@@ -22,7 +22,8 @@ void PKB::AddStatement(Node *node) {
 void PKB::AddExprString(Node *node) {
   if (node->get_kind() == NodeType::Assign) {
     auto *assign_node = dynamic_cast<AssignNode *>(node);
-    switch (assign_node->get_kind()) {
+    // SUS
+    switch (assign_node->expr()->get_kind()) {
       case NodeType::Expression: {
         auto *expression_node = dynamic_cast<ExpressionNode *>(assign_node->expr());
         std::string expr_string = expression_node->get_expr_string();
@@ -56,6 +57,10 @@ void PKB::AddVariable(Node *node) {
 void PKB::AddConstant(Node *node) {
   auto *constant_node = dynamic_cast<ConstantNode *>(node);
   const_table_.AddConstant(std::stoi(constant_node->get_value()));
+}
+
+int PKB::get_num_procedures() {
+  return proc_table_.get_num_procedures();
 }
 
 std::vector<Procedure *> PKB::get_all_procedures() {
@@ -98,10 +103,23 @@ void PKB::PrintStatements() {
   stmt_table_.PrintStatements();
 }
 
+void PKB::PrintProcedures() { 
+  proc_table_.PrintProcedureDetails(); 
+}
+
+void PKB::PrintVariables() { 
+  var_table_.PrintVariableDetails(); 
+}
+
+
+
+ 
 void PKB::Initialise() {
   ExtractEntities();
-  GetFollows();
-  GetParent();
+  ExtractFollows();
+  ExtractParent();
+  ExtractCalls();
+  ExtractUsesModifies();
 }
 
 void PKB::ExtractEntities() {
@@ -131,7 +149,7 @@ void PKB::ExtractEntities() {
   const_table_.PrintConstants();
 }
 
-void PKB::GetFollows() {
+void PKB::ExtractFollows() {
   auto extract_follows_for_if_node = [this](Node *node) { PKB::FollowsProcessIfNode(node); };
   auto extract_follows_for_while_node = [this](Node *node) { PKB::FollowsProcessWhileNode(node); };
   auto extract_follows_for_procedure_node = [this](Node *node) { PKB::FollowsProcessProcedureNode(node); };
@@ -146,7 +164,7 @@ void PKB::GetFollows() {
   stmt_table_.ProcessFollowsStar();
 }
 
-void PKB::GetParent() {
+void PKB::ExtractParent() {
   auto extract_parents_for_if_node = [this](Node *node) { PKB::ParentProcessIfNode(node); };
   auto extract_parents_for_while_node = [this](Node *node) { PKB::ParentProcessWhileNode(node); };
 
@@ -157,6 +175,59 @@ void PKB::GetParent() {
   Visit(root_, functions);
   stmt_table_.ProcessParent();
   stmt_table_.ProcessParentStar();
+}
+
+void PKB::ExtractUsesModifies() {
+  auto extract_uses_modifies_for_assign_node =
+      [this](Node *node, std::vector<Node *> ancestor_list) {
+        PKB::UsesModifiesProcessAssignNode(node, ancestor_list);
+      };
+  auto extract_uses_modifies_for_read_node =
+      [this](Node *node, std::vector<Node *> ancestor_list) {
+        PKB::UsesModifiesProcessReadNode(node, ancestor_list);
+      };
+  auto extract_uses_modifies_for_print_node =
+      [this](Node *node, std::vector<Node *> ancestor_list) {
+        PKB::UsesModifiesProcessPrintNode(node, ancestor_list);
+      };
+
+  std::map<NodeType, std::vector<std::function<void(Node *, std::vector<Node *>)>>> functions = {
+          {NodeType::Assign, {extract_uses_modifies_for_assign_node}},
+          {NodeType::Read, {extract_uses_modifies_for_read_node}},
+          {NodeType::Print, {extract_uses_modifies_for_print_node}},
+  };
+  std::vector<Node *> ancestors;
+  VisitWithAncestors(root_, ancestors, functions);
+  proc_table_.ProcessUsesModifiesIndirect();
+  UpdateVarTableWithProcs();
+}
+
+void PKB::ExtractCalls() {
+  std::map<
+      NodeType,
+      std::vector<std::function<void(Node *, std::vector<Node *>)>>>
+      functions = {
+          {NodeType::Call,
+           {[this](Node *node, std::vector<Node *> ancestorList) {
+             PKB::CallsProcessCallNode(node, ancestorList);
+           }}},
+      };
+  std::vector<Node *> ancestors;
+  VisitWithAncestors(root_, ancestors, functions);
+
+  proc_table_.ProcessCalls();
+  proc_table_.ProcessCallsStar();
+}
+
+void PKB::UpdateVarTableWithProcs() {
+  for (auto &proc : proc_table_.get_all_procedures()) {
+    for (auto &var_name : *(proc->get_uses())) {
+      var_table_.get_variable(var_name)->AddProcUsing(proc->get_name());
+    }
+    for (auto &var_name : *(proc->get_modifies())) {
+      var_table_.get_variable(var_name)->AddProcModifying(proc->get_name());
+    }
+  }
 }
 
 void PKB::FollowsProcessProcedureNode(Node *node) {
@@ -186,7 +257,7 @@ void PKB::FollowsProcessIfNode(Node *node) {
     stmt_table_.get_statement(then_line_nos[i])->AddFollowee(then_line_nos[i - 1]);
   }
 
-  for (StatementNode *n : if_node->get_then_stmt_lst()) {
+  for (StatementNode *n : if_node->get_else_stmt_lst()) {
     else_line_nos.push_back(n->get_stmt_no());
   }
   std::sort(else_line_nos.begin(), else_line_nos.end());
@@ -220,7 +291,7 @@ void PKB::ParentProcessIfNode(Node *node) {
     stmt_table_.get_statement(n->get_stmt_no())->AddParent(if_statement->get_stmt_no());
   }
 
-  for (StatementNode *n : if_node->get_then_stmt_lst()) {
+  for (StatementNode *n : if_node->get_else_stmt_lst()) {
     if_statement->AddChild(n->get_stmt_no());
     // TODO: Check and throw error if NULL
     stmt_table_.get_statement(n->get_stmt_no())->AddParent(if_statement->get_stmt_no());
@@ -233,5 +304,75 @@ void PKB::ParentProcessWhileNode(Node *node) {
   for (StatementNode *n : while_node->get_stmt_list()) {
     while_statement->AddChild(n->get_stmt_no());
     stmt_table_.get_statement(n->get_stmt_no())->AddParent(while_statement->get_stmt_no()); //might want to do error checking here if NULL
+  }
+}
+
+
+void PKB::UsesModifiesProcessAssignNode(Node *node, std::vector<Node *> &ancestorList) {
+  auto *assign_node = dynamic_cast<AssignNode *>(node);
+  Statement *assign_statement = stmt_table_.get_statement(assign_node->get_stmt_no());
+  assign_statement->AddModifies(assign_node->get_var()->get_name());
+  var_table_.get_variable(assign_node->get_var()->get_name())->AddStmtModifying(assign_statement->get_stmt_no());
+  for (auto &var : assign_statement->get_vars_from_expr_string()) {
+    assign_statement->AddUses(var);
+    var_table_.get_variable(var)->AddStmtUsing(assign_statement->get_stmt_no());
+  }
+  for (Node *n : ancestorList) {
+    if (n->get_kind() == NodeType::Procedure) {
+      auto *procedure_node = dynamic_cast<ProcedureNode *>(n);
+      Procedure *proc = proc_table_.get_procedure(procedure_node->get_name());
+      for (auto &var : *(assign_statement->get_uses())) {
+        proc->AddUses(var);
+      }
+      proc->AddModifies(assign_node->get_var()->get_name());
+    }
+    // TODO: not working for container exp yet
+    if (n->get_kind() == NodeType::If || n->get_kind()== NodeType::While) {
+      auto statement_node = dynamic_cast<StatementNode *>(n);
+      for (auto &var : *(assign_statement->get_uses())) {
+        stmt_table_.get_statement(statement_node->get_stmt_no())->AddUses(var);
+      }
+    }
+  }
+}
+// Process and store Uses relationships for the AST read node.
+void PKB::UsesModifiesProcessReadNode(Node *node, std::vector<Node *> &ancestorList) {
+  auto *read_node = dynamic_cast<ReadNode *>(node);
+  for (Node *n : ancestorList) {
+    if (n->get_kind() == NodeType::Procedure) {
+      auto *procedure_node = dynamic_cast<ProcedureNode *>(n);
+      proc_table_.get_procedure(procedure_node->get_name())->AddModifies(read_node->get_var()->get_name());
+    }
+  }
+  stmt_table_.get_statement(read_node->get_stmt_no())
+      ->AddModifies(read_node->get_var()->get_name());
+  var_table_.get_variable(read_node->get_var()->get_name())
+      ->AddStmtModifying(read_node->get_stmt_no());
+}
+// Process and store Uses relationships for the AST print node.
+void PKB::UsesModifiesProcessPrintNode(Node *node, std::vector<Node *> &ancestorList) {
+  auto *print_node = dynamic_cast<PrintNode *>(node);
+  for (Node *n : ancestorList) {
+    if (n->get_kind() == NodeType::Procedure) {
+      auto *procedure_node = dynamic_cast<ProcedureNode *>(n);
+      proc_table_.get_procedure(procedure_node->get_name())
+          ->AddUses(print_node->get_var()->get_name());
+    }
+  }
+  stmt_table_.get_statement(print_node->get_stmt_no())->AddUses(print_node->get_var()->get_name());
+  var_table_.get_variable(print_node->get_var()->get_name())
+      ->AddStmtUsing(print_node->get_stmt_no());
+}
+
+void PKB::CallsProcessCallNode(Node *node, std::vector<Node *> &ancestorList) {
+  auto *call_node = dynamic_cast<CallNode *>(node);
+  for (Node *n : ancestorList) {
+    if (n->get_kind() == NodeType::Procedure) {
+      auto *procedure_node = dynamic_cast<ProcedureNode *>(n);
+      proc_table_.get_procedure(procedure_node->get_name())
+          ->AddCalls(call_node->get_proc()->get_name());
+      proc_table_.get_procedure(call_node->get_proc()->get_name())
+          ->AddCallers(procedure_node->get_name());
+    }
   }
 }

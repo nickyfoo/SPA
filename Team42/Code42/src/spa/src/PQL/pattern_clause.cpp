@@ -46,22 +46,22 @@ bool PatternClause::IsValidRightRef(std::string ref) {
     }
 
     ref = ref.substr(1, ref.length() - 2);  // remove ""
-    bool expectingExp = false;
+    bool expecting_exp = false;
     for (char& c : ref) {
-        if (!expectingExp && IsExp(c)) {
+        if (!expecting_exp && IsExp(c)) {
             return false;
         } else {
             if (IsExp(c)) {
-                expectingExp = false;
+                expecting_exp = false;
             } else if (IsChar(c)) {
-                expectingExp = true;
+                expecting_exp = true;
             } else {
                 return false;
             }
         }
     }
 
-    if (!expectingExp && !ref.empty()) {
+    if (!expecting_exp && !ref.empty()) {
         return false;
     }
 

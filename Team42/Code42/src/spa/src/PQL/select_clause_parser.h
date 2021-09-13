@@ -32,7 +32,7 @@ class SelectClauseParser {
     PatternClause *MakePatternClause(std::string pattern_statement);
     static std::vector<std::string> SplitSelect(std::string select_clause);
     static std::vector<std::string> SplitTokensByDelimiter(
-            std::string input, const std::string& delimiter);
+            std::string input, const std::string &delimiter);
     static std::vector<std::string> SplitTokensByMultipleDelimiters(
             const std::string &input, const std::string &delimiters);
     static std::tuple<std::string, std::vector<std::string>,

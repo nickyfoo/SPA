@@ -57,7 +57,7 @@ PQLQuery *SelectClauseParser::get_clauses() {std::tuple<std::string,
         such_that_ret->push_back(relationship);
     }
 
-    for (const std::string& pattern_clause : pattern_clauses) {
+    for (const std::string &pattern_clause : pattern_clauses) {
         PatternClause *pattern = MakePatternClause(pattern_clause);
         if (pattern == nullptr) {
             return nullptr;
@@ -70,7 +70,7 @@ PQLQuery *SelectClauseParser::get_clauses() {std::tuple<std::string,
     return ret;
 }
 
-SuchThatClause* SelectClauseParser::MakeSuchThatClause(
+SuchThatClause *SelectClauseParser::MakeSuchThatClause(
         std::string relationship_statement) {
     if (relationship_statement.empty()) {
         return nullptr;
@@ -87,7 +87,7 @@ SuchThatClause* SelectClauseParser::MakeSuchThatClause(
         return nullptr;
     }
 
-    auto* relationship = new SuchThatClause(relationship_clauses.at(0));
+    auto *relationship = new SuchThatClause(relationship_clauses.at(0));
     if (relationship->get_type() == RelRef::None) {  // invalid relation
         return nullptr;
     }
@@ -130,19 +130,19 @@ PatternClause *SelectClauseParser::MakePatternClause(
     return pattern;
 }
 
-PatternClause *SelectClauseParser::MakePatternRef(const std::string& synonym,
+PatternClause *SelectClauseParser::MakePatternRef(const std::string &synonym,
                                                   std::string left_ref,
                                                   std::string right_ref) {
     PatternClause *ret;
     auto *entRef = new EntRef();
     if ((synonym_to_entity_->find(synonym) != synonym_to_entity_->end())
-    && (synonym_to_entity_->at(synonym)->getType() == EntityType::Assign)) {
+    && (synonym_to_entity_->at(synonym)->get_type() == EntityType::Assign)) {
         ret = new PatternClause(synonym_to_entity_->find(synonym)->second);
     } else {
         return nullptr;
     }
     if ((synonym_to_entity_->find(left_ref) != synonym_to_entity_->end()) &&
-        (synonym_to_entity_->at(left_ref)->getType() == EntityType::Variable)) {
+        (synonym_to_entity_->at(left_ref)->get_type() == EntityType::Variable)) {
         entRef->set_synonym(left_ref);
     } else if (left_ref == "_") {
         entRef->set_wild_card();
@@ -166,7 +166,7 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRef(
 
     // existing synonym_
     if (synonym_to_entity_->find(ref) != synonym_to_entity_->end()) {
-        EntityType entity_type = synonym_to_entity_->at(ref)->getType();
+        EntityType entity_type = synonym_to_entity_->at(ref)->get_type();
         switch (entity_type) {
           case EntityType::Assign:
           case EntityType::Call:

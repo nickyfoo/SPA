@@ -8,3 +8,5 @@ NodeType IdentifierNode::get_kind() { return NodeType::Identifier; }
 
 std::string IdentifierNode::get_name() { return this->name_; }
 
+std::string IdentifierNode::get_expr_string() { return this->name_; }
+

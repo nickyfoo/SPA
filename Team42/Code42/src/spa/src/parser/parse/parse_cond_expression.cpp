@@ -23,7 +23,7 @@ Node *ParseCondExpression(BufferedLexer *lexer, ParseState *state) {
     }
 
     return new CondExpressionNode(CondExprOp::Not, left, nullptr,
-                                  LocInfo{.line_no = start_line, .col_no = start_col});
+                                  {start_line, start_col});
   }
 
   if (t->kind_ == TokenType::Constant || t->kind_ == TokenType::Identifier) {
@@ -63,6 +63,6 @@ Node *ParseCondExpression(BufferedLexer *lexer, ParseState *state) {
     throw ParseException("expected right parenthesis", t->line_no_, t->col_no_);
   }
 
-  return new CondExpressionNode(op, left, right, LocInfo{.line_no=start_line, .col_no=start_col});
+  return new CondExpressionNode(op, left, right, {start_line, start_col});
 }
 

@@ -90,11 +90,11 @@ bool Precedes(const Token *op1, const Token *op2) {
 }
 
 ConstantNode *MakeConstantNodeFromToken(const Token *t) {
-  return new ConstantNode(t->value_, LocInfo{.line_no = t->line_no_, .col_no = t->col_no_});
+  return new ConstantNode(t->value_, {t->line_no_, t->col_no_});
 };
 
 IdentifierNode *MakeIdentifierNodeFromToken(const Token *t) {
-  return new IdentifierNode(t->value_, LocInfo{.line_no = t->line_no_, .col_no = t->col_no_});
+  return new IdentifierNode(t->value_, {t->line_no_, t->col_no_});
 };
 
 void PopExpressionNodeFromStacks(const Token *op, std::stack<Node *> *result_stack,
@@ -119,7 +119,7 @@ void PopExpressionNodeFromStacks(const Token *op, std::stack<Node *> *result_sta
   result_stack->pop();
 
   std::string expr_str = StringFormat("%s %s %s", left_str.c_str(), right_str.c_str(), expr_op_str.c_str());
-  LocInfo loc = LocInfo{.line_no = left->get_line_no(), .col_no = left->get_col_no()};
+  LocInfo loc = {left->get_line_no(), left->get_col_no()};
 
   result_stack->push(new ExpressionNode(expr_op, left, right, expr_str, loc));
   expr_str_stack->push(expr_str);

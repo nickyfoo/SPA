@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include <map>
-
+#include <functional>
 #include "ast.h"
 
 bool IsIdentifierEqual(IdentifierNode *i1, IdentifierNode *i2);

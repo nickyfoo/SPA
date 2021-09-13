@@ -9,7 +9,7 @@
 
 TEST_CASE("TestParseExpression 1") {
   std::string source = "102";
-  auto *expected = new ConstantNode("102", LocInfo{.line_no = 1, .col_no = 0});
+  auto *expected = new ConstantNode("102", {1, 0});
 
   BufferedLexer *lexer = new BufferedLexer(source.c_str());
   Node *res = ParseExpression(lexer, new ParseState{});
@@ -21,13 +21,11 @@ TEST_CASE("TestParseExpression 2") {
   std::string source = "1 * 1 + x * y";
   auto *expected = new ExpressionNode(
       ExprOp::Plus,
-      new ExpressionNode(ExprOp::Times, new ConstantNode("1", LocInfo{.line_no = 1, .col_no = 0}),
-                         new ConstantNode("1", LocInfo{.line_no = 1, .col_no = 4}), "1 1 *",
-                         LocInfo{.line_no = 1, .col_no = 0}),
-      new ExpressionNode(ExprOp::Times, new IdentifierNode("x", LocInfo{.line_no = 1, .col_no = 8}),
-                         new IdentifierNode("y", LocInfo{.line_no = 1, .col_no = 12}), "x y *",
-                         LocInfo{.line_no = 1, .col_no = 8}),
-      "1 1 * x y * +", LocInfo{.line_no = 1, .col_no = 0});
+      new ExpressionNode(ExprOp::Times, new ConstantNode("1", {1, 0}),
+                         new ConstantNode("1", {1, 4}), "1 1 *", {1, 0}),
+      new ExpressionNode(ExprOp::Times, new IdentifierNode("x", {1, 8}),
+                         new IdentifierNode("y", {1, 12}), "x y *", {1, 8}),
+      "1 1 * x y * +", {1, 0});
 
   BufferedLexer *lexer = new BufferedLexer(source.c_str());
   Node *res = ParseExpression(lexer, new ParseState{});
@@ -40,14 +38,12 @@ TEST_CASE("TestParseExpression 3") {
   auto *expected = new ExpressionNode(
       ExprOp::Minus,
       new ExpressionNode(
-          ExprOp::Plus, new ConstantNode("1", LocInfo{.line_no = 1, .col_no = 0}),
+          ExprOp::Plus, new ConstantNode("1", {1, 0}),
           new ExpressionNode(ExprOp::Times,
-                             new IdentifierNode("x", LocInfo{.line_no = 1, .col_no = 4}),
-                             new ConstantNode("4", LocInfo{.line_no = 1, .col_no = 8}), "x 4 *",
-                             LocInfo{.line_no = 1, .col_no = 4}),
-          "1 x 4 * +", LocInfo{.line_no = 1, .col_no = 0}),
-      new IdentifierNode("b", LocInfo{.line_no = 1, .col_no = 12}), "1 x 4 * + b -",
-      LocInfo{.line_no = 1, .col_no = 0});
+                             new IdentifierNode("x", {1, 4}),
+                             new ConstantNode("4", {1, 8}), "x 4 *", {1, 4}),
+          "1 x 4 * +", {1, 0}),
+      new IdentifierNode("b", {1, 12}), "1 x 4 * + b -", {1, 0});
 
   BufferedLexer *lexer = new BufferedLexer(source.c_str());
   Node *res = ParseExpression(lexer, new ParseState{});
@@ -62,13 +58,11 @@ TEST_CASE("TestParseExpression 4") {
       new ExpressionNode(
           ExprOp::Divide,
           new ExpressionNode(ExprOp::Times,
-                             new ConstantNode("3", LocInfo{.line_no = 1, .col_no = 0}),
-                             new ConstantNode("1", LocInfo{.line_no = 1, .col_no = 4}), "3 1 *",
-                             LocInfo{.line_no = 1, .col_no = 0}),
-          new IdentifierNode("a", LocInfo{.line_no = 1, .col_no = 8}), "3 1 * a /",
-          LocInfo{.line_no = 1, .col_no = 0}),
-      new ConstantNode("5", LocInfo{.line_no = 1, .col_no = 12}), "3 1 * a / 5 +",
-      LocInfo{.line_no = 1, .col_no = 0});
+                             new ConstantNode("3", {1, 0}),
+                             new ConstantNode("1", {1, 4}), "3 1 *", {1, 0}),
+          new IdentifierNode("a", {1, 8}), "3 1 * a /",
+          {1, 0}),
+      new ConstantNode("5", {1, 12}), "3 1 * a / 5 +", {1, 0});
 
   BufferedLexer *lexer = new BufferedLexer(source.c_str());
   Node *res = ParseExpression(lexer, new ParseState{});
@@ -83,13 +77,10 @@ TEST_CASE("TestParseExpression 5") {
       new ExpressionNode(
           ExprOp::Times,
           new ExpressionNode(ExprOp::Plus,
-                             new ConstantNode("3", LocInfo{.line_no = 1, .col_no = 1}),
-                             new IdentifierNode("b", LocInfo{.line_no = 1, .col_no = 5}), "3 b +",
-                             LocInfo{.line_no = 1, .col_no = 1}),
-          new ConstantNode("2", LocInfo{.line_no = 1, .col_no = 10}), "3 b + 2 *",
-          LocInfo{.line_no = 1, .col_no = 1}),
-      new ConstantNode("4", LocInfo{.line_no = 1, .col_no = 14}), "3 b + 2 * 4 +",
-      LocInfo{.line_no = 1, .col_no = 1});
+                             new ConstantNode("3", {1, 1}),
+                             new IdentifierNode("b", {1, 5}), "3 b +", {1, 1}),
+          new ConstantNode("2", {1, 10}), "3 b + 2 *", {1, 1}),
+      new ConstantNode("4", {1, 14}), "3 b + 2 * 4 +", {1, 1});
 
   BufferedLexer *lexer = new BufferedLexer(source.c_str());
   Node *res = ParseExpression(lexer, new ParseState{});

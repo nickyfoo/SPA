@@ -1,5 +1,6 @@
 #include <vector>
 #include "pkb.h"
+#include <algorithm>
 #include "ast_utils.hpp"
 
 PKB::PKB(Node *programRoot) {
@@ -179,7 +180,7 @@ void PKB::FollowsProcessIfNode(Node *node) {
   for (StatementNode *n : if_node->get_then_stmt_lst()) {
     then_line_nos.push_back(n->get_stmt_no());
   }
-  sort(then_line_nos.begin(), then_line_nos.end());
+  std::sort(then_line_nos.begin(), then_line_nos.end());
   for (int i = 1; i < then_line_nos.size(); i++) {
     stmt_table_.get_statement(then_line_nos[i - 1])->AddFollower(then_line_nos[i]);
     stmt_table_.get_statement(then_line_nos[i])->AddFollowee(then_line_nos[i - 1]);
@@ -188,7 +189,7 @@ void PKB::FollowsProcessIfNode(Node *node) {
   for (StatementNode *n : if_node->get_then_stmt_lst()) {
     else_line_nos.push_back(n->get_stmt_no());
   }
-  sort(else_line_nos.begin(), else_line_nos.end());
+  std::sort(else_line_nos.begin(), else_line_nos.end());
   for (int i = 1; i < else_line_nos.size(); i++) {
     stmt_table_.get_statement(else_line_nos[i - 1])->AddFollower(else_line_nos[i]);
     stmt_table_.get_statement(else_line_nos[i])->AddFollowee(else_line_nos[i - 1]);

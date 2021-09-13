@@ -1,7 +1,7 @@
 #include "statement.h"
 #include <iostream>
 
-Statement::Statement(int line_no, ast::Kind type) {
+Statement::Statement(int line_no, NodeType type) {
   this->stmt_no_ = line_no;
   this->kind_ = type;
 }
@@ -14,31 +14,31 @@ int Statement::get_stmt_no() {
   return stmt_no_;
 }
 
-int Statement::get_stmt_no(ast::Node *node) {
-  switch (node->kind) {
-    case ast::Assign: {
-      ast::AssignNode *castedAssignNode{static_cast<ast::AssignNode *>(node)};
-      return castedAssignNode->stmtNo;
+int Statement::get_stmt_no(Node *node) {
+  switch (node->get_kind()) {
+    case NodeType::Assign: {
+      AssignNode *assign_node{static_cast<AssignNode *>(node)};
+      return assign_node->get_stmt_no();
     }
-    case ast::If: {
-      ast::IfNode *castedIfNode{static_cast<ast::IfNode *>(node)};
-      return castedIfNode->stmtNo;
+    case NodeType::If: {
+      IfNode *if_node{static_cast<IfNode *>(node)};
+      return if_node->get_stmt_no();
     }
-    case ast::While: {
-      ast::WhileNode *castedWhileNode{static_cast<ast::WhileNode *>(node)};
-      return castedWhileNode->stmtNo;
+    case NodeType::While: {
+      WhileNode *while_node{static_cast<WhileNode *>(node)};
+      return while_node->get_stmt_no();
     }
-    case ast::Read: {
-      ast::ReadNode *castedReadNode{static_cast<ast::ReadNode *>(node)};
-      return castedReadNode->stmtNo;
+    case NodeType::Read: {
+      ReadNode *read_node{static_cast<ReadNode *>(node)};
+      return read_node->get_stmt_no();
     }
-    case ast::Print: {
-      ast::PrintNode *castedPrintNode{static_cast<ast::PrintNode *>(node)};
-      return castedPrintNode->stmtNo;
+    case NodeType::Print: {
+      PrintNode *print_node{static_cast<PrintNode *>(node)};
+      return print_node->get_stmt_no();
     }
-    case ast::Call: {
-      ast::CallNode *castedCallNode{static_cast<ast::CallNode *>(node)};
-      return castedCallNode->stmtNo;
+    case NodeType::Call: {
+      CallNode *call_node{static_cast<CallNode *>(node)};
+      return call_node->get_stmt_no();
     }
     default: {
       return 0;
@@ -46,7 +46,7 @@ int Statement::get_stmt_no(ast::Node *node) {
   }
 };
 
-ast::Kind Statement::get_kind() {
+NodeType Statement::get_kind() {
   return kind_;
 }
 

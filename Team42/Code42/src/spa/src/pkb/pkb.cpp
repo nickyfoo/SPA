@@ -1,44 +1,47 @@
 #include <vector>
 #include "pkb.h"
+#include "ast_utils.hpp"
 
-PKB::PKB(ast::Node *programRoot) {
+PKB::PKB(Node *programRoot) {
   this->root_ = programRoot;
   Initialise();
 }
 
 PKB::~PKB() = default;
 
-void PKB::AddProcedure(ast::Node *node) {
-  auto *procedure_node = (ast::ProcedureNode *) node;
-  proc_table_.AddProcedure(procedure_node->name);
+void PKB::AddProcedure(Node *node) {
+  auto *procedure_node = (ProcedureNode *) node;
+  proc_table_.AddProcedure(procedure_node->get_name());
 }
 
-void PKB::AddStatement(ast::Node *node) {
+void PKB::AddStatement(Node *node) {
   stmt_table_.AddStatement(node);
 }
 
-void PKB::AddExprString(ast::Node *node) {
-  if (node->kind == ast::Assign) {
-    auto *assign_node = (ast::AssignNode *) node;
-    stmt_table_.get_statement(assign_node->stmtNo)->set_expr_string(assign_node->expr->exprString);
+void PKB::AddExprString(Node *node) {
+  if (node->get_kind() == NodeType::Assign) {
+    auto *assign_node = (AssignNode *) node;
+    // TODO: CORRECT THIS PLS
+    auto *expr_node = (ExpressionNode *) assign_node->expr();
+    stmt_table_.get_statement(assign_node->get_stmt_no())->set_expr_string(expr_node->get_expr_string());
   }
 }
 
-void PKB::AddVariable(ast::Node *node) {
-  auto *identifier_node = (ast::IdentifierNode *) node;
-  var_table_.AddVariable(identifier_node->name);
+void PKB::AddVariable(Node *node) {
+  auto *identifier_node = (IdentifierNode *) node;
+  var_table_.AddVariable(identifier_node->get_name());
 }
 
-void PKB::AddConstant(ast::Node *node) {
-  auto *constant_node = (ast::ConstantNode *) node;
-  const_table_.AddConstant(std::stoi(constant_node->value));
+void PKB::AddConstant(Node *node) {
+  auto *constant_node = (ConstantNode *) node;
+  const_table_.AddConstant(std::stoi(constant_node->get_value()));
 }
 
-std::vector<Procedure *> PKB::get_all_procedures() {
+std::vector<class Procedure *> PKB::get_all_procedures() {
   return proc_table_.get_all_procedures();
 }
 
-Procedure *PKB::get_procedure(std::string &name) {
+class Procedure *PKB::get_procedure(std::string &name) {
   return proc_table_.get_procedure(name);
 }
 
@@ -50,7 +53,7 @@ std::vector<Statement *> PKB::get_all_statements() {
   return stmt_table_.get_all_statements();
 }
 
-std::vector<Statement *> PKB::get_statements(ast::Kind type) {
+std::vector<Statement *> PKB::get_statements(NodeType type) {
   return stmt_table_.get_statements(type);
 }
 
@@ -77,21 +80,21 @@ void PKB::Initialise() {
 }
 
 void PKB::ExtractEntities() {
-  std::map<ast::Kind, std::vector<std::function<void(ast::Node *)>>> functions = {
-      {ast::Identifier, {[this](ast::Node *node) { PKB::AddVariable(node); }}},
-      {ast::Constant, {[this](ast::Node *node) { PKB::AddConstant(node); }}},
-      {ast::Assign, {
-          [this](ast::Node *node) { PKB::AddStatement(node); },
-          [this](ast::Node *node) { PKB::AddExprString(node); }}},
-      {ast::If, {[this](ast::Node *node) { PKB::AddStatement(node); }}},
-      {ast::While, {[this](ast::Node *node) { PKB::AddStatement(node); }}},
-      {ast::Read, {[this](ast::Node *node) { PKB::AddStatement(node); }}},
-      {ast::Print, {[this](ast::Node *node) { PKB::AddStatement(node); }}},
-      {ast::Call, {[this](ast::Node *node) { PKB::AddStatement(node); }}},
-      {ast::Procedure, {[this](ast::Node *node) { PKB::AddProcedure(node); }}},
+  std::map<NodeType, std::vector<std::function<void(Node *)>>> functions = {
+      {NodeType::Identifier, {[this](Node *node) { PKB::AddVariable(node); }}},
+      {NodeType::Constant, {[this](Node *node) { PKB::AddConstant(node); }}},
+      {NodeType::Assign, {
+          [this](Node *node) { PKB::AddStatement(node); },
+          [this](Node *node) { PKB::AddExprString(node); }}},
+      {NodeType::If, {[this](Node *node) { PKB::AddStatement(node); }}},
+      {NodeType::While, {[this](Node *node) { PKB::AddStatement(node); }}},
+      {NodeType::Read, {[this](Node *node) { PKB::AddStatement(node); }}},
+      {NodeType::Print, {[this](Node *node) { PKB::AddStatement(node); }}},
+      {NodeType::Call, {[this](Node *node) { PKB::AddStatement(node); }}},
+      {NodeType::Procedure, {[this](Node *node) { PKB::AddProcedure(node); }}},
   };
 
-  ast::visit(root_, functions);
+  Visit(root_, functions);
 
   stmt_table_.PrintStatements();
   proc_table_.PrintProcedures();
@@ -100,31 +103,31 @@ void PKB::ExtractEntities() {
 }
 
 void PKB::GetFollows() {
-  std::map<ast::Kind, std::vector<std::function<void(ast::Node *)>>> functions = {
-      {ast::If, {[this](ast::Node *node) { PKB::FollowsProcessIfNode(node); }}},
-      {ast::While, {[this](ast::Node *node) { PKB::FollowsProcessWhileNode(node); }}},
-      {ast::Procedure, {[this](ast::Node *node) { PKB::FollowsProcessProcedureNode(node); }}},
+  std::map<NodeType, std::vector<std::function<void(Node *)>>> functions = {
+      {NodeType::If, {[this](Node *node) { PKB::FollowsProcessIfNode(node); }}},
+      {NodeType::While, {[this](Node *node) { PKB::FollowsProcessWhileNode(node); }}},
+      {NodeType::Procedure, {[this](Node *node) { PKB::FollowsProcessProcedureNode(node); }}},
   };
-  ast::visit(root_, functions);
+  Visit(root_, functions);
   stmt_table_.ProcessFollows();
   stmt_table_.ProcessFollowsStar();
 }
 
 void PKB::GetParent() {
-  std::map<ast::Kind, std::vector<std::function<void(ast::Node *)>>> functions = {
-      {ast::If, {[this](ast::Node *node) { PKB::ParentProcessIfNode(node); }}},
-      {ast::While, {[this](ast::Node *node) { PKB::ParentProcessWhileNode(node); }}},
+  std::map<NodeType, std::vector<std::function<void(Node *)>>> functions = {
+      {NodeType::If, {[this](Node *node) { PKB::ParentProcessIfNode(node); }}},
+      {NodeType::While, {[this](Node *node) { PKB::ParentProcessWhileNode(node); }}},
   };
-  ast::visit(root_, functions);
+  Visit(root_, functions);
   stmt_table_.ProcessParent();
   stmt_table_.ProcessParentStar();
 }
 
-void PKB::FollowsProcessProcedureNode(ast::Node *node) {
-  auto *procedure_node = (ast::ProcedureNode *) node;
+void PKB::FollowsProcessProcedureNode(Node *node) {
+  auto *procedure_node = (ProcedureNode *) node;
   std::vector<int> line_no;
 
-  for (ast::Node *n : procedure_node->stmtLst) {
+  for (Node *n : procedure_node->get_stmt_lst()) {
     line_no.push_back(Statement::get_stmt_no(n));
   }
   sort(line_no.begin(), line_no.end());
@@ -134,11 +137,11 @@ void PKB::FollowsProcessProcedureNode(ast::Node *node) {
   }
 }
 
-void PKB::FollowsProcessIfNode(ast::Node *node) {
-  auto *if_node = (ast::IfNode *) node;
+void PKB::FollowsProcessIfNode(Node *node) {
+  auto *if_node = (IfNode *) node;
   std::vector<int> then_line_nos, else_line_nos;
 
-  for (ast::Node *n : if_node->thenStmtLst) {
+  for (Node *n : if_node->get_then_stmt_lst()) {
     then_line_nos.push_back(Statement::get_stmt_no(n));
   }
   sort(then_line_nos.begin(), then_line_nos.end());
@@ -147,7 +150,7 @@ void PKB::FollowsProcessIfNode(ast::Node *node) {
     stmt_table_.get_statement(then_line_nos[i])->AddFollowee(then_line_nos[i - 1]);
   }
 
-  for (ast::Node *n : if_node->thenStmtLst) {
+  for (Node *n : if_node->get_then_stmt_lst()) {
     else_line_nos.push_back(Statement::get_stmt_no(n));
   }
   sort(else_line_nos.begin(), else_line_nos.end());
@@ -158,12 +161,12 @@ void PKB::FollowsProcessIfNode(ast::Node *node) {
 
 }
 
-void PKB::FollowsProcessWhileNode(ast::Node *node) {
-  auto *while_node = (ast::WhileNode *) node;
+void PKB::FollowsProcessWhileNode(Node *node) {
+  auto *while_node = (WhileNode *) node;
   // TODO: Line numbers are stored and sorted at the moment
   //  as it is not clear how it statement list is organised / sorted
   std::vector<int> line_nos;
-  for (ast::Node *n : while_node->stmtLst) {
+  for (Node *n : while_node->get_stmt_list()) {
     line_nos.push_back(Statement::get_stmt_no(n));
   }
   sort(line_nos.begin(), line_nos.end());
@@ -173,26 +176,26 @@ void PKB::FollowsProcessWhileNode(ast::Node *node) {
   }
 }
 
-void PKB::ParentProcessIfNode(ast::Node *node) {
-  auto *if_node = (ast::IfNode *) node;
-  Statement *if_statement = stmt_table_.get_statement(if_node->stmtNo);
-  for (ast::Node *n : if_node->thenStmtLst) {
+void PKB::ParentProcessIfNode(Node *node) {
+  auto *if_node = (IfNode *) node;
+  Statement *if_statement = stmt_table_.get_statement(if_node->get_stmt_no());
+  for (Node *n : if_node->get_then_stmt_lst()) {
     if_statement->AddChild(Statement::get_stmt_no(n));
     // TODO: Check and throw error if NULL
     stmt_table_.get_statement(Statement::get_stmt_no(n))->AddParent(if_statement->get_stmt_no());
   }
 
-  for (ast::Node *n : if_node->thenStmtLst) {
+  for (Node *n : if_node->get_then_stmt_lst()) {
     if_statement->AddChild(Statement::get_stmt_no(n));
     // TODO: Check and throw error if NULL
     stmt_table_.get_statement(Statement::get_stmt_no(n))->AddParent(if_statement->get_stmt_no());
   }
 }
 
-void PKB::ParentProcessWhileNode(ast::Node *node) {
-  auto *while_node = (ast::WhileNode *) node;
-  Statement *while_statement = stmt_table_.get_statement(while_node->stmtNo);
-  for (ast::Node *n : while_node->stmtLst) {
+void PKB::ParentProcessWhileNode(Node *node) {
+  auto *while_node = (WhileNode *) node;
+  Statement *while_statement = stmt_table_.get_statement(while_node->get_stmt_no());
+  for (Node *n : while_node->get_stmt_list()) {
     while_statement->AddChild(Statement::get_stmt_no(n));
     stmt_table_.get_statement(Statement::get_stmt_no(n))->AddParent(while_statement->get_stmt_no()); //might want to do error checking here if NULL
   }

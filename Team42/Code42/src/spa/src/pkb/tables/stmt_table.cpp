@@ -7,13 +7,13 @@ StmtTable::StmtTable() {
 
 StmtTable::~StmtTable() = default;
 
-void StmtTable::AddStatement(ast::Node *node) {
+void StmtTable::AddStatement(Node *node) {
   int stmt_no = Statement::get_stmt_no(node);
   // Return if statement number is invalid
   if (stmt_no == 0) return;
-  Statement s(stmt_no, node->kind);
+  Statement s(stmt_no, node->get_kind());
   table_[stmt_no] = s;
-  type_to_statement_[node->kind].push_back(&table_[stmt_no]);
+  type_to_statement_[node->get_kind()].push_back(&table_[stmt_no]);
   all_statements_.push_back(&table_[stmt_no]);
   num_statements_ = std::max(num_statements_, stmt_no);
 }
@@ -26,7 +26,7 @@ std::vector<Statement *> StmtTable::get_all_statements() {
   return all_statements_;
 }
 
-std::vector<Statement *> StmtTable::get_statements(ast::Kind type) {
+std::vector<Statement *> StmtTable::get_statements(NodeType type) {
   return type_to_statement_[type];
 }
 
@@ -87,7 +87,7 @@ void StmtTable::PrintStatements() {
   std::cout << "StmtTable size: " << table_.size() << '\n';
   for (auto&[k, x] : table_) {
     std::cout << k << ": " << x.get_kind() << ' ';
-    if (x.get_kind() == ast::Assign) std::cout << x.get_expr_string();
+    if (x.get_kind() == NodeType::Assign) std::cout << x.get_expr_string();
     std::cout << '\n';
   }
 }

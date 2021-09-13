@@ -1,11 +1,11 @@
 #pragma once
-#include "AST.hpp"
+#include "ast.h"
 #include "entity.hpp"
 #include <set>
 
 class Statement : public Entity {
  public:
-  Statement(int line_no, ast::Kind type);
+  Statement(int line_no, NodeType type);
 
   Statement();
 
@@ -14,9 +14,9 @@ class Statement : public Entity {
   // Gets the statement number.
   int get_stmt_no();
   // Gets the statement number of the given ast node.
-  static int get_stmt_no(ast::Node *node);
+  static int get_stmt_no(Node *node);
   // Gets the kind of statement.
-  ast::Kind get_kind();
+  NodeType get_kind();
   // Gets the postfix expression string of an assignment statement.
   std::string get_expr_string();
   // Gets the statements which follows before this statement.
@@ -67,7 +67,7 @@ class Statement : public Entity {
   // Postfix expression string. Currently, only valid in assignment statements.
   std::string expr_string_;
   // Kind of statement.
-  ast::Kind kind_;
+  NodeType kind_;
 
   // for v in followers_, Follows(this, v) is true.
   std::set<int> followers_, followers_star_;

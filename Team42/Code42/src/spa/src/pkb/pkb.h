@@ -12,20 +12,20 @@
 
 class PKB {
  public:
-  explicit PKB(ast::Node *programRoot);
+  explicit PKB(Node *programRoot);
 
   ~PKB();
 
   // Adds a procedure to the procedures table.
-  void AddProcedure(ast::Node *node);
+  void AddProcedure(Node *node);
   // Adds a statement to the statements table.
-  void AddStatement(ast::Node *node);
+  void AddStatement(Node *node);
   // Adds a postfix expression string to the table.
-  void AddExprString(ast::Node *node);
+  void AddExprString(Node *node);
   // Adds a variable to the variables table.
-  void AddVariable(ast::Node *node);
+  void AddVariable(Node *node);
   // Adds a constant to the variables table.
-  void AddConstant(ast::Node *node);
+  void AddConstant(Node *node);
 
   // Gets all procedures in the program.
   std::vector<Procedure *> get_all_procedures();
@@ -37,7 +37,7 @@ class PKB {
   // Gets all statements in the statement table.
   std::vector<Statement *> get_all_statements();
   // Gets all statements of the given type.
-  std::vector<Statement *> get_statements(ast::Kind type);
+  std::vector<Statement *> get_statements(NodeType type);
   // Gets a statement by its corresponding line number.
   Statement *get_statement(int line_no);
 
@@ -61,19 +61,19 @@ class PKB {
   void GetParent();
 
   // Process and store Follows relationships for the AST procedure node.
-  void FollowsProcessProcedureNode(ast::Node *node);
+  void FollowsProcessProcedureNode(Node *node);
   // Process and store Follows relationships for the AST if node.
-  void FollowsProcessIfNode(ast::Node *node);
+  void FollowsProcessIfNode(Node *node);
   // Process and store Follows relationships for the AST while node.
-  void FollowsProcessWhileNode(ast::Node *node);
+  void FollowsProcessWhileNode(Node *node);
 
   // Process and store Parent relationships for the AST if node.
-  void ParentProcessIfNode(ast::Node *node);
+  void ParentProcessIfNode(Node *node);
   // Process and store Parent relationships for the AST while node.
-  void ParentProcessWhileNode(ast::Node *node);
+  void ParentProcessWhileNode(Node *node);
 
   // Root AST node of the program.
-  ast::Node *root_;
+  Node *root_;
   // Table of procedures in the program.
   ProcTable proc_table_;
   // Table of statements in the program.

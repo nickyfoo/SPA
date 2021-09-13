@@ -1,5 +1,5 @@
 #pragma once
 
-#include "AST.hpp"
+#include "ast.h"
 
 class Entity {};

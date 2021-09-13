@@ -4,6 +4,7 @@ ReadNode::ReadNode(IdentifierNode *var, int stmt_no, LocInfo loc) : StatementNod
   this->var_ = var;
 }
 
-NodeType ReadNode::kind() { return NodeType::Read; }
+NodeType ReadNode::get_kind() { return NodeType::Read; }
 
-IdentifierNode *ReadNode::var() { return this->var_; }
+IdentifierNode *ReadNode::get_var() { return this->var_; }
+

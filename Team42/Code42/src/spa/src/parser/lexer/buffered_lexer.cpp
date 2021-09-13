@@ -24,3 +24,4 @@ const Token *BufferedLexer::PeekNextToken() {
   next_token_ = lexer_->GetNextToken();
   return next_token_;
 }
+

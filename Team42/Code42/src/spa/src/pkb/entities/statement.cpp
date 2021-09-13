@@ -14,38 +14,6 @@ int Statement::get_stmt_no() {
   return stmt_no_;
 }
 
-int Statement::get_stmt_no(Node *node) {
-  switch (node->get_kind()) {
-    case NodeType::Assign: {
-      AssignNode *assign_node{static_cast<AssignNode *>(node)};
-      return assign_node->get_stmt_no();
-    }
-    case NodeType::If: {
-      IfNode *if_node{static_cast<IfNode *>(node)};
-      return if_node->get_stmt_no();
-    }
-    case NodeType::While: {
-      WhileNode *while_node{static_cast<WhileNode *>(node)};
-      return while_node->get_stmt_no();
-    }
-    case NodeType::Read: {
-      ReadNode *read_node{static_cast<ReadNode *>(node)};
-      return read_node->get_stmt_no();
-    }
-    case NodeType::Print: {
-      PrintNode *print_node{static_cast<PrintNode *>(node)};
-      return print_node->get_stmt_no();
-    }
-    case NodeType::Call: {
-      CallNode *call_node{static_cast<CallNode *>(node)};
-      return call_node->get_stmt_no();
-    }
-    default: {
-      return 0;
-    }
-  }
-};
-
 NodeType Statement::get_kind() {
   return kind_;
 }

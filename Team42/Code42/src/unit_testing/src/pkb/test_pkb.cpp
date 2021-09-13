@@ -58,8 +58,7 @@ TEST_CASE("Test pkb::GetFollows()") {
   for (int i = 1; i <= pkb.get_num_statements() + 1; i++) {
     Statement *stmt = pkb.get_statement(i);
     // checking for NULL response
-    if (!stmt) continue;
-    stmt->FollowsInfo();
+    if (stmt) stmt->FollowsInfo();
   }
 }
 
@@ -72,7 +71,6 @@ TEST_CASE("Test pkb::GetParent()") {
   for (int i = 1; i <= pkb.get_num_statements() + 1; i++) {
     Statement *stmt = pkb.get_statement(i);
     // checking for NULL response
-    if (!stmt) continue;
-    stmt->ParentInfo();
+    if (stmt) stmt->ParentInfo();
   }
 }

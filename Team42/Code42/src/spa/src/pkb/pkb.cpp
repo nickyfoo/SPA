@@ -21,9 +21,29 @@ void PKB::AddStatement(Node *node) {
 void PKB::AddExprString(Node *node) {
   if (node->get_kind() == NodeType::Assign) {
     auto *assign_node = (AssignNode *) node;
-    // TODO: CORRECT THIS PLS
-    auto *expr_node = (ExpressionNode *) assign_node->expr();
-    stmt_table_.get_statement(assign_node->get_stmt_no())->set_expr_string(expr_node->get_expr_string());
+    switch (assign_node->get_kind()) {
+      case NodeType::Expression: {
+        auto *expression_node = (ExpressionNode *) assign_node->expr();
+        std::string expr_string = expression_node->get_expr_string();
+        stmt_table_.get_statement(assign_node->get_stmt_no())->set_expr_string(expr_string);
+        break;
+      }
+      case NodeType::Constant: {
+        auto *constant_node = (ConstantNode *) assign_node->expr();
+        std::string expr_string = constant_node->get_expr_string();
+        stmt_table_.get_statement(assign_node->get_stmt_no())->set_expr_string(expr_string);
+        break;
+      }
+      case NodeType::Identifier: {
+        auto *identifier_node = (IdentifierNode *) assign_node->expr();
+        std::string expr_string = identifier_node->get_expr_string();
+        stmt_table_.get_statement(assign_node->get_stmt_no())->set_expr_string(expr_string);
+        break;
+      }
+      default:
+        // TODO: might throw an error here
+        break;
+    }
   }
 }
 
@@ -37,11 +57,11 @@ void PKB::AddConstant(Node *node) {
   const_table_.AddConstant(std::stoi(constant_node->get_value()));
 }
 
-std::vector<class Procedure *> PKB::get_all_procedures() {
+std::vector<Procedure *> PKB::get_all_procedures() {
   return proc_table_.get_all_procedures();
 }
 
-class Procedure *PKB::get_procedure(std::string &name) {
+Procedure *PKB::get_procedure(std::string &name) {
   return proc_table_.get_procedure(name);
 }
 

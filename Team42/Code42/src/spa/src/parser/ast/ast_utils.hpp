@@ -357,7 +357,9 @@ inline void Visit(Node *node, std::map<NodeType, std::vector<std::function<void(
   if (node == nullptr) return;
 
   // Execute the corresponding function taking the node as a parameter
-  for (const auto &func : functions[node->get_kind()]) func(node);
+  if (node) {
+    for (const auto &func : functions[node->get_kind()]) func(node);
+  }
 
   // Continue traversing the AST
   for (Node *n : NextNodes(node)) {

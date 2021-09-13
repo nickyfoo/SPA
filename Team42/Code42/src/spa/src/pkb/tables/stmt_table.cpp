@@ -86,7 +86,7 @@ void StmtTable::ProcessParentStar() {
 void StmtTable::PrintStatements() {
   std::cout << "StmtTable size: " << table_.size() << '\n';
   for (auto&[k, x] : table_) {
-    std::cout << k << ": " << x.get_kind() << ' ';
+    std::cout << k << ": " << static_cast<int>(x.get_kind()) << ' ';
     if (x.get_kind() == NodeType::Assign) std::cout << x.get_expr_string();
     std::cout << '\n';
   }

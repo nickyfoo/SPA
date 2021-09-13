@@ -151,7 +151,7 @@ TEST_CASE("TestParseProgram 1") {
       "normSq = cenX * cenX + cenY * cenY;"
       "}";
 
-  BufferedLexer *lexer = new BufferedLexer(source.c_str());
+  auto *lexer = new BufferedLexer(source.c_str());
   ProgramNode *res = ParseProgram(lexer, new ParseState{});
 
   REQUIRE(res->get_procedures().size() == 4);

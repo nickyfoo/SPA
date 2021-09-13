@@ -270,36 +270,37 @@ inline bool IsProgramEqual(ProgramNode *p1, ProgramNode *p2) {
   return metadata_equal && proc_lst_equal;
 }
 
-std::vector<Node *> NextNodes(Node *node) {
+inline std::vector<Node *> NextNodes(Node *node) {
   std::vector<Node *> next_nodes;
   switch (node->get_kind()) {
-    case Identifier:
-    case Constant:break;
-    case Expression: {
+    case NodeType::Identifier:
+    case NodeType::Constant:
+      break;
+    case NodeType::Expression: {
       auto *expression_node = (ExpressionNode *) node;
       next_nodes.push_back(expression_node->get_left());
       next_nodes.push_back(expression_node->get_right());
       break;
     }
-    case RelExpression: {
+    case NodeType::RelExpression: {
       auto *expression_node = (RelExpressionNode *) node;
       next_nodes.push_back(expression_node->get_left());
       next_nodes.push_back(expression_node->get_right());
       break;
     }
-    case CondExpression: {
+    case NodeType::CondExpression: {
       auto *expression_node = (CondExpressionNode *) node;
       next_nodes.push_back(expression_node->get_left());
       next_nodes.push_back(expression_node->get_right());
       break;
     }
-    case Assign: {
+    case NodeType::Assign: {
       auto *assign_node = (AssignNode *) node;
       next_nodes.push_back(assign_node->get_var());
       next_nodes.push_back(assign_node->expr());
       break;
     }
-    case If: {
+    case NodeType::If: {
       auto *if_node = (IfNode *) node;
       next_nodes.push_back(if_node->get_cond());
       for (Node *n : if_node->get_then_stmt_lst()) {
@@ -310,7 +311,7 @@ std::vector<Node *> NextNodes(Node *node) {
       }
       break;
     }
-    case While: {
+    case NodeType::While: {
       auto *while_node = (WhileNode *) node;
       next_nodes.push_back(while_node->get_cond());
       for (Node *n : while_node->get_stmt_list()) {
@@ -318,29 +319,29 @@ std::vector<Node *> NextNodes(Node *node) {
       }
       break;
     }
-    case Read: {
+    case NodeType::Read: {
       auto *read_node = (ReadNode *) node;
       next_nodes.push_back(read_node->get_var());
       break;
     }
-    case Print: {
+    case NodeType::Print: {
       auto *print_node = (PrintNode *) node;
       next_nodes.push_back(print_node->get_var());
       break;
     }
-    case Call: {
+    case NodeType::Call: {
       auto *call_node = (CallNode *) node;
       next_nodes.push_back(call_node->get_proc());
       break;
     }
-    case Procedure: {
+    case NodeType::Procedure: {
       auto *procedure_node = (ProcedureNode *) node;
       for (Node *n : procedure_node->get_stmt_lst()) {
         next_nodes.push_back(n);
       }
       break;
     }
-    case Program: {
+    case NodeType::Program: {
       auto *program_node = (ProgramNode *) node;
       for (Node *n : program_node->get_procedures()) {
         next_nodes.push_back(n);
@@ -351,7 +352,7 @@ std::vector<Node *> NextNodes(Node *node) {
   return next_nodes;
 }
 
-void Visit(Node *node, std::map<NodeType, std::vector<std::function<void(Node *currentNode)>>> functions) {
+inline void Visit(Node *node, std::map<NodeType, std::vector<std::function<void(Node *currentNode)>>> functions) {
   // TODO: throw an error
   if (node == nullptr) return;
 

@@ -1,12 +1,8 @@
-#include "Parser.h"
+#include "parse.h"
 #include <vector>
 #include "pkb.h"
 #include "catch.hpp"
 #include "entities/statement.h"
-
-using namespace lexer;
-using namespace parser;
-using namespace ast;
 
 std::string source = "procedure main {\n"
                      "\tflag = 0;\n"
@@ -45,17 +41,17 @@ std::string source = "procedure main {\n"
 
 TEST_CASE("Test pkb::Initialise()") {
 
-  BufferedLexer B(source.c_str());
-  State s{};
-  ProgramNode *p = parseProgram(&B, &s);
+  BufferedLexer lexer(source.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
   pkb.PrintStatements();
 }
 
 TEST_CASE("Test pkb::GetFollows()") {
-  BufferedLexer B(source.c_str());
-  State s{};
-  ProgramNode *p = parseProgram(&B, &s);
+  BufferedLexer lexer(source.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
 
   PKB pkb = PKB(p);
   pkb.PrintStatements();
@@ -68,9 +64,9 @@ TEST_CASE("Test pkb::GetFollows()") {
 }
 
 TEST_CASE("Test pkb::GetParent()") {
-  BufferedLexer B(source.c_str());
-  State s{};
-  ProgramNode *p = parseProgram(&B, &s);
+  BufferedLexer lexer(source.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
   pkb.PrintStatements();
   for (int i = 1; i <= pkb.get_num_statements() + 1; i++) {

@@ -59,8 +59,8 @@ TEST_CASE("Test pkb::GetFollows()") {
 
   PKB pkb = PKB(p);
   pkb.PrintStatements();
-  for (int i = 1; i <= pkb.GetNumStatements() + 1; i++) {
-    Statement *stmt = pkb.GetStatement(i);
+  for (int i = 1; i <= pkb.get_num_statements() + 1; i++) {
+    Statement *stmt = pkb.get_statement(i);
     // checking for NULL response
     if (!stmt) continue;
     stmt->FollowsInfo();
@@ -73,8 +73,8 @@ TEST_CASE("Test pkb::GetParent()") {
   ProgramNode *p = parseProgram(&B, &s);
   PKB pkb = PKB(p);
   pkb.PrintStatements();
-  for (int i = 1; i <= pkb.GetNumStatements() + 1; i++) {
-    Statement *stmt = pkb.GetStatement(i);
+  for (int i = 1; i <= pkb.get_num_statements() + 1; i++) {
+    Statement *stmt = pkb.get_statement(i);
     // checking for NULL response
     if (!stmt) continue;
     stmt->ParentInfo();

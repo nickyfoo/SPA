@@ -10,7 +10,7 @@ class Constant : public Entity {
   ~Constant();
 
   // Gets the value of constant.
-  int GetValue();
+  int get_value();
 
  private:
   // Value of constant.

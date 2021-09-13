@@ -9,9 +9,9 @@ class Variable : public Entity {
   ~Variable();
 
   // Gets the index mapping to the variable.
-  int GetIndex();
+  int get_index();
   // Gets the name of the variable.
-  std::string GetName();
+  std::string get_name();
 
  private:
   // Mapped index of variable.

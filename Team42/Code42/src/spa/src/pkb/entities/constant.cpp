@@ -10,6 +10,6 @@ Constant::Constant(int value) {
 
 Constant::~Constant() = default;
 
-int Constant::GetValue() {
+int Constant::get_value() {
   return value_;
 }

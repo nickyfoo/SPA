@@ -6,6 +6,6 @@ Procedure::Procedure(std::string name) {
 
 Procedure::~Procedure() = default;
 
-std::string Procedure::GetName() {
+std::string Procedure::get_name() {
   return name_;
 }

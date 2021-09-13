@@ -18,17 +18,17 @@ int VarTable::AddVariable(const std::string &name) {
   return pos;
 };
 
-int VarTable::GetNumVariables() {
+int VarTable::get_num_variables() {
   return name_to_index_.size();
 }
 
-std::vector<Variable *> VarTable::GetAllVariables() {
+std::vector<Variable *> VarTable::get_all_variables() {
   return all_variables_;
 }
 
 void VarTable::PrintVariables() {
   std::cout << "VarTable size: " << name_to_index_.size() << '\n';
   for (Variable v : table_) {
-    std::cout << v.GetName() << "\n";
+    std::cout << v.get_name() << "\n";
   }
 }

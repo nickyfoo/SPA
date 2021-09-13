@@ -25,13 +25,13 @@ class StmtTable : public Table {
   void AddStatement(ast::Node *node);
 
   // Get total number of statements.
-  int GetNumStatements();
+  int get_num_statements();
   // Gets all statements.
-  std::vector<Statement *> GetAllStatements();
+  std::vector<Statement *> get_all_statements();
   // Gets all statements of the given type.
-  std::vector<Statement *> GetStatements(ast::Kind type);
+  std::vector<Statement *> get_statements(ast::Kind type);
   // Gets the statement by line number.
-  Statement *GetStatement(int line_no);
+  Statement *get_statement(int line_no);
 
   // Gets Follows relationship from Statements in preparation to get
   // transitive closure.

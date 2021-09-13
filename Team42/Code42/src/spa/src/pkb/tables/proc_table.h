@@ -17,11 +17,11 @@ class ProcTable : public Table {
   int AddProcedure(const std::string &name);
 
   // Get total number of procedures.
-  int GetNumProcedures();
+  int get_num_procedures();
   // Get all procedures.
-  std::vector<Procedure *> GetAllProcedures();
+  std::vector<Procedure *> get_all_procedures();
   // Gets a procedure by its procedure name.
-  Procedure *GetProcedure(std::string &name);
+  Procedure *get_procedure(std::string &name);
 
   // Prints information of all procedures.
   void PrintProcedures();

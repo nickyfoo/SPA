@@ -7,10 +7,10 @@ Variable::Variable(int index, std::string name) {
 
 Variable::~Variable() = default;
 
-std::string Variable::GetName() {
+std::string Variable::get_name() {
   return name_;
 }
 
-int Variable::GetIndex() {
+int Variable::get_index() {
   return index_;
 }

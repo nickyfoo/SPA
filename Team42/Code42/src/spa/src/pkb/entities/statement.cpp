@@ -10,11 +10,11 @@ Statement::Statement() = default;
 
 Statement::~Statement() = default;
 
-int Statement::GetStmtNo() {
+int Statement::get_stmt_no() {
   return stmt_no_;
 }
 
-int Statement::GetStmtNo(ast::Node *node) {
+int Statement::get_stmt_no(ast::Node *node) {
   switch (node->kind) {
     case ast::Assign: {
       ast::AssignNode *castedAssignNode{static_cast<ast::AssignNode *>(node)};
@@ -46,24 +46,48 @@ int Statement::GetStmtNo(ast::Node *node) {
   }
 };
 
-ast::Kind Statement::GetKind() {
+ast::Kind Statement::get_kind() {
   return kind_;
 }
 
-std::string Statement::GetExprString() {
+std::string Statement::get_expr_string() {
   // TODO: Only applicable for AssignStatement for now, need to add if/while
   return expr_string_;
 }
 
-std::set<int> *Statement::GetFollowers() {
+std::set<int> *Statement::get_followers() {
   return &followers_;
 }
 
-std::set<int> *Statement::GetChildren() {
+std::set<int> *Statement::get_followers_star() {
+  return &followers_star_;
+}
+
+std::set<int> *Statement::get_followees() {
+  return &followees_;
+}
+
+std::set<int> *Statement::get_followees_star() {
+  return &followees_star_;
+}
+
+std::set<int> *Statement::get_parents() {
+  return &parents_;
+}
+
+std::set<int> *Statement::get_parents_star() {
+  return &parents_star_;
+}
+
+std::set<int> *Statement::get_children() {
   return &children_;
 }
 
-void Statement::SetExprString(std::string expr_string) {
+std::set<int> *Statement::get_children_star() {
+  return &children_star_;
+}
+
+void Statement::set_expr_string(std::string expr_string) {
   this->expr_string_ = expr_string;
 }
 

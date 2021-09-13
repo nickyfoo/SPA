@@ -41,7 +41,7 @@ AssignNode *ParseAssign(BufferedLexer *lexer, ParseState *state);
 
 Node *ParseExpression(BufferedLexer *lexer, ParseState *state);
 
-CondExpressionNode *ParseCondExpression(BufferedLexer *lexer, ParseState *state);
+Node *ParseCondExpression(BufferedLexer *lexer, ParseState *state);
 
 RelExpressionNode *ParseRelExpression(BufferedLexer *lexer, ParseState *state);
 

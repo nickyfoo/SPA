@@ -8,7 +8,7 @@ ProgramNode *ParseProgram(BufferedLexer *lexer, ParseState *state) {
   std::vector<ProcedureNode *> procedures{};
   while (t->kind_ != TokenType::End) {
     if (t->kind_ != TokenType::Procedure) {
-      throw ParseException("expected procedure node", t->line_no_, t->col_no_);
+      throw ParseException("expected Procedure", t->line_no_, t->col_no_);
     }
 
     ProcedureNode *p = ParseProcedure(lexer, state);

@@ -105,8 +105,8 @@ inline bool IsIdentifierEqual(IdentifierNode *i1, IdentifierNode *i2) {
 
 inline bool IsConstantEqual(ConstantNode *c1, ConstantNode *c2) {
   bool metadata_equal = c1->line_no() == c2->line_no() && c1->col_no() == c2->col_no();
-  bool ident_equal = c1->value() == c2->value();
-  return metadata_equal && ident_equal;
+  bool const_equal = c1->value() == c2->value();
+  return metadata_equal && const_equal;
 }
 
 inline bool IsExpressionEqual(ExpressionNode *e1, ExpressionNode *e2) {

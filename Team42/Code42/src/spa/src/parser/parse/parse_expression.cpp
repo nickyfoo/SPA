@@ -198,6 +198,12 @@ Node *ParseExpression(BufferedLexer *lexer, ParseState *state) {
   // flush the token and peek next
   while (!operator_stack.empty()) {
     const Token *op = operator_stack.top();
+
+    // there's a chance that there might be mismatched LParen left in operator stack
+    if (op->kind_ == TokenType::LParen) {
+      throw ParseException("matching parenthesis not found", op->line_no_, op->col_no_);
+    }
+
     PopExpressionNodeFromStacks(op, &result_stack, &expr_str_stack);
     operator_stack.pop();
   }

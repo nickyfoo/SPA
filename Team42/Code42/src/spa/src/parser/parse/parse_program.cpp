@@ -1,4 +1,4 @@
-#include <parse.h>
+#include "parse.h"
 
 ProgramNode *ParseProgram(BufferedLexer *lexer, ParseState *state) {
   const Token *t = lexer->PeekNextToken();

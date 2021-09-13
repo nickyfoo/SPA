@@ -1,5 +1,5 @@
 
-#include <parse.h>
+#include "parse.h"
 
 AssignNode *ParseAssign(BufferedLexer *lexer, ParseState *state) {
   int stmt_no = ++(state->stmt_count_);

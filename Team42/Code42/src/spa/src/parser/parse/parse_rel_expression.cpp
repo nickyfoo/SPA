@@ -1,4 +1,4 @@
-#include <parse.h>
+#include "parse.h"
 
 RelExpressionNode *ParseRelExpression(BufferedLexer *lexer, ParseState *state) {
   const Token *t = lexer->GetNextToken();

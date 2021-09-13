@@ -1,4 +1,4 @@
-#include <parse.h>
+#include "parse.h"
 
 PrintNode *ParsePrint(BufferedLexer *lexer, ParseState *state) {
   int stmt_no = ++(state->stmt_count_);

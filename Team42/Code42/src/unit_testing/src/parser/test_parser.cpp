@@ -114,3 +114,45 @@ TEST_CASE("TestParseExpression 8") {
   BufferedLexer *lexer = new BufferedLexer(source.c_str());
   REQUIRE_THROWS_AS(ParseExpression(lexer, new ParseState{}), ParseException);
 }
+
+TEST_CASE("TestParseProgram 1") {
+  std::string source =
+      "procedure main {"
+      "flag = 0;"
+      "call computeCentroid;"
+      "call printResults;"
+      "}"
+      "procedure readPoint {"
+      "read x;"
+      "read y;"
+      "}"
+      "procedure printResults {"
+      "print flag;"
+      "print cenX;"
+      "print cenY;"
+      "print normSq;"
+      "}"
+      "procedure computeCentroid {"
+      "count = 0;"
+      "cenX = 0;"
+      "cenY = 0;"
+      "call readPoint;"
+      "while ((x != 0) && (y != 0)) {"
+      "count = count + 1;"
+      "cenX = cenX + x;"
+      "cenY = cenY + y;"
+      "call readPoint;"
+      "}"
+      "if (count == 0) then { flag = 1; }"
+      "else {"
+      "cenX = cenX / count;"
+      "cenY = cenY / count;"
+      "}"
+      "normSq = cenX * cenX + cenY * cenY;"
+      "}";
+
+  BufferedLexer *lexer = new BufferedLexer(source.c_str());
+  ProgramNode *res = ParseProgram(lexer, new ParseState{});
+
+  REQUIRE(res->procedures().size() == 4);
+}

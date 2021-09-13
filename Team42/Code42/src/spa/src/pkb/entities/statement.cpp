@@ -14,38 +14,6 @@ int Statement::get_stmt_no() {
   return stmt_no_;
 }
 
-int Statement::get_stmt_no(Node *node) {
-  switch (node->get_kind()) {
-    case NodeType::Assign: {
-      auto *assign_node = dynamic_cast<AssignNode *>(node);
-      return assign_node->get_stmt_no();
-    }
-    case NodeType::If: {
-      auto *if_node = dynamic_cast<IfNode *>(node);
-      return if_node->get_stmt_no();
-    }
-    case NodeType::While: {
-      auto *while_node = dynamic_cast<WhileNode *>(node);
-      return while_node->get_stmt_no();
-    }
-    case NodeType::Read: {
-      auto *read_node = dynamic_cast<ReadNode *>(node);
-      return read_node->get_stmt_no();
-    }
-    case NodeType::Print: {
-      auto *print_node = dynamic_cast<PrintNode *>(node);
-      return print_node->get_stmt_no();
-    }
-    case NodeType::Call: {
-      auto *call_node = dynamic_cast<CallNode *>(node);
-      return call_node->get_stmt_no();
-    }
-    default: {
-      return 0;
-    }
-  }
-};
-
 NodeType Statement::get_kind() {
   return kind_;
 }

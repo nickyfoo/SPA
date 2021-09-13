@@ -13,8 +13,6 @@ class Statement : public Entity {
 
   // Gets the statement number.
   int get_stmt_no();
-  // Gets the statement number of the given ast node.
-  static int get_stmt_no(Node *node);
   // Gets the kind of statement.
   NodeType get_kind();
   // Gets the postfix expression string of an assignment statement.

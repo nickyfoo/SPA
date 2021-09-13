@@ -8,12 +8,13 @@ StmtTable::StmtTable() {
 StmtTable::~StmtTable() = default;
 
 void StmtTable::AddStatement(Node *node) {
-  int stmt_no = Statement::get_stmt_no(node);
+  StatementNode *stmt_node = dynamic_cast<StatementNode *>(node);
+  int stmt_no = stmt_node->get_stmt_no();
   // Return if statement number is invalid
   if (stmt_no == 0) return;
-  Statement s(stmt_no, node->get_kind());
+  Statement s(stmt_no, stmt_node->get_kind());
   table_[stmt_no] = s;
-  type_to_statement_[node->get_kind()].push_back(&table_[stmt_no]);
+  type_to_statement_[stmt_node->get_kind()].push_back(&table_[stmt_no]);
   all_statements_.push_back(&table_[stmt_no]);
   num_statements_ = std::max(num_statements_, stmt_no);
 }

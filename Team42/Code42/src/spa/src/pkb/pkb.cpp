@@ -162,8 +162,8 @@ void PKB::FollowsProcessProcedureNode(Node *node) {
   auto *procedure_node = dynamic_cast<ProcedureNode *>(node);
   std::vector<int> line_no;
 
-  for (Node *n : procedure_node->get_stmt_lst()) {
-    line_no.push_back(Statement::get_stmt_no(n));
+  for (StatementNode *n : procedure_node->get_stmt_lst()) {
+    line_no.push_back(n->get_stmt_no());
   }
   sort(line_no.begin(), line_no.end());
   for (int i = 1; i < line_no.size(); i++) {
@@ -176,8 +176,8 @@ void PKB::FollowsProcessIfNode(Node *node) {
   auto *if_node = dynamic_cast<IfNode *>(node);
   std::vector<int> then_line_nos, else_line_nos;
 
-  for (Node *n : if_node->get_then_stmt_lst()) {
-    then_line_nos.push_back(Statement::get_stmt_no(n));
+  for (StatementNode *n : if_node->get_then_stmt_lst()) {
+    then_line_nos.push_back(n->get_stmt_no());
   }
   sort(then_line_nos.begin(), then_line_nos.end());
   for (int i = 1; i < then_line_nos.size(); i++) {
@@ -185,8 +185,8 @@ void PKB::FollowsProcessIfNode(Node *node) {
     stmt_table_.get_statement(then_line_nos[i])->AddFollowee(then_line_nos[i - 1]);
   }
 
-  for (Node *n : if_node->get_then_stmt_lst()) {
-    else_line_nos.push_back(Statement::get_stmt_no(n));
+  for (StatementNode *n : if_node->get_then_stmt_lst()) {
+    else_line_nos.push_back(n->get_stmt_no());
   }
   sort(else_line_nos.begin(), else_line_nos.end());
   for (int i = 1; i < else_line_nos.size(); i++) {
@@ -200,8 +200,8 @@ void PKB::FollowsProcessWhileNode(Node *node) {
   // TODO: Line numbers are stored and sorted at the moment
   //  as it is not clear how it statement list is organised / sorted
   std::vector<int> line_nos;
-  for (Node *n : while_node->get_stmt_list()) {
-    line_nos.push_back(Statement::get_stmt_no(n));
+  for (StatementNode *n : while_node->get_stmt_list()) {
+    line_nos.push_back(n->get_stmt_no());
   }
   sort(line_nos.begin(), line_nos.end());
   for (int i = 1; i < line_nos.size(); i++) {
@@ -213,24 +213,24 @@ void PKB::FollowsProcessWhileNode(Node *node) {
 void PKB::ParentProcessIfNode(Node *node) {
   auto *if_node = dynamic_cast<IfNode *>(node);
   Statement *if_statement = stmt_table_.get_statement(if_node->get_stmt_no());
-  for (Node *n : if_node->get_then_stmt_lst()) {
-    if_statement->AddChild(Statement::get_stmt_no(n));
+  for (StatementNode *n : if_node->get_then_stmt_lst()) {
+    if_statement->AddChild(n->get_stmt_no());
     // TODO: Check and throw error if NULL
-    stmt_table_.get_statement(Statement::get_stmt_no(n))->AddParent(if_statement->get_stmt_no());
+    stmt_table_.get_statement(n->get_stmt_no())->AddParent(if_statement->get_stmt_no());
   }
 
-  for (Node *n : if_node->get_then_stmt_lst()) {
-    if_statement->AddChild(Statement::get_stmt_no(n));
+  for (StatementNode *n : if_node->get_then_stmt_lst()) {
+    if_statement->AddChild(n->get_stmt_no());
     // TODO: Check and throw error if NULL
-    stmt_table_.get_statement(Statement::get_stmt_no(n))->AddParent(if_statement->get_stmt_no());
+    stmt_table_.get_statement(n->get_stmt_no())->AddParent(if_statement->get_stmt_no());
   }
 }
 
 void PKB::ParentProcessWhileNode(Node *node) {
   auto *while_node = dynamic_cast<WhileNode *>(node);
   Statement *while_statement = stmt_table_.get_statement(while_node->get_stmt_no());
-  for (Node *n : while_node->get_stmt_list()) {
-    while_statement->AddChild(Statement::get_stmt_no(n));
-    stmt_table_.get_statement(Statement::get_stmt_no(n))->AddParent(while_statement->get_stmt_no()); //might want to do error checking here if NULL
+  for (StatementNode *n : while_node->get_stmt_list()) {
+    while_statement->AddChild(n->get_stmt_no());
+    stmt_table_.get_statement(n->get_stmt_no())->AddParent(while_statement->get_stmt_no()); //might want to do error checking here if NULL
   }
 }

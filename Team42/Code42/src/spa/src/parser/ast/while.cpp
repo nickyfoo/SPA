@@ -24,3 +24,4 @@ Node *WhileNode::get_cond() {
 }
 
 std::vector<StatementNode *> WhileNode::get_stmt_list() { return this->stmt_lst_; }
+

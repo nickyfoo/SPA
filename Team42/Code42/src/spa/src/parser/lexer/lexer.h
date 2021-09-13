@@ -79,3 +79,4 @@ class BufferedLexer {
   Lexer *lexer_;
   const Token *next_token_;
 };
+

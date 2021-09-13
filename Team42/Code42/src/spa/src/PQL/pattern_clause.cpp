@@ -25,10 +25,10 @@ ExpressionSpec *PatternClause::get_right_ref() {
 
 bool PatternClause::IsValidRightRef(std::string ref) {
     bool partial_pattern;
-    auto* expSpec = new ExpressionSpec();
+    auto *exp_spec = new ExpressionSpec();
     if (ref == "_") {
-        expSpec->set_wild_card();
-        this->right_ref_ = expSpec;
+        exp_spec->set_wild_card();
+        this->right_ref_ = exp_spec;
         return true;
     }
 
@@ -46,29 +46,29 @@ bool PatternClause::IsValidRightRef(std::string ref) {
     }
 
     ref = ref.substr(1, ref.length() - 2);  // remove ""
-    bool expectingExp = false;
-    for (char& c : ref) {
-        if (!expectingExp && IsExp(c)) {
+    bool expecting_exp = false;
+    for (char &c : ref) {
+        if (!expecting_exp && IsExp(c)) {
             return false;
         } else {
             if (IsExp(c)) {
-                expectingExp = false;
+                expecting_exp = false;
             } else if (IsChar(c)) {
-                expectingExp = true;
+                expecting_exp = true;
             } else {
                 return false;
             }
         }
     }
 
-    if (!expectingExp && !ref.empty()) {
+    if (!expecting_exp && !ref.empty()) {
         return false;
     }
 
-    expSpec->set_expression(ref);
-    expSpec->set_partial_pattern(partial_pattern);
+    exp_spec->set_expression(ref);
+    exp_spec->set_partial_pattern(partial_pattern);
 
-    this->right_ref_ = expSpec;
+    this->right_ref_ = exp_spec;
     return true;
 }
 

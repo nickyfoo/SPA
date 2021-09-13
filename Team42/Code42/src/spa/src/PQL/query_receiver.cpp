@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
         std::cout << "\n" << std::flush;
         for (PatternClause* pattern : *clause->get_query_patterns()) {
             std::cout << "PatternClause synonym_: "
-            << pattern->get_synonym()->getSynonym()
+            << pattern->get_synonym()->get_synonym()
             << "\nIs partial pattern? "
             << (pattern->get_right_ref()->IsPartialPattern() ? "Yes" : "No")
             << "\nLeft ref: "

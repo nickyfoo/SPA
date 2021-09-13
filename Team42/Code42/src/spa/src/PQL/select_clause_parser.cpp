@@ -9,7 +9,7 @@ SelectClauseParser::SelectClauseParser() {
 
 SelectClauseParser *SelectClauseParser::instance = nullptr;
 
-SelectClauseParser *SelectClauseParser::getInstance() {
+SelectClauseParser *SelectClauseParser::get_instance() {
     if (!instance)
         instance = new SelectClauseParser;
     return instance;
@@ -303,9 +303,9 @@ std::vector<std::string> SelectClauseParser::SplitTokensByDelimiter(
 // splits by such that, pattern and with
 std::tuple<std::string, std::vector<std::string>, std::vector<std::string>>
 SelectClauseParser::SplitTokensByClauses(const std::string &input) {
-    std::string such_that_delim = "such that ";
-    std::string pattern_delim = "pattern ";
-    std::vector<std::string> delimiters{such_that_delim, pattern_delim};
+    std::string SUCH_THAT_DELIM = "such that ";
+    std::string PATTERN_DELIM = "pattern ";
+    std::vector<std::string> delimiters{SUCH_THAT_DELIM, PATTERN_DELIM};
     std::string select_clause;
     std::vector<std::string> such_that_clauses;
     std::vector<std::string> pattern_clauses;
@@ -361,11 +361,11 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
     select_clause = clean_input.substr(0, pos);  // adds the select clause
     clean_input.erase(0, pos);
 
-    while ( clean_input.find(such_that_delim) != std::string::npos
-    || clean_input.find(pattern_delim) != std::string::npos) {
+    while (clean_input.find(SUCH_THAT_DELIM) != std::string::npos
+    || clean_input.find(PATTERN_DELIM) != std::string::npos) {
         // find the earliest clause
-        pos = std::min(clean_input.find(such_that_delim),
-                       clean_input.find(pattern_delim));
+        pos = std::min(clean_input.find(SUCH_THAT_DELIM),
+                       clean_input.find(PATTERN_DELIM));
         token = clean_input.substr(0, pos);
         if (last_found_such_that) {
             such_that_clauses.push_back(token);
@@ -373,14 +373,14 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
             pattern_clauses.push_back(token);
         }
 
-        if (clean_input.substr(pos, such_that_delim.length())
-        == such_that_delim) {
-            clean_input.erase(0, pos + such_that_delim.length());
+        if (clean_input.substr(pos, SUCH_THAT_DELIM.length())
+            == SUCH_THAT_DELIM) {
+            clean_input.erase(0, pos + SUCH_THAT_DELIM.length());
             last_found_such_that = true;
             last_found_pattern = false;
-        } else if (clean_input.substr(pos, pattern_delim.length())
-        == pattern_delim) {
-            clean_input.erase(0, pos + pattern_delim.length());
+        } else if (clean_input.substr(pos, PATTERN_DELIM.length())
+                   == PATTERN_DELIM) {
+            clean_input.erase(0, pos + PATTERN_DELIM.length());
             last_found_pattern = true;
             last_found_such_that = false;
         }

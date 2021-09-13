@@ -13,7 +13,7 @@
 
 class SelectClauseParser {
  public:
-    static SelectClauseParser *getInstance();
+    static SelectClauseParser *get_instance();
     void set_select_clause(std::unordered_map<std::string,
                          EntityDeclaration*> *syn_to_ent,
                            std::string select_clause);

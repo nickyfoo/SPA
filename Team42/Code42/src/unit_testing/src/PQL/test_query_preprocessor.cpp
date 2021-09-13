@@ -1,5 +1,5 @@
-#include "PQL/query_preprocessor.h"
-#include "PQL/pql_query.h"
+#include "query_preprocessor.h"
+#include "pql_query.h"
 #include "catch.hpp"
 
 TEST_CASE("1. Standard select") {
@@ -552,7 +552,7 @@ TEST_CASE("44. Standard pattern clause") {
     REQUIRE(clause->get_query_relationships()->size() == 0);
     REQUIRE(clause->get_query_patterns()->size() == 1);
     PatternClause *pattern = clause->get_query_patterns()->at(0);
-    REQUIRE(pattern->get_synonym()->getSynonym() == "a");
+    REQUIRE(pattern->get_synonym()->get_synonym() == "a");
     REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::WildCard);
     REQUIRE(pattern->get_right_ref()->get_expression() == "count+1");
     REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
@@ -568,7 +568,7 @@ TEST_CASE("45. PatternClause clause with partial pattern") {
     REQUIRE(clause->get_query_relationships()->size() == 0);
     REQUIRE(clause->get_query_patterns()->size() == 1);
     PatternClause *pattern = clause->get_query_patterns()->at(0);
-    REQUIRE(pattern->get_synonym()->getSynonym() == "a");
+    REQUIRE(pattern->get_synonym()->get_synonym() == "a");
     REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Argument);
     REQUIRE(pattern->get_left_ref()->get_argument() == "normSq");
     REQUIRE(pattern->get_right_ref()->get_expression() == "cenX*cenX");
@@ -585,7 +585,7 @@ TEST_CASE("46. PatternClause clause with different variable name") {
     REQUIRE(clause->get_query_relationships()->size() == 0);
     REQUIRE(clause->get_query_patterns()->size() == 1);
     PatternClause *pattern = clause->get_query_patterns()->at(0);
-    REQUIRE(pattern->get_synonym()->getSynonym() == "newa");
+    REQUIRE(pattern->get_synonym()->get_synonym() == "newa");
     REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Argument);
     REQUIRE(pattern->get_left_ref()->get_argument() == "normSq");
     REQUIRE(pattern->get_right_ref()->get_expression() == "cenX*cenX");
@@ -607,7 +607,7 @@ TEST_CASE("47. Queries with one pattern clause and one such that") {
 
     REQUIRE(clause->get_query_patterns()->size() == 1);
     PatternClause *pattern = clause->get_query_patterns()->at(0);
-    REQUIRE(pattern->get_synonym()->getSynonym() == "a");
+    REQUIRE(pattern->get_synonym()->get_synonym() == "a");
     REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Argument);
     REQUIRE(pattern->get_left_ref()->get_argument() == "count");
     REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
@@ -629,7 +629,7 @@ TEST_CASE("48. Queries with one pattern clause and one such that") {
 
     REQUIRE(clause->get_query_patterns()->size() == 1);
     PatternClause *pattern = clause->get_query_patterns()->at(0);
-    REQUIRE(pattern->get_synonym()->getSynonym() == "a");
+    REQUIRE(pattern->get_synonym()->get_synonym() == "a");
     REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Synonym);
     REQUIRE(pattern->get_left_ref()->get_synonym() == "v");
     REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
@@ -651,7 +651,7 @@ TEST_CASE("49. Queries that use and modify the same variable") {
 
     REQUIRE(clause->get_query_patterns()->size() == 1);
     PatternClause *pattern = clause->get_query_patterns()->at(0);
-    REQUIRE(pattern->get_synonym()->getSynonym() == "a");
+    REQUIRE(pattern->get_synonym()->get_synonym() == "a");
     REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Argument);
     REQUIRE(pattern->get_left_ref()->get_argument() == "x");
     REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
@@ -673,7 +673,7 @@ TEST_CASE("50. Complex queries with keywords as variable name") {
 
     REQUIRE(clause->get_query_patterns()->size() == 1);
     PatternClause *pattern = clause->get_query_patterns()->at(0);
-    REQUIRE(pattern->get_synonym()->getSynonym() == "pattern");
+    REQUIRE(pattern->get_synonym()->get_synonym() == "pattern");
     REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Argument);
     REQUIRE(pattern->get_left_ref()->get_argument() == "x");
     REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
@@ -696,7 +696,7 @@ TEST_CASE("51. Complex queries with keywords as variable name") {
 
     REQUIRE(clause->get_query_patterns()->size() == 1);
     PatternClause *pattern = clause->get_query_patterns()->at(0);
-    REQUIRE(pattern->get_synonym()->getSynonym() == "pattern");
+    REQUIRE(pattern->get_synonym()->get_synonym() == "pattern");
     REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Synonym);
     REQUIRE(pattern->get_left_ref()->get_synonym() == "select");
     REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
@@ -748,7 +748,7 @@ TEST_CASE("56. Pattern keyword inside pattern") {
 
     REQUIRE(clause->get_query_patterns()->size() == 1);
     PatternClause *pattern = clause->get_query_patterns()->at(0);
-    REQUIRE(pattern->get_synonym()->getSynonym() == "a");
+    REQUIRE(pattern->get_synonym()->get_synonym() == "a");
     REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::WildCard);
     REQUIRE(pattern->get_right_ref()->get_expression() == "pattern");
     REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);

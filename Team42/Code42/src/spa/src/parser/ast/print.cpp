@@ -4,6 +4,7 @@ PrintNode::PrintNode(IdentifierNode *var, int stmt_no, LocInfo loc) : StatementN
   this->var_ = var;
 }
 
-NodeType PrintNode::kind() { return NodeType::Print; }
+NodeType PrintNode::get_kind() { return NodeType::Print; }
 
-IdentifierNode *PrintNode::var() { return this->var_; }
+IdentifierNode *PrintNode::get_var() { return this->var_; }
+

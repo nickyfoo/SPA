@@ -9,9 +9,9 @@ AssignNode::AssignNode(IdentifierNode *var, Node *expr, int stmt_no, LocInfo loc
     throw std::invalid_argument("AssignNode: expected var to be Identifier");
   }
 
-  if (expr == nullptr || expr->kind() != NodeType::Expression &&
-                             expr->kind() != NodeType::Constant &&
-                             expr->kind() != NodeType::Identifier) {
+  if (expr == nullptr || expr->get_kind() != NodeType::Expression &&
+                             expr->get_kind() != NodeType::Constant &&
+                             expr->get_kind() != NodeType::Identifier) {
     throw std::invalid_argument(
         "AssignNode: expected expr to be Expression, Constant or Identifier");
   }
@@ -20,13 +20,14 @@ AssignNode::AssignNode(IdentifierNode *var, Node *expr, int stmt_no, LocInfo loc
   this->expr_ = expr;
 }
 
-NodeType AssignNode::kind() { return NodeType::Assign; }
+NodeType AssignNode::get_kind() { return NodeType::Assign; }
 
-IdentifierNode *AssignNode::var() { return this->var_; }
+IdentifierNode *AssignNode::get_var() { return this->var_; }
 
 Node *AssignNode::expr() {
-  assert(this->expr_->kind() == NodeType::Expression || this->expr_->kind() == NodeType::Constant ||
-         this->expr_->kind() == NodeType::Identifier);
+  assert(this->expr_->get_kind() == NodeType::Expression || this->expr_->get_kind() == NodeType::Constant ||
+         this->expr_->get_kind() == NodeType::Identifier);
 
   return this->expr_;
 }
+

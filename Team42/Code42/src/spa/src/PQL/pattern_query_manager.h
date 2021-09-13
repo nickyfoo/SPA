@@ -5,7 +5,7 @@
 #include "string"
 #include "entity_declaration.h"
 #include "pattern_clause.h"
-#include "Entity.h"
+#include "entity.hpp"
 
 
 class PatternQueryManager {

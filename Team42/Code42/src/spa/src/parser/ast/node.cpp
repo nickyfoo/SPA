@@ -5,6 +5,7 @@ Node::Node(LocInfo loc) {
   this->col_no_ = loc.col_no;
 }
 
-int Node::line_no() { return this->line_no_; }
+int Node::get_line_no() { return this->line_no_; }
 
-int Node::col_no() { return this->col_no_; }
+int Node::get_col_no() { return this->col_no_; }
+

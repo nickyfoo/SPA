@@ -13,7 +13,7 @@ class StubNode : public Node {
   StubNode(NodeType kind) : Node(LocInfo{.line_no = rand(), .col_no = rand()}) {
     this->kind_ = kind;
   }
-  NodeType kind() { return this->kind_; }
+  NodeType get_kind() { return this->kind_; }
 };
 
 class StubStatementNode : public StatementNode {
@@ -26,7 +26,7 @@ class StubStatementNode : public StatementNode {
     this->kind_ = kind;
   }
 
-  NodeType kind() { return this->kind_; }
+  NodeType get_kind() { return this->kind_; }
 };
 
 TEST_CASE("Test Identifier Node") {
@@ -38,19 +38,19 @@ TEST_CASE("Test Identifier Node") {
   cn = rand();
   name = "X";
   i = new IdentifierNode(name, LocInfo{.line_no = ln, .col_no = cn});
-  REQUIRE(i->kind() == NodeType::Identifier);
-  REQUIRE(i->line_no() == ln);
-  REQUIRE(i->col_no() == cn);
-  REQUIRE(i->name() == name);
+  REQUIRE(i->get_kind() == NodeType::Identifier);
+  REQUIRE(i->get_line_no() == ln);
+  REQUIRE(i->get_col_no() == cn);
+  REQUIRE(i->get_name() == name);
 
   ln = rand();
   cn = rand();
   name = "Foo";
   i = new IdentifierNode(name, LocInfo{.line_no = ln, .col_no = cn});
-  REQUIRE(i->kind() == NodeType::Identifier);
-  REQUIRE(i->line_no() == ln);
-  REQUIRE(i->col_no() == cn);
-  REQUIRE(i->name() == name);
+  REQUIRE(i->get_kind() == NodeType::Identifier);
+  REQUIRE(i->get_line_no() == ln);
+  REQUIRE(i->get_col_no() == cn);
+  REQUIRE(i->get_name() == name);
 }
 
 TEST_CASE("Test Constant Node") {
@@ -62,19 +62,19 @@ TEST_CASE("Test Constant Node") {
   cn = rand();
   value = "12345";
   c = new ConstantNode(value, LocInfo{.line_no = ln, .col_no = cn});
-  REQUIRE(c->kind() == NodeType::Constant);
-  REQUIRE(c->line_no() == ln);
-  REQUIRE(c->col_no() == cn);
-  REQUIRE(c->value() == value);
+  REQUIRE(c->get_kind() == NodeType::Constant);
+  REQUIRE(c->get_line_no() == ln);
+  REQUIRE(c->get_col_no() == cn);
+  REQUIRE(c->get_value() == value);
 
   ln = rand();
   cn = rand();
   value = "652434141";
   c = new ConstantNode(value, LocInfo{.line_no = ln, .col_no = cn});
-  REQUIRE(c->kind() == NodeType::Constant);
-  REQUIRE(c->line_no() == ln);
-  REQUIRE(c->col_no() == cn);
-  REQUIRE(c->value() == value);
+  REQUIRE(c->get_kind() == NodeType::Constant);
+  REQUIRE(c->get_line_no() == ln);
+  REQUIRE(c->get_col_no() == cn);
+  REQUIRE(c->get_value() == value);
 }
 
 TEST_CASE("Test Expression Node") {
@@ -106,13 +106,13 @@ TEST_CASE("Test Expression Node") {
 
     e = new ExpressionNode(op, left, right, expr_string, LocInfo{.line_no = ln, .col_no = cn});
 
-    REQUIRE(e->kind() == NodeType::Expression);
-    REQUIRE(e->line_no() == ln);
-    REQUIRE(e->col_no() == cn);
-    REQUIRE(e->op() == op);
-    REQUIRE(e->left() == left);
-    REQUIRE(e->right() == right);
-    REQUIRE(e->expr_string() == expr_string);
+    REQUIRE(e->get_kind() == NodeType::Expression);
+    REQUIRE(e->get_line_no() == ln);
+    REQUIRE(e->get_col_no() == cn);
+    REQUIRE(e->get_op() == op);
+    REQUIRE(e->get_left() == left);
+    REQUIRE(e->get_right() == right);
+    REQUIRE(e->get_expr_string() == expr_string);
   }
 
   std::vector<std::tuple<ExprOp, Node *, Node *, std::string>> fail_perms{
@@ -170,12 +170,12 @@ TEST_CASE("Test RelExpression Node") {
 
     r = new RelExpressionNode(op, left, right, LocInfo{.line_no = ln, .col_no = cn});
 
-    REQUIRE(r->kind() == NodeType::RelExpression);
-    REQUIRE(r->line_no() == ln);
-    REQUIRE(r->col_no() == cn);
-    REQUIRE(r->op() == op);
-    REQUIRE(r->left() == left);
-    REQUIRE(r->right() == right);
+    REQUIRE(r->get_kind() == NodeType::RelExpression);
+    REQUIRE(r->get_line_no() == ln);
+    REQUIRE(r->get_col_no() == cn);
+    REQUIRE(r->get_op() == op);
+    REQUIRE(r->get_left() == left);
+    REQUIRE(r->get_right() == right);
   }
 
   std::vector<std::tuple<RelExprOp, Node *, Node *>> fail_perms{
@@ -232,12 +232,12 @@ TEST_CASE("Test CondExpression Node") {
 
     c = new CondExpressionNode(op, left, right, LocInfo{.line_no = ln, .col_no = cn});
 
-    REQUIRE(c->kind() == NodeType::CondExpression);
-    REQUIRE(c->line_no() == ln);
-    REQUIRE(c->col_no() == cn);
-    REQUIRE(c->op() == op);
-    REQUIRE(c->left() == left);
-    REQUIRE(c->right() == right);
+    REQUIRE(c->get_kind() == NodeType::CondExpression);
+    REQUIRE(c->get_line_no() == ln);
+    REQUIRE(c->get_col_no() == cn);
+    REQUIRE(c->get_op() == op);
+    REQUIRE(c->get_left() == left);
+    REQUIRE(c->get_right() == right);
   }
 
   std::vector<std::tuple<CondExprOp, Node *, Node *>> fail_perms{
@@ -292,12 +292,12 @@ TEST_CASE("Test Assign Node") {
   n = new StubNode(NodeType::Expression);
 
   a = new AssignNode(i, n, sn, LocInfo{.line_no = ln, .col_no = cn});
-  REQUIRE(a->kind() == NodeType::Assign);
-  REQUIRE(a->line_no() == ln);
-  REQUIRE(a->col_no() == cn);
-  REQUIRE(a->var() == i);
+  REQUIRE(a->get_kind() == NodeType::Assign);
+  REQUIRE(a->get_line_no() == ln);
+  REQUIRE(a->get_col_no() == cn);
+  REQUIRE(a->get_var() == i);
   REQUIRE(a->expr() == n);
-  REQUIRE(a->stmt_no() == sn);
+  REQUIRE(a->get_stmt_no() == sn);
 
   ln = rand();
   cn = rand();
@@ -306,12 +306,12 @@ TEST_CASE("Test Assign Node") {
   n = new StubNode(NodeType::Constant);
 
   a = new AssignNode(i, n, sn, LocInfo{.line_no = ln, .col_no = cn});
-  REQUIRE(a->kind() == NodeType::Assign);
-  REQUIRE(a->line_no() == ln);
-  REQUIRE(a->col_no() == cn);
-  REQUIRE(a->var() == i);
+  REQUIRE(a->get_kind() == NodeType::Assign);
+  REQUIRE(a->get_line_no() == ln);
+  REQUIRE(a->get_col_no() == cn);
+  REQUIRE(a->get_var() == i);
   REQUIRE(a->expr() == n);
-  REQUIRE(a->stmt_no() == sn);
+  REQUIRE(a->get_stmt_no() == sn);
 
   ln = rand();
   cn = rand();
@@ -320,12 +320,12 @@ TEST_CASE("Test Assign Node") {
   n = new StubNode(NodeType::Constant);
 
   a = new AssignNode(i, n, sn, LocInfo{.line_no = ln, .col_no = cn});
-  REQUIRE(a->kind() == NodeType::Assign);
-  REQUIRE(a->line_no() == ln);
-  REQUIRE(a->col_no() == cn);
-  REQUIRE(a->var() == i);
+  REQUIRE(a->get_kind() == NodeType::Assign);
+  REQUIRE(a->get_line_no() == ln);
+  REQUIRE(a->get_col_no() == cn);
+  REQUIRE(a->get_var() == i);
   REQUIRE(a->expr() == n);
-  REQUIRE(a->stmt_no() == sn);
+  REQUIRE(a->get_stmt_no() == sn);
 
   std::vector<NodeType> fail_perms{
       NodeType::RelExpression, NodeType::CondExpression, NodeType::Assign, NodeType::If,
@@ -384,13 +384,13 @@ TEST_CASE("Test If Node") {
   sn = rand();
 
   i = new IfNode(cond, then_lst, else_lst, sn, LocInfo{.line_no = ln, .col_no = cn});
-  REQUIRE(i->kind() == NodeType::If);
-  REQUIRE(i->line_no() == ln);
-  REQUIRE(i->col_no() == cn);
-  REQUIRE(i->stmt_no() == sn);
-  REQUIRE(i->cond() == cond);
-  REQUIRE(i->else_stmt_lst() == else_lst);
-  REQUIRE(i->then_stmt_lst() == then_lst);
+  REQUIRE(i->get_kind() == NodeType::If);
+  REQUIRE(i->get_line_no() == ln);
+  REQUIRE(i->get_col_no() == cn);
+  REQUIRE(i->get_stmt_no() == sn);
+  REQUIRE(i->get_cond() == cond);
+  REQUIRE(i->get_else_stmt_lst() == else_lst);
+  REQUIRE(i->get_then_stmt_lst() == then_lst);
 
   cond = new StubNode(NodeType::CondExpression);
   then_lst = populateStmtLst();
@@ -400,13 +400,13 @@ TEST_CASE("Test If Node") {
   sn = rand();
 
   i = new IfNode(cond, then_lst, else_lst, sn, LocInfo{.line_no = ln, .col_no = cn});
-  REQUIRE(i->kind() == NodeType::If);
-  REQUIRE(i->line_no() == ln);
-  REQUIRE(i->col_no() == cn);
-  REQUIRE(i->stmt_no() == sn);
-  REQUIRE(i->cond() == cond);
-  REQUIRE(i->else_stmt_lst() == else_lst);
-  REQUIRE(i->then_stmt_lst() == then_lst);
+  REQUIRE(i->get_kind() == NodeType::If);
+  REQUIRE(i->get_line_no() == ln);
+  REQUIRE(i->get_col_no() == cn);
+  REQUIRE(i->get_stmt_no() == sn);
+  REQUIRE(i->get_cond() == cond);
+  REQUIRE(i->get_else_stmt_lst() == else_lst);
+  REQUIRE(i->get_then_stmt_lst() == then_lst);
 
   cond = nullptr;
   then_lst = populateStmtLst();
@@ -460,12 +460,12 @@ TEST_CASE("Test While Node") {
   sn = rand();
 
   w = new WhileNode(cond, stmt_lst, sn, LocInfo{.line_no = ln, .col_no = cn});
-  REQUIRE(w->kind() == NodeType::While);
-  REQUIRE(w->line_no() == ln);
-  REQUIRE(w->col_no() == cn);
-  REQUIRE(w->stmt_no() == sn);
-  REQUIRE(w->cond() == cond);
-  REQUIRE(w->stmt_list() == stmt_lst);
+  REQUIRE(w->get_kind() == NodeType::While);
+  REQUIRE(w->get_line_no() == ln);
+  REQUIRE(w->get_col_no() == cn);
+  REQUIRE(w->get_stmt_no() == sn);
+  REQUIRE(w->get_cond() == cond);
+  REQUIRE(w->get_stmt_list() == stmt_lst);
 
   cond = new StubNode(NodeType::CondExpression);
   stmt_lst = populateStmtLst();
@@ -474,12 +474,12 @@ TEST_CASE("Test While Node") {
   sn = rand();
 
   w = new WhileNode(cond, stmt_lst, sn, LocInfo{.line_no = ln, .col_no = cn});
-  REQUIRE(w->kind() == NodeType::While);
-  REQUIRE(w->line_no() == ln);
-  REQUIRE(w->col_no() == cn);
-  REQUIRE(w->stmt_no() == sn);
-  REQUIRE(w->cond() == cond);
-  REQUIRE(w->stmt_list() == stmt_lst);
+  REQUIRE(w->get_kind() == NodeType::While);
+  REQUIRE(w->get_line_no() == ln);
+  REQUIRE(w->get_col_no() == cn);
+  REQUIRE(w->get_stmt_no() == sn);
+  REQUIRE(w->get_cond() == cond);
+  REQUIRE(w->get_stmt_list() == stmt_lst);
 
   cond = nullptr;
   stmt_lst = populateStmtLst();
@@ -516,11 +516,11 @@ TEST_CASE("Test Read Node") {
   i = new IdentifierNode("X", LocInfo{.line_no = ln, .col_no = cn});
 
   r = new ReadNode(i, sn, LocInfo{.line_no = ln, .col_no = cn});
-  REQUIRE(r->kind() == NodeType::Read);
-  REQUIRE(r->line_no() == ln);
-  REQUIRE(r->col_no() == cn);
-  REQUIRE(r->stmt_no() == sn);
-  REQUIRE(r->var() == i);
+  REQUIRE(r->get_kind() == NodeType::Read);
+  REQUIRE(r->get_line_no() == ln);
+  REQUIRE(r->get_col_no() == cn);
+  REQUIRE(r->get_stmt_no() == sn);
+  REQUIRE(r->get_var() == i);
 }
 
 TEST_CASE("Test Print Node") {
@@ -534,11 +534,11 @@ TEST_CASE("Test Print Node") {
   i = new IdentifierNode("X", LocInfo{.line_no = ln, .col_no = cn});
 
   p = new PrintNode(i, sn, LocInfo{.line_no = ln, .col_no = cn});
-  REQUIRE(p->kind() == NodeType::Print);
-  REQUIRE(p->line_no() == ln);
-  REQUIRE(p->col_no() == cn);
-  REQUIRE(p->stmt_no() == sn);
-  REQUIRE(p->var() == i);
+  REQUIRE(p->get_kind() == NodeType::Print);
+  REQUIRE(p->get_line_no() == ln);
+  REQUIRE(p->get_col_no() == cn);
+  REQUIRE(p->get_stmt_no() == sn);
+  REQUIRE(p->get_var() == i);
 }
 
 TEST_CASE("Test Call Node") {
@@ -552,11 +552,11 @@ TEST_CASE("Test Call Node") {
   i = new IdentifierNode("X", LocInfo{.line_no = ln, .col_no = cn});
 
   c = new CallNode(i, sn, LocInfo{.line_no = ln, .col_no = cn});
-  REQUIRE(c->kind() == NodeType::Call);
-  REQUIRE(c->line_no() == ln);
-  REQUIRE(c->col_no() == cn);
-  REQUIRE(c->stmt_no() == sn);
-  REQUIRE(c->proc() == i);
+  REQUIRE(c->get_kind() == NodeType::Call);
+  REQUIRE(c->get_line_no() == ln);
+  REQUIRE(c->get_col_no() == cn);
+  REQUIRE(c->get_stmt_no() == sn);
+  REQUIRE(c->get_proc() == i);
 }
 
 TEST_CASE("Test Procedure Node") {
@@ -584,10 +584,10 @@ TEST_CASE("Test Procedure Node") {
   cn = rand();
 
   p = new ProcedureNode(name, stmt_lst, LocInfo{.line_no = ln, .col_no = cn});
-  REQUIRE(p->kind() == NodeType::Procedure);
-  REQUIRE(p->name() == name);
-  REQUIRE(p->line_no() == ln);
-  REQUIRE(p->col_no() == cn);
+  REQUIRE(p->get_kind() == NodeType::Procedure);
+  REQUIRE(p->get_name() == name);
+  REQUIRE(p->get_line_no() == ln);
+  REQUIRE(p->get_col_no() == cn);
 
   name = "Main";
   stmt_lst = populateStmtLst();
@@ -595,10 +595,10 @@ TEST_CASE("Test Procedure Node") {
   cn = rand();
 
   p = new ProcedureNode(name, stmt_lst, LocInfo{.line_no = ln, .col_no = cn});
-  REQUIRE(p->kind() == NodeType::Procedure);
-  REQUIRE(p->name() == name);
-  REQUIRE(p->line_no() == ln);
-  REQUIRE(p->col_no() == cn);
+  REQUIRE(p->get_kind() == NodeType::Procedure);
+  REQUIRE(p->get_name() == name);
+  REQUIRE(p->get_line_no() == ln);
+  REQUIRE(p->get_col_no() == cn);
 }
 
 TEST_CASE("Test Program Node") {
@@ -609,8 +609,8 @@ TEST_CASE("Test Program Node") {
   ln = rand();
   cn = rand();
   p = new ProgramNode(procedures, LocInfo{.line_no = ln, .col_no = cn});
-  REQUIRE(p->kind() == NodeType::Program);
-  REQUIRE(p->procedures() == procedures);
-  REQUIRE(p->line_no() == ln);
-  REQUIRE(p->col_no() == cn);
+  REQUIRE(p->get_kind() == NodeType::Program);
+  REQUIRE(p->get_procedures() == procedures);
+  REQUIRE(p->get_line_no() == ln);
+  REQUIRE(p->get_col_no() == cn);
 }

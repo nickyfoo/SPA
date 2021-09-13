@@ -39,8 +39,7 @@ std::string source = "procedure main {\n"
                      "\tnormSq = cenX * cenX + cenY * cenY;\n"
                      "}";
 
-TEST_CASE("Test pkb::Initialise()") {
-
+TEST_CASE("Test PKB::Initialise()") {
   BufferedLexer lexer(source.c_str());
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
@@ -52,7 +51,6 @@ TEST_CASE("Test pkb::GetFollows()") {
   BufferedLexer lexer(source.c_str());
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
-
   PKB pkb = PKB(p);
   pkb.PrintStatements();
   for (int i = 1; i <= pkb.get_num_statements() + 1; i++) {

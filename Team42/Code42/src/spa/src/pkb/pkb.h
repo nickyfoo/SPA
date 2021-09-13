@@ -9,6 +9,7 @@
 #include "tables/stmt_table.h"
 #include "tables/var_table.h"
 #include "tables/const_table.h"
+#include "pattern_manager.h"
 
 class PKB {
  public:
@@ -46,6 +47,10 @@ class PKB {
 
   // Gets all constants in the program.
   std::vector<Constant *> get_all_constants();
+
+  // Tests the RHS of assignment statement against the given pattern.
+  // Returns true if pattern matches.
+  static bool TestAssignmentPattern(Statement *statement, std::string pattern, bool is_partial_match);
 
   // Prints information of statements in the statement table.
   void PrintStatements();

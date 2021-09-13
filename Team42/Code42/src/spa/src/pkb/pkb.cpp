@@ -104,18 +104,22 @@ void PKB::Initialise() {
 }
 
 void PKB::ExtractEntities() {
+  auto extract_variable = [this](Node *node) { PKB::AddVariable(node); };
+  auto extract_constant = [this](Node *node) { PKB::AddConstant(node); };
+  auto extract_statement = [this](Node *node) { PKB::AddStatement(node); };
+  auto extract_expr_string = [this](Node *node) { PKB::AddExprString(node); };
+  auto extract_procedure = [this](Node *node) { PKB::AddProcedure(node); };
+
   std::map<NodeType, std::vector<std::function<void(Node *)>>> functions = {
-      {NodeType::Identifier, {[this](Node *node) { PKB::AddVariable(node); }}},
-      {NodeType::Constant, {[this](Node *node) { PKB::AddConstant(node); }}},
-      {NodeType::Assign, {
-          [this](Node *node) { PKB::AddStatement(node); },
-          [this](Node *node) { PKB::AddExprString(node); }}},
-      {NodeType::If, {[this](Node *node) { PKB::AddStatement(node); }}},
-      {NodeType::While, {[this](Node *node) { PKB::AddStatement(node); }}},
-      {NodeType::Read, {[this](Node *node) { PKB::AddStatement(node); }}},
-      {NodeType::Print, {[this](Node *node) { PKB::AddStatement(node); }}},
-      {NodeType::Call, {[this](Node *node) { PKB::AddStatement(node); }}},
-      {NodeType::Procedure, {[this](Node *node) { PKB::AddProcedure(node); }}},
+      {NodeType::Identifier, {extract_variable}},
+      {NodeType::Constant, {extract_constant}},
+      {NodeType::Assign, {extract_statement, extract_expr_string}},
+      {NodeType::If, {extract_statement}},
+      {NodeType::While, {extract_statement}},
+      {NodeType::Read, {extract_statement}},
+      {NodeType::Print, {extract_statement}},
+      {NodeType::Call, {extract_statement}},
+      {NodeType::Procedure, {extract_procedure}},
   };
 
   Visit(root_, functions);
@@ -127,10 +131,14 @@ void PKB::ExtractEntities() {
 }
 
 void PKB::GetFollows() {
+  auto extract_follows_for_if_node = [this](Node *node) { PKB::FollowsProcessIfNode(node); };
+  auto extract_follows_for_while_node = [this](Node *node) { PKB::FollowsProcessWhileNode(node); };
+  auto extract_follows_for_procedure_node = [this](Node *node) { PKB::FollowsProcessProcedureNode(node); };
+
   std::map<NodeType, std::vector<std::function<void(Node *)>>> functions = {
-      {NodeType::If, {[this](Node *node) { PKB::FollowsProcessIfNode(node); }}},
-      {NodeType::While, {[this](Node *node) { PKB::FollowsProcessWhileNode(node); }}},
-      {NodeType::Procedure, {[this](Node *node) { PKB::FollowsProcessProcedureNode(node); }}},
+      {NodeType::If, {extract_follows_for_if_node}},
+      {NodeType::While, {extract_follows_for_while_node}},
+      {NodeType::Procedure, {extract_follows_for_procedure_node}},
   };
   Visit(root_, functions);
   stmt_table_.ProcessFollows();
@@ -138,9 +146,12 @@ void PKB::GetFollows() {
 }
 
 void PKB::GetParent() {
+  auto extract_parents_for_if_node = [this](Node *node) { PKB::ParentProcessIfNode(node); };
+  auto extract_parents_for_while_node = [this](Node *node) { PKB::ParentProcessWhileNode(node); };
+
   std::map<NodeType, std::vector<std::function<void(Node *)>>> functions = {
-      {NodeType::If, {[this](Node *node) { PKB::ParentProcessIfNode(node); }}},
-      {NodeType::While, {[this](Node *node) { PKB::ParentProcessWhileNode(node); }}},
+      {NodeType::If, {extract_parents_for_if_node}},
+      {NodeType::While, {extract_parents_for_while_node}},
   };
   Visit(root_, functions);
   stmt_table_.ProcessParent();

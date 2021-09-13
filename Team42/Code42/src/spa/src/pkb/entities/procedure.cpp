@@ -36,7 +36,10 @@ void Procedure::AddModifies(std::string var_name) {
   modifies_.insert(var_name);
 }
 
-void Procedure::AddCalls(std::string proc_name) { calls_.insert(proc_name); }
+void Procedure::AddCalls(std::string proc_name) { 
+  calls_.insert(proc_name); 
+}
+
 void Procedure::AddCallsStar(std::string proc_name) {
   calls_star_.insert(proc_name);
 }

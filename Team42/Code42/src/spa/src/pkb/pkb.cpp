@@ -22,7 +22,6 @@ void PKB::AddStatement(Node *node, std::vector<Node *> ancestor_list) {
 void PKB::AddExprString(Node *node, std::vector<Node *> ancestor_list) {
   if (node->get_kind() == NodeType::Assign) {
     auto *assign_node = dynamic_cast<AssignNode *>(node);
-    // SUS
     switch (assign_node->expr()->get_kind()) {
       case NodeType::Expression: {
         auto *expression_node = dynamic_cast<ExpressionNode *>(assign_node->expr());

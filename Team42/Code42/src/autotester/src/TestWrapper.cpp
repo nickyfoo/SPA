@@ -33,8 +33,8 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results){
 
   auto* query_preprocessor = new QueryPreprocessor(query);
   PQLQuery *clause = query_preprocessor->get_pql_query();
-  QueryEvaluator query_evaluator = new QueryEvaluator(*clause);
-  std::vector<std::string> res = query_evaluator.evaluate();
-  std::copy(res.begin(), res.end(), std::back_inserter(results));
+//  QueryEvaluator query_evaluator = new QueryEvaluator(*clause);
+//  std::vector<std::string> res = query_evaluator.evaluate();
+//  std::copy(res.begin(), res.end(), std::back_inserter(results));
 
 }

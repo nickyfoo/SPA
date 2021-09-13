@@ -11,9 +11,9 @@ int main(int argc, char *argv[]) {
 
     auto* query = new QueryPreprocessor(ss.str());
     PQLQuery *clause = query->get_pql_query();
-    QueryEvaluator query_evaluator = new QueryEvaluator(*clause);
-    std::vector<std::string>> res = query_evaluator.evaluate();
-    return res;
+//    QueryEvaluator query_evaluator = new QueryEvaluator(*clause);
+//    std::vector<std::string>> res = query_evaluator.evaluate();
+//    return res;
 
     if (clause == nullptr) {
         std::cout << "Invalid PQL Query!" << "\n";

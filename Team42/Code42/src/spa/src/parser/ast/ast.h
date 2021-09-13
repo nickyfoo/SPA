@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-enum NodeType {
+enum class NodeType {
   Identifier,
   Constant,
   Expression,
@@ -19,11 +19,11 @@ enum NodeType {
   Program
 };
 
-enum ExprOp { Plus, Minus, Times, Divide, Modulo };
+enum class ExprOp { Plus, Minus, Times, Divide, Modulo };
 
-enum RelExprOp { Gt, Gte, Lt, Lte, Eq, Neq };
+enum class RelExprOp { Gt, Gte, Lt, Lte, Eq, Neq };
 
-enum CondExprOp { And, Or, Not };
+enum class CondExprOp { And, Or, Not };
 
 struct LocInfo {
   int line_no;
@@ -61,6 +61,7 @@ class IdentifierNode : public Node {
   IdentifierNode(std::string name, LocInfo loc);
   NodeType get_kind();
   std::string get_name();
+  std::string get_expr_string();
 
  private:
   std::string name_;
@@ -71,6 +72,7 @@ class ConstantNode : public Node {
   ConstantNode(std::string value, LocInfo loc);
   NodeType get_kind();
   std::string get_value();
+  std::string get_expr_string();
 
  private:
   std::string value_;

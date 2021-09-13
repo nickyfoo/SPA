@@ -1,5 +1,5 @@
-#include "PQL/query_preprocessor.h"
-#include "PQL/pql_query.h"
+#include "query_preprocessor.h"
+#include "pql_query.h"
 #include "catch.hpp"
 
 TEST_CASE("1. Standard select") {

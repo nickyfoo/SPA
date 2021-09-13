@@ -113,11 +113,11 @@
    <receiver>MainWindow</receiver>
    <slot>btnLoad_clicked()</slot>
    <hints>
-    <hint type_="sourcelabel">
+    <hint type="sourcelabel">
      <x>635</x>
      <y>683</y>
     </hint>
-    <hint type_="destinationlabel">
+    <hint type="destinationlabel">
      <x>625</x>
      <y>784</y>
     </hint>
@@ -129,11 +129,11 @@
    <receiver>MainWindow</receiver>
    <slot>btnRun_clicked()</slot>
    <hints>
-    <hint type_="sourcelabel">
+    <hint type="sourcelabel">
      <x>714</x>
      <y>710</y>
     </hint>
-    <hint type_="destinationlabel">
+    <hint type="destinationlabel">
      <x>692</x>
      <y>808</y>
     </hint>

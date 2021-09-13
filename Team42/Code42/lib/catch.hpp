@@ -651,7 +651,7 @@ namespace Catch {
         Normal = 0x01,
 
         ContinueOnFailure = 0x02,   // Failures fail test, but execution continues
-        FalseTest = 0x04,           // Prefix expression_ with !
+        FalseTest = 0x04,           // Prefix expression with !
         SuppressFail = 0x08         // Failures are reported but do not fail the test
     }; };
 
@@ -1156,7 +1156,7 @@ namespace Catch {
 #endif // CATCH_CONFIG_ENABLE_TUPLE_STRINGMAKER
 
 namespace Catch {
-    struct not_this_one {}; // Tag type_ for detecting which begin/ end are being selected
+    struct not_this_one {}; // Tag type for detecting which begin/ end are being selected
 
     // Import begin/ end from std here so they are considered alongside the fallback (...) overloads in this namespace
     using std::begin;
@@ -1346,7 +1346,7 @@ struct ratio_string<std::milli> {
 #pragma warning(disable:4389) // '==' : signed/unsigned mismatch
 #pragma warning(disable:4018) // more "signed/unsigned mismatch"
 #pragma warning(disable:4312) // Converting int to T* using reinterpret_cast (issue on x64 platform)
-#pragma warning(disable:4180) // qualifier applied to function type_ has no meaning
+#pragma warning(disable:4180) // qualifier applied to function type has no meaning
 #endif
 
 namespace Catch {
@@ -1737,8 +1737,8 @@ namespace Catch {
             CATCH_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS \
         } INTERNAL_CATCH_CATCH( catchAssertionHandler ) \
         INTERNAL_CATCH_REACT( catchAssertionHandler ) \
-    } while( (void)0, false && static_cast<bool>( !!(__VA_ARGS__) ) ) // the expression_ here is never evaluated at runtime but it forces the compiler to give it a look
-    // The double negation silences MSVC's C4800 warning, the static_cast forces short-circuit evaluation if the type_ has overloaded &&.
+    } while( (void)0, false && static_cast<bool>( !!(__VA_ARGS__) ) ) // the expression here is never evaluated at runtime but it forces the compiler to give it a look
+    // The double negation silences MSVC's C4800 warning, the static_cast forces short-circuit evaluation if the type has overloaded &&.
 
 ///////////////////////////////////////////////////////////////////////////////
 #define INTERNAL_CATCH_IF( macroName, resultDisposition, ... ) \
@@ -2509,7 +2509,7 @@ public:
 } // namespace Generic
 
     // The following functions create the actual matcher objects.
-    // The user has to explicitly specify type_ to the function, because
+    // The user has to explicitly specify type to the function, because
     // infering std::function<bool(T const&)> is hard (but possible) and
     // requires a lot of TMP.
     template<typename T>
@@ -3547,7 +3547,7 @@ namespace Catch {
 
 namespace Catch {
 
-    // An optional type_
+    // An optional type
     template<typename T>
     class Option {
     public:
@@ -4003,7 +4003,7 @@ namespace Catch {
         bool assertionEnded(AssertionStats const& assertionStats) override {
             assert(!m_sectionStack.empty());
             // AssertionResult holds a pointer to a temporary DecomposedExpression,
-            // which getExpandedExpression() calls to build the expression_ string.
+            // which getExpandedExpression() calls to build the expression string.
             // Our section stack copy of the assertionResult will likely outlive the
             // temporary, so it must be expanded or discarded now to avoid calling
             // a destroyed object later.
@@ -5087,7 +5087,7 @@ namespace Catch {
                 os << *lazyExpr.m_transientExpression;
         }
         else {
-            os << "{** error - unchecked empty expression_ requested **}";
+            os << "{** error - unchecked empty expression requested **}";
         }
         return os;
     }
@@ -5678,7 +5678,7 @@ namespace Catch { namespace clara { namespace TextFlow {
 namespace Catch { namespace clara {
 namespace detail {
 
-    // Traits for extracting arg and return type_ of lambdas (for single argument_ lambdas)
+    // Traits for extracting arg and return type of lambdas (for single argument lambdas)
     template<typename L>
     struct UnaryLambdaTraits : UnaryLambdaTraits<decltype( &L::operator() )> {};
 
@@ -5718,7 +5718,7 @@ namespace detail {
     };
 
     // Wraps a token coming from a token stream. These may not directly correspond to strings as a single string
-    // may encode an option + its argument_ if the : or = form is used
+    // may encode an option + its argument if the : or = form is used
     enum class TokenType {
         Option, Argument
     };
@@ -5948,7 +5948,7 @@ namespace detail {
         ss << source;
         ss >> target;
         if( ss.fail() )
-            return ParserResult::runtimeError( "Unable to convert '" + source + "' to destination type_" );
+            return ParserResult::runtimeError( "Unable to convert '" + source + "' to destination type" );
         else
             return ParserResult::ok( ParseResultType::Matched );
     }
@@ -6070,7 +6070,7 @@ namespace detail {
     struct BoundLambda : BoundValueRefBase {
         L m_lambda;
 
-        static_assert( UnaryLambdaTraits<L>::isValid, "Supplied lambda must take exactly one argument_" );
+        static_assert( UnaryLambdaTraits<L>::isValid, "Supplied lambda must take exactly one argument" );
         explicit BoundLambda( L const &lambda ) : m_lambda( lambda ) {}
 
         auto setValue( std::string const &arg ) -> ParserResult override {
@@ -6082,7 +6082,7 @@ namespace detail {
     struct BoundFlagLambda : BoundFlagRefBase {
         L m_lambda;
 
-        static_assert( UnaryLambdaTraits<L>::isValid, "Supplied lambda must take exactly one argument_" );
+        static_assert( UnaryLambdaTraits<L>::isValid, "Supplied lambda must take exactly one argument" );
         static_assert( std::is_same<typename UnaryLambdaTraits<L>::ArgType, bool>::value, "flags must be boolean" );
 
         explicit BoundFlagLambda( L const &lambda ) : m_lambda( lambda ) {}
@@ -6314,10 +6314,10 @@ namespace detail {
                         auto valueRef = static_cast<detail::BoundValueRefBase*>( m_ref.get() );
                         ++remainingTokens;
                         if( !remainingTokens )
-                            return InternalParseResult::runtimeError( "Expected argument_ following " + token.token );
+                            return InternalParseResult::runtimeError( "Expected argument following " + token.token );
                         auto const &argToken = *remainingTokens;
                         if( argToken.type != TokenType::Argument )
-                            return InternalParseResult::runtimeError( "Expected argument_ following " + token.token );
+                            return InternalParseResult::runtimeError( "Expected argument following " + token.token );
                         auto result = valueRef->setValue( argToken.token );
                         if( !result )
                             return InternalParseResult( result );
@@ -6546,7 +6546,7 @@ using detail::Help;
 // enum of result types from a parse
 using detail::ParseResultType;
 
-// Result type_ for parser operation
+// Result type for parser operation
 using detail::ParserResult;
 
 }} // namespace Catch::clara
@@ -6650,7 +6650,7 @@ namespace Catch {
                 else if( keypressLc == "both" )
                     config.waitForKeypress = WaitForKeypress::BeforeStartAndExit;
                 else
-                    return ParserResult::runtimeError( "keypress argument_ must be one of: start, exit or both. '" + keypress + "' not recognised" );
+                    return ParserResult::runtimeError( "keypress argument must be one of: start, exit or both. '" + keypress + "' not recognised" );
             return ParserResult::ok( ParseResultType::Matched );
             };
         auto const setVerbosity = [&]( std::string const& verbosity ) {
@@ -8913,7 +8913,7 @@ namespace Catch {
     }
     void RunContext::resetAssertionInfo() {
         m_lastAssertionInfo.macroName = StringRef();
-        m_lastAssertionInfo.capturedExpression = "{Unknown expression_ after the reported line}"_sr;
+        m_lastAssertionInfo.capturedExpression = "{Unknown expression after the reported line}"_sr;
     }
 
     bool RunContext::sectionStarted(SectionInfo const & sectionInfo, Counts & assertions) {
@@ -10680,7 +10680,7 @@ namespace Catch {
     bool TestSpec::ExcludedPattern::matches( TestCaseInfo const& testCase ) const { return !m_underlyingPattern->matches( testCase ); }
 
     bool TestSpec::Filter::matches( TestCaseInfo const& testCase ) const {
-        // All patterns_ in a filter must match for the filter to be a match
+        // All patterns in a filter must match for the filter to be a match
         for( auto const& pattern : m_patterns ) {
             if( !pattern->matches( testCase ) )
                 return false;
@@ -11473,7 +11473,7 @@ namespace {
     }
 
     void XmlWriter::writeStylesheetRef( std::string const& url ) {
-        m_os << "<?xml-stylesheet type_=\"text/xsl\" href=\"" << url << "\"?>\n";
+        m_os << "<?xml-stylesheet type=\"text/xsl\" href=\"" << url << "\"?>\n";
     }
 
     XmlWriter& XmlWriter::writeBlankLine() {
@@ -11712,7 +11712,7 @@ private:
             stream << ';';
             {
                 Colour colour(dimColour());
-                stream << " expression_ was:";
+                stream << " expression was:";
             }
             printOriginalExpression();
         }
@@ -12663,7 +12663,7 @@ namespace Catch {
             XmlWriter::ScopedElement e = xml.scopedElement( elementName );
 
             xml.writeAttribute( "message", result.getExpandedExpression() );
-            xml.writeAttribute( "type_", result.getTestMacroName() );
+            xml.writeAttribute( "type", result.getTestMacroName() );
 
             ReusableStringStream rss;
             if( !result.getMessage().empty() )
@@ -12917,11 +12917,11 @@ namespace Catch {
         if( !includeResults && result.getResultType() != ResultWas::Warning )
             return true;
 
-        // Print the expression_ if there is one.
+        // Print the expression if there is one.
         if( result.hasExpression() ) {
             m_xml.startElement( "Expression" )
                 .writeAttribute( "success", result.succeeded() )
-                .writeAttribute( "type_", result.getTestMacroName() );
+                .writeAttribute( "type", result.getTestMacroName() );
 
             writeSourceInfo( result.getSourceInfo() );
 
@@ -12931,7 +12931,7 @@ namespace Catch {
                 .writeText( result.getExpandedExpression() );
         }
 
-        // And... Print a result applicable to each result type_.
+        // And... Print a result applicable to each result type.
         switch( result.getResultType() ) {
             case ResultWas::ThrewException:
                 m_xml.startElement( "Exception" );

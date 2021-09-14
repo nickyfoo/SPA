@@ -2,7 +2,7 @@
 #include "pql_query.h"
 #include "catch.hpp"
 
-TEST_CASE("1. Standard select") {
+TEST_CASE("Select_NoExtraClauses_ReturnsCorrect") {
     std::string ss = "stmt s;\n"
                 "Select s";
     auto *query = new QueryPreprocessor(ss);
@@ -13,7 +13,7 @@ TEST_CASE("1. Standard select") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("2. No entity found") {
+TEST_CASE("Select_UndefinedEntity_ReturnsNullPtr") {
     std::string ss = "stmt s;\n"
                 "Select s1";
     auto *query = new QueryPreprocessor(ss);
@@ -21,7 +21,7 @@ TEST_CASE("2. No entity found") {
     REQUIRE(clause == nullptr);
 }
 
-TEST_CASE("3. Lowercase select") {
+TEST_CASE("Select_BadSelectKeyword_ReturnsNullPtr") {
     std::string ss = "stmt s;\n"
                 "select s";
     auto *query = new QueryPreprocessor(ss);
@@ -29,7 +29,7 @@ TEST_CASE("3. Lowercase select") {
     REQUIRE(clause == nullptr);
 }
 
-TEST_CASE("4. Empty select") {
+TEST_CASE("Select_NoEntitySelected_ReturnsNullPtr") {
     std::string ss = "stmt s;\n"
                 "Select";
     auto *query = new QueryPreprocessor(ss);
@@ -37,7 +37,7 @@ TEST_CASE("4. Empty select") {
     REQUIRE(clause == nullptr);
 }
 
-TEST_CASE("5. Additional spaces in select statement") {
+TEST_CASE("Select_ExtraSpaces_ReturnsCorrect") {
     std::string ss = "stmt s;\n"
                 "Select    s ";
     auto *query = new QueryPreprocessor(ss);
@@ -48,7 +48,7 @@ TEST_CASE("5. Additional spaces in select statement") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("6. Wrong such that keyword") {
+TEST_CASE("SuchThat_BadSuchThatClauseKeyword_ReturnsNullPtr") {
     std::string ss = "stmt s1; stmt s2;\n"
                 "Select s1 st Follows(s1, s2)";
     auto *query = new QueryPreprocessor(ss);
@@ -56,7 +56,7 @@ TEST_CASE("6. Wrong such that keyword") {
     REQUIRE(clause == nullptr);
 }
 
-TEST_CASE("7. Invalid relationship") {
+TEST_CASE("SuchThat_BadRelRef_ReturnsNullPtr") {
     std::string ss = "stmt s1; stmt s2;\n"
                 "Select s1 such that Following(s1, s2)";
     auto *query = new QueryPreprocessor(ss);
@@ -64,7 +64,7 @@ TEST_CASE("7. Invalid relationship") {
     REQUIRE(clause == nullptr);
 }
 
-TEST_CASE("8. Follows with string argument_") {
+TEST_CASE("Follows_ArgAndStmt_ReturnsNullPtr") {
     std::string ss = "stmt s1; stmt s2;\n"
                 "Select s1 such that Follows('test', s2)";
     auto *query = new QueryPreprocessor(ss);
@@ -72,7 +72,7 @@ TEST_CASE("8. Follows with string argument_") {
     REQUIRE(clause == nullptr);
 }
 
-TEST_CASE("9. Follows clause with 2 statements") {
+TEST_CASE("Follows_StmtAndStmt_ReturnsCorrect") {
     std::string ss = "stmt s1; stmt s2;\n"
                 "Select s1 such that Follows(s1, s2)";
     auto *query = new QueryPreprocessor(ss);

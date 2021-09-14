@@ -66,7 +66,6 @@ void PKB::AddExprString(Node *node, std::vector<Node *> ancestor_list) {
         break;
       }
       default:
-        // TODO(nic): might throw an error here
         break;
     }
   } 
@@ -91,7 +90,6 @@ void PKB::AddExprString(Node *node, std::vector<Node *> ancestor_list) {
         break;
       }
       default:
-        // TODO(nic): might throw an error here
         break;
     }
   } 
@@ -361,8 +359,6 @@ void PKB::FollowsProcessIfNode(Node *node) {
 
 void PKB::FollowsProcessWhileNode(Node *node) {
   auto *while_node = dynamic_cast<WhileNode *>(node);
-  // TODO(nic): Line numbers are stored and sorted at the moment
-  //  as it is not clear how it statement list is organised / sorted
   std::vector<int> line_nos;
   for (StatementNode *n : while_node->get_stmt_list()) {
     line_nos.push_back(n->get_stmt_no());
@@ -379,13 +375,11 @@ void PKB::ParentProcessIfNode(Node *node) {
   Statement *if_statement = stmt_table_.get_statement(if_node->get_stmt_no());
   for (StatementNode *n : if_node->get_then_stmt_lst()) {
     if_statement->AddChild(n->get_stmt_no());
-    // TODO(nic): Check and throw error if NULL
     stmt_table_.get_statement(n->get_stmt_no())->AddParent(if_statement->get_stmt_no());
   }
 
   for (StatementNode *n : if_node->get_else_stmt_lst()) {
     if_statement->AddChild(n->get_stmt_no());
-    // TODO(nic): Check and throw error if NULL
     stmt_table_.get_statement(n->get_stmt_no())->AddParent(if_statement->get_stmt_no());
   }
 }
@@ -395,7 +389,6 @@ void PKB::ParentProcessWhileNode(Node *node) {
   Statement *while_statement = stmt_table_.get_statement(while_node->get_stmt_no());
   for (StatementNode *n : while_node->get_stmt_list()) {
     while_statement->AddChild(n->get_stmt_no());
-    // might want to do error checking here if NULL
     stmt_table_.get_statement(n->get_stmt_no())->AddParent(while_statement->get_stmt_no());
   }
 }
@@ -404,13 +397,19 @@ void PKB::ParentProcessWhileNode(Node *node) {
 void PKB::UsesModifiesProcessAssignNode(Node *node, std::vector<Node *> &ancestorList) {
   auto *assign_node = dynamic_cast<AssignNode *>(node);
   Statement *assign_statement = stmt_table_.get_statement(assign_node->get_stmt_no());
+
+  // Adding Modifies and Modifying relations for LHS
   assign_statement->AddModifies(assign_node->get_var()->get_name());
   var_table_.get_variable(assign_node->get_var()->get_name())
     ->AddStmtModifying(assign_statement->get_stmt_no());
+
+  // Adding Uses for RHS
   for (auto &var : assign_statement->get_vars_from_expr_string()) {
     assign_statement->AddUses(var);
     var_table_.get_variable(var)->AddStmtUsing(assign_statement->get_stmt_no());
   }
+
+  // Updating containers and procedures
   for (Node *n : ancestorList) {
     if (n->get_kind() == NodeType::Procedure) {
       auto *procedure_node = dynamic_cast<ProcedureNode *>(n);
@@ -420,7 +419,7 @@ void PKB::UsesModifiesProcessAssignNode(Node *node, std::vector<Node *> &ancesto
       }
       proc->AddModifies(assign_node->get_var()->get_name());
     }
-    // TODO(nic): not working for container exp yet
+
     if (n->get_kind() == NodeType::If || n->get_kind()== NodeType::While) {
       auto statement_node = dynamic_cast<StatementNode *>(n);
       for (auto &var : *(assign_statement->get_uses())) {

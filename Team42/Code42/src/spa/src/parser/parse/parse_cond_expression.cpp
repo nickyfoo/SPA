@@ -51,8 +51,7 @@ Node *ParseCondExpression(BufferedLexer *lexer, ParseState *state) {
       throw ParseException("expected right parenthesis", t->line_no_, t->col_no_);
     }
 
-    return new CondExpressionNode(CondExprOp::Not, left, nullptr, expr_string,
-                                  LocInfo{.line_no = start_line, .col_no = start_col});
+    return new CondExpressionNode(CondExprOp::Not, left, nullptr, expr_string, {start_line, start_col});
   }
 
   if (t->kind_ == TokenType::Constant || t->kind_ == TokenType::Identifier) {
@@ -112,6 +111,5 @@ Node *ParseCondExpression(BufferedLexer *lexer, ParseState *state) {
   std::string expr_string = StringFormat("%s %s %s", left_expr_string.c_str(),
                                          right_expr_string.c_str(), CondExprOpToString(op).c_str());
 
-  return new CondExpressionNode(op, left, right, expr_string,
-                                LocInfo{.line_no = start_line, .col_no = start_col});
+  return new CondExpressionNode(op, left, right, expr_string, {start_line, start_col});
 }

@@ -170,7 +170,7 @@ TEST_CASE("Test RelExpression Node") {
     right = std::get<2>(p);
     expr_string = std::get<3>(p);
 
-    r = new RelExpressionNode(op, left, right, expr_string, LocInfo{.line_no = ln, .col_no = cn});
+    r = new RelExpressionNode(op, left, right, expr_string, {ln, cn});
 
     REQUIRE(r->get_kind() == NodeType::RelExpression);
     REQUIRE(r->get_line_no() == ln);
@@ -202,7 +202,7 @@ TEST_CASE("Test RelExpression Node") {
     op = std::get<0>(p);
     left = std::get<1>(p);
     right = std::get<2>(p);
-    REQUIRE_THROWS_AS(RelExpressionNode(op, left, right, "", LocInfo{.line_no = ln, .col_no = cn}),
+    REQUIRE_THROWS_AS(RelExpressionNode(op, left, right, "", {ln, cn}),
                       std::invalid_argument);
   }
 }
@@ -234,7 +234,7 @@ TEST_CASE("Test CondExpression Node") {
     right = std::get<2>(p);
     expr_string = std::get<3>(p);
 
-    c = new CondExpressionNode(op, left, right, expr_string, LocInfo{.line_no = ln, .col_no = cn});
+    c = new CondExpressionNode(op, left, right, expr_string, {ln, cn});
 
     REQUIRE(c->get_kind() == NodeType::CondExpression);
     REQUIRE(c->get_line_no() == ln);
@@ -279,7 +279,7 @@ TEST_CASE("Test CondExpression Node") {
     op = std::get<0>(p);
     left = std::get<1>(p);
     right = std::get<2>(p);
-    REQUIRE_THROWS_AS(CondExpressionNode(op, left, right, "", LocInfo{.line_no = ln, .col_no = cn}),
+    REQUIRE_THROWS_AS(CondExpressionNode(op, left, right, "", {ln, cn}),
                       std::invalid_argument);
   }
 }

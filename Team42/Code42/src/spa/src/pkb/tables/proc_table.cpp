@@ -62,7 +62,6 @@ void ProcTable::PrintProcedures() {
   }
 }
 
-
 void ProcTable::PrintProcedureDetails() {
   for (auto &p : table_) {
     p.CallsInfo();

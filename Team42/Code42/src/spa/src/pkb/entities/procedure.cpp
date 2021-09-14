@@ -75,6 +75,7 @@ void Procedure::CallsInfo() {
   }
   std::cout << '\n';
 }
+
 void Procedure::UsesInfo() {
   std::cout << "Procedure " << name_ << " uses:\n";
   std::cout << "Uses: ";

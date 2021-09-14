@@ -43,6 +43,14 @@ std::vector<std::string> Statement::get_vars_from_expr_string() {
   return ans;
 }
 
+
+std::string Statement::get_called_proc_name() {
+  if (this->kind_ == NodeType::Call) {
+    return this->called_proc_name;
+  }
+  return "";
+}
+
 std::set<int> *Statement::get_followers() {
   return &followers_;
 }
@@ -84,6 +92,12 @@ std::set<std::string> *Statement::get_modifies() {
 
 void Statement::set_expr_string(std::string expr_string) {
   this->expr_string_ = expr_string;
+}
+
+void Statement::set_called_proc_name(std::string name) {
+  if (this->kind_ == NodeType::Call) {
+    this->called_proc_name = name;
+  }
 }
 
 void Statement::AddFollower(int line_no) {

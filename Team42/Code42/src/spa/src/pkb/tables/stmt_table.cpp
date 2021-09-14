@@ -13,7 +13,13 @@ void StmtTable::AddStatement(Node *node) {
   // Return if statement number is invalid
   if (stmt_no == 0) return;
   Statement s(stmt_no, stmt_node->get_kind());
+  if (stmt_node->get_kind() == NodeType::Call) {
+    auto *call_node = dynamic_cast<CallNode *>(stmt_node);
+    s.set_called_proc_name(call_node->get_proc()->get_name());
+  }
   table_[stmt_no] = s;
+  //sus might not work :/
+  //probably do a pass later on.
   type_to_statement_[stmt_node->get_kind()].push_back(&table_[stmt_no]);
   num_statements_ = std::max(num_statements_, stmt_no);
 }

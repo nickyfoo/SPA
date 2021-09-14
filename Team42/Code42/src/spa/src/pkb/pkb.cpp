@@ -217,6 +217,19 @@ void PKB::ExtractUsesModifies() {
   VisitWithAncestors(root_, ancestors, functions);
   proc_table_.ProcessUsesModifiesIndirect();
   UpdateVarTableWithProcs();
+  for (auto& call_statement: get_statements(NodeType::Call)) {
+    for (auto &var_used :
+         *(proc_table_.get_procedure(call_statement->get_called_proc_name())->get_uses())) {
+      call_statement->AddUses(var_used);
+      var_table_.get_variable(var_used)->AddStmtUsing(call_statement->get_stmt_no());
+    }
+    for (auto &var_used :
+         *(proc_table_.get_procedure(call_statement->get_called_proc_name())->get_modifies())) {
+      call_statement->AddModifies(var_used);
+      var_table_.get_variable(var_used)->AddStmtModifying(
+          call_statement->get_stmt_no());
+    }
+  }
 }
 
 void PKB::ExtractCalls() {

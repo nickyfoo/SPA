@@ -3,9 +3,10 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <map>
+#include <utility>
 #include "entities/procedure.h"
 #include "table.hpp"
-#include <map>
 
 class ProcTable : public Table {
  public:

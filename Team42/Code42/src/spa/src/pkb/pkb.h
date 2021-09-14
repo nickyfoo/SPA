@@ -27,7 +27,7 @@ class PKB {
   void AddVariable(Node *node, std::vector<Node *> ancestor_list);
   // Adds a constant to the variables table.
   void AddConstant(Node *node, std::vector<Node *> ancestor_list);
-  
+
   // Gets the total number of procedures in the procedure table
   int PKB::get_num_procedures();
   // Gets all procedures in the program.
@@ -96,7 +96,6 @@ class PKB {
   // Process and store Uses/Modifies relationships for the AST print node.
   void UsesModifiesProcessPrintNode(Node *node, std::vector<Node *> &ancestorList);
 
-  
   // Process and store Calls relationships for the AST call node.
   void CallsProcessCallNode(Node *node, std::vector<Node *> &ancestorList);
 

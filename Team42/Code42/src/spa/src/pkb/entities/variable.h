@@ -23,7 +23,7 @@ class Variable : public Entity {
   // Adds a procedure that modifies this variable.
   void AddProcModifying(std::string proc_name);
 
-   // Gets the statement numbers using this variable.
+  // Gets the statement numbers using this variable.
   std::set<int> *get_stmts_using();
   // Gets the statement numbers modifying this variable.
   std::set<int> *get_stmts_modifying();
@@ -44,7 +44,6 @@ class Variable : public Entity {
   // Name of variable.
   std::string name_;
 
-  
   // For s in stmts_using_, Uses(s, this) is true.
   std::set<int> stmts_using_;
   // For s in stmts_modifying_, Modifies(s, this) is true.

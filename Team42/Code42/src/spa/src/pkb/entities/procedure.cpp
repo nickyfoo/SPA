@@ -12,32 +12,32 @@ std::string Procedure::get_name() {
 }
 
 
-std::set<std::string>* Procedure::get_uses() { 
-  return &uses_; 
+std::set<std::string>* Procedure::get_uses() {
+  return &uses_;
 }
 
-std::set<std::string>* Procedure::get_modifies() { 
-  return &modifies_; 
+std::set<std::string>* Procedure::get_modifies() {
+  return &modifies_;
 }
 
-std::set<std::string>* Procedure::get_calls() { 
-  return &calls_; 
+std::set<std::string>* Procedure::get_calls() {
+  return &calls_;
 }
 
-std::set<std::string>* Procedure::get_callers() { 
-  return &callers_; 
+std::set<std::string>* Procedure::get_callers() {
+  return &callers_;
 }
 
-void Procedure::AddUses(std::string var_name) { 
-  uses_.insert(var_name); 
+void Procedure::AddUses(std::string var_name) {
+  uses_.insert(var_name);
 }
 
 void Procedure::AddModifies(std::string var_name) {
   modifies_.insert(var_name);
 }
 
-void Procedure::AddCalls(std::string proc_name) { 
-  calls_.insert(proc_name); 
+void Procedure::AddCalls(std::string proc_name) {
+  calls_.insert(proc_name);
 }
 
 void Procedure::AddCallsStar(std::string proc_name) {

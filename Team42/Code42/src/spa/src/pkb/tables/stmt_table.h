@@ -1,9 +1,10 @@
 #pragma once
-#include "entities/statement.h"
-#include "table.hpp"
 #include <map>
 #include <set>
 #include <vector>
+#include <utility>
+#include "entities/statement.h"
+#include "table.hpp"
 
 class StmtTable : public Table {
  public:

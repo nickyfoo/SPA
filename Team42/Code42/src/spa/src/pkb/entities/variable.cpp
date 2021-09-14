@@ -16,8 +16,8 @@ int Variable::get_index() {
   return index_;
 }
 
-void Variable::AddStmtUsing(int stmt_no) { 
-  stmts_using_.insert(stmt_no); 
+void Variable::AddStmtUsing(int stmt_no) {
+  stmts_using_.insert(stmt_no);
 }
 
 void Variable::AddStmtModifying(int stmt_no) {
@@ -32,16 +32,16 @@ void Variable::AddProcModifying(std::string proc_name) {
   procs_modifying_.insert(proc_name);
 }
 
-std::set<int>* Variable::get_stmts_using() { 
-  return &stmts_using_; 
+std::set<int>* Variable::get_stmts_using() {
+  return &stmts_using_;
 }
 
-std::set<int>* Variable::get_stmts_modifying() { 
-  return &stmts_modifying_; 
+std::set<int>* Variable::get_stmts_modifying() {
+  return &stmts_modifying_;
 }
 
-std::set<std::string>* Variable::get_procs_using() { 
-  return &procs_using_; 
+std::set<std::string>* Variable::get_procs_using() {
+  return &procs_using_;
 }
 
 std::set<std::string>* Variable::get_procs_modifying() {

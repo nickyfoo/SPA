@@ -57,7 +57,7 @@ void ProcTable::ProcessCallsStar() {
 
 void ProcTable::PrintProcedures() {
   std::cout << "ProcTable size: " << table_.size() << '\n';
-  for (Procedure p: table_) {
+  for (Procedure p : table_) {
     std::cout << p.get_name() << '\n';
   }
 }

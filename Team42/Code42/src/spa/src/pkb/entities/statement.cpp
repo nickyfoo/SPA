@@ -1,6 +1,8 @@
 #include "statement.h"
 #include <iostream>
 #include <sstream>
+#include <vector>
+#include <string>
 
 Statement::Statement(int line_no, NodeType type) {
   this->stmt_no_ = line_no;
@@ -20,11 +22,11 @@ NodeType Statement::get_kind() {
 }
 
 std::string Statement::get_expr_string() {
-  // TODO: Only applicable for AssignStatement for now, need to add if/while
+  // TODO(nic): Only applicable for AssignStatement for now, need to add if/while
   return expr_string_;
 }
 
-// TODO: would be nice if AST had a vector/set of variables used while generating postfix
+// TODO(nic): would be nice if AST had a vector/set of variables used while generating postfix
 std::vector<std::string> Statement::get_vars_from_expr_string() {
   std::string var;
   std::vector<std::string> ans;
@@ -82,12 +84,13 @@ std::set<int> *Statement::get_children() {
 std::set<int> *Statement::get_children_star() {
   return &children_star_;
 }
-std::set<std::string> *Statement::get_uses() { 
-  return &uses_; 
+
+std::set<std::string> *Statement::get_uses() {
+  return &uses_;
 }
 
-std::set<std::string> *Statement::get_modifies() { 
-  return &modifies_; 
+std::set<std::string> *Statement::get_modifies() {
+  return &modifies_;
 }
 
 void Statement::set_expr_string(std::string expr_string) {
@@ -132,8 +135,8 @@ void Statement::AddChildStar(int line_no) {
   children_star_.insert(line_no);
 }
 
-void Statement::AddUses(std::string var_name) { 
-  uses_.insert(var_name); 
+void Statement::AddUses(std::string var_name) {
+  uses_.insert(var_name);
 }
 
 void Statement::AddModifies(std::string var_name) {

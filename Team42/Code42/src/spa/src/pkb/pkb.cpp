@@ -1,6 +1,6 @@
-#include <vector>
 #include "pkb.h"
 #include <algorithm>
+#include <vector>
 #include "ast_utils.hpp"
 
 PKB::PKB(Node *programRoot) {
@@ -42,7 +42,7 @@ void PKB::AddExprString(Node *node, std::vector<Node *> ancestor_list) {
         break;
       }
       default:
-        // TODO: might throw an error here
+        // TODO(nic): might throw an error here
         break;
     }
   }
@@ -104,17 +104,14 @@ void PKB::PrintStatements() {
   stmt_table_.PrintStatements();
 }
 
-void PKB::PrintProcedures() { 
-  proc_table_.PrintProcedureDetails(); 
+void PKB::PrintProcedures() {
+  proc_table_.PrintProcedureDetails();
 }
 
-void PKB::PrintVariables() { 
-  var_table_.PrintVariableDetails(); 
+void PKB::PrintVariables() {
+  var_table_.PrintVariableDetails();
 }
 
-
-
- 
 void PKB::Initialise() {
   ExtractEntities();
   ExtractFollows();
@@ -167,9 +164,12 @@ void PKB::ExtractEntities() {
 }
 
 void PKB::ExtractFollows() {
-  auto extract_follows_for_if_node = [this](Node *node) { PKB::FollowsProcessIfNode(node); };
-  auto extract_follows_for_while_node = [this](Node *node) { PKB::FollowsProcessWhileNode(node); };
-  auto extract_follows_for_procedure_node = [this](Node *node) { PKB::FollowsProcessProcedureNode(node); };
+  auto extract_follows_for_if_node = [this](Node *node) {
+    PKB::FollowsProcessIfNode(node); };
+  auto extract_follows_for_while_node = [this](Node *node) {
+    PKB::FollowsProcessWhileNode(node); };
+  auto extract_follows_for_procedure_node = [this](Node *node) {
+    PKB::FollowsProcessProcedureNode(node); };
 
   std::map<NodeType, std::vector<std::function<void(Node *)>>> functions = {
       {NodeType::If, {extract_follows_for_if_node}},
@@ -217,7 +217,7 @@ void PKB::ExtractUsesModifies() {
   VisitWithAncestors(root_, ancestors, functions);
   proc_table_.ProcessUsesModifiesIndirect();
   UpdateVarTableWithProcs();
-  for (auto& call_statement: get_statements(NodeType::Call)) {
+  for (auto &call_statement : get_statements(NodeType::Call)) {
     for (auto &var_used :
          *(proc_table_.get_procedure(call_statement->get_called_proc_name())->get_uses())) {
       call_statement->AddUses(var_used);
@@ -233,11 +233,10 @@ void PKB::ExtractUsesModifies() {
 }
 
 void PKB::ExtractCalls() {
-  auto extract_calls_for_call_node = 
-    [this](Node *node, std::vector<Node *> ancestor_list) {
+  auto extract_calls_for_call_node = [this](Node *node, std::vector<Node *> ancestor_list) {
     PKB::CallsProcessCallNode(node, ancestor_list);
   };
-      
+
   std::map<
       NodeType,
       std::vector<std::function<void(Node *, std::vector<Node *>)>>>
@@ -301,7 +300,7 @@ void PKB::FollowsProcessIfNode(Node *node) {
 
 void PKB::FollowsProcessWhileNode(Node *node) {
   auto *while_node = dynamic_cast<WhileNode *>(node);
-  // TODO: Line numbers are stored and sorted at the moment
+  // TODO(nic): Line numbers are stored and sorted at the moment
   //  as it is not clear how it statement list is organised / sorted
   std::vector<int> line_nos;
   for (StatementNode *n : while_node->get_stmt_list()) {
@@ -319,13 +318,13 @@ void PKB::ParentProcessIfNode(Node *node) {
   Statement *if_statement = stmt_table_.get_statement(if_node->get_stmt_no());
   for (StatementNode *n : if_node->get_then_stmt_lst()) {
     if_statement->AddChild(n->get_stmt_no());
-    // TODO: Check and throw error if NULL
+    // TODO(nic): Check and throw error if NULL
     stmt_table_.get_statement(n->get_stmt_no())->AddParent(if_statement->get_stmt_no());
   }
 
   for (StatementNode *n : if_node->get_else_stmt_lst()) {
     if_statement->AddChild(n->get_stmt_no());
-    // TODO: Check and throw error if NULL
+    // TODO(nic): Check and throw error if NULL
     stmt_table_.get_statement(n->get_stmt_no())->AddParent(if_statement->get_stmt_no());
   }
 }
@@ -335,7 +334,8 @@ void PKB::ParentProcessWhileNode(Node *node) {
   Statement *while_statement = stmt_table_.get_statement(while_node->get_stmt_no());
   for (StatementNode *n : while_node->get_stmt_list()) {
     while_statement->AddChild(n->get_stmt_no());
-    stmt_table_.get_statement(n->get_stmt_no())->AddParent(while_statement->get_stmt_no()); //might want to do error checking here if NULL
+    // might want to do error checking here if NULL
+    stmt_table_.get_statement(n->get_stmt_no())->AddParent(while_statement->get_stmt_no());
   }
 }
 
@@ -344,7 +344,8 @@ void PKB::UsesModifiesProcessAssignNode(Node *node, std::vector<Node *> &ancesto
   auto *assign_node = dynamic_cast<AssignNode *>(node);
   Statement *assign_statement = stmt_table_.get_statement(assign_node->get_stmt_no());
   assign_statement->AddModifies(assign_node->get_var()->get_name());
-  var_table_.get_variable(assign_node->get_var()->get_name())->AddStmtModifying(assign_statement->get_stmt_no());
+  var_table_.get_variable(assign_node->get_var()->get_name())
+    ->AddStmtModifying(assign_statement->get_stmt_no());
   for (auto &var : assign_statement->get_vars_from_expr_string()) {
     assign_statement->AddUses(var);
     var_table_.get_variable(var)->AddStmtUsing(assign_statement->get_stmt_no());
@@ -358,7 +359,7 @@ void PKB::UsesModifiesProcessAssignNode(Node *node, std::vector<Node *> &ancesto
       }
       proc->AddModifies(assign_node->get_var()->get_name());
     }
-    // TODO: not working for container exp yet
+    // TODO(nic): not working for container exp yet
     if (n->get_kind() == NodeType::If || n->get_kind()== NodeType::While) {
       auto statement_node = dynamic_cast<StatementNode *>(n);
       for (auto &var : *(assign_statement->get_uses())) {
@@ -373,7 +374,8 @@ void PKB::UsesModifiesProcessReadNode(Node *node, std::vector<Node *> &ancestorL
   for (Node *n : ancestorList) {
     if (n->get_kind() == NodeType::Procedure) {
       auto *procedure_node = dynamic_cast<ProcedureNode *>(n);
-      proc_table_.get_procedure(procedure_node->get_name())->AddModifies(read_node->get_var()->get_name());
+      proc_table_.get_procedure(procedure_node->get_name())
+        ->AddModifies(read_node->get_var()->get_name());
     }
   }
   stmt_table_.get_statement(read_node->get_stmt_no())

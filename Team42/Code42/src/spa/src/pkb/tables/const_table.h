@@ -1,11 +1,10 @@
 #pragma once
-
 #include <set>
 #include <string>
 #include <vector>
-#include "entities/constant.h"
-#include "table.hpp"
 #include <map>
+#include "table.hpp"
+#include "entities/constant.h"
 
 class ConstTable : public Table {
  public:

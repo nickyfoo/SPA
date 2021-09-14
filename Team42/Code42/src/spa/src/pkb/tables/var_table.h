@@ -1,9 +1,10 @@
 #pragma once
-#include "../entities/variable.h"
-#include "table.hpp"
 #include <map>
 #include <set>
+#include <string>
 #include <vector>
+#include "../entities/variable.h"
+#include "table.hpp"
 
 class VarTable : public Table {
  public:

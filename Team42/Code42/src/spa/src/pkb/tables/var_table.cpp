@@ -1,5 +1,6 @@
 #include "var_table.h"
 #include <iostream>
+#include <string>
 
 VarTable::VarTable() = default;
 
@@ -15,7 +16,7 @@ int VarTable::AddVariable(const std::string &name) {
   table_.push_back(v);
   name_to_index_[name] = pos;
   return pos;
-};
+}
 
 int VarTable::get_num_variables() {
   return name_to_index_.size();

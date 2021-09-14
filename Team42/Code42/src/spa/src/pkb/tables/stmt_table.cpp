@@ -1,5 +1,6 @@
 #include "stmt_table.h"
 #include <iostream>
+#include <algorithm>
 
 StmtTable::StmtTable() {
   num_statements_ = 0;
@@ -106,7 +107,7 @@ void StmtTable::PrintStatements() {
 
   std::cout << "Categorized:\n";
   for (auto &[type, statements] : type_to_statement_) {
-    std::cout << (int)type << ": ";
+    std::cout << static_cast<int>(type) << ": ";
     for (auto &stmt : statements) {
       std::cout << stmt->get_stmt_no() << ' ';
     }

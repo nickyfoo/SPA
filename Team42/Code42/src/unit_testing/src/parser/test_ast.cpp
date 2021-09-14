@@ -151,14 +151,15 @@ TEST_CASE("Test RelExpression Node") {
   int ln, cn;
   RelExprOp op;
   Node *left, *right;
+  std::string expr_string;
 
-  std::vector<std::tuple<RelExprOp, Node *, Node *>> perms{
-      {RelExprOp::Gt, new StubNode(NodeType::Constant), new StubNode(NodeType::Constant)},
-      {RelExprOp::Gte, new StubNode(NodeType::Identifier), new StubNode(NodeType::Identifier)},
-      {RelExprOp::Lt, new StubNode(NodeType::Identifier), new StubNode(NodeType::Constant)},
-      {RelExprOp::Lte, new StubNode(NodeType::Identifier), new StubNode(NodeType::Constant)},
-      {RelExprOp::Eq, new StubNode(NodeType::Identifier), new StubNode(NodeType::Constant)},
-      {RelExprOp::Neq, new StubNode(NodeType::Identifier), new StubNode(NodeType::Constant)},
+  std::vector<std::tuple<RelExprOp, Node *, Node *, std::string>> perms{
+      {RelExprOp::Gt, new StubNode(NodeType::Constant), new StubNode(NodeType::Constant), "1 2 >"},
+      {RelExprOp::Gte, new StubNode(NodeType::Identifier), new StubNode(NodeType::Identifier), "x y >="},
+      {RelExprOp::Lt, new StubNode(NodeType::Identifier), new StubNode(NodeType::Constant), "a 1 <"},
+      {RelExprOp::Lte, new StubNode(NodeType::Identifier), new StubNode(NodeType::Constant), "Y 3 <="},
+      {RelExprOp::Eq, new StubNode(NodeType::Identifier), new StubNode(NodeType::Constant), "Z 50 =="},
+      {RelExprOp::Neq, new StubNode(NodeType::Identifier), new StubNode(NodeType::Constant), "foo 5 !="},
   };
 
   for (auto p : perms) {
@@ -167,8 +168,9 @@ TEST_CASE("Test RelExpression Node") {
     op = std::get<0>(p);
     left = std::get<1>(p);
     right = std::get<2>(p);
+    expr_string = std::get<3>(p);
 
-    r = new RelExpressionNode(op, left, right, {ln, cn});
+    r = new RelExpressionNode(op, left, right, expr_string, LocInfo{.line_no = ln, .col_no = cn});
 
     REQUIRE(r->get_kind() == NodeType::RelExpression);
     REQUIRE(r->get_line_no() == ln);
@@ -176,6 +178,7 @@ TEST_CASE("Test RelExpression Node") {
     REQUIRE(r->get_op() == op);
     REQUIRE(r->get_left() == left);
     REQUIRE(r->get_right() == right);
+    REQUIRE(r->get_expr_string() == expr_string);
   }
 
   std::vector<std::tuple<RelExprOp, Node *, Node *>> fail_perms{
@@ -199,7 +202,7 @@ TEST_CASE("Test RelExpression Node") {
     op = std::get<0>(p);
     left = std::get<1>(p);
     right = std::get<2>(p);
-    REQUIRE_THROWS_AS(RelExpressionNode(op, left, right, {ln, cn}),
+    REQUIRE_THROWS_AS(RelExpressionNode(op, left, right, "", LocInfo{.line_no = ln, .col_no = cn}),
                       std::invalid_argument);
   }
 }
@@ -209,19 +212,19 @@ TEST_CASE("Test CondExpression Node") {
   int ln, cn;
   CondExprOp op;
   Node *left, *right;
+  std::string expr_string;
 
-  std::vector<std::tuple<CondExprOp, Node *, Node *>> perms{
+  std::vector<std::tuple<CondExprOp, Node *, Node *, std::string>> perms{
       {CondExprOp::And, new StubNode(NodeType::CondExpression),
-       new StubNode(NodeType::CondExpression)},
-      {CondExprOp::Or, new StubNode(NodeType::RelExpression),
-       new StubNode(NodeType::RelExpression)},
+       new StubNode(NodeType::CondExpression), "x y > ! a b < ! &&"},
+      {CondExprOp::Or, new StubNode(NodeType::RelExpression), new StubNode(NodeType::RelExpression),
+       "x y > a b == ||"},
       {CondExprOp::And, new StubNode(NodeType::RelExpression),
-       new StubNode(NodeType::CondExpression)},
+       new StubNode(NodeType::CondExpression), "x y != a b == ! &&"},
       {CondExprOp::Or, new StubNode(NodeType::CondExpression),
-       new StubNode(NodeType::RelExpression)},
-      {CondExprOp::Not, new StubNode(NodeType::CondExpression), nullptr},
-      {CondExprOp::Not, new StubNode(NodeType::RelExpression), nullptr},
-  };
+       new StubNode(NodeType::RelExpression), "x y != a b == && i j > ||"},
+      {CondExprOp::Not, new StubNode(NodeType::CondExpression), nullptr, "x y >= ! !"},
+      {CondExprOp::Not, new StubNode(NodeType::RelExpression), nullptr, "a == b !"}};
 
   for (auto p : perms) {
     ln = rand();
@@ -229,8 +232,9 @@ TEST_CASE("Test CondExpression Node") {
     op = std::get<0>(p);
     left = std::get<1>(p);
     right = std::get<2>(p);
+    expr_string = std::get<3>(p);
 
-    c = new CondExpressionNode(op, left, right, {ln, cn});
+    c = new CondExpressionNode(op, left, right, expr_string, LocInfo{.line_no = ln, .col_no = cn});
 
     REQUIRE(c->get_kind() == NodeType::CondExpression);
     REQUIRE(c->get_line_no() == ln);
@@ -238,6 +242,7 @@ TEST_CASE("Test CondExpression Node") {
     REQUIRE(c->get_op() == op);
     REQUIRE(c->get_left() == left);
     REQUIRE(c->get_right() == right);
+    REQUIRE(c->get_expr_string() == expr_string);
   }
 
   std::vector<std::tuple<CondExprOp, Node *, Node *>> fail_perms{
@@ -274,7 +279,7 @@ TEST_CASE("Test CondExpression Node") {
     op = std::get<0>(p);
     left = std::get<1>(p);
     right = std::get<2>(p);
-    REQUIRE_THROWS_AS(CondExpressionNode(op, left, right, {ln, cn}),
+    REQUIRE_THROWS_AS(CondExpressionNode(op, left, right, "", LocInfo{.line_no = ln, .col_no = cn}),
                       std::invalid_argument);
   }
 }

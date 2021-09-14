@@ -3,7 +3,8 @@
 
 #include "ast.h"
 
-CondExpressionNode::CondExpressionNode(CondExprOp op, Node *left, Node *right, LocInfo loc)
+CondExpressionNode::CondExpressionNode(CondExprOp op, Node *left, Node *right,
+                                       std::string expr_string, LocInfo loc)
     : Node(loc) {
   if (left == nullptr ||
       left->get_kind() != NodeType::RelExpression && left->get_kind() != NodeType::CondExpression) {
@@ -17,8 +18,8 @@ CondExpressionNode::CondExpressionNode(CondExprOp op, Node *left, Node *right, L
   }
 
   if (op != CondExprOp::Not &&
-      (right == nullptr ||
-       right->get_kind() != NodeType::RelExpression && right->get_kind() != NodeType::CondExpression)) {
+      (right == nullptr || right->get_kind() != NodeType::RelExpression &&
+                               right->get_kind() != NodeType::CondExpression)) {
     throw std::invalid_argument(
         "CondExpressionNode: expected right to be RelExpression or "
         "CondExpression");
@@ -27,6 +28,7 @@ CondExpressionNode::CondExpressionNode(CondExprOp op, Node *left, Node *right, L
   this->op_ = op;
   this->left_ = left;
   this->right_ = right;
+  this->expr_string_ = expr_string;
 }
 
 NodeType CondExpressionNode::get_kind() { return NodeType::CondExpression; }
@@ -52,3 +54,4 @@ Node *CondExpressionNode::get_right() {
   return this->right_;
 }
 
+std::string CondExpressionNode::get_expr_string() { return this->expr_string_; }

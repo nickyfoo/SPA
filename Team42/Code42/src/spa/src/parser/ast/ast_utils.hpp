@@ -1,9 +1,10 @@
 #pragma once
 
 #include <cstring>
+#include <functional>
 #include <iostream>
-#include <string>
 #include <map>
+#include <string>
 
 #include "ast.h"
 
@@ -22,7 +23,8 @@ bool IsProcedureEqual(ProcedureNode *p1, ProcedureNode *p2);
 bool IsProgramEqual(ProgramNode *p1, ProgramNode *p2);
 bool IsNodeEqual(Node *t1, Node *t2);
 std::vector<Node *> NextNodes(Node *node);
-void Visit(Node *node, std::map<NodeType, std::vector<std::function<void(Node *currentNode)>>> functions);
+void Visit(Node *node,
+           std::map<NodeType, std::vector<std::function<void(Node *currentNode)>>> functions);
 
 inline bool IsNodeEqual(Node *t1, Node *t2) {
   if (t1->get_kind() != t2->get_kind()) {
@@ -101,49 +103,61 @@ inline bool IsNodeEqual(Node *t1, Node *t2) {
 }
 
 inline bool IsIdentifierEqual(IdentifierNode *i1, IdentifierNode *i2) {
-  bool metadata_equal = i1->get_line_no() == i2->get_line_no() && i1->get_col_no() == i2->get_col_no();
+  bool metadata_equal =
+      i1->get_line_no() == i2->get_line_no() && i1->get_col_no() == i2->get_col_no();
   bool ident_equal = i1->get_name() == i2->get_name();
   return metadata_equal && ident_equal;
 }
 
 inline bool IsConstantEqual(ConstantNode *c1, ConstantNode *c2) {
-  bool metadata_equal = c1->get_line_no() == c2->get_line_no() && c1->get_col_no() == c2->get_col_no();
+  bool metadata_equal =
+      c1->get_line_no() == c2->get_line_no() && c1->get_col_no() == c2->get_col_no();
   bool const_equal = c1->get_value() == c2->get_value();
   return metadata_equal && const_equal;
 }
 
 inline bool IsExpressionEqual(ExpressionNode *e1, ExpressionNode *e2) {
-  bool metadata_equal = e1->get_line_no() == e2->get_line_no() && e1->get_col_no() == e2->get_col_no();
-  bool expr_equal = e1->get_expr_string() == e2->get_expr_string() && IsNodeEqual(e1->get_left(), e2->get_left()) &&
-      IsNodeEqual(e1->get_right(), e2->get_right());
+  bool metadata_equal =
+      e1->get_line_no() == e2->get_line_no() && e1->get_col_no() == e2->get_col_no();
+  bool expr_equal = e1->get_expr_string() == e2->get_expr_string() &&
+                    IsNodeEqual(e1->get_left(), e2->get_left()) &&
+                    IsNodeEqual(e1->get_right(), e2->get_right());
   return metadata_equal && expr_equal;
 }
 
 inline bool IsRelExpressionEqual(RelExpressionNode *re1, RelExpressionNode *re2) {
-  bool metadata_equal = re1->get_line_no() == re2->get_line_no() && re1->get_col_no() == re2->get_col_no();
-  bool rel_equal = re1->get_op() == re2->get_op() && IsNodeEqual(re1->get_left(), re2->get_left()) &&
-      IsNodeEqual(re1->get_right(), re2->get_right());
+  bool metadata_equal =
+      re1->get_line_no() == re2->get_line_no() && re1->get_col_no() == re2->get_col_no();
+  bool rel_equal = re1->get_op() == re2->get_op() &&
+                   IsNodeEqual(re1->get_left(), re2->get_left()) &&
+                   IsNodeEqual(re1->get_right(), re2->get_right()) &&
+                   re1->get_expr_string() == re2->get_expr_string();
   return metadata_equal && rel_equal;
 }
 
 inline bool IsCondExpressionEqual(CondExpressionNode *ce1, CondExpressionNode *ce2) {
-  bool metadata_equal = ce1->get_line_no() == ce2->get_line_no() && ce1->get_col_no() == ce2->get_col_no();
-  bool cond_equal = ce1->get_op() == ce2->get_op() && IsNodeEqual(ce1->get_left(), ce2->get_left()) &&
-      IsNodeEqual(ce1->get_right(), ce2->get_right());
+  bool metadata_equal =
+      ce1->get_line_no() == ce2->get_line_no() && ce1->get_col_no() == ce2->get_col_no();
+  bool cond_equal = ce1->get_op() == ce2->get_op() &&
+                    IsNodeEqual(ce1->get_left(), ce2->get_left()) &&
+                    IsNodeEqual(ce1->get_right(), ce2->get_right()) &&
+                    ce1->get_expr_string() == ce2->get_expr_string();
   return metadata_equal && cond_equal;
 }
 
 inline bool IsAssignEqual(AssignNode *a1, AssignNode *a2) {
-  bool metadata_equal = a1->get_line_no() == a2->get_line_no() && a1->get_col_no() == a2->get_col_no() &&
-      a1->get_stmt_no() == a2->get_stmt_no();
+  bool metadata_equal = a1->get_line_no() == a2->get_line_no() &&
+                        a1->get_col_no() == a2->get_col_no() &&
+                        a1->get_stmt_no() == a2->get_stmt_no();
   bool assign_equal =
       IsIdentifierEqual(a1->get_var(), a2->get_var()) && IsNodeEqual(a1->expr(), a2->expr());
   return metadata_equal && assign_equal;
 }
 
 inline bool IsIfEqual(IfNode *i1, IfNode *i2) {
-  bool metadata_equal = i1->get_line_no() == i2->get_line_no() && i1->get_col_no() == i2->get_col_no() &&
-      i1->get_stmt_no() == i2->get_stmt_no();
+  bool metadata_equal = i1->get_line_no() == i2->get_line_no() &&
+                        i1->get_col_no() == i2->get_col_no() &&
+                        i1->get_stmt_no() == i2->get_stmt_no();
 
   bool then_equal = true;
   auto then_list_1 = i1->get_then_stmt_lst();
@@ -182,8 +196,9 @@ inline bool IsIfEqual(IfNode *i1, IfNode *i2) {
 }
 
 inline bool IsWhileEqual(WhileNode *w1, WhileNode *w2) {
-  bool metadata_equal = w1->get_line_no() == w2->get_line_no() && w1->get_col_no() == w2->get_col_no() &&
-      w1->get_stmt_no() == w2->get_stmt_no();
+  bool metadata_equal = w1->get_line_no() == w2->get_line_no() &&
+                        w1->get_col_no() == w2->get_col_no() &&
+                        w1->get_stmt_no() == w2->get_stmt_no();
 
   bool stmt_lst_equal = true;
   auto stmt_lst_1 = w1->get_stmt_list();
@@ -205,28 +220,32 @@ inline bool IsWhileEqual(WhileNode *w1, WhileNode *w2) {
 }
 
 inline bool IsReadEqual(ReadNode *r1, ReadNode *r2) {
-  bool metadata_equal = r1->get_line_no() == r2->get_line_no() && r1->get_col_no() == r2->get_col_no() &&
-      r1->get_stmt_no() == r2->get_stmt_no();
+  bool metadata_equal = r1->get_line_no() == r2->get_line_no() &&
+                        r1->get_col_no() == r2->get_col_no() &&
+                        r1->get_stmt_no() == r2->get_stmt_no();
   bool read_equal = IsIdentifierEqual(r1->get_var(), r2->get_var());
   return metadata_equal && read_equal;
 }
 
 inline bool IsPrintEqual(PrintNode *p1, PrintNode *p2) {
-  bool metadata_equal = p1->get_line_no() == p2->get_line_no() && p1->get_col_no() == p2->get_col_no() &&
-      p1->get_stmt_no() == p2->get_stmt_no();
+  bool metadata_equal = p1->get_line_no() == p2->get_line_no() &&
+                        p1->get_col_no() == p2->get_col_no() &&
+                        p1->get_stmt_no() == p2->get_stmt_no();
   bool print_equal = IsIdentifierEqual(p1->get_var(), p2->get_var());
   return metadata_equal && print_equal;
 }
 
 inline bool IsCallEqual(CallNode *c1, CallNode *c2) {
-  bool metadata_equal = c1->get_line_no() == c2->get_line_no() && c1->get_col_no() == c2->get_col_no() &&
-      c1->get_stmt_no() == c2->get_stmt_no();
+  bool metadata_equal = c1->get_line_no() == c2->get_line_no() &&
+                        c1->get_col_no() == c2->get_col_no() &&
+                        c1->get_stmt_no() == c2->get_stmt_no();
   bool call_equal = IsIdentifierEqual(c1->get_proc(), c2->get_proc());
   return metadata_equal && call_equal;
 }
 
 inline bool IsProcedureEqual(ProcedureNode *p1, ProcedureNode *p2) {
-  bool metadata_equal = p1->get_line_no() == p2->get_line_no() && p1->get_col_no() == p2->get_col_no();
+  bool metadata_equal =
+      p1->get_line_no() == p2->get_line_no() && p1->get_col_no() == p2->get_col_no();
 
   bool stmt_lst_equal = true;
   auto stmt_lst_1 = p1->get_stmt_lst();
@@ -249,7 +268,8 @@ inline bool IsProcedureEqual(ProcedureNode *p1, ProcedureNode *p2) {
 }
 
 inline bool IsProgramEqual(ProgramNode *p1, ProgramNode *p2) {
-  bool metadata_equal = p1->get_line_no() == p2->get_line_no() && p1->get_col_no() == p2->get_col_no();
+  bool metadata_equal =
+      p1->get_line_no() == p2->get_line_no() && p1->get_col_no() == p2->get_col_no();
 
   bool proc_lst_equal = true;
   auto proc_lst_1 = p1->get_procedures();
@@ -274,7 +294,8 @@ inline std::vector<Node *> NextNodes(Node *node) {
   std::vector<Node *> next_nodes;
   switch (node->get_kind()) {
     case NodeType::Identifier:
-    case NodeType::Constant:break;
+    case NodeType::Constant:
+      break;
     case NodeType::Expression: {
       auto *expression_node = dynamic_cast<ExpressionNode *>(node);
       next_nodes.push_back(expression_node->get_left());
@@ -351,13 +372,13 @@ inline std::vector<Node *> NextNodes(Node *node) {
   }
 
   // Remove all null pointers found
-  next_nodes.erase(std::remove(begin(next_nodes), end(next_nodes), nullptr),
-                   end(next_nodes));
+  next_nodes.erase(std::remove(begin(next_nodes), end(next_nodes), nullptr), end(next_nodes));
 
   return next_nodes;
 }
 
-inline void Visit(Node *node, std::map<NodeType, std::vector<std::function<void(Node *currentNode)>>> functions) {
+inline void Visit(
+    Node *node, std::map<NodeType, std::vector<std::function<void(Node *currentNode)>>> functions) {
   // TODO: throw an error
   if (node == nullptr) return;
 

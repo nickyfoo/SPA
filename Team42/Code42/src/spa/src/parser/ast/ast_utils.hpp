@@ -400,7 +400,7 @@ inline void VisitWithAncestors(
   Node *node, 
   std::vector<Node *>& ancestor_list, 
   std::map<NodeType, 
-  std::vector<std::function<void(Node *currentNode, std::vector<Node *>ancestorList)>>>&functions) {
+  std::vector<std::function<void(Node *, std::vector<Node *>)>>>&functions) {
   if (node) {
     for (auto func : functions[node->get_kind()]) {
       func(node, ancestor_list);

@@ -32,19 +32,19 @@ void Variable::AddProcModifying(std::string proc_name) {
   procs_modifying_.insert(proc_name);
 }
 
-std::set<int>* Variable::get_stmts_using() {
+std::set<int> *Variable::get_stmts_using() {
   return &stmts_using_;
 }
 
-std::set<int>* Variable::get_stmts_modifying() {
+std::set<int> *Variable::get_stmts_modifying() {
   return &stmts_modifying_;
 }
 
-std::set<std::string>* Variable::get_procs_using() {
+std::set<std::string> *Variable::get_procs_using() {
   return &procs_using_;
 }
 
-std::set<std::string>* Variable::get_procs_modifying() {
+std::set<std::string> *Variable::get_procs_modifying() {
   return &procs_modifying_;
 }
 

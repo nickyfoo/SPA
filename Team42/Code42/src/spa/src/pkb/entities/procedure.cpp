@@ -12,19 +12,19 @@ std::string Procedure::get_name() {
 }
 
 
-std::set<std::string>* Procedure::get_uses() {
+std::set<std::string> *Procedure::get_uses() {
   return &uses_;
 }
 
-std::set<std::string>* Procedure::get_modifies() {
+std::set<std::string> *Procedure::get_modifies() {
   return &modifies_;
 }
 
-std::set<std::string>* Procedure::get_calls() {
+std::set<std::string> *Procedure::get_calls() {
   return &calls_;
 }
 
-std::set<std::string>* Procedure::get_callers() {
+std::set<std::string> *Procedure::get_callers() {
   return &callers_;
 }
 

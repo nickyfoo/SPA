@@ -59,11 +59,11 @@ class ProcTable : public Table {
   // is called by v
   std::vector<std::vector<int>> SetupAL();
   // Does a DFS to fill ans with a topological ordering of the procedures.
-  void ProcTable::DFS(int u, std::vector<std::vector<int>> &al,
+  void DFS(int u, std::vector<std::vector<int>> &al,
                       std::vector<int> &status, std::vector<int> &ans);
   // Propagates the Uses and Modifies variables that have been encountered to
   // the calling procedures.
-  void ProcTable::PropagateUsesModifiesIndirect(
+  void PropagateUsesModifiesIndirect(
       int u, std::vector<std::vector<int>> &al, std::set<std::string> &uses,
       std::set<std::string> &modifies);
 };

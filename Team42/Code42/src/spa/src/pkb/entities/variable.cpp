@@ -56,7 +56,7 @@ void Variable::UsesInfo() {
   }
   std::cout << '\n';
   std::cout << "Procedures Using: ";
-  for (auto& x : procs_using_) {
+  for (auto &x : procs_using_) {
     std::cout << x << ' ';
   }
   std::cout << '\n' << '\n';
@@ -65,12 +65,12 @@ void Variable::UsesInfo() {
 void Variable::ModifiesInfo() {
   std::cout << "Variable " << name_ << " modified by:\n";
   std::cout << "Statements Modifying: ";
-  for (auto& x : stmts_modifying_) {
+  for (auto &x : stmts_modifying_) {
     std::cout << x << ' ';
   }
   std::cout << '\n';
   std::cout << "Procedures Modifying: ";
-  for (auto& x : procs_modifying_) {
+  for (auto &x : procs_modifying_) {
     std::cout << x << ' ';
   }
   std::cout << '\n' << '\n';

@@ -22,7 +22,6 @@ int VarTable::get_num_variables() {
   return name_to_index_.size();
 }
 
-
 std::vector<Variable *> VarTable::get_all_variables() {
   std::vector<Variable *> ans;
   for (auto &var : table_) {

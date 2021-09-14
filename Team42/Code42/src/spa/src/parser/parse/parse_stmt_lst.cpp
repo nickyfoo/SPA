@@ -13,26 +13,19 @@ std::vector<StatementNode *> ParseStmtLst(BufferedLexer *lexer, ParseState *stat
 
   while (t->kind_ != TokenType::RBrace) {
     switch (t->kind_) {
-      case TokenType::Read:
-        stmt_lst.push_back(ParseRead(lexer, state));
+      case TokenType::Read:stmt_lst.push_back(ParseRead(lexer, state));
         break;
-      case TokenType::Print:
-        stmt_lst.push_back(ParsePrint(lexer, state));
+      case TokenType::Print:stmt_lst.push_back(ParsePrint(lexer, state));
         break;
-      case TokenType::Call:
-        stmt_lst.push_back(ParseCall(lexer, state));
+      case TokenType::Call:stmt_lst.push_back(ParseCall(lexer, state));
         break;
-      case TokenType::While:
-        stmt_lst.push_back(ParseWhile(lexer, state));
+      case TokenType::While:stmt_lst.push_back(ParseWhile(lexer, state));
         break;
-      case TokenType::If:
-        stmt_lst.push_back(ParseIf(lexer, state));
+      case TokenType::If:stmt_lst.push_back(ParseIf(lexer, state));
         break;
-      case TokenType::Identifier:
-        stmt_lst.push_back(ParseAssign(lexer, state));
+      case TokenType::Identifier:stmt_lst.push_back(ParseAssign(lexer, state));
         break;
-      default:
-        throw ParseException("expected Statement", t->line_no_, t->col_no_);
+      default:throw ParseException("expected Statement", t->line_no_, t->col_no_);
     }
 
     t = lexer->PeekNextToken();

@@ -37,7 +37,6 @@ class Variable : public Entity {
   // Prints the variables modified by this statement.
   void ModifiesInfo();
 
-
  private:
   // Mapped index of variable.
   int index_;

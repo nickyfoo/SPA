@@ -44,7 +44,6 @@ std::vector<std::string> Statement::get_vars_from_expr_string() {
   return ans;
 }
 
-
 std::string Statement::get_called_proc_name() {
   if (this->kind_ == NodeType::Call) {
     return this->called_proc_name;

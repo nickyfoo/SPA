@@ -16,7 +16,7 @@ class ConstTable : public Table {
   void AddConstant(int value);
 
   // Get all constants.
-  std::vector<Constant*> get_all_constants();
+  std::vector<Constant *> get_all_constants();
 
   // Prints all constants in the table.
   void PrintConstants();

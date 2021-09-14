@@ -14,7 +14,7 @@ class Table {
 
   // Gets transitive closure using the Floyd Warshall algorithm.
   static std::vector<std::vector<int>> GetTransitiveClosure(std::set<std::pair<int, int>> al,
-    int n) {
+                                                            int n) {
     std::vector<std::vector<int>> d(n, std::vector<int>(n, kInf));
     for (auto&[u, v] : al) {
       d[u][v] = 1;

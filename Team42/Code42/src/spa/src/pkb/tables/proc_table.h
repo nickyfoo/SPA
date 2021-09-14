@@ -22,7 +22,7 @@ class ProcTable : public Table {
   // Get all procedures.
   std::vector<Procedure *> get_all_procedures();
   // Gets a procedure by its procedure name.
-  Procedure *get_procedure(std::string &name);
+  Procedure *get_procedure(std::string name);
 
   // Gets Calls relationship from Procedures in preparation to get
   // transitive closure.
@@ -60,7 +60,7 @@ class ProcTable : public Table {
   std::vector<std::vector<int>> SetupAL();
   // Does a DFS to fill ans with a topological ordering of the procedures.
   void DFS(int u, std::vector<std::vector<int>> &al,
-                      std::vector<int> &status, std::vector<int> &ans);
+           std::vector<int> &status, std::vector<int> &ans);
   // Propagates the Uses and Modifies variables that have been encountered to
   // the calling procedures.
   void PropagateUsesModifiesIndirect(

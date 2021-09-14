@@ -5,14 +5,10 @@
 
 std::string CondExprOpToString(CondExprOp op) {
   switch (op) {
-    case CondExprOp::And:
-      return "&&";
-    case CondExprOp::Or:
-      return "||";
-    case CondExprOp::Not:
-      return "!";
-    default:
-      throw std::invalid_argument("CondExprOpToString: invalid CondExprOp value");
+    case CondExprOp::And:return "&&";
+    case CondExprOp::Or:return "||";
+    case CondExprOp::Not:return "!";
+    default:throw std::invalid_argument("CondExprOpToString: invalid CondExprOp value");
   }
 }
 
@@ -35,7 +31,7 @@ Node *ParseCondExpression(BufferedLexer *lexer, ParseState *state) {
 
     // this should be a runtime gurantee
     assert(left->get_kind() == NodeType::CondExpression ||
-           left->get_kind() == NodeType::RelExpression);
+        left->get_kind() == NodeType::RelExpression);
 
     std::string expr_string;
     if (left->get_kind() == NodeType::RelExpression) {
@@ -76,7 +72,7 @@ Node *ParseCondExpression(BufferedLexer *lexer, ParseState *state) {
 
   Node *left = ParseCondExpression(lexer, state);
   assert(left->get_kind() == NodeType::CondExpression ||
-         left->get_kind() == NodeType::RelExpression);
+      left->get_kind() == NodeType::RelExpression);
   std::string left_expr_string;
   if (left->get_kind() == NodeType::RelExpression) {
     left_expr_string = dynamic_cast<RelExpressionNode *>(left)->get_expr_string();
@@ -95,7 +91,7 @@ Node *ParseCondExpression(BufferedLexer *lexer, ParseState *state) {
 
   Node *right = ParseCondExpression(lexer, state);
   assert(right->get_kind() == NodeType::CondExpression ||
-         right->get_kind() == NodeType::RelExpression);
+      right->get_kind() == NodeType::RelExpression);
   std::string right_expr_string;
   if (right->get_kind() == NodeType::RelExpression) {
     right_expr_string = dynamic_cast<RelExpressionNode *>(right)->get_expr_string();

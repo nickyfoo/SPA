@@ -29,10 +29,9 @@ std::vector<Procedure *> ProcTable::get_all_procedures() {
   return ans;
 }
 
-Procedure *ProcTable::get_procedure(std::string &name) {
+Procedure *ProcTable::get_procedure(std::string name) {
   return &table_[name_to_index_[name]];
 }
-
 
 void ProcTable::ProcessCalls() {
   for (Procedure &p : table_) {

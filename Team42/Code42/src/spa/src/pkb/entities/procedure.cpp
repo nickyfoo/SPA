@@ -11,7 +11,6 @@ std::string Procedure::get_name() {
   return name_;
 }
 
-
 std::set<std::string> *Procedure::get_uses() {
   return &uses_;
 }
@@ -54,23 +53,23 @@ void Procedure::AddCallersStar(std::string proc_name) {
 void Procedure::CallsInfo() {
   std::cout << "Procedure " << name_ << " calls:\n";
   std::cout << "Calls: ";
-  for (auto& x : calls_) {
+  for (auto &x : calls_) {
     std::cout << x << ' ';
   }
   std::cout << '\n';
   std::cout << "CallsStar: ";
-  for (auto& x : calls_star_) {
+  for (auto &x : calls_star_) {
     std::cout << x << ' ';
   }
   std::cout << '\n';
   std::cout << "Procedure " << name_ << " has callers:\n";
   std::cout << "Callers: ";
-  for (auto& x : callers_) {
+  for (auto &x : callers_) {
     std::cout << x << ' ';
   }
   std::cout << '\n';
   std::cout << "CallersStar: ";
-  for (auto& x : callers_star_) {
+  for (auto &x : callers_star_) {
     std::cout << x << ' ';
   }
   std::cout << '\n';
@@ -79,7 +78,7 @@ void Procedure::CallsInfo() {
 void Procedure::UsesInfo() {
   std::cout << "Procedure " << name_ << " uses:\n";
   std::cout << "Uses: ";
-  for (auto& x : uses_) {
+  for (auto &x : uses_) {
     std::cout << x << ' ';
   }
   std::cout << '\n';
@@ -88,7 +87,7 @@ void Procedure::UsesInfo() {
 void Procedure::ModifiesInfo() {
   std::cout << "Procedure " << name_ << " modifies:\n";
   std::cout << "Modifies: ";
-  for (auto& x : modifies_) {
+  for (auto &x : modifies_) {
     std::cout << x << ' ';
   }
   std::cout << '\n';

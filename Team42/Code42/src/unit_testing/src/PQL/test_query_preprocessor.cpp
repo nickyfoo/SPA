@@ -86,7 +86,7 @@ TEST_CASE("Follows_StmtAndStmt_ReturnsCorrect") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("10. Follows clause with 1 statement and 1 statement number") {
+TEST_CASE("Follows_StmtAndStmtNum_ReturnsCorrect") {
     std::string ss = "stmt s1; stmt s2;\n"
                 "Select s1 such that Follows(s1, 2)";
     auto *query = new QueryPreprocessor(ss);
@@ -100,7 +100,7 @@ TEST_CASE("10. Follows clause with 1 statement and 1 statement number") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("11. Follows clause with 1 statement number and 1 statement") {
+TEST_CASE("Follows_StmtNumAndStmt_ReturnsCorrect") {
     std::string ss = "stmt s1; stmt s2;\n"
                 "Select s1 such that Follows(1, s2)";
     auto *query = new QueryPreprocessor(ss);
@@ -114,7 +114,7 @@ TEST_CASE("11. Follows clause with 1 statement number and 1 statement") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("12. Follows clause with 1 statement and invalid entity") {
+TEST_CASE("Follows_StmtAndVar_ReturnsNullPtr") {
     std::string ss = "stmt s1; stmt s2; var v;\n"
                 "Select s1 such that Follows(s1, v)";
     auto *query = new QueryPreprocessor(ss);
@@ -122,7 +122,15 @@ TEST_CASE("12. Follows clause with 1 statement and invalid entity") {
     REQUIRE(clause == nullptr);
 }
 
-TEST_CASE("13. Follows* clause with 2 statements") {
+TEST_CASE("Follows_StmtAndProcedure_ReturnsNullPtr") {
+    std::string ss = "stmt s1; stmt s2; procedure p;\n"
+                     "Select s1 such that Follows(s1, p)";
+    auto *query = new QueryPreprocessor(ss);
+    PQLQuery *clause = query->get_pql_query();
+    REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("FollowsT_StmtAndStmt_ReturnsCorrect") {
     std::string ss = "stmt s1; stmt s2;\n"
                 "Select s1 such that Follows*(s1,s2)";
     auto *query = new QueryPreprocessor(ss);
@@ -138,7 +146,7 @@ TEST_CASE("13. Follows* clause with 2 statements") {
 }
 
 
-TEST_CASE("14. Follows* clause with 1 statement and 1 statement number") {
+TEST_CASE("FollowsT_StmtAndStmt_ReturnsCorrect") {
     std::string ss = "stmt s1; stmt s2;\n"
                 "Select s1 such that Follows*(s1,2)";
     auto *query = new QueryPreprocessor(ss);
@@ -154,7 +162,7 @@ TEST_CASE("14. Follows* clause with 1 statement and 1 statement number") {
 }
 
 
-TEST_CASE("15. Follows* clause with additional spaces") {
+TEST_CASE("SuchThat_ExtraSpacesWithinBracket_ReturnsCorrect") {
     std::string ss = "stmt s1; stmt s2;\n"
                 "Select s1 such that Follows*(s1  , s2)";
     auto *query = new QueryPreprocessor(ss);
@@ -169,7 +177,7 @@ TEST_CASE("15. Follows* clause with additional spaces") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("16. Parent with string argument_") {
+TEST_CASE("Parent_ArgAndStmt_ReturnsNullPtr") {
     std::string ss = "stmt s1; stmt s2;\n"
                 "Select s1 such that Parent('test', s2)";
     auto *query = new QueryPreprocessor(ss);
@@ -177,7 +185,7 @@ TEST_CASE("16. Parent with string argument_") {
     REQUIRE(clause == nullptr);
 }
 
-TEST_CASE("17. Parent clause with 2 statements") {
+TEST_CASE("Parent_StmtAndStmt_ReturnsCorrect") {
     std::string ss = "stmt s1; stmt s2;\n"
                 "Select s1 such that Parent(s1, s2)";
     auto *query = new QueryPreprocessor(ss);
@@ -192,7 +200,7 @@ TEST_CASE("17. Parent clause with 2 statements") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("18. Parent clause with 1 statement and 1 statement number") {
+TEST_CASE("Parent_StmtAndStmtNum_ReturnsCorrect") {
     std::string ss = "stmt s1; stmt s2;\n"
                 "Select s1 such that Parent(s1, 2)";
     auto *query = new QueryPreprocessor(ss);
@@ -207,7 +215,7 @@ TEST_CASE("18. Parent clause with 1 statement and 1 statement number") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("19. Parent clause with 1 statement number and 1 statement") {
+TEST_CASE("Parent_StmtNumAndStmt_ReturnsCorrect") {
     std::string ss = "stmt s1; stmt s2;\n"
                 "Select s1 such that Parent(1, s2)";
     auto *query = new QueryPreprocessor(ss);
@@ -222,7 +230,7 @@ TEST_CASE("19. Parent clause with 1 statement number and 1 statement") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("20. Parent clause with 1 statement and invalid entity") {
+TEST_CASE("Parent_StmtNumAndVar_ReturnsNullPtr") {
     std::string ss = "stmt s1; stmt s2; var v;\n"
                 "Select s1 such that Parent(s1, v)";
     auto *query = new QueryPreprocessor(ss);
@@ -230,7 +238,7 @@ TEST_CASE("20. Parent clause with 1 statement and invalid entity") {
     REQUIRE(clause == nullptr);
 }
 
-TEST_CASE("21. Parent* clause with 2 statements") {
+TEST_CASE("ParentT_StmtAndStmt_ReturnsCorrect") {
     std::string ss = "stmt s1; stmt s2;\n"
                 "Select s1 such that Parent*(s1,s2)";
     auto *query = new QueryPreprocessor(ss);
@@ -246,7 +254,7 @@ TEST_CASE("21. Parent* clause with 2 statements") {
 }
 
 
-TEST_CASE("22. Parent* clause with 1 statement and 1 statement number") {
+TEST_CASE("ParentT_StmtAndStmtNum_ReturnsCorrect") {
     std::string ss = "stmt s1; stmt s2;\n"
                 "Select s1 such that Parent*(s1,2)";
     auto *query = new QueryPreprocessor(ss);
@@ -262,22 +270,7 @@ TEST_CASE("22. Parent* clause with 1 statement and 1 statement number") {
 }
 
 
-TEST_CASE("23. Parent* clause with additional spaces") {
-    std::string ss = "stmt s1; stmt s2;\n"
-                "Select s1 such that Parent*(s1  , s2)";
-    auto *query = new QueryPreprocessor(ss);
-    PQLQuery *clause = query->get_pql_query();
-    REQUIRE(clause != nullptr);
-    REQUIRE(clause->get_query_entities()->at(0) == "s1");
-    REQUIRE(clause->get_query_relationships()->size() == 1);
-    SuchThatClause *relationship = clause->get_query_relationships()->at(0);
-    REQUIRE(relationship->get_type() == RelRef::ParentT);
-    REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
-    REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_synonym() == "s2");
-    REQUIRE(clause->get_query_patterns()->size() == 0);
-}
-
-TEST_CASE("24. Modifies clause with assignment and variable") {
+TEST_CASE("Modifies_AssignAndVar_ReturnsCorrect") {
     std::string ss = "assign a; variable v;\n"
                 "Select a such that Modifies(a, v)";
     auto *query = new QueryPreprocessor(ss);
@@ -292,7 +285,7 @@ TEST_CASE("24. Modifies clause with assignment and variable") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("25. Modifies clause with print and variable") {
+TEST_CASE("Modifies_PrintAndVar_ReturnsCorrect") {
     std::string ss = "print pn; variable v;\n"
                 "Select pn such that Modifies(pn, v)";
     auto *query = new QueryPreprocessor(ss);
@@ -307,7 +300,7 @@ TEST_CASE("25. Modifies clause with print and variable") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("26. Modifies clause with if and variable") {
+TEST_CASE("Modifies_IfAndVar_ReturnsCorrect") {
     std::string ss = "if ifs; variable v;\n"
                 "Select ifs such that Modifies(ifs, v)";
     auto *query = new QueryPreprocessor(ss);
@@ -322,7 +315,7 @@ TEST_CASE("26. Modifies clause with if and variable") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("27. Modifies clause with while and variable") {
+TEST_CASE("Modifies_WhileAndVar_ReturnsCorrect") {
     std::string ss = "while whiles; variable v;\n"
                 "Select whiles such that Modifies(whiles, v)";
     auto *query = new QueryPreprocessor(ss);
@@ -337,7 +330,7 @@ TEST_CASE("27. Modifies clause with while and variable") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("28. Modifies clause with procedure and variable") {
+TEST_CASE("Modifies_ProcedureAndVar_ReturnsCorrect") {
     std::string ss = "procedure proc; variable v;\n"
                 "Select proc such that Modifies(proc, v)";
     auto *query = new QueryPreprocessor(ss);
@@ -352,7 +345,7 @@ TEST_CASE("28. Modifies clause with procedure and variable") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("29. Modifies clause with call and variable") {
+TEST_CASE("Modifies_CallAndVar_ReturnsCorrect") {
     std::string ss = "call calls; variable v;\n"
                 "Select calls such that Modifies(calls, v)";
     auto *query = new QueryPreprocessor(ss);
@@ -367,7 +360,7 @@ TEST_CASE("29. Modifies clause with call and variable") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("30. Modifies clause with statement and variable") {
+TEST_CASE("Modifies_StmtAndVar_ReturnsCorrect") {
     std::string ss = "stmt s; variable v;\n"
                 "Select s such that Modifies(s, v)";
     auto *query = new QueryPreprocessor(ss);
@@ -382,7 +375,7 @@ TEST_CASE("30. Modifies clause with statement and variable") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("31. Modifies clause with statement number and variable") {
+TEST_CASE("Modifies_StmtNumAndVar_ReturnsCorrect") {
     std::string ss = "variable v;\n"
                 "Select v such that Modifies(2, v)";
     auto *query = new QueryPreprocessor(ss);
@@ -397,7 +390,7 @@ TEST_CASE("31. Modifies clause with statement number and variable") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("32. Modifies clause with assignment and statement") {
+TEST_CASE("Modifies_AssignAndStmt_ReturnsCorrect") {
     std::string ss = "assign assign; stmt s;\n"
                 "Select assign such that Modifies(assign, s)";
     auto *query = new QueryPreprocessor(ss);
@@ -405,7 +398,7 @@ TEST_CASE("32. Modifies clause with assignment and statement") {
     REQUIRE(clause == nullptr);
 }
 
-TEST_CASE("33. Modifies clause with unknown variable") {
+TEST_CASE("Modifies_UnknownEntityAndVar_ReturnsCorrect") {
     std::string ss = "assign assign; stmt s;\n"
                 "Select assign such that Modifies(pn, 50)";
     auto *query = new QueryPreprocessor(ss);
@@ -413,7 +406,7 @@ TEST_CASE("33. Modifies clause with unknown variable") {
     REQUIRE(clause == nullptr);
 }
 
-TEST_CASE("34. Uses clause with assignment and variable") {
+TEST_CASE("Uses_AssignAndVar_ReturnsCorrect") {
     std::string ss = "assign a; variable v;\n"
                 "Select a such that Uses(a, v)";
     auto *query = new QueryPreprocessor(ss);
@@ -428,7 +421,7 @@ TEST_CASE("34. Uses clause with assignment and variable") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("35. Uses clause with print and variable") {
+TEST_CASE("Uses_PrintAndVar_ReturnsCorrect") {
     std::string ss = "print pn; variable v;\n"
                 "Select pn such that Uses(pn, v)";
     auto *query = new QueryPreprocessor(ss);
@@ -443,7 +436,7 @@ TEST_CASE("35. Uses clause with print and variable") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("36. Uses clause with if and variable") {
+TEST_CASE("Uses_IfAndVar_ReturnsCorrect") {
     std::string ss = "if ifs; variable v;\n"
                 "Select ifs such that Uses(ifs, v)";
     auto *query = new QueryPreprocessor(ss);
@@ -458,7 +451,7 @@ TEST_CASE("36. Uses clause with if and variable") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("37. Uses clause with while and variable") {
+TEST_CASE("Uses_WhileAndVar_ReturnsCorrect") {
     std::string ss = "while whiles; variable v;\n"
                 "Select whiles such that Uses(whiles, v)";
     auto *query = new QueryPreprocessor(ss);
@@ -466,7 +459,7 @@ TEST_CASE("37. Uses clause with while and variable") {
     REQUIRE(clause != nullptr);
 }
 
-TEST_CASE("38. Uses clause with procedure and variable") {
+TEST_CASE("Uses_ProcedureAndVar_ReturnsCorrect") {
     std::string ss = "procedure proc; variable v;\n"
                 "Select proc such that Uses(proc, v)";
     auto *query = new QueryPreprocessor(ss);
@@ -481,7 +474,7 @@ TEST_CASE("38. Uses clause with procedure and variable") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("39. Uses clause with call and variable") {
+TEST_CASE("Uses_CallAndVar_ReturnsCorrect") {
     std::string ss = "call calls; variable v;\n"
                 "Select calls such that Uses(calls, v)";
     auto *query = new QueryPreprocessor(ss);
@@ -496,7 +489,7 @@ TEST_CASE("39. Uses clause with call and variable") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("40. Uses clause with statement and variable") {
+TEST_CASE("Uses_StmtAndVar_ReturnsCorrect") {
     std::string ss = "stmt s; variable v;\n"
                 "Select s such that Uses(s, v)";
     auto *query = new QueryPreprocessor(ss);
@@ -511,7 +504,7 @@ TEST_CASE("40. Uses clause with statement and variable") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("41. Uses clause with statement number and variable") {
+TEST_CASE("Uses_StmtNumAndVar_ReturnsCorrect") {
     std::string ss = "variable v;\n"
                 "Select v such that Uses(2, v)";
     auto *query = new QueryPreprocessor(ss);
@@ -526,7 +519,7 @@ TEST_CASE("41. Uses clause with statement number and variable") {
     REQUIRE(clause->get_query_patterns()->size() == 0);
 }
 
-TEST_CASE("42. Uses clause with assignment and statement") {
+TEST_CASE("Uses_AssignAndStmt_ReturnsCorrect") {
     std::string ss = "assign assign; stmt s;\n"
                 "Select assign such that Uses(assign, s)";
     auto *query = new QueryPreprocessor(ss);
@@ -534,15 +527,15 @@ TEST_CASE("42. Uses clause with assignment and statement") {
     REQUIRE(clause == nullptr);
 }
 
-TEST_CASE("43. Uses clause with assignment and statement number") {
-    std::string ss = "assign assign; stmt s;\n"
-                "Select assign such that Uses(pn, 50)";
+TEST_CASE("Uses_UnknownEntityAndVar_ReturnsCorrect") {
+    std::string ss = "assign assign; var v;\n"
+                "Select assign such that Uses(pn, v)";
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause == nullptr);
 }
 
-TEST_CASE("44. Standard pattern clause") {
+TEST_CASE("Pattern_AssignWildCardAndPattern_ReturnsCorrect") {
     std::string ss = "assign a;\n"
                      "Select a pattern a ( _ , 'count + 1')";
     auto *query = new QueryPreprocessor(ss);
@@ -558,7 +551,38 @@ TEST_CASE("44. Standard pattern clause") {
     REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
 }
 
-TEST_CASE("45. PatternClause clause with partial pattern") {
+TEST_CASE("Pattern_AssignWildCardAndPartialPattern_ReturnsCorrect") {
+    std::string ss = "assign a;\n"
+                     "Select a pattern a ( _ , _'count + 1'_)";
+    auto *query = new QueryPreprocessor(ss);
+    PQLQuery *clause = query->get_pql_query();
+    REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "a");
+    REQUIRE(clause->get_query_relationships()->size() == 0);
+    REQUIRE(clause->get_query_patterns()->size() == 1);
+    PatternClause *pattern = clause->get_query_patterns()->at(0);
+    REQUIRE(pattern->get_synonym()->get_synonym() == "a");
+    REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::WildCard);
+    REQUIRE(pattern->get_right_ref()->get_expression() == "count+1");
+    REQUIRE(pattern->get_right_ref()->IsPartialPattern() == true);
+}
+
+TEST_CASE("Pattern_AssignWildCardAndWildCard_ReturnsCorrect") {
+    std::string ss = "assign a;\n"
+                     "Select a pattern a ( _ , _ )";
+    auto *query = new QueryPreprocessor(ss);
+    PQLQuery *clause = query->get_pql_query();
+    REQUIRE(clause != nullptr);
+    REQUIRE(clause->get_query_entities()->at(0) == "a");
+    REQUIRE(clause->get_query_relationships()->size() == 0);
+    REQUIRE(clause->get_query_patterns()->size() == 1);
+    PatternClause *pattern = clause->get_query_patterns()->at(0);
+    REQUIRE(pattern->get_synonym()->get_synonym() == "a");
+    REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::WildCard);
+    REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
+}
+
+TEST_CASE("Pattern_AssignVarAndPartialPattern_ReturnsCorrect") {
     std::string ss = "assign a;\n"
                      "Select a pattern a ( 'normSq' , _'cenX * cenX'_)";
     auto *query = new QueryPreprocessor(ss);
@@ -575,24 +599,24 @@ TEST_CASE("45. PatternClause clause with partial pattern") {
     REQUIRE(pattern->get_right_ref()->IsPartialPattern() == true);
 }
 
-TEST_CASE("46. PatternClause clause with different variable name") {
-    std::string ss = "assign newa;\n"
-                     "Select newa pattern newa( 'normSq' , _'cenX * cenX'_)";
+TEST_CASE("Pattern_AssignWildCardAndPartialPattern_ReturnsCorrect") {
+    std::string ss = "assign a;\n"
+                     "Select a pattern a (_, _'cenX * cenX'_)";
     auto *query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
     REQUIRE(clause != nullptr);
-    REQUIRE(clause->get_query_entities()->at(0) == "newa");
+    REQUIRE(clause->get_query_entities()->at(0) == "a");
     REQUIRE(clause->get_query_relationships()->size() == 0);
     REQUIRE(clause->get_query_patterns()->size() == 1);
     PatternClause *pattern = clause->get_query_patterns()->at(0);
-    REQUIRE(pattern->get_synonym()->get_synonym() == "newa");
-    REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Argument);
+    REQUIRE(pattern->get_synonym()->get_synonym() == "a");
+    REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::WildCard);
     REQUIRE(pattern->get_left_ref()->get_argument() == "normSq");
     REQUIRE(pattern->get_right_ref()->get_expression() == "cenX*cenX");
     REQUIRE(pattern->get_right_ref()->IsPartialPattern() == true);
 }
 
-TEST_CASE("47. Queries with one pattern clause and one such that") {
+TEST_CASE("Select_OneSuchThatAndPattern_ReturnsCorrect") {
     std::string ss = "assign a; while w;"
                      "Select w such that Parent* (w, a) pattern a ('count', _)";
     auto *query = new QueryPreprocessor(ss);
@@ -614,7 +638,7 @@ TEST_CASE("47. Queries with one pattern clause and one such that") {
     REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
 }
 
-TEST_CASE("48. Queries with one pattern clause and one such that") {
+TEST_CASE("Select_OnePatternAndSuchThat_ReturnsCorrect") {
     std::string ss = "assign a; variable v;"
                      "Select a such that Uses (a, v) pattern a (v, _)";
     auto *query = new QueryPreprocessor(ss);
@@ -636,7 +660,7 @@ TEST_CASE("48. Queries with one pattern clause and one such that") {
     REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
 }
 
-TEST_CASE("49. Queries that use and modify the same variable") {
+TEST_CASE("Select_UsesRepeatEntity_ReturnsCorrect") {
     std::string ss = "assign a; while w;"
                      "Select a pattern a ('x', _) such that Uses (a, 'x')";
     auto *query = new QueryPreprocessor(ss);
@@ -657,7 +681,7 @@ TEST_CASE("49. Queries that use and modify the same variable") {
     REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
 }
 
-TEST_CASE("50. Complex queries with keywords as variable name") {
+TEST_CASE("Select_ComplexQueryWithSimilarPatternNaming_ReturnsCorrect") {
     std::string ss = "assign pattern; while w;"
                      "Select pattern pattern pattern ('x', _) "
                      "such that Uses (pattern, 'x')";
@@ -680,7 +704,7 @@ TEST_CASE("50. Complex queries with keywords as variable name") {
     REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
 }
 
-TEST_CASE("51. Complex queries with keywords as variable name") {
+TEST_CASE("Select_ComplexQueryWithSimilarNaming_ReturnsCorrect") {
     std::string ss = "assign pattern; variable select;"
                      "Select pattern pattern pattern (select, _) "
                      "such that Uses (pattern, select)";
@@ -703,7 +727,7 @@ TEST_CASE("51. Complex queries with keywords as variable name") {
     REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
 }
 
-TEST_CASE("52. Extra such that") {
+TEST_CASE("Select_ExtraSuchThatKeyword_ReturnsNullPtr") {
     std::string ss = "assign pattern; variable select;"
                      "Select pattern pattern pattern (select, _) "
                      "such that such that Uses (pattern, select)";
@@ -712,7 +736,7 @@ TEST_CASE("52. Extra such that") {
     REQUIRE(clause == nullptr);
 }
 
-TEST_CASE("53. Strange such that") {
+TEST_CASE("Select_StrangeFormat_ReturnsNullPtr") {
     std::string ss = "assign pattern; variable select;"
                      "Select pattern pattern pattern (select, _) "
                      "such that (,)    such that Uses (pattern, select)";
@@ -721,7 +745,7 @@ TEST_CASE("53. Strange such that") {
     REQUIRE(clause == nullptr);
 }
 
-TEST_CASE("54. Bad Pattern ending with symbol") {
+TEST_CASE("Pattern_EndingWithSymbol_ReturnsNullPtr") {
     std::string ss = "assign a;"
                      "Select a pattern a ( _ , 'x+y*')";
     auto *query = new QueryPreprocessor(ss);
@@ -729,7 +753,7 @@ TEST_CASE("54. Bad Pattern ending with symbol") {
     REQUIRE(clause == nullptr);
 }
 
-TEST_CASE("55. Bad Pattern with two symbols") {
+TEST_CASE("Pattern_HavingTwoContinuousSymbols_ReturnsNullPtr") {
     std::string ss = "assign a;"
                      "Select a pattern a ( _ , 'x+*y')";
     auto *query = new QueryPreprocessor(ss);
@@ -737,7 +761,7 @@ TEST_CASE("55. Bad Pattern with two symbols") {
     REQUIRE(clause == nullptr);
 }
 
-TEST_CASE("56. Pattern keyword inside pattern") {
+TEST_CASE("Pattern_KeywordPatternInPattern_ReturnsCorrect") {
     std::string ss = "assign a;"
                      "Select a pattern a ( _ , ' pattern ')";
     auto *query = new QueryPreprocessor(ss);
@@ -754,7 +778,7 @@ TEST_CASE("56. Pattern keyword inside pattern") {
     REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
 }
 
-TEST_CASE("57. Weird select clauses_") {
+TEST_CASE("Select_InvalidKeywords_ReturnsNullPtr") {
     std::string ss = "stmt s;"
                      "Select s hello Follows(s, 4)";
     auto *query = new QueryPreprocessor(ss);

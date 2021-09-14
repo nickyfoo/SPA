@@ -91,6 +91,10 @@ class PKB {
 
   // Process and store Uses/Modifies relationships for the AST assign node.
   void UsesModifiesProcessAssignNode(Node *node, std::vector<Node *> &ancestorList);
+  // Process and store Uses/Modifies relationships for the AST if node.
+  void PKB::UsesModifiesProcessIfNode(Node *node, std::vector<Node *> &ancestorList);
+  // Process and store Uses/Modifies relationships for the AST while node.
+  void PKB::UsesModifiesProcessWhileNode(Node *node, std::vector<Node *> &ancestorList);
   // Process and store Uses/Modifies relationships for the AST read node.
   void UsesModifiesProcessReadNode(Node *node, std::vector<Node *> &ancestorList);
   // Process and store Uses/Modifies relationships for the AST print node.

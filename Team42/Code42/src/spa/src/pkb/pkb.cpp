@@ -45,7 +45,58 @@ void PKB::AddExprString(Node *node, std::vector<Node *> ancestor_list) {
         // TODO(nic): might throw an error here
         break;
     }
-  }
+  } 
+
+  if (node->get_kind() == NodeType::If) {
+    auto *if_node = dynamic_cast<IfNode *>(node);
+    switch (if_node->get_cond()->get_kind()) {
+      case NodeType::RelExpression: {
+        auto *rel_expression_node =
+            dynamic_cast<RelExpressionNode *>(if_node->get_cond());
+        std::string expr_string = rel_expression_node->get_expr_string();
+        stmt_table_.get_statement(if_node->get_stmt_no())
+            ->set_expr_string(expr_string);
+        break;
+      }
+      case NodeType::CondExpression: {
+        auto *cond_expression_node = dynamic_cast<CondExpressionNode *>(if_node->get_cond());
+        std::string expr_string = cond_expression_node->get_expr_string();
+        stmt_table_.get_statement(if_node->get_stmt_no())
+            ->set_expr_string(expr_string);
+        break;
+      }
+      default:
+        // TODO(nic): might throw an error here
+        break;
+    }
+  } 
+    
+  if (node->get_kind() == NodeType::While) {
+    auto *while_node = dynamic_cast<WhileNode *>(node);
+    switch (while_node->get_cond()->get_kind()) {
+      case NodeType::RelExpression: {
+        auto *rel_expression_node =
+            dynamic_cast<RelExpressionNode *>(while_node->get_cond());
+        std::string expr_string = rel_expression_node->get_expr_string();
+        stmt_table_.get_statement(while_node->get_stmt_no())
+            ->set_expr_string(expr_string);
+        break;
+      }
+      case NodeType::CondExpression: {
+        auto *cond_expression_node =
+            dynamic_cast<CondExpressionNode *>(while_node->get_cond());
+        std::string expr_string = cond_expression_node->get_expr_string();
+        stmt_table_.get_statement(while_node->get_stmt_no())
+            ->set_expr_string(expr_string);
+        break;
+      }
+      default:
+        // TODO(nic): might throw an error here
+        break;
+    }
+  } 
+
+
 }
 
 void PKB::AddVariable(Node *node, std::vector<Node *> ancestor_list) {
@@ -146,8 +197,8 @@ void PKB::ExtractEntities() {
       {NodeType::Identifier, {extract_variable}},
       {NodeType::Constant, {extract_constant}},
       {NodeType::Assign, {extract_statement, extract_expr_string}},
-      {NodeType::If, {extract_statement}},
-      {NodeType::While, {extract_statement}},
+      {NodeType::If, {extract_statement, extract_expr_string}},
+      {NodeType::While, {extract_statement, extract_expr_string}},
       {NodeType::Read, {extract_statement}},
       {NodeType::Print, {extract_statement}},
       {NodeType::Call, {extract_statement}},
@@ -199,6 +250,14 @@ void PKB::ExtractUsesModifies() {
       [this](Node *node, std::vector<Node *> ancestor_list) {
         PKB::UsesModifiesProcessAssignNode(node, ancestor_list);
       };
+  auto extract_uses_modifies_for_if_node =
+      [this](Node *node, std::vector<Node *> ancestor_list) {
+        PKB::UsesModifiesProcessIfNode(node, ancestor_list);
+      };
+  auto extract_uses_modifies_for_while_node =
+      [this](Node *node, std::vector<Node *> ancestor_list) {
+        PKB::UsesModifiesProcessWhileNode(node, ancestor_list);
+      };
   auto extract_uses_modifies_for_read_node =
       [this](Node *node, std::vector<Node *> ancestor_list) {
         PKB::UsesModifiesProcessReadNode(node, ancestor_list);
@@ -210,6 +269,8 @@ void PKB::ExtractUsesModifies() {
 
   std::map<NodeType, std::vector<std::function<void(Node *, std::vector<Node *>)>>> functions = {
           {NodeType::Assign, {extract_uses_modifies_for_assign_node}},
+          {NodeType::If, {extract_uses_modifies_for_if_node}},
+          {NodeType::While, {extract_uses_modifies_for_while_node}},
           {NodeType::Read, {extract_uses_modifies_for_read_node}},
           {NodeType::Print, {extract_uses_modifies_for_print_node}},
   };
@@ -365,9 +426,61 @@ void PKB::UsesModifiesProcessAssignNode(Node *node, std::vector<Node *> &ancesto
       for (auto &var : *(assign_statement->get_uses())) {
         stmt_table_.get_statement(statement_node->get_stmt_no())->AddUses(var);
       }
+      stmt_table_.get_statement(statement_node->get_stmt_no())
+          ->AddModifies(assign_node->get_var()->get_name());
     }
   }
 }
+
+void PKB::UsesModifiesProcessIfNode(Node *node, std::vector<Node *> &ancestorList) {
+  auto *if_node = dynamic_cast<IfNode *>(node);
+  Statement *if_statement = stmt_table_.get_statement(if_node->get_stmt_no());
+  for (auto &var : if_statement->get_vars_from_expr_string()) {
+    if_statement->AddUses(var);
+    var_table_.get_variable(var)->AddStmtUsing(if_statement->get_stmt_no());
+  }
+  for (Node *n : ancestorList) {
+    if (n->get_kind() == NodeType::Procedure) {
+      auto *procedure_node = dynamic_cast<ProcedureNode *>(n);
+      Procedure *proc = proc_table_.get_procedure(procedure_node->get_name());
+      for (auto &var : *(if_statement->get_uses())) {
+        proc->AddUses(var);
+      }
+    }
+    if (n->get_kind() == NodeType::If || n->get_kind() == NodeType::While) {
+      auto statement_node = dynamic_cast<StatementNode *>(n);
+      for (auto &var : *(if_statement->get_uses())) {
+        stmt_table_.get_statement(statement_node->get_stmt_no())->AddUses(var);
+      }
+    }
+  }
+}
+
+void PKB::UsesModifiesProcessWhileNode(Node *node,
+                                    std::vector<Node *> &ancestorList) {
+  auto *while_node = dynamic_cast<WhileNode *>(node);
+  Statement *while_statement = stmt_table_.get_statement(while_node->get_stmt_no());
+  for (auto &var : while_statement->get_vars_from_expr_string()) {
+    while_statement->AddUses(var);
+    var_table_.get_variable(var)->AddStmtUsing(while_statement->get_stmt_no());
+  }
+  for (Node *n : ancestorList) {
+    if (n->get_kind() == NodeType::Procedure) {
+      auto *procedure_node = dynamic_cast<ProcedureNode *>(n);
+      Procedure *proc = proc_table_.get_procedure(procedure_node->get_name());
+      for (auto &var : *(while_statement->get_uses())) {
+        proc->AddUses(var);
+      }
+    }
+    if (n->get_kind() == NodeType::If || n->get_kind() == NodeType::While) {
+      auto statement_node = dynamic_cast<StatementNode *>(n);
+      for (auto &var : *(while_statement->get_uses())) {
+        stmt_table_.get_statement(statement_node->get_stmt_no())->AddUses(var);
+      }
+    }
+  }
+}
+
 // Process and store Uses relationships for the AST read node.
 void PKB::UsesModifiesProcessReadNode(Node *node, std::vector<Node *> &ancestorList) {
   auto *read_node = dynamic_cast<ReadNode *>(node);

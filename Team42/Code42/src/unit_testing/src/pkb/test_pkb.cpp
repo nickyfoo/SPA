@@ -109,3 +109,36 @@ TEST_CASE("Test pkb::ExtractUsesModifies()") {
     var->ModifiesInfo();
   }
 }
+
+TEST_CASE("Test pkb::ExtractUsesModifies() for containerstmts") {
+  std::string source2 =
+      "procedure main {"
+      "if((x==0) && (y==0) ) then {"
+      "a = b + c;"
+      "} else {"
+      "d = e + f;}" 
+      "}";
+
+  BufferedLexer lexer(source2.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  pkb.PrintStatements();
+  pkb.PrintProcedures();
+  pkb.PrintVariables();
+  std::vector<Statement *> statements = pkb.get_all_statements();
+  for (auto &stmt : statements) {
+    stmt->UsesInfo();
+    stmt->ModifiesInfo();
+  }
+  std::vector<Procedure *> procedures = pkb.get_all_procedures();
+  for (auto &proc : procedures) {
+    proc->UsesInfo();
+    proc->ModifiesInfo();
+  }
+  std::vector<Variable *> variables = pkb.get_all_variables();
+  for (auto &var : variables) {
+    var->UsesInfo();
+    var->ModifiesInfo();
+  }
+}

@@ -22,7 +22,6 @@ NodeType Statement::get_kind() {
 }
 
 std::string Statement::get_expr_string() {
-  // TODO(nic): Only applicable for AssignStatement for now, need to add if/while
   return expr_string_;
 }
 

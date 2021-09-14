@@ -1,5 +1,7 @@
 #include "lexer.h"
 
+#include "iostream"
+
 BufferedLexer::BufferedLexer(const char *source) {
   // this implementation of BufferedLexer uses Lexer
   this->lexer_ = new Lexer(source);
@@ -13,7 +15,10 @@ const Token *BufferedLexer::GetNextToken() {
     return tmp;
   }
 
-  return lexer_->GetNextToken();
+  auto n = lexer_->GetNextToken();
+  std::cout << static_cast<typename std::underlying_type<TokenType>::type>(n->kind_) << "\n";
+
+  return n;
 }
 
 const Token *BufferedLexer::PeekNextToken() {

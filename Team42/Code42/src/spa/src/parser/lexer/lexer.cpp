@@ -1,4 +1,5 @@
 #include "lexer.h"
+#include "iostream"
 
 Lexer::Lexer(const char *source) {
   this->source_ = source;

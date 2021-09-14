@@ -2,4 +2,9 @@
 
 #include "ast.h"
 
-class Entity {};
+class Entity {
+ protected:
+  Entity() {}
+
+  virtual ~Entity() {};
+};

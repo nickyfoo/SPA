@@ -27,6 +27,14 @@ void Visit(Node *node,
            std::map<NodeType, std::vector<std::function<void(Node *currentNode)>>> functions);
 
 inline bool IsNodeEqual(Node *t1, Node *t2) {
+  if (t1 == nullptr && t2 == nullptr) {
+    return true;
+  } else if (t1 == nullptr && t2 != nullptr) {
+    return false;
+  } else if (t1 != nullptr && t2 == nullptr) {
+    return false;
+  }
+
   if (t1->get_kind() != t2->get_kind()) {
     return false;
   }

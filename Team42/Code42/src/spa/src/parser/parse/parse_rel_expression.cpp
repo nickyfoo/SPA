@@ -1,16 +1,39 @@
+#include <stdexcept>
 #include "parse.h"
+
+std::string RelExprOpToString(RelExprOp op) {
+  switch (op) {
+    case RelExprOp::Gt:
+      return ">";
+    case RelExprOp::Gte:
+      return ">=";
+    case RelExprOp::Lt:
+      return "<";
+    case RelExprOp::Lte:
+      return "<=";
+    case RelExprOp::Eq:
+      return "==";
+    case RelExprOp::Neq:
+      return "!=";
+    default:
+      throw std::invalid_argument("RelExprOpToString: invalid RelExprOp value");
+  }
+}
 
 RelExpressionNode *ParseRelExpression(BufferedLexer *lexer, ParseState *state) {
   const Token *t = lexer->GetNextToken();
   int start_line = t->line_no_;
   int start_col = t->col_no_;
+  std::string expr_string = "";
 
   // for rel expressions, left and right should be constants or identifiers only
   Node *left;
   if (t->kind_ == TokenType::Constant) {
     left = new ConstantNode(t->value_, LocInfo{.line_no = t->line_no_, .col_no = t->col_no_});
+    expr_string += t->value_;
   } else if (t->kind_ == TokenType::Identifier) {
     left = new IdentifierNode(t->value_, LocInfo{.line_no = t->line_no_, .col_no = t->col_no_});
+    expr_string += t->value_;
   } else {
     throw ParseException("expected Constant or Identifier", t->line_no_, t->col_no_);
   }
@@ -44,13 +67,15 @@ RelExpressionNode *ParseRelExpression(BufferedLexer *lexer, ParseState *state) {
   Node *right;
   if (t->kind_ == TokenType::Constant) {
     right = new ConstantNode(t->value_, LocInfo{.line_no = t->line_no_, .col_no = t->col_no_});
+    expr_string += " " + t->value_;
   } else if (t->kind_ == TokenType::Identifier) {
     right = new IdentifierNode(t->value_, LocInfo{.line_no = t->line_no_, .col_no = t->col_no_});
+    expr_string += " " + t->value_;
   } else {
     throw ParseException("expected Constant or Identifier", t->line_no_, t->col_no_);
   }
 
-  return new RelExpressionNode(op, left, right,
-                               LocInfo{.line_no = start_line, .col_no = start_col});
-}
+  expr_string += " " + RelExprOpToString(op);
 
+  return new RelExpressionNode(op, left, right, expr_string, {start_line, start_col});
+}

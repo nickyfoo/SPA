@@ -18,9 +18,6 @@ void StmtTable::AddStatement(Node *node) {
     s.set_called_proc_name(call_node->get_proc()->get_name());
   }
   table_[stmt_no] = s;
-  //sus might not work :/
-  //probably do a pass later on.
-  type_to_statement_[stmt_node->get_kind()].push_back(&table_[stmt_no]);
   num_statements_ = std::max(num_statements_, stmt_no);
 }
 
@@ -44,6 +41,12 @@ Statement *StmtTable::get_statement(int line_no) {
   auto it = table_.find(line_no);
   if (it == table_.end()) return nullptr;
   return &(it->second);
+}
+
+void StmtTable::CategorizeStatements() {
+  for (auto &[stmt_no, stmt] : table_) {
+    type_to_statement_[stmt.get_kind()].push_back(&table_[stmt_no]);
+  }
 }
 
 void StmtTable::ProcessFollows() {
@@ -100,6 +103,16 @@ void StmtTable::PrintStatements() {
     if (x.get_kind() == NodeType::Assign) std::cout << x.get_expr_string();
     std::cout << '\n';
   }
+
+  std::cout << "Categorized:\n";
+  for (auto &[type, statements] : type_to_statement_) {
+    std::cout << (int)type << ": ";
+    for (auto &stmt : statements) {
+      std::cout << stmt->get_stmt_no() << ' ';
+    }
+    std::cout << '\n';
+  }
+  std::cout << "\n\n";
 }
 
 void StmtTable::PrintStatementDetails() {

@@ -29,6 +29,9 @@ class StmtTable : public Table {
   // Gets the statement by line number.
   Statement *get_statement(int line_no);
 
+  // Passes over table_ to populate type_to_statement_;
+  void CategorizeStatements();
+
   // Gets Follows relationship from Statements in preparation to get
   // transitive closure.
   void ProcessFollows();

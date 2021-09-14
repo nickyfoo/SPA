@@ -110,16 +110,18 @@ class RelExpressionNode : public Node {
 
 class CondExpressionNode : public Node {
  public:
-  CondExpressionNode(CondExprOp op, Node *left, Node *right, LocInfo loc);
+  CondExpressionNode(CondExprOp op, Node *left, Node *right, std::string expr_string, LocInfo loc);
   NodeType get_kind();
   CondExprOp get_op();
   Node *get_left();
   Node *get_right();
+  std::string get_expr_string();
 
  private:
   CondExprOp op_;
   Node *left_;   // must be RelExpression or CondExpression
   Node *right_;  // must be RelExpression or CondExpression
+  std::string expr_string_;  // converted to postfix notation
 };
 
 class AssignNode : public StatementNode {

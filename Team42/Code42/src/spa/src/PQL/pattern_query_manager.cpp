@@ -55,7 +55,7 @@ void PatternQueryManager::ManagePatterns(PatternClause *pattern) {
     if (!var_set.empty()) {
         std::vector<Entity*> *variable_vec = &synonym_to_entity_result_->at(left_synonym); // getting list of variable objects
         for (int k = 0; k < variable_vec->size(); k++) {
-            if (!var_set.count(&variable_vec->at(k)->)) {
+            if (!var_set.count(variable_vec->at(k))) {
                 variable_vec->erase(variable_vec->begin() + k);
                 k--;
             }

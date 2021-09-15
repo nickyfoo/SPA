@@ -3,6 +3,7 @@
 #include "statement.h"
 #include "follows_parents_handler.h"
 #include "uses_modifies_handler.h"
+#include "usesp_modifiesp_handler.h"
 #include "variable.h"
 #include "procedure.h"
 

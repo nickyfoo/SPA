@@ -1,15 +1,18 @@
 #include "query_preprocessor.h"
 
 QueryPreprocessor::QueryPreprocessor(std::string input) {
+    printf("here1\n");
   std::vector<std::string> *entities;
   std::string select_clause;
   tie(entities, select_clause) = SplitEntitiesAndSelectClause(input);
   std::unordered_map<std::string, EntityDeclaration *> *entities_map;
   entities_map = MakeEntitiesMap(entities);
+  printf("here2\n");
   if (entities_map == nullptr) {
     this->clauses_ = nullptr;
     return;
   }
+  printf("here3\n");
   PQLQuery *pql_query = MakePQLQuery(entities_map, select_clause);
   this->clauses_ = pql_query;
 }

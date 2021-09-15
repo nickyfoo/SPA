@@ -38,6 +38,7 @@ PQLQuery *SelectClauseParser::get_clauses() {
   auto *pattern_ret = new std::vector<PatternClause *>();
 
   std::vector<std::string> select_clauses = SplitSelect(select_clause);
+  printf("BEFORE SELECT\n");
   if (select_clauses.empty()) {  // invalid select syntax
     return nullptr;
   }
@@ -49,7 +50,7 @@ PQLQuery *SelectClauseParser::get_clauses() {
       select_ret->push_back(select);
     }
   }
-
+  printf("BEFORE SUCHTHAT\n");
   for (const std::string &such_that_clause : such_that_clauses) {
     SuchThatClause *relationship = MakeSuchThatClause(such_that_clause);
     if (relationship == nullptr) {
@@ -57,7 +58,7 @@ PQLQuery *SelectClauseParser::get_clauses() {
     }
     such_that_ret->push_back(relationship);
   }
-
+  printf("BEFORE PATTERN\n");
   for (const std::string &pattern_clause : pattern_clauses) {
     PatternClause *pattern = MakePatternClause(pattern_clause);
     if (pattern == nullptr) {

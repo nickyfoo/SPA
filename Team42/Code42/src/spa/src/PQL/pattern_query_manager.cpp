@@ -31,26 +31,26 @@ void PatternQueryManager::ManagePatterns(PatternClause *pattern) {
     std::string left_synonym;
     for (int i = 0; i < entity_vec->size(); i++) {
         auto *assign = (Statement*) entity_vec->at(i); // for each assign object
-        if (assign->get_modifies()->size() == 0 || !pkb_->TestAssignmentPattern(assign, pattern_to_check, is_partial_pattern)) {
-            entity_vec->erase(entity_vec->begin() + i);
-            i--;
-        } else {
-            if (left_ent->get_type() == EntRefType::Synonym) { // eg pattern a(v, "sth")
-                left_synonym = left_ent->get_synonym();
-                std::vector<Entity*> *variable_vec = &synonym_to_entity_result_->at(left_ent->get_synonym()); // getting list of variable objects
-                for (int j = 0; j < variable_vec->size(); j++) {
-                    auto* variable = (Variable*) &variable_vec->at(j); // for each variable object
-                    if (assign->get_modifies()->count(variable->get_name())) {
-                        var_set.insert(variable_vec->at(j));
-                    }
-                }
-            } else if (left_ent->get_type() == EntRefType::Argument) {
-                if (!assign->get_modifies()->count(left_ent->get_argument())) {
-                    entity_vec->erase(entity_vec->begin() + i);
-                    i--;
-                }
-            }
-        }
+//        if (assign->get_modifies()->size() == 0 || !pkb_->TestAssignmentPattern(assign, pattern_to_check, is_partial_pattern)) {
+//            entity_vec->erase(entity_vec->begin() + i);
+//            i--;
+//        } else {
+//            if (left_ent->get_type() == EntRefType::Synonym) { // eg pattern a(v, "sth")
+//                left_synonym = left_ent->get_synonym();
+//                std::vector<Entity*> *variable_vec = &synonym_to_entity_result_->at(left_ent->get_synonym()); // getting list of variable objects
+//                for (int j = 0; j < variable_vec->size(); j++) {
+//                    auto* variable = (Variable*) &variable_vec->at(j); // for each variable object
+//                    if (assign->get_modifies()->count(variable->get_name())) {
+//                        var_set.insert(variable_vec->at(j));
+//                    }
+//                }
+//            } else if (left_ent->get_type() == EntRefType::Argument) {
+//                if (!assign->get_modifies()->count(left_ent->get_argument())) {
+//                    entity_vec->erase(entity_vec->begin() + i);
+//                    i--;
+//                }
+//            }
+//        }
     }
     if (!var_set.empty()) {
         std::vector<Entity*> *variable_vec = &synonym_to_entity_result_->at(left_synonym); // getting list of variable objects

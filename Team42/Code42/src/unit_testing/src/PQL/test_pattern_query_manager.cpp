@@ -205,6 +205,7 @@ TEST_CASE("Test 3: Assign Pattern with Synonym and Synonym") {
                      "Select a pattern a(v1, v2)";
     auto* query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
+    printf("PQL QUERY NULL??? %d\n", clause == nullptr);
 
     // Parse source
     BufferedLexer lexer(source.c_str());
@@ -215,7 +216,7 @@ TEST_CASE("Test 3: Assign Pattern with Synonym and Synonym") {
     auto evaluator = new QueryEvaluator(clause, &pkb);
     std::vector<std::string> *ret = evaluator->Evaluate();
 
-    std::vector<std::string> expected = {"15", "16", "17", "21", "22", "23"};
+    std::vector<std::string> expected = {};
 
     REQUIRE(ret->size() == expected.size());
     for (int i = 0; i < expected.size(); i++) {
@@ -394,63 +395,6 @@ TEST_CASE("Test 6: Assign Pattern with Wild Card and Argument") {
     }
 }
 
-TEST_CASE("Test 7: Assign Pattern with Wild Card and Synonym") {
-    std::string source = "procedure main {"
-                         "flag = 0;"
-                         "call computeCentroid;"
-                         "call printResults;"
-                         "}"
-                         "procedure readPoint {"
-                         "read x;"
-                         "read y;"
-                         "}"
-                         "procedure printResults {"
-                         "print flag;"
-                         "print cenX;"
-                         "print cenY;"
-                         "print normSq;"
-                         "}"
-                         "procedure computeCentroid {"
-                         "count = 0;"
-                         "cenX = 0;"
-                         "cenY = 0;"
-                         "call readPoint;"
-                         "while((x != 0) && (y != 0)) {"
-                         "count = count+1;"
-                         "cenX = cenX + x;"
-                         "cenY = cenY + y;"
-                         "call readPoint;"
-                         "}"
-                         "if (count == 0) then {"
-                         "flag = 1;"
-                         "} else {"
-                         "cenX = cenX / count;"
-                         "cenY = cenY / count;"
-                         "}"
-                         "normSq = cenX * cenX + cenY * cenY;"
-                         "}";
-    std::string ss = "assign a; variable v2; \n"
-                     "Select a pattern a(_, v2)";
-    auto* query = new QueryPreprocessor(ss);
-    PQLQuery *clause = query->get_pql_query();
-
-    // Parse source
-    BufferedLexer lexer(source.c_str());
-    ParseState s{};
-    ProgramNode* p = ParseProgram(&lexer, &s);
-    PKB pkb = PKB(p);
-
-    auto evaluator = new QueryEvaluator(clause, &pkb);
-    std::vector<std::string> *ret = evaluator->Evaluate();
-
-    std::vector<std::string> expected = {"15", "16", "17", "21", "22", "23"};
-
-    REQUIRE(ret->size() == expected.size());
-    for (int i = 0; i < expected.size(); i++) {
-        REQUIRE(ret->at(i) == expected.at(i));
-    }
-}
-
 TEST_CASE("Test 8: Assign Pattern with Wild Card and Partial Pattern") {
     std::string source = "procedure main {"
                          "flag = 0;"
@@ -562,7 +506,7 @@ TEST_CASE("Test 9: Non-Assign Pattern with Wild Card and Partial Pattern") {
     REQUIRE(ret == nullptr);
 }
 
-TEST_CASE("Test 10: Assign Pattern with Wild Card and Partial Pattern") {
+TEST_CASE("Test 10: Print Pattern with Wild Card and Partial Pattern") {
     std::string source = "procedure main {"
                          "flag = 0;"
                          "call computeCentroid;"
@@ -597,8 +541,8 @@ TEST_CASE("Test 10: Assign Pattern with Wild Card and Partial Pattern") {
                          "}"
                          "normSq = cenX * cenX + cenY * cenY;"
                          "}";
-    std::string ss = "while w; variable v;\n"
-                     "Select w pattern w(_, _'cenX'_)";
+    std::string ss = "print p; variable v;\n"
+                     "Select p pattern p(_, _'cenX'_)";
     auto* query = new QueryPreprocessor(ss);
     PQLQuery *clause = query->get_pql_query();
 

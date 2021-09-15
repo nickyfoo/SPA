@@ -45,6 +45,7 @@ std::unordered_map<std::string, EntityDeclaration *>
       return nullptr;
     }
   }
+  printf("entities map size: %d\n", entities_map->size());
   return entities_map;
 }
 

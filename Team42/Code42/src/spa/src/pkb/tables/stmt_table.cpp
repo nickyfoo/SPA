@@ -1,5 +1,6 @@
 #include "stmt_table.h"
 #include <iostream>
+#include <algorithm>
 
 StmtTable::StmtTable() {
   num_statements_ = 0;
@@ -13,9 +14,11 @@ void StmtTable::AddStatement(Node *node) {
   // Return if statement number is invalid
   if (stmt_no == 0) return;
   Statement s(stmt_no, stmt_node->get_kind());
+  if (stmt_node->get_kind() == NodeType::Call) {
+    auto *call_node = dynamic_cast<CallNode *>(stmt_node);
+    s.set_called_proc_name(call_node->get_proc()->get_name());
+  }
   table_[stmt_no] = s;
-  type_to_statement_[stmt_node->get_kind()].push_back(&table_[stmt_no]);
-  all_statements_.push_back(&table_[stmt_no]);
   num_statements_ = std::max(num_statements_, stmt_no);
 }
 
@@ -24,7 +27,11 @@ int StmtTable::get_num_statements() {
 }
 
 std::vector<Statement *> StmtTable::get_all_statements() {
-  return all_statements_;
+  std::vector<Statement *> ans;
+  for (auto &[stmt_no, stmt] : table_) {
+    ans.push_back(&stmt);
+  }
+  return ans;
 }
 
 std::vector<Statement *> StmtTable::get_statements(NodeType type) {
@@ -35,6 +42,12 @@ Statement *StmtTable::get_statement(int line_no) {
   auto it = table_.find(line_no);
   if (it == table_.end()) return nullptr;
   return &(it->second);
+}
+
+void StmtTable::CategorizeStatements() {
+  for (auto &[stmt_no, stmt] : table_) {
+    type_to_statement_[stmt.get_kind()].push_back(&table_[stmt_no]);
+  }
 }
 
 void StmtTable::ProcessFollows() {
@@ -88,9 +101,19 @@ void StmtTable::PrintStatements() {
   std::cout << "StmtTable size: " << table_.size() << '\n';
   for (auto&[k, x] : table_) {
     std::cout << k << ": " << static_cast<int>(x.get_kind()) << ' ';
-    if (x.get_kind() == NodeType::Assign) std::cout << x.get_expr_string();
+    std::cout << x.get_expr_string();
     std::cout << '\n';
   }
+
+  std::cout << "Categorized:\n";
+  for (auto &[type, statements] : type_to_statement_) {
+    std::cout << static_cast<int>(type) << ": ";
+    for (auto &stmt : statements) {
+      std::cout << stmt->get_stmt_no() << ' ';
+    }
+    std::cout << '\n';
+  }
+  std::cout << "\n\n";
 }
 
 void StmtTable::PrintStatementDetails() {

@@ -18,6 +18,6 @@ ProgramNode *ParseProgram(BufferedLexer *lexer, ParseState *state) {
     t = lexer->PeekNextToken();
   }
 
-  return new ProgramNode(procedures, LocInfo{.line_no=start_line, .col_no=start_col});
+  return new ProgramNode(procedures, {start_line, start_col});
 }
 

@@ -3,7 +3,8 @@
 
 #include "ast.h"
 
-RelExpressionNode::RelExpressionNode(RelExprOp op, Node *left, Node *right, LocInfo loc)
+RelExpressionNode::RelExpressionNode(RelExprOp op, Node *left, Node *right, std::string expr_string,
+                                     LocInfo loc)
     : Node(loc) {
   if (left == nullptr || left->get_kind() != NodeType::Expression &&
                              left->get_kind() != NodeType::Constant &&
@@ -24,6 +25,7 @@ RelExpressionNode::RelExpressionNode(RelExprOp op, Node *left, Node *right, LocI
   this->op_ = op;
   this->left_ = left;
   this->right_ = right;
+  this->expr_string_ = expr_string;
 }
 
 NodeType RelExpressionNode::get_kind() { return NodeType::RelExpression; }
@@ -31,7 +33,8 @@ NodeType RelExpressionNode::get_kind() { return NodeType::RelExpression; }
 RelExprOp RelExpressionNode::get_op() { return this->op_; }
 
 Node *RelExpressionNode::get_left() {
-  assert(this->left_->get_kind() == NodeType::Expression || this->left_->get_kind() == NodeType::Constant ||
+  assert(this->left_->get_kind() == NodeType::Expression ||
+         this->left_->get_kind() == NodeType::Constant ||
          this->left_->get_kind() == NodeType::Identifier);
 
   return this->left_;
@@ -45,3 +48,4 @@ Node *RelExpressionNode::get_right() {
   return this->right_;
 }
 
+std::string RelExpressionNode::get_expr_string() { return this->expr_string_; }

@@ -76,16 +76,9 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results){
 
   // store the answers to the query in the results list (it is initially empty)
   // each result must be a string.
-  printf("hihihihi\n"); // this is so cool wohhhhhhhh
   auto* query_preprocessor = new QueryPreprocessor(query);
   PQLQuery *clause = query_preprocessor->get_pql_query();
-//  pkb_->PrintStatements();
   QueryEvaluator *query_evaluator = new QueryEvaluator(clause, pkb_);
   std::vector<std::string> *res = query_evaluator->Evaluate();
-  for (std::string r : *res) {
-    printf("printing res");
-    std::cout << r << "\n" << std::flush;
-  }
   std::copy(res->begin(), res->end(), std::back_inserter(results));
-  printf("bye\n");
 }

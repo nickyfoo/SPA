@@ -201,258 +201,235 @@ TEST_CASE("Test 6: Follows Unused entity declaration") {
   }
 }
 
-//TEST_CASE("Test 7: Follows Integer, Wildcard") {
-//    std::string ss = "stmt s1, s2;\n"
-//                     "Select s1 such that Follows(2, _)";
-//    auto* query = new QueryObject(ss);
-//    PQLQuery *clause = query->getPQLQuery();
-//
-//    // Parse source
-//    BufferedLexer* B = new BufferedLexer(sourcePQL.c_str());
-//    State* s = new State{};
-//    ProgramNode* p = parseProgram(B, s);
-//    PKB pkb = PKB(p);
-//    pkb.initialPass();
-//    pkb.getFollows();
-//    auto evaluator = new QueryEvaluator(clause);
-//    std::vector<std::string> *ret = evaluator->Evaluate();
-//
-//    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
-//                                         "15", "16", "17", "18", "19", "20", "21", "22", "23"};
-//
+TEST_CASE("Test 7: Follows Integer, Wildcard") {
+    std::string ss = "stmt s1, s2;\n"
+                     "Select s1 such that Follows(2, _)";
+    auto *query = new QueryPreprocessor(ss);
+    PQLQuery *clause = query->get_pql_query();
+
+    // Parse source
+    BufferedLexer lexer(sourcePQL.c_str());
+    ParseState s{};
+    ProgramNode *p = ParseProgram(&lexer, &s);
+    PKB pkb = PKB(p);
+    auto evaluator = new QueryEvaluator(clause, &pkb);
+    std::vector<std::string> *ret = evaluator->Evaluate();
+
+    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
+                                         "15", "16", "17", "18", "19", "20", "21", "22", "23"};
+
+    REQUIRE(ret->size() == expected.size());
+    for (int i = 0; i < ret->size(); i++) {
+        REQUIRE(ret->at(i) == expected.at(i));
+    }
+}
+
+TEST_CASE("Test 8: Follows Wildcard, Integer") {
+    std::string ss = "stmt s1;\n"
+                     "Select s1 such that Follows(_, 3)";
+    auto *query = new QueryPreprocessor(ss);
+    PQLQuery *clause = query->get_pql_query();
+
+    // Parse source
+    BufferedLexer lexer(sourcePQL.c_str());
+    ParseState s{};
+    ProgramNode *p = ParseProgram(&lexer, &s);
+    PKB pkb = PKB(p);
+    auto evaluator = new QueryEvaluator(clause, &pkb);
+    std::vector<std::string> *ret = evaluator->Evaluate();
+
+    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
+                                         "15", "16", "17", "18", "19", "20", "21", "22", "23"};
+
+    REQUIRE(ret->size() == expected.size());
+    for (int i = 0; i < ret->size(); i++) {
+        REQUIRE(ret->at(i) == expected.at(i));
+    }
+}
+
+TEST_CASE("Test 9: Follows Wildcard, Wildcard") {
+    std::string ss = "stmt s1;\n"
+                     "Select s1 such that Follows(_, _)";
+    auto *query = new QueryPreprocessor(ss);
+    PQLQuery *clause = query->get_pql_query();
+
+    // Parse source
+    BufferedLexer lexer(sourcePQL.c_str());
+    ParseState s{};
+    ProgramNode *p = ParseProgram(&lexer, &s);
+    PKB pkb = PKB(p);
+    auto evaluator = new QueryEvaluator(clause, &pkb);
+    std::vector<std::string> *ret = evaluator->Evaluate();
+
+    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
+                                         "15", "16", "17", "18", "19", "20", "21", "22", "23"};
+
+    REQUIRE(ret->size() == expected.size());
+    for (int i = 0; i < ret->size(); i++) {
+        REQUIRE(ret->at(i) == expected.at(i));
+    }
+}
+
+TEST_CASE("Test 9: Follows Synonym, Wildcard") {
+    std::string ss = "stmt s1;\n"
+                     "Select s1 such that Follows(s1, _)";
+    auto *query = new QueryPreprocessor(ss);
+    PQLQuery *clause = query->get_pql_query();
+
+    // Parse source
+    BufferedLexer lexer(sourcePQL.c_str());
+    ParseState s{};
+    ProgramNode *p = ParseProgram(&lexer, &s);
+    PKB pkb = PKB(p);
+    auto evaluator = new QueryEvaluator(clause, &pkb);
+    std::vector<std::string> *ret = evaluator->Evaluate();
+
+    std::vector<std::string> expected = {"1", "2", "4", "6", "7", "8", "10", "11", "12", "13", "14", "15", "16", "17", "19", "21"};;
+
+    REQUIRE(ret->size() == expected.size());
+    for (int i = 0; i < ret->size(); i++) {
+        REQUIRE(ret->at(i) == expected.at(i));
+    }
+}
+
+TEST_CASE("Test 10: Follows* Synonym, Integer") {
+    std::string ss = "stmt s1;\n"
+                     "Select s1 such that Follows*(s1, 3)";
+    auto *query = new QueryPreprocessor(ss);
+    PQLQuery *clause = query->get_pql_query();
+
+    // Parse source
+    BufferedLexer lexer(sourcePQL.c_str());
+    ParseState s{};
+    ProgramNode *p = ParseProgram(&lexer, &s);
+    PKB pkb = PKB(p);
+    auto evaluator = new QueryEvaluator(clause, &pkb);
+    std::vector<std::string> *ret = evaluator->Evaluate();
+
+    std::vector<std::string> expected = {"1", "2"};;
+
+    REQUIRE(ret->size() == expected.size());
+    for (int i = 0; i < ret->size(); i++) {
+        REQUIRE(ret->at(i) == expected.at(i));
+    }
+}
+
+TEST_CASE("Test 11: Follows* Integer, Integer") {
+    std::string ss = "stmt s1;\n"
+                     "Select s1 such that Follows*(12, 19)";
+    auto *query = new QueryPreprocessor(ss);
+    PQLQuery *clause = query->get_pql_query();
+
+    // Parse source
+    BufferedLexer lexer(sourcePQL.c_str());
+    ParseState s{};
+    ProgramNode *p = ParseProgram(&lexer, &s);
+    PKB pkb = PKB(p);
+    auto evaluator = new QueryEvaluator(clause, &pkb);
+    std::vector<std::string> *ret = evaluator->Evaluate();
+
+    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
+                                         "15", "16", "17", "18", "19", "20", "21", "22", "23"};
+
+    REQUIRE(ret->size() == expected.size());
+    for (int i = 0; i < ret->size(); i++) {
+        REQUIRE(ret->at(i) == expected.at(i));
+    }
+}
+
+TEST_CASE("Test 12: Follows* Integer, Synonym") {
+    std::string ss = "stmt s1;\n"
+                     "Select s1 such that Follows*(s1, 14)";
+    auto *query = new QueryPreprocessor(ss);
+    PQLQuery *clause = query->get_pql_query();
+
+    // Parse source
+    BufferedLexer lexer(sourcePQL.c_str());
+    ParseState s{};
+    ProgramNode *p = ParseProgram(&lexer, &s);
+    PKB pkb = PKB(p);
+    auto evaluator = new QueryEvaluator(clause, &pkb);
+    std::vector<std::string> *ret = evaluator->Evaluate();
+
+    std::vector<std::string> expected = {"10", "11", "12", "13"};
+
+    REQUIRE(ret->size() == expected.size());
+    for (int i = 0; i < ret->size(); i++) {
+        REQUIRE(ret->at(i) == expected.at(i));
+    }
+}
+
+TEST_CASE("Test 13: Parent Integer, Integer") {
+    std::string ss = "stmt s1;\n"
+                     "Select s1 such that Parent(14, 16)";
+    auto *query = new QueryPreprocessor(ss);
+    PQLQuery *clause = query->get_pql_query();
+
+    // Parse source
+    BufferedLexer lexer(sourcePQL.c_str());
+    ParseState s{};
+    ProgramNode *p = ParseProgram(&lexer, &s);
+    PKB pkb = PKB(p);
+    auto evaluator = new QueryEvaluator(clause, &pkb);
+    std::vector<std::string> *ret = evaluator->Evaluate();
+//    for (std::string str: *ret) {
+//        printf("whats in ret %s\n", str.c_str());
+//    }
+
+    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
+                                         "15", "16", "17", "18", "19", "20", "21", "22", "23"};
+
+    REQUIRE(ret->size() == expected.size());
+    for (int i = 0; i < ret->size(); i++) {
+        REQUIRE(ret->at(i) == expected.at(i));
+    }
+}
+
+TEST_CASE("Test 14: Parent Synonym, Wildcard") {
+    std::string ss = "stmt s1;\n"
+                     "Select s1 such that Parent(s1, _)";
+    auto *query = new QueryPreprocessor(ss);
+    PQLQuery *clause = query->get_pql_query();
+
+    // Parse source
+    BufferedLexer lexer(sourcePQL.c_str());
+    ParseState s{};
+    ProgramNode *p = ParseProgram(&lexer, &s);
+    PKB pkb = PKB(p);
+    auto evaluator = new QueryEvaluator(clause, &pkb);
+    std::vector<std::string> *ret = evaluator->Evaluate();
+
+    std::vector<std::string> expected = {"14", "19"};
+
+    REQUIRE(ret->size() == expected.size());
+    for (int i = 0; i < ret->size(); i++) {
+        REQUIRE(ret->at(i) == expected.at(i));
+    }
+}
+
+TEST_CASE("Test 15: Parent Integer, Integer") {
+    std::string ss = "stmt s1;\n"
+                     "Select s1 such that Parent(19, 22)";
+    auto *query = new QueryPreprocessor(ss);
+    PQLQuery *clause = query->get_pql_query();
+
+    // Parse source
+    BufferedLexer lexer(sourcePQL.c_str());
+    ParseState s{};
+    ProgramNode *p = ParseProgram(&lexer, &s);
+    PKB pkb = PKB(p);
+    auto evaluator = new QueryEvaluator(clause, &pkb);
+    std::vector<std::string> *ret = evaluator->Evaluate();
+
+    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
+                                         "15", "16", "17", "18", "19", "20", "21", "22", "23"};
+
 //    REQUIRE(ret->size() == expected.size());
-//    for (int i = 0; i < ret->size(); i++) {
+    for (int i = 0; i < ret->size(); i++) {
+        printf("%s\n", ret->at(i).c_str());
 //        REQUIRE(ret->at(i) == expected.at(i));
-//    }
-//}
-//
-//TEST_CASE("Test 8: Follows Wildcard, Integer") {
-//    std::string ss = "stmt s1;\n"
-//                     "Select s1 such that Follows(_, 3)";
-//    auto* query = new QueryObject(ss);
-//    PQLQuery *clause = query->getPQLQuery();
-//
-//    // Parse source
-//    BufferedLexer* B = new BufferedLexer(sourcePQL.c_str());
-//    State* s = new State{};
-//    ProgramNode* p = parseProgram(B, s);
-//    PKB pkb = PKB(p);
-//    pkb.initialPass();
-//    pkb.getFollows();
-//    auto evaluator = new QueryEvaluator(clause);
-//    std::vector<std::string> *ret = evaluator->Evaluate();
-//
-//    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
-//                                         "15", "16", "17", "18", "19", "20", "21", "22", "23"};
-//
-//    REQUIRE(ret->size() == expected.size());
-//    for (int i = 0; i < ret->size(); i++) {
-//        REQUIRE(ret->at(i) == expected.at(i));
-//    }
-//}
-//
-//TEST_CASE("Test 9: Follows Wildcard, Wildcard") {
-//    std::string ss = "stmt s1;\n"
-//                     "Select s1 such that Follows(_, _)";
-//    auto* query = new QueryObject(ss);
-//    PQLQuery *clause = query->getPQLQuery();
-//
-//    // Parse source
-//    BufferedLexer* B = new BufferedLexer(sourcePQL.c_str());
-//    State* s = new State{};
-//    ProgramNode* p = parseProgram(B, s);
-//    PKB pkb = PKB(p);
-//    pkb.initialPass();
-//    pkb.getFollows();
-//    auto evaluator = new QueryEvaluator(clause);
-//    std::vector<std::string> *ret = evaluator->Evaluate();
-//
-//    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
-//                                         "15", "16", "17", "18", "19", "20", "21", "22", "23"};
-//
-//    REQUIRE(ret->size() == expected.size());
-//    for (int i = 0; i < ret->size(); i++) {
-//        REQUIRE(ret->at(i) == expected.at(i));
-//    }
-//}
-//
-//TEST_CASE("Test 9: Follows Synonym, Wildcard") {
-//    std::string ss = "stmt s1;\n"
-//                     "Select s1 such that Follows(s1, _)";
-//    auto* query = new QueryObject(ss);
-//    PQLQuery *clause = query->getPQLQuery();
-//
-//    // Parse source
-//    BufferedLexer* B = new BufferedLexer(sourcePQL.c_str());
-//    State* s = new State{};
-//    ProgramNode* p = parseProgram(B, s);
-//    PKB pkb = PKB(p);
-//    pkb.initialPass();
-//    pkb.getFollows();
-//    auto evaluator = new QueryEvaluator(clause);
-//    std::vector<std::string> *ret = evaluator->Evaluate();
-//
-//    std::vector<std::string> expected = {"1", "2", "4", "6", "7", "8", "10", "11", "12", "13", "14", "15", "16", "17", "19", "21"};;
-//
-//    REQUIRE(ret->size() == expected.size());
-//    for (int i = 0; i < ret->size(); i++) {
-//        REQUIRE(ret->at(i) == expected.at(i));
-//    }
-//}
-//
-//TEST_CASE("Test 10: Follows* Synonym, Integer") {
-//    std::string ss = "stmt s1;\n"
-//                     "Select s1 such that Follows*(s1, 3)";
-//    auto* query = new QueryObject(ss);
-//    PQLQuery *clause = query->getPQLQuery();
-//
-//    // Parse source
-//    BufferedLexer* B = new BufferedLexer(sourcePQL.c_str());
-//    State* s = new State{};
-//    ProgramNode* p = parseProgram(B, s);
-//    PKB pkb = PKB(p);
-//    pkb.initialPass();
-//    pkb.getFollows();
-//    auto evaluator = new QueryEvaluator(clause);
-//    std::vector<std::string> *ret = evaluator->Evaluate();
-//
-//    std::vector<std::string> expected = {"1", "2"};;
-//
-//    REQUIRE(ret->size() == expected.size());
-//    for (int i = 0; i < ret->size(); i++) {
-//        REQUIRE(ret->at(i) == expected.at(i));
-//    }
-//}
-//
-//TEST_CASE("Test 11: Follows* Integer, Integer") {
-//    std::string ss = "stmt s1;\n"
-//                     "Select s1 such that Follows*(12, 19)";
-//    auto* query = new QueryObject(ss);
-//    PQLQuery *clause = query->getPQLQuery();
-//
-//    // Parse source
-//    BufferedLexer* B = new BufferedLexer(sourcePQL.c_str());
-//    State* s = new State{};
-//    ProgramNode* p = parseProgram(B, s);
-//    PKB pkb = PKB(p);
-//    pkb.initialPass();
-//    pkb.getFollows();
-//    auto evaluator = new QueryEvaluator(clause);
-//    std::vector<std::string> *ret = evaluator->Evaluate();
-//
-//    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
-//                                         "15", "16", "17", "18", "19", "20", "21", "22", "23"};
-//
-//    REQUIRE(ret->size() == expected.size());
-//    for (int i = 0; i < ret->size(); i++) {
-//        REQUIRE(ret->at(i) == expected.at(i));
-//    }
-//}
-//
-//TEST_CASE("Test 12: Follows* Integer, Synonym") {
-//    std::string ss = "stmt s1;\n"
-//                     "Select s1 such that Follows*(s1, 14)";
-//    auto* query = new QueryObject(ss);
-//    PQLQuery *clause = query->getPQLQuery();
-//
-//    // Parse source
-//    BufferedLexer* B = new BufferedLexer(sourcePQL.c_str());
-//    State* s = new State{};
-//    ProgramNode* p = parseProgram(B, s);
-//    PKB pkb = PKB(p);
-//    pkb.initialPass();
-//    pkb.getFollows();
-//    auto evaluator = new QueryEvaluator(clause);
-//    std::vector<std::string> *ret = evaluator->Evaluate();
-//
-//    std::vector<std::string> expected = {"10", "11", "12", "13"};
-//
-//    REQUIRE(ret->size() == expected.size());
-//    for (int i = 0; i < ret->size(); i++) {
-//        REQUIRE(ret->at(i) == expected.at(i));
-//    }
-//}
-//
-//TEST_CASE("Test 13: Parent Integer, Integer") {
-//    std::string ss = "stmt s1;\n"
-//                     "Select s1 such that Parent(14, 16)";
-//    auto* query = new QueryObject(ss);
-//    PQLQuery *clause = query->getPQLQuery();
-//
-//    // Parse source
-//    BufferedLexer* B = new BufferedLexer(sourcePQL.c_str());
-//    State* s = new State{};
-//    ProgramNode* p = parseProgram(B, s);
-//    PKB pkb = PKB(p);
-//    pkb.initialPass();
-//    pkb.getFollows();
-//    pkb.getParent();
-//    auto evaluator = new QueryEvaluator(clause);
-//    std::vector<std::string> *ret = evaluator->Evaluate();
-////    for (std::string str: *ret) {
-////        printf("whats in ret %s\n", str.c_str());
-////    }
-//
-//    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
-//                                         "15", "16", "17", "18", "19", "20", "21", "22", "23"};
-//
-//    REQUIRE(ret->size() == expected.size());
-//    for (int i = 0; i < ret->size(); i++) {
-//        REQUIRE(ret->at(i) == expected.at(i));
-//    }
-//}
-//
-//TEST_CASE("Test 14: Parent Synonym, Wildcard") {
-//    std::string ss = "stmt s1;\n"
-//                     "Select s1 such that Parent(s1, _)";
-//    auto* query = new QueryObject(ss);
-//    PQLQuery *clause = query->getPQLQuery();
-//
-//    // Parse source
-//    BufferedLexer* B = new BufferedLexer(sourcePQL.c_str());
-//    State* s = new State{};
-//    ProgramNode* p = parseProgram(B, s);
-//    PKB pkb = PKB(p);
-//    pkb.initialPass();
-//    pkb.getFollows();
-//    pkb.getParent();
-//    auto evaluator = new QueryEvaluator(clause);
-//    std::vector<std::string> *ret = evaluator->Evaluate();
-//
-//    std::vector<std::string> expected = {"14", "19"};
-//
-//    REQUIRE(ret->size() == expected.size());
-//    for (int i = 0; i < ret->size(); i++) {
-//        REQUIRE(ret->at(i) == expected.at(i));
-//    }
-//}
-//
-//TEST_CASE("Test 15: Parent Integer, Integer") {
-//    std::string ss = "stmt s1;\n"
-//                     "Select s1 such that Parent(19, 22)";
-//    auto* query = new QueryObject(ss);
-//    PQLQuery *clause = query->getPQLQuery();
-//
-//    // Parse source
-//    BufferedLexer* B = new BufferedLexer(sourcePQL.c_str());
-//    State* s = new State{};
-//    ProgramNode* p = parseProgram(B, s);
-//    PKB pkb = PKB(p);
-//    pkb.initialPass();
-//    pkb.getFollows();
-//    pkb.getParent();
-//    auto evaluator = new QueryEvaluator(clause);
-//    std::vector<std::string> *ret = evaluator->Evaluate();
-//
-//    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
-//                                         "15", "16", "17", "18", "19", "20", "21", "22", "23"};
-//
-////    REQUIRE(ret->size() == expected.size());
-//    for (int i = 0; i < ret->size(); i++) {
-//        printf("%s\n", ret->at(i).c_str());
-////        REQUIRE(ret->at(i) == expected.at(i));
-//    }
-//}
+    }
+}
 
 TEST_CASE("Test 16: Sample source query 1") {
   std::string ss = "while w;\n"
@@ -492,6 +469,117 @@ TEST_CASE("Test 17: Sample source query 1") {
   std::vector<std::string> *ret = evaluator->Evaluate();
 
   std::vector<std::string> expected = {"6"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < ret->size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("Test 18: Uses Synonym, Synonym") {
+  std::string ss = "stmt s1; variable v;\n"
+                   "Select s1 such that Uses(s1, v)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(sourcePQL.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"2", "3", "6", "7", "8", "9", "14", "15", "16", "17", "19", "21", "22", "23"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < ret->size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("Test 19: UsesP Synonym, Synonym") {
+  std::string ss = "procedure p; variable v;\n"
+                   "Select p such that Uses(p, v)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(sourcePQL.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"main", "printResults", "computeCentroid"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < ret->size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("Test 18: Modifies Synonym, Synonym") {
+  std::string ss = "stmt s1; variable v;\n"
+                   "Select s1 such that Modifies(s1, v)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(sourcePQL.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"1", "2", "4", "5", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < ret->size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("Test 18: Modifies Synonym, Argument") {
+  std::string ss = "stmt s1;\n"
+                   "Select s1 such that Modifies(s1, 'cenX')";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(sourcePQL.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"2", "11", "14", "16", "19", "21"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < ret->size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("Test 17: Sample source query 4") {
+  std::string ss = "stmt s;"
+                   "Select s such that Modifies(s, 'i')";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(samplePQL.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  pkb.PrintStatements();
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"3", "4", "11", "12", "13", "14", "17"};
 
   REQUIRE(ret->size() == expected.size());
   for (int i = 0; i < ret->size(); i++) {

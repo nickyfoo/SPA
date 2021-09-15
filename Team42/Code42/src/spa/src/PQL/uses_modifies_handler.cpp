@@ -41,7 +41,7 @@ void UsesModifiesHandler::set_function_pointers(
 }
 
 void UsesModifiesHandler::Evaluate() {
-    StmtRef left_ent = relationship_->get_left_ref()->get_stmt_ref();  // this will be entref for usesp
+    StmtRef left_ent = relationship_->get_left_ref()->get_stmt_ref();
     EntRef right_ent = relationship_->get_right_ref()->get_ent_ref();
 
     // Going through 6 different cases for UsesS
@@ -54,7 +54,7 @@ void UsesModifiesHandler::Evaluate() {
         std::vector<Entity*> *right_entity_vec;
         right_entity_vec = &synonym_to_entity_result_->at(right_synonym);
         for (int i = 0; i < left_entity_vec->size(); i++) {
-            auto *stmt = dynamic_cast<Statement*>(left_entity_vec->at(i)); // this will be procedure for usesp
+            auto *stmt = dynamic_cast<Statement*>(left_entity_vec->at(i));
             if (StatementForwarder(get_normal_, stmt)->empty()) {
                 // Remove statements that do not have something it uses.
                 left_entity_vec->erase(left_entity_vec->begin() + i);
@@ -75,7 +75,7 @@ void UsesModifiesHandler::Evaluate() {
         std::vector<Entity*> *left_entity_vec;
         left_entity_vec = &synonym_to_entity_result_->at(left_synonym);
         for (int i = 0; i < left_entity_vec->size(); i++) {
-            auto *stmt = static_cast<Statement*>(left_entity_vec->at(i)); // this will be procedure for usesp
+            auto *stmt = dynamic_cast<Statement*>(left_entity_vec->at(i));
             // Remove each statement that doesnt use anything.
             if (StatementForwarder(get_normal_, stmt)->empty()) {
                 left_entity_vec->erase(left_entity_vec->begin() + i);
@@ -86,10 +86,12 @@ void UsesModifiesHandler::Evaluate() {
     right_ent.get_type() == EntRefType::Argument) {  // Uses(s, "x")
         std::string left_synonym = left_ent.get_synonym();
         std::string right_arg = right_ent.get_argument();
+        // Remove '' from right arg
+        right_arg = right_arg.substr(1, right_arg.size() - 2);
         std::vector<Entity*> *left_entity_vec;
         left_entity_vec = &synonym_to_entity_result_->at(left_synonym);
         for (int i = 0; i < left_entity_vec->size(); i++) {
-            auto *stmt = static_cast<Statement*>(left_entity_vec->at(i)); // this will be procedure for usesp
+            auto *stmt = dynamic_cast<Statement*>(left_entity_vec->at(i));
             // Remove each statement that doesnt have right arg in its uses
             if (!StatementForwarder(get_normal_, stmt)->count(right_arg)) {
                 left_entity_vec->erase(left_entity_vec->begin() + i);
@@ -98,12 +100,12 @@ void UsesModifiesHandler::Evaluate() {
         }
     } else if (left_ent.get_type() == StmtRefType::StmtNum &&
     right_ent.get_type() == EntRefType::Synonym) {  // Uses(4, v)
-        int left_arg = left_ent.get_stmt_num();  // this will be a string for usesp
+        int left_arg = left_ent.get_stmt_num();
         std::string right_synonym = right_ent.get_synonym();
         std::vector<Entity*> *right_entity_vec;
         right_entity_vec = &synonym_to_entity_result_->at(right_synonym);
         for (int i = 0; i < right_entity_vec->size(); i++) {
-            auto *variable = static_cast<Variable*>(right_entity_vec->at(i));
+            auto *variable = dynamic_cast<Variable*>(right_entity_vec->at(i));
             // Remove each statement that doesnt have left arg in its users.
             if (!VariableForwarder(get_reverse_, variable)->count(left_arg)) {
                 right_entity_vec->erase(right_entity_vec->begin() + i);
@@ -112,8 +114,8 @@ void UsesModifiesHandler::Evaluate() {
         }
     } else if (left_ent.get_type() == StmtRefType::StmtNum &&
     right_ent.get_type() == EntRefType::WildCard) {  // Uses(4, _)
-        int left_arg = left_ent.get_stmt_num();  // this will be a string for usesp
-        Statement *stmt = pkb_->get_statement(left_arg);  // this will be a procedure for usesp
+        int left_arg = left_ent.get_stmt_num();
+        Statement *stmt = pkb_->get_statement(left_arg);
         if (StatementForwarder(get_normal_, stmt)->empty()) {
             // If statement with left arg as line number
             // does not use anything then clear results vector
@@ -121,9 +123,11 @@ void UsesModifiesHandler::Evaluate() {
         }
     } else if (left_ent.get_type() == StmtRefType::StmtNum &&
     right_ent.get_type() == EntRefType::Argument) {  // Uses(4, "x")
-        int left_arg = left_ent.get_stmt_num();  // this will be a string for usesp
+        int left_arg = left_ent.get_stmt_num();
         std::string right_arg = right_ent.get_argument();
-        Statement *stmt = pkb_->get_statement(left_arg);  // this will be a procedure for usesp
+        // Remove '' from right arg
+        right_arg = right_arg.substr(1, right_arg.size() - 2);
+        Statement *stmt = pkb_->get_statement(left_arg);
         if (!StatementForwarder(get_normal_, stmt)->count(right_arg)) {
             // Clear results vector if this relationship_ is false
             synonym_to_entity_result_->at(entities_to_return_->at(0)).clear();

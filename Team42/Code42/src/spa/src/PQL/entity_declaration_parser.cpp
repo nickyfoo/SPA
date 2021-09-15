@@ -17,11 +17,9 @@ void EntityDeclarationParser::set_entities(std::vector<std::string> *entities) {
 
 std::unordered_map<std::string, EntityDeclaration *>
 *EntityDeclarationParser::get_entities_map() {
-    printf("heree1\n");
   auto *entities_map =
       new std::unordered_map<std::string, EntityDeclaration *>;
   for (std::string entity_str : *entity_declaration_strings_) {
-      printf("STRING: %s\n", entity_str.c_str());
     // Trim entity_str first and find EntityType declaration
     entity_str = EntityDeclarationParser::trim(entity_str);
     int index_of_entity = entity_str.find(" ");
@@ -45,7 +43,6 @@ std::unordered_map<std::string, EntityDeclaration *>
       return nullptr;
     }
   }
-  printf("entities map size: %d\n", entities_map->size());
   return entities_map;
 }
 

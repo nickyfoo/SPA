@@ -9,16 +9,13 @@
 #include "pkb.h"
 
 QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
-    printf("came here\n");
     if (pql_query != nullptr) {
     QueryEvaluator::entities_to_return_ = pql_query->get_query_entities();
     QueryEvaluator::relationships_ = pql_query->get_query_relationships();
     QueryEvaluator::patterns_ = pql_query->get_query_patterns();
     QueryEvaluator::synonym_to_entity_dec_ = pql_query->get_synonym_to_entities();
     this->pkb_ = pkb;
-        printf("have something\n");
     } else {
-        printf("GOT NOTHING");
         QueryEvaluator::entities_to_return_ = nullptr;
         QueryEvaluator::relationships_ = nullptr;
         QueryEvaluator::synonym_to_entity_dec_ = nullptr;
@@ -27,16 +24,13 @@ QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
 }
 
 std::vector<std::string> *QueryEvaluator::Evaluate() {
-    printf("CAMEEEE\n");
     if (synonym_to_entity_dec_ == nullptr) {
         return new std::vector<std::string>{};
     }
-    printf("AMHERE BOI\n");
     // Initialising an unordered map mapping synonym_ to Entity objects.
     auto *synonym_to_entity_result =
             new std::unordered_map<std::string, std::vector<Entity*>>();
     for (auto &pair : *synonym_to_entity_dec_) {
-        printf("got come here la\n");
         EntityType type = pair.second->get_type();
         std::vector<Entity*> entities;
         switch (type) {  // TODO: Combine EntityType enum with AST's kind enum
@@ -95,26 +89,21 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
                 break;
             }
             case EntityType::Assign: {
-                printf("CAME TO HERE GOT ASSIGN!!!\n");
                 std::vector<Statement*> entities_stmt;
                 entities_stmt = pkb_->get_statements(NodeType::Assign);
-                printf("ASSIGN SIZE: %d\n", entities_stmt.size());
                 for (Statement *stmt : entities_stmt) {
                     Entity *entity = static_cast<Entity*>(stmt);
                     entities.push_back(entity);
                 }
-                printf("entities size: %d\n", entities.size());
                 break;
             }
             case EntityType::Variable:
                 std::vector<Variable*> entities_variable;
                 entities_variable = pkb_->get_all_variables();
-                printf("ASSIGN SIZE: %d\n", entities_variable.size());
                 for (Variable *variable : entities_variable) {
                     Entity *entity = static_cast<Entity*>(variable);
                     entities.push_back(entity);
                 }
-                printf("entities size: %d\n", entities.size());
                 break;
                 // Get variables from PKB
 //            case EntityType::Constant:
@@ -134,17 +123,13 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
 //        relationshipQueryManager.EvaluateRelationships();
 //    }
     // Do same check for patterns too and pass to PatternManager
-    printf("patterns size: %d\n", patterns_->size());
-    printf("syn size? %d\n", synonym_to_entity_result->size());
     if (patterns_->size() != 0 &&
     !IsEmpty(synonym_to_entity_result)) {
-        printf("initialising pattern query manager\n");
         PatternQueryManager pattern_query_manager =
                 PatternQueryManager(synonym_to_entity_result,
                                          patterns_,
                                          entities_to_return_,
                                          pkb_);
-        printf("slayedit\n");
         pattern_query_manager.EvaluatePatterns();
     }
     return ConvertToOutput(synonym_to_entity_result);

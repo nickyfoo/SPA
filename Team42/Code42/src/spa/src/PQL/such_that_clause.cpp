@@ -34,6 +34,7 @@ bool SuchThatClause::set_ref(SuchThatRef *left, SuchThatRef *right) {
         this->right_ref_ = right;
         return true;
       }
+      return false;
     case RelRef::Uses:
       if (right->get_type() == SuchThatRefType::Entity) {
         if (left->get_type() == SuchThatRefType::Statement
@@ -51,6 +52,7 @@ bool SuchThatClause::set_ref(SuchThatRef *left, SuchThatRef *right) {
           return true;
         }
       }
+      return false;
     case RelRef::Modifies:
       if (right->get_type() == SuchThatRefType::Entity) {
         if (left->get_type() == SuchThatRefType::Statement
@@ -68,6 +70,7 @@ bool SuchThatClause::set_ref(SuchThatRef *left, SuchThatRef *right) {
           return true;
         }
       }
+      return false;
     default:break;
   }
   return false;

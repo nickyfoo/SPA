@@ -28,6 +28,6 @@ IfNode *ParseIf(BufferedLexer *lexer, ParseState *state) {
   std::vector<StatementNode *> else_stmt_lst = ParseStmtLst(lexer, state);
 
   return new IfNode(cond, then_stmt_lst, else_stmt_lst, stmt_no,
-                    LocInfo{.line_no = start_line, .col_no = start_col});
+                    {start_line, start_col});
 }
 

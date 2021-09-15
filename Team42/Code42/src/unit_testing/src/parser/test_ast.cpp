@@ -10,7 +10,7 @@ class StubNode : public Node {
   NodeType kind_;
 
  public:
-  StubNode(NodeType kind) : Node(LocInfo{.line_no = rand(), .col_no = rand()}) {
+  StubNode(NodeType kind) : Node({rand(), rand()}) {
     this->kind_ = kind;
   }
   NodeType get_kind() { return this->kind_; }
@@ -22,7 +22,7 @@ class StubStatementNode : public StatementNode {
 
  public:
   StubStatementNode(NodeType kind)
-      : StatementNode(rand(), LocInfo{.line_no = rand(), .col_no = rand()}) {
+      : StatementNode(rand(), {rand(), rand()}) {
     this->kind_ = kind;
   }
 
@@ -37,7 +37,7 @@ TEST_CASE("Test Identifier Node") {
   ln = rand();
   cn = rand();
   name = "X";
-  i = new IdentifierNode(name, LocInfo{.line_no = ln, .col_no = cn});
+  i = new IdentifierNode(name, {ln, cn});
   REQUIRE(i->get_kind() == NodeType::Identifier);
   REQUIRE(i->get_line_no() == ln);
   REQUIRE(i->get_col_no() == cn);
@@ -46,7 +46,7 @@ TEST_CASE("Test Identifier Node") {
   ln = rand();
   cn = rand();
   name = "Foo";
-  i = new IdentifierNode(name, LocInfo{.line_no = ln, .col_no = cn});
+  i = new IdentifierNode(name, {ln, cn});
   REQUIRE(i->get_kind() == NodeType::Identifier);
   REQUIRE(i->get_line_no() == ln);
   REQUIRE(i->get_col_no() == cn);
@@ -61,7 +61,7 @@ TEST_CASE("Test Constant Node") {
   ln = rand();
   cn = rand();
   value = "12345";
-  c = new ConstantNode(value, LocInfo{.line_no = ln, .col_no = cn});
+  c = new ConstantNode(value, {ln, cn});
   REQUIRE(c->get_kind() == NodeType::Constant);
   REQUIRE(c->get_line_no() == ln);
   REQUIRE(c->get_col_no() == cn);
@@ -70,7 +70,7 @@ TEST_CASE("Test Constant Node") {
   ln = rand();
   cn = rand();
   value = "652434141";
-  c = new ConstantNode(value, LocInfo{.line_no = ln, .col_no = cn});
+  c = new ConstantNode(value, {ln, cn});
   REQUIRE(c->get_kind() == NodeType::Constant);
   REQUIRE(c->get_line_no() == ln);
   REQUIRE(c->get_col_no() == cn);
@@ -104,7 +104,7 @@ TEST_CASE("Test Expression Node") {
     right = std::get<2>(p);
     expr_string = std::get<3>(p);
 
-    e = new ExpressionNode(op, left, right, expr_string, LocInfo{.line_no = ln, .col_no = cn});
+    e = new ExpressionNode(op, left, right, expr_string, {ln, cn});
 
     REQUIRE(e->get_kind() == NodeType::Expression);
     REQUIRE(e->get_line_no() == ln);
@@ -141,7 +141,7 @@ TEST_CASE("Test Expression Node") {
     right = std::get<2>(p);
     expr_string = std::get<3>(p);
     REQUIRE_THROWS_AS(
-        ExpressionNode(op, left, right, expr_string, LocInfo{.line_no = ln, .col_no = cn}),
+        ExpressionNode(op, left, right, expr_string, {ln, cn}),
         std::invalid_argument);
   }
 }
@@ -170,7 +170,7 @@ TEST_CASE("Test RelExpression Node") {
     right = std::get<2>(p);
     expr_string = std::get<3>(p);
 
-    r = new RelExpressionNode(op, left, right, expr_string, LocInfo{.line_no = ln, .col_no = cn});
+    r = new RelExpressionNode(op, left, right, expr_string, {ln, cn});
 
     REQUIRE(r->get_kind() == NodeType::RelExpression);
     REQUIRE(r->get_line_no() == ln);
@@ -202,7 +202,7 @@ TEST_CASE("Test RelExpression Node") {
     op = std::get<0>(p);
     left = std::get<1>(p);
     right = std::get<2>(p);
-    REQUIRE_THROWS_AS(RelExpressionNode(op, left, right, "", LocInfo{.line_no = ln, .col_no = cn}),
+    REQUIRE_THROWS_AS(RelExpressionNode(op, left, right, "", {ln, cn}),
                       std::invalid_argument);
   }
 }
@@ -234,7 +234,7 @@ TEST_CASE("Test CondExpression Node") {
     right = std::get<2>(p);
     expr_string = std::get<3>(p);
 
-    c = new CondExpressionNode(op, left, right, expr_string, LocInfo{.line_no = ln, .col_no = cn});
+    c = new CondExpressionNode(op, left, right, expr_string, {ln, cn});
 
     REQUIRE(c->get_kind() == NodeType::CondExpression);
     REQUIRE(c->get_line_no() == ln);
@@ -279,7 +279,7 @@ TEST_CASE("Test CondExpression Node") {
     op = std::get<0>(p);
     left = std::get<1>(p);
     right = std::get<2>(p);
-    REQUIRE_THROWS_AS(CondExpressionNode(op, left, right, "", LocInfo{.line_no = ln, .col_no = cn}),
+    REQUIRE_THROWS_AS(CondExpressionNode(op, left, right, "", {ln, cn}),
                       std::invalid_argument);
   }
 }
@@ -293,10 +293,10 @@ TEST_CASE("Test Assign Node") {
   ln = rand();
   cn = rand();
   sn = rand();
-  i = new IdentifierNode("X", LocInfo{.line_no = ln, .col_no = cn});
+  i = new IdentifierNode("X", {ln, cn});
   n = new StubNode(NodeType::Expression);
 
-  a = new AssignNode(i, n, sn, LocInfo{.line_no = ln, .col_no = cn});
+  a = new AssignNode(i, n, sn, {ln, cn});
   REQUIRE(a->get_kind() == NodeType::Assign);
   REQUIRE(a->get_line_no() == ln);
   REQUIRE(a->get_col_no() == cn);
@@ -307,10 +307,10 @@ TEST_CASE("Test Assign Node") {
   ln = rand();
   cn = rand();
   sn = rand();
-  i = new IdentifierNode("X", LocInfo{.line_no = ln, .col_no = cn});
+  i = new IdentifierNode("X", {ln, cn});
   n = new StubNode(NodeType::Constant);
 
-  a = new AssignNode(i, n, sn, LocInfo{.line_no = ln, .col_no = cn});
+  a = new AssignNode(i, n, sn, {ln, cn});
   REQUIRE(a->get_kind() == NodeType::Assign);
   REQUIRE(a->get_line_no() == ln);
   REQUIRE(a->get_col_no() == cn);
@@ -321,10 +321,10 @@ TEST_CASE("Test Assign Node") {
   ln = rand();
   cn = rand();
   sn = rand();
-  i = new IdentifierNode("X", LocInfo{.line_no = ln, .col_no = cn});
+  i = new IdentifierNode("X", {ln, cn});
   n = new StubNode(NodeType::Constant);
 
-  a = new AssignNode(i, n, sn, LocInfo{.line_no = ln, .col_no = cn});
+  a = new AssignNode(i, n, sn, {ln, cn});
   REQUIRE(a->get_kind() == NodeType::Assign);
   REQUIRE(a->get_line_no() == ln);
   REQUIRE(a->get_col_no() == cn);
@@ -340,9 +340,9 @@ TEST_CASE("Test Assign Node") {
   for (auto p : fail_perms) {
     ln = rand();
     cn = rand();
-    i = new IdentifierNode("X", LocInfo{.line_no = ln, .col_no = cn});
+    i = new IdentifierNode("X", {ln, cn});
     n = new StubNode(p);
-    REQUIRE_THROWS_AS(AssignNode(i, n, 3, LocInfo{.line_no = ln, .col_no = cn}),
+    REQUIRE_THROWS_AS(AssignNode(i, n, 3, {ln, cn}),
                       std::invalid_argument);
   }
 
@@ -350,14 +350,14 @@ TEST_CASE("Test Assign Node") {
   cn = rand();
   i = nullptr;
   n = new StubNode(NodeType::Identifier);
-  REQUIRE_THROWS_AS(AssignNode(i, n, 3, LocInfo{.line_no = ln, .col_no = cn}),
+  REQUIRE_THROWS_AS(AssignNode(i, n, 3, {ln, cn}),
                     std::invalid_argument);
 
   ln = rand();
   cn = rand();
-  i = new IdentifierNode("X", LocInfo{.line_no = ln, .col_no = cn});
+  i = new IdentifierNode("X", {ln, cn});
   n = nullptr;
-  REQUIRE_THROWS_AS(AssignNode(i, n, 3, LocInfo{.line_no = ln, .col_no = cn}),
+  REQUIRE_THROWS_AS(AssignNode(i, n, 3, {ln, cn}),
                     std::invalid_argument);
 }
 
@@ -388,7 +388,7 @@ TEST_CASE("Test If Node") {
   cn = rand();
   sn = rand();
 
-  i = new IfNode(cond, then_lst, else_lst, sn, LocInfo{.line_no = ln, .col_no = cn});
+  i = new IfNode(cond, then_lst, else_lst, sn, {ln, cn});
   REQUIRE(i->get_kind() == NodeType::If);
   REQUIRE(i->get_line_no() == ln);
   REQUIRE(i->get_col_no() == cn);
@@ -404,7 +404,7 @@ TEST_CASE("Test If Node") {
   cn = rand();
   sn = rand();
 
-  i = new IfNode(cond, then_lst, else_lst, sn, LocInfo{.line_no = ln, .col_no = cn});
+  i = new IfNode(cond, then_lst, else_lst, sn, {ln, cn});
   REQUIRE(i->get_kind() == NodeType::If);
   REQUIRE(i->get_line_no() == ln);
   REQUIRE(i->get_col_no() == cn);
@@ -419,7 +419,7 @@ TEST_CASE("Test If Node") {
   ln = rand();
   cn = rand();
   sn = rand();
-  REQUIRE_THROWS_AS(IfNode(cond, then_lst, else_lst, sn, LocInfo{.line_no = ln, .col_no = cn}),
+  REQUIRE_THROWS_AS(IfNode(cond, then_lst, else_lst, sn, {ln, cn}),
                     std::invalid_argument);
 
   std::vector<NodeType> fail_perms{NodeType::Identifier, NodeType::Constant, NodeType::Expression,
@@ -434,7 +434,7 @@ TEST_CASE("Test If Node") {
     ln = rand();
     cn = rand();
     sn = rand();
-    REQUIRE_THROWS_AS(IfNode(cond, then_lst, else_lst, sn, LocInfo{.line_no = ln, .col_no = cn}),
+    REQUIRE_THROWS_AS(IfNode(cond, then_lst, else_lst, sn, {ln, cn}),
                       std::invalid_argument);
   }
 }
@@ -464,7 +464,7 @@ TEST_CASE("Test While Node") {
   cn = rand();
   sn = rand();
 
-  w = new WhileNode(cond, stmt_lst, sn, LocInfo{.line_no = ln, .col_no = cn});
+  w = new WhileNode(cond, stmt_lst, sn, {ln, cn});
   REQUIRE(w->get_kind() == NodeType::While);
   REQUIRE(w->get_line_no() == ln);
   REQUIRE(w->get_col_no() == cn);
@@ -478,7 +478,7 @@ TEST_CASE("Test While Node") {
   cn = rand();
   sn = rand();
 
-  w = new WhileNode(cond, stmt_lst, sn, LocInfo{.line_no = ln, .col_no = cn});
+  w = new WhileNode(cond, stmt_lst, sn, {ln, cn});
   REQUIRE(w->get_kind() == NodeType::While);
   REQUIRE(w->get_line_no() == ln);
   REQUIRE(w->get_col_no() == cn);
@@ -491,7 +491,7 @@ TEST_CASE("Test While Node") {
   ln = rand();
   cn = rand();
   sn = rand();
-  REQUIRE_THROWS_AS(WhileNode(cond, stmt_lst, sn, LocInfo{.line_no = ln, .col_no = cn}),
+  REQUIRE_THROWS_AS(WhileNode(cond, stmt_lst, sn, {ln, cn}),
                     std::invalid_argument);
 
   std::vector<NodeType> fail_perms{NodeType::Identifier, NodeType::Constant, NodeType::Expression,
@@ -505,7 +505,7 @@ TEST_CASE("Test While Node") {
     ln = rand();
     cn = rand();
     sn = rand();
-    REQUIRE_THROWS_AS(WhileNode(cond, stmt_lst, sn, LocInfo{.line_no = ln, .col_no = cn}),
+    REQUIRE_THROWS_AS(WhileNode(cond, stmt_lst, sn, {ln, cn}),
                       std::invalid_argument);
   }
 }
@@ -518,9 +518,9 @@ TEST_CASE("Test Read Node") {
   ln = rand();
   cn = rand();
   sn = rand();
-  i = new IdentifierNode("X", LocInfo{.line_no = ln, .col_no = cn});
+  i = new IdentifierNode("X", {ln, cn});
 
-  r = new ReadNode(i, sn, LocInfo{.line_no = ln, .col_no = cn});
+  r = new ReadNode(i, sn, {ln, cn});
   REQUIRE(r->get_kind() == NodeType::Read);
   REQUIRE(r->get_line_no() == ln);
   REQUIRE(r->get_col_no() == cn);
@@ -536,9 +536,9 @@ TEST_CASE("Test Print Node") {
   ln = rand();
   cn = rand();
   sn = rand();
-  i = new IdentifierNode("X", LocInfo{.line_no = ln, .col_no = cn});
+  i = new IdentifierNode("X", {ln, cn});
 
-  p = new PrintNode(i, sn, LocInfo{.line_no = ln, .col_no = cn});
+  p = new PrintNode(i, sn, {ln, cn});
   REQUIRE(p->get_kind() == NodeType::Print);
   REQUIRE(p->get_line_no() == ln);
   REQUIRE(p->get_col_no() == cn);
@@ -554,9 +554,9 @@ TEST_CASE("Test Call Node") {
   ln = rand();
   cn = rand();
   sn = rand();
-  i = new IdentifierNode("X", LocInfo{.line_no = ln, .col_no = cn});
+  i = new IdentifierNode("X", {ln, cn});
 
-  c = new CallNode(i, sn, LocInfo{.line_no = ln, .col_no = cn});
+  c = new CallNode(i, sn, {ln, cn});
   REQUIRE(c->get_kind() == NodeType::Call);
   REQUIRE(c->get_line_no() == ln);
   REQUIRE(c->get_col_no() == cn);
@@ -588,7 +588,7 @@ TEST_CASE("Test Procedure Node") {
   ln = rand();
   cn = rand();
 
-  p = new ProcedureNode(name, stmt_lst, LocInfo{.line_no = ln, .col_no = cn});
+  p = new ProcedureNode(name, stmt_lst, {ln, cn});
   REQUIRE(p->get_kind() == NodeType::Procedure);
   REQUIRE(p->get_name() == name);
   REQUIRE(p->get_line_no() == ln);
@@ -599,7 +599,7 @@ TEST_CASE("Test Procedure Node") {
   ln = rand();
   cn = rand();
 
-  p = new ProcedureNode(name, stmt_lst, LocInfo{.line_no = ln, .col_no = cn});
+  p = new ProcedureNode(name, stmt_lst, {ln, cn});
   REQUIRE(p->get_kind() == NodeType::Procedure);
   REQUIRE(p->get_name() == name);
   REQUIRE(p->get_line_no() == ln);
@@ -613,7 +613,7 @@ TEST_CASE("Test Program Node") {
 
   ln = rand();
   cn = rand();
-  p = new ProgramNode(procedures, LocInfo{.line_no = ln, .col_no = cn});
+  p = new ProgramNode(procedures, {ln, cn});
   REQUIRE(p->get_kind() == NodeType::Program);
   REQUIRE(p->get_procedures() == procedures);
   REQUIRE(p->get_line_no() == ln);

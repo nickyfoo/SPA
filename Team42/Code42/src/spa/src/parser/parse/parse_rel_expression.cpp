@@ -3,20 +3,13 @@
 
 std::string RelExprOpToString(RelExprOp op) {
   switch (op) {
-    case RelExprOp::Gt:
-      return ">";
-    case RelExprOp::Gte:
-      return ">=";
-    case RelExprOp::Lt:
-      return "<";
-    case RelExprOp::Lte:
-      return "<=";
-    case RelExprOp::Eq:
-      return "==";
-    case RelExprOp::Neq:
-      return "!=";
-    default:
-      throw std::invalid_argument("RelExprOpToString: invalid RelExprOp value");
+    case RelExprOp::Gt:return ">";
+    case RelExprOp::Gte:return ">=";
+    case RelExprOp::Lt:return "<";
+    case RelExprOp::Lte:return "<=";
+    case RelExprOp::Eq:return "==";
+    case RelExprOp::Neq:return "!=";
+    default:throw std::invalid_argument("RelExprOpToString: invalid RelExprOp value");
   }
 }
 
@@ -29,10 +22,10 @@ RelExpressionNode *ParseRelExpression(BufferedLexer *lexer, ParseState *state) {
   // for rel expressions, left and right should be constants or identifiers only
   Node *left;
   if (t->kind_ == TokenType::Constant) {
-    left = new ConstantNode(t->value_, LocInfo{.line_no = t->line_no_, .col_no = t->col_no_});
+    left = new ConstantNode(t->value_, {t->line_no_, t->col_no_});
     expr_string += t->value_;
   } else if (t->kind_ == TokenType::Identifier) {
-    left = new IdentifierNode(t->value_, LocInfo{.line_no = t->line_no_, .col_no = t->col_no_});
+    left = new IdentifierNode(t->value_, {t->line_no_, t->col_no_});
     expr_string += t->value_;
   } else {
     throw ParseException("expected Constant or Identifier", t->line_no_, t->col_no_);
@@ -41,35 +34,28 @@ RelExpressionNode *ParseRelExpression(BufferedLexer *lexer, ParseState *state) {
   t = lexer->GetNextToken();
   RelExprOp op;
   switch (t->kind_) {
-    case TokenType::Gt:
-      op = RelExprOp::Gt;
+    case TokenType::Gt:op = RelExprOp::Gt;
       break;
-    case TokenType::Gte:
-      op = RelExprOp::Gte;
+    case TokenType::Gte:op = RelExprOp::Gte;
       break;
-    case TokenType::Lt:
-      op = RelExprOp::Lt;
+    case TokenType::Lt:op = RelExprOp::Lt;
       break;
-    case TokenType::Lte:
-      op = RelExprOp::Lte;
+    case TokenType::Lte:op = RelExprOp::Lte;
       break;
-    case TokenType::Eq:
-      op = RelExprOp::Eq;
+    case TokenType::Eq:op = RelExprOp::Eq;
       break;
-    case TokenType::Neq:
-      op = RelExprOp::Neq;
+    case TokenType::Neq:op = RelExprOp::Neq;
       break;
-    default:
-      throw ParseException("expected RelExpression operator", t->line_no_, t->col_no_);
+    default:throw ParseException("expected RelExpression operator", t->line_no_, t->col_no_);
   }
 
   t = lexer->GetNextToken();
   Node *right;
   if (t->kind_ == TokenType::Constant) {
-    right = new ConstantNode(t->value_, LocInfo{.line_no = t->line_no_, .col_no = t->col_no_});
+    right = new ConstantNode(t->value_, {t->line_no_, t->col_no_});
     expr_string += " " + t->value_;
   } else if (t->kind_ == TokenType::Identifier) {
-    right = new IdentifierNode(t->value_, LocInfo{.line_no = t->line_no_, .col_no = t->col_no_});
+    right = new IdentifierNode(t->value_, {t->line_no_, t->col_no_});
     expr_string += " " + t->value_;
   } else {
     throw ParseException("expected Constant or Identifier", t->line_no_, t->col_no_);

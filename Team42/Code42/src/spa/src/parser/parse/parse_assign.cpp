@@ -12,7 +12,7 @@ AssignNode *ParseAssign(BufferedLexer *lexer, ParseState *state) {
     throw ParseException("expected Identifier", t->line_no_, t->col_no_);
   }
 
-  auto var = new IdentifierNode(t->value_, LocInfo{.line_no = t->line_no_, .col_no = t->col_no_});
+  auto var = new IdentifierNode(t->value_, {t->line_no_, t->col_no_});
 
   t = lexer->GetNextToken();
   if (t->kind_ != TokenType::Equal) {
@@ -25,6 +25,6 @@ AssignNode *ParseAssign(BufferedLexer *lexer, ParseState *state) {
     throw ParseException("expected Semicolon", t->line_no_, t->col_no_);
   }
 
-  return new AssignNode(var, expr, stmt_no, LocInfo{.line_no = start_line, .col_no = start_col});
+  return new AssignNode(var, expr, stmt_no, {start_line, start_col});
 }
 

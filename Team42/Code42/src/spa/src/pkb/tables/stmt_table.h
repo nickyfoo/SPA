@@ -1,9 +1,10 @@
 #pragma once
-#include "entities/statement.h"
-#include "table.hpp"
 #include <map>
 #include <set>
 #include <vector>
+#include <utility>
+#include "entities/statement.h"
+#include "table.hpp"
 
 class StmtTable : public Table {
  public:
@@ -29,6 +30,9 @@ class StmtTable : public Table {
   // Gets the statement by line number.
   Statement *get_statement(int line_no);
 
+  // Passes over table_ to populate type_to_statement_;
+  void CategorizeStatements();
+
   // Gets Follows relationship from Statements in preparation to get
   // transitive closure.
   void ProcessFollows();
@@ -50,8 +54,6 @@ class StmtTable : public Table {
   int num_statements_;
   // Table mapping each line number to its corresponding statement.
   std::map<int, Statement> table_;
-  // Table of all statements.
-  std::vector<Statement *> all_statements_;
   // Table mapping each statement type to a list of its corresponding
   // statements.
   std::map<NodeType, std::vector<Statement *>> type_to_statement_;

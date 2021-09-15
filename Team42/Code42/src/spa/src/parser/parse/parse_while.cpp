@@ -15,6 +15,6 @@ WhileNode *ParseWhile(BufferedLexer *lexer, ParseState *state) {
   std::vector<StatementNode *> stmt_lst = ParseStmtLst(lexer, state);
 
   return new WhileNode(cond, stmt_lst, stmt_no,
-                       LocInfo{.line_no = start_line, .col_no = start_col});
+                       {start_line, start_col});
 }
 

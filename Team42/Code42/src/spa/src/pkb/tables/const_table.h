@@ -1,11 +1,10 @@
 #pragma once
-
 #include <set>
 #include <string>
 #include <vector>
-#include "entities/constant.h"
-#include "table.hpp"
 #include <map>
+#include "table.hpp"
+#include "entities/constant.h"
 
 class ConstTable : public Table {
  public:
@@ -17,7 +16,7 @@ class ConstTable : public Table {
   void AddConstant(int value);
 
   // Get all constants.
-  std::vector<Constant*> get_all_constants();
+  std::vector<Constant *> get_all_constants();
 
   // Prints all constants in the table.
   void PrintConstants();
@@ -25,6 +24,4 @@ class ConstTable : public Table {
  private:
   // Table mapping each constant value to its corresponding constant.
   std::map<int, Constant> table_;
-  // Table of pointers to all constants.
-  std::vector<Constant *> all_constants_;
 };

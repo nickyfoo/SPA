@@ -20,5 +20,5 @@ ProcedureNode *ParseProcedure(BufferedLexer *lexer, ParseState *state) {
   std::vector<StatementNode *> stmt_lst = ParseStmtLst(lexer, state);
 
   return new ProcedureNode(proc_name, stmt_lst,
-                           LocInfo{.line_no = start_line, .col_no = start_col});
+                           {start_line, start_col});
 }

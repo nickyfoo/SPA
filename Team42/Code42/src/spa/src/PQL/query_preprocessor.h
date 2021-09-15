@@ -12,16 +12,16 @@
 
 class QueryPreprocessor {
  public:
-    explicit QueryPreprocessor(std::string input);
-    PQLQuery *get_pql_query();
+  explicit QueryPreprocessor(std::string input);
+  PQLQuery *get_pql_query();
  private:
-    std::unordered_map<std::string, EntityDeclaration> syn_to_entity_;
-    PQLQuery *clauses_;
-    static std::tuple<std::vector<std::string>*, std::string>
-            SplitEntitiesAndSelectClause(std::string input);
-    static std::unordered_map<std::string, EntityDeclaration*>
-            *MakeEntitiesMap(std::vector<std::string> *entities);
-    static PQLQuery *MakePQLQuery(
-            std::unordered_map<std::string, EntityDeclaration*> *entities_map,
-            const std::string &select_clause);
+  std::unordered_map<std::string, EntityDeclaration> syn_to_entity_;
+  PQLQuery *clauses_;
+  static std::tuple<std::vector<std::string> *, std::string>
+  SplitEntitiesAndSelectClause(std::string input);
+  static std::unordered_map<std::string, EntityDeclaration *>
+  *MakeEntitiesMap(std::vector<std::string> *entities);
+  static PQLQuery *MakePQLQuery(
+      std::unordered_map<std::string, EntityDeclaration *> *entities_map,
+      const std::string &select_clause);
 };

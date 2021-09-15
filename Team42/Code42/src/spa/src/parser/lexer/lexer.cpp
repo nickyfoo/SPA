@@ -34,54 +34,37 @@ const Token *Lexer::GetNextToken() {
   }
 
   switch (cur_char_pointer_[0]) {
-    case '>':
-      return GtOrGte();
-    case '<':
-      return LtOrLte();
-    case '=':
-      return EqualOrEq();
-    case '!':
-      return NotOrNeq();
-    case '&':
-      return AndOrUnknown();
-    case '|':
-      return OrOrUnknown();
+    case '>':return GtOrGte();
+    case '<':return LtOrLte();
+    case '=':return EqualOrEq();
+    case '!':return NotOrNeq();
+    case '&':return AndOrUnknown();
+    case '|':return OrOrUnknown();
   }
 
   const Token *res = nullptr;
   switch (cur_char_pointer_[0]) {
-    case '\0':
-      res = new Token(TokenType::End, "", cur_line_, cur_col_);
+    case '\0':res = new Token(TokenType::End, "", cur_line_, cur_col_);
       break;
-    case ';':
-      res = new Token(TokenType::Semicolon, "", cur_line_, cur_col_);
+    case ';':res = new Token(TokenType::Semicolon, "", cur_line_, cur_col_);
       break;
-    case '(':
-      res = new Token(TokenType::LParen, "", cur_line_, cur_col_);
+    case '(':res = new Token(TokenType::LParen, "", cur_line_, cur_col_);
       break;
-    case ')':
-      res = new Token(TokenType::RParen, "", cur_line_, cur_col_);
+    case ')':res = new Token(TokenType::RParen, "", cur_line_, cur_col_);
       break;
-    case '{':
-      res = new Token(TokenType::LBrace, "", cur_line_, cur_col_);
+    case '{':res = new Token(TokenType::LBrace, "", cur_line_, cur_col_);
       break;
-    case '}':
-      res = new Token(TokenType::RBrace, "", cur_line_, cur_col_);
+    case '}':res = new Token(TokenType::RBrace, "", cur_line_, cur_col_);
       break;
-    case '+':
-      res = new Token(TokenType::Plus, "", cur_line_, cur_col_);
+    case '+':res = new Token(TokenType::Plus, "", cur_line_, cur_col_);
       break;
-    case '-':
-      res = new Token(TokenType::Minus, "", cur_line_, cur_col_);
+    case '-':res = new Token(TokenType::Minus, "", cur_line_, cur_col_);
       break;
-    case '/':
-      res = new Token(TokenType::Divide, "", cur_line_, cur_col_);
+    case '/':res = new Token(TokenType::Divide, "", cur_line_, cur_col_);
       break;
-    case '*':
-      res = new Token(TokenType::Multiply, "", cur_line_, cur_col_);
+    case '*':res = new Token(TokenType::Multiply, "", cur_line_, cur_col_);
       break;
-    case '%':
-      res = new Token(TokenType::Modulo, "", cur_line_, cur_col_);
+    case '%':res = new Token(TokenType::Modulo, "", cur_line_, cur_col_);
       break;
     default:
       res =

@@ -16,13 +16,13 @@ ReadNode *ParseRead(BufferedLexer *lexer, ParseState *state) {
     throw ParseException("expected Identifier", t->line_no_, t->col_no_);
   }
   IdentifierNode *var =
-      new IdentifierNode(t->value_, LocInfo{.line_no = t->line_no_, .col_no = t->col_no_});
+      new IdentifierNode(t->value_, {t->line_no_, t->col_no_});
 
   t = lexer->GetNextToken();
   if (t->kind_ != TokenType::Semicolon) {
     throw ParseException("expected semicolon", t->line_no_, t->col_no_);
   }
 
-  return new ReadNode(var, stmt_no, LocInfo{.line_no=start_line, .col_no=start_col});
+  return new ReadNode(var, stmt_no, {start_line, start_col});
 }
 

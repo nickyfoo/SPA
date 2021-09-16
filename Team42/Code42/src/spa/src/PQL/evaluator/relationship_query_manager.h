@@ -8,21 +8,20 @@
 #include "entity.hpp"
 #include "pkb.h"
 
-
 class RelationshipQueryManager {
  public:
-    RelationshipQueryManager(
-            std::unordered_map<std::string, std::vector<Entity*>>
-            *synonym_to_entity_result,
-            std::vector<SuchThatClause*> *relationships,
-            std::vector<std::string> *entities_to_return,
-            PKB *pkb);
-    void EvaluateRelationships();
+  RelationshipQueryManager(
+      std::unordered_map<std::string, std::vector<Entity *>>
+      *synonym_to_entity_result,
+      std::vector<SuchThatClause *> *relationships,
+      std::vector<std::string> *entities_to_return,
+      PKB *pkb);
+  void EvaluateRelationships();
 
  private:
-    std::unordered_map<std::string, std::vector<Entity*>>
-    *synonym_to_entity_result_;
-    std::vector<SuchThatClause*> *relationships_;
-    std::vector<std::string> *entities_to_return_;
-    PKB *pkb_;
+  std::unordered_map<std::string, std::vector<Entity *>>
+      *synonym_to_entity_result_;
+  std::vector<SuchThatClause *> *relationships_;
+  std::vector<std::string> *entities_to_return_;
+  PKB *pkb_;
 };

@@ -122,8 +122,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         }
         break;
       }
-      case EntityType::None:
-        return new std::vector<std::string>{};
+      case EntityType::None:return new std::vector<std::string>{};
     }
     synonym_to_entity_result->insert({pair.first, entities});
   }
@@ -164,22 +163,22 @@ std::vector<std::string>
 
   // Populating the output vector based on return type needed.
   if (QueryEvaluator::IsStmt(entity_type)) {
-    for (auto & stmt : entities) {
+    for (auto &stmt : entities) {
       auto *entity = dynamic_cast<Statement *>(stmt);
       output->push_back(std::to_string(entity->get_stmt_no()));
     }
   } else if (entity_type == EntityType::Variable) {
-    for (auto & var : entities) {
+    for (auto &var : entities) {
       auto *entity = dynamic_cast<Variable *>(var);
       output->push_back(entity->get_name());
     }
   } else if (entity_type == EntityType::Procedure) {
-    for (auto & proc : entities) {
+    for (auto &proc : entities) {
       auto *entity = dynamic_cast<Procedure *>(proc);
       output->push_back(entity->get_name());
     }
   } else if (entity_type == EntityType::Constant) {
-    for (auto & cons : entities) {
+    for (auto &cons : entities) {
       auto *entity = dynamic_cast<Constant *>(cons);
       output->push_back(std::to_string(entity->get_value()));
     }

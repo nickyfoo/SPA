@@ -133,7 +133,7 @@ PatternClause *SelectClauseParser::MakePatternRef(const std::string &synonym,
                                                   std::string left_ref,
                                                   std::string right_ref) {
     PatternClause *ret;
-    auto *entRef = new EntRef();
+    auto *ent_ref = new EntRef();
     if ((synonym_to_entity_->find(synonym) != synonym_to_entity_->end())
     && (synonym_to_entity_->at(synonym)->get_type() == EntityType::Assign)) {
         ret = new PatternClause(synonym_to_entity_->find(synonym)->second);
@@ -142,15 +142,15 @@ PatternClause *SelectClauseParser::MakePatternRef(const std::string &synonym,
     }
     if ((synonym_to_entity_->find(left_ref) != synonym_to_entity_->end()) &&
         (synonym_to_entity_->at(left_ref)->get_type() == EntityType::Variable)) {
-        entRef->set_synonym(left_ref);
+        ent_ref->set_synonym(left_ref);
     } else if (left_ref == "_") {
-        entRef->set_wild_card();
+        ent_ref->set_wild_card();
     } else if (IsValidIdentifier(left_ref)) {
-        entRef->set_argument(left_ref.substr(1, left_ref.length() - 2));
+        ent_ref->set_argument(left_ref.substr(1, left_ref.length() - 2));
     } else {
         return nullptr;
     }
-    if (ret->set_ref(entRef, right_ref)) {
+    if (ret->set_ref(ent_ref, right_ref)) {
         return ret;
     } else {
         return nullptr;

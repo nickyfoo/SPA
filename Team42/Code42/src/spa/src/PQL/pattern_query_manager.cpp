@@ -2,64 +2,75 @@
 #include "entity_declaration.h"
 #include "stmt_table.h"
 #include "statement.h"
+#include <set>
 
-PatternQueryManager::PatternQueryManager(std::unordered_map<std::string, std::vector<Entity*>> *synonymToEntityResult,
-                                                   std::vector<PatternClause*> *patterns,
-                                                   std::vector<std::string> *entitiesToReturn,
-                                                   PKB *pkb) {
-    this->synonym_to_entity_result_ = synonymToEntityResult;
-    this->patterns_ = patterns;
-    this->entities_to_return_ = entitiesToReturn;
-    this->pkb_ = pkb;
+PatternQueryManager::PatternQueryManager(std::unordered_map<std::string,
+                                                            std::vector<Entity *>> *synonym_to_entity_result,
+                                         std::vector<PatternClause *> *patterns,
+                                         std::vector<std::string> *entities_to_return,
+                                         PKB *pkb) {
+  this->synonym_to_entity_result_ = synonym_to_entity_result;
+  this->patterns_ = patterns;
+  this->entities_to_return_ = entities_to_return;
+  this->pkb_ = pkb;
 }
 
 void PatternQueryManager::EvaluatePatterns() {
-    // Iterating through patterns_ and evaluating one by one. For basic requirements, there will be only 1 pattern.
-    for (PatternClause *pattern : *patterns_) {
-        ManagePatterns(pattern);
-    }
+  // Iterating through patterns_ and evaluating one by one.
+  // For basic requirements, there will be only 1 pattern.
+  for (PatternClause *pattern : *patterns_) {
+    ManagePatterns(pattern);
+  }
 }
 
 void PatternQueryManager::ManagePatterns(PatternClause *pattern) {
-    EntityDeclaration *synonym = pattern->get_synonym();
-    EntRef *left_ent = pattern->get_left_ref();
-    ExpressionSpec *rightEnt = pattern->get_right_ref();
-    std::string pattern_to_check = rightEnt->get_expression();
-    bool is_partial_pattern = rightEnt->IsPartialPattern();
-    std::vector<Entity *> *entity_vec = &synonym_to_entity_result_->at(synonym->get_synonym()); // list of assignment object
-    std::set<Entity *> var_set;
-    std::string left_synonym;
-    for (int i = 0; i < entity_vec->size(); i++) {
-        auto *assign = (Statement*) entity_vec->at(i); // for each assign object
-        if ((assign->get_modifies()->size() == 0 || !pkb_->TestAssignmentPattern(assign, pattern_to_check, is_partial_pattern))
-        && !rightEnt->IsWildCard()) {
-            entity_vec->erase(entity_vec->begin() + i);
-            i--;
-        } else {
-            if (left_ent->get_type() == EntRefType::Synonym) { // eg pattern a(v, "sth")
-                left_synonym = left_ent->get_synonym();
-                std::vector<Entity*> *variable_vec = &synonym_to_entity_result_->at(left_ent->get_synonym()); // getting list of variable objects
-                for (int j = 0; j < variable_vec->size(); j++) {
-                    auto* variable = (Variable*) variable_vec->at(j); // for each variable object
-                    if (assign->get_modifies()->count(variable->get_name())) {
-                        var_set.insert(variable_vec->at(j));
-                    }
-                }
-            } else if (left_ent->get_type() == EntRefType::Argument) {
-                if (!assign->get_modifies()->count(left_ent->get_argument())) {
-                    entity_vec->erase(entity_vec->begin() + i);
-                    i--;
-                }
-            }
+  EntityDeclaration *synonym = pattern->get_synonym();
+  EntRef *left_ent = pattern->get_left_ref();
+  ExpressionSpec *right_ent = pattern->get_right_ref();
+  std::string pattern_to_check = right_ent->get_expression();
+  bool is_partial_pattern = right_ent->IsPartialPattern();
+
+  // list of assignment object
+  std::vector<Entity *> *entity_vec = &synonym_to_entity_result_->at(synonym->get_synonym());
+  std::set<Entity *> var_set;
+  std::string left_synonym;
+  for (int i = 0; i < entity_vec->size(); i++) {
+    auto *assign = dynamic_cast<Statement *>(entity_vec->at(i));  // for each assign object
+    if ((assign->get_modifies()->size() == 0
+        || !pkb_->TestAssignmentPattern(assign, pattern_to_check, is_partial_pattern))
+        && !right_ent->IsWildCard()) {
+      entity_vec->erase(entity_vec->begin() + i);
+      i--;
+    } else {
+      if (left_ent->get_type() == EntRefType::Synonym) {  // pattern a(v, "pattern")
+        left_synonym = left_ent->get_synonym();
+
+        // getting list of variable objects
+        std::vector<Entity *> *variable_vec =
+            &synonym_to_entity_result_->at(left_ent->get_synonym());
+        // for each variable object
+        for (int j = 0; j < variable_vec->size(); j++) {
+          auto *variable = dynamic_cast<Variable *>(variable_vec->at(j));
+          if (assign->get_modifies()->count(variable->get_name())) {
+            var_set.insert(variable_vec->at(j));
+          }
         }
-    }
-    if (!var_set.empty()) {
-        std::vector<Entity*> *variable_vec = &synonym_to_entity_result_->at(left_synonym); // getting list of variable objects
-        for (int k = 0; k < variable_vec->size(); k++) {
-            if (!var_set.count(variable_vec->at(k))) {
-                variable_vec->erase(variable_vec->begin() + k);
-                k--;
-            }
+      } else if (left_ent->get_type() == EntRefType::Argument) {
+        if (!assign->get_modifies()->count(left_ent->get_argument())) {
+          entity_vec->erase(entity_vec->begin() + i);
+          i--;
         }
+      }
     }
+  }
+  if (!var_set.empty()) {
+    std::vector<Entity *> *variable_vec = &synonym_to_entity_result_->at(left_synonym);
+    // getting list of variable objects
+    for (int k = 0; k < variable_vec->size(); k++) {
+      if (!var_set.count(variable_vec->at(k))) {
+        variable_vec->erase(variable_vec->begin() + k);
+        k--;
+      }
+    }
+  }
 }

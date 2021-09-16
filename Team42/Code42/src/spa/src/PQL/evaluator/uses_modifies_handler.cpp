@@ -1,7 +1,7 @@
 #include "uses_modifies_handler.h"
 
 UsesModifiesHandler::UsesModifiesHandler() = default;
-UsesModifiesHandler *UsesModifiesHandler::instance_ = 0;
+UsesModifiesHandler *UsesModifiesHandler::instance_ = nullptr;
 
 UsesModifiesHandler *UsesModifiesHandler::get_instance() {
   if (!instance_) {

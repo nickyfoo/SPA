@@ -1,7 +1,7 @@
 #include "usesp_modifiesp_handler.h"
 
 UsesPModifiesPHandler::UsesPModifiesPHandler() = default;
-UsesPModifiesPHandler *UsesPModifiesPHandler::instance_ = 0;
+UsesPModifiesPHandler *UsesPModifiesPHandler::instance_ = nullptr;
 
 UsesPModifiesPHandler *UsesPModifiesPHandler::get_instance() {
   if (!instance_) {
@@ -44,7 +44,7 @@ void UsesPModifiesPHandler::Evaluate() {
   EntRef left_ent = relationship_->get_left_ref()->get_ent_ref();
   EntRef right_ent = relationship_->get_right_ref()->get_ent_ref();
 
-  // Going through 6 different cases for UsesS
+  // Going through 6 different cases for UsesP
   if (left_ent.get_type() == EntRefType::Synonym &&
       right_ent.get_type() == EntRefType::Synonym) {  // UsesP(p, v)
     std::string left_synonym = left_ent.get_synonym();

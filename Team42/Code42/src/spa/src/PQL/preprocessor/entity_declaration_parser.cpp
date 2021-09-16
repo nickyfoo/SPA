@@ -1,8 +1,8 @@
 #include "entity_declaration_parser.h"
 #include <algorithm>
 
-EntityDeclarationParser::EntityDeclarationParser() {}
-EntityDeclarationParser *EntityDeclarationParser::instance_ = 0;
+EntityDeclarationParser::EntityDeclarationParser() = default;
+EntityDeclarationParser *EntityDeclarationParser::instance_ = nullptr;
 
 EntityDeclarationParser *EntityDeclarationParser::get_instance() {
   if (!instance_) {

@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 #include "pkb.h"
-#include "catch.hpp"
 #include "entities/statement.h"
 
 std::string sourcePQL = "procedure main {"
@@ -152,7 +151,8 @@ TEST_CASE("Test 4: Select") {
   auto evaluator = new QueryEvaluator(clause, &pkb);
   std::vector<std::string> *ret = evaluator->Evaluate();
 
-  std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
+  std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8",
+                                       "9", "10", "11", "12", "13", "14",
                                        "15", "16", "17", "18", "19", "20", "21", "22", "23"};
 
   REQUIRE(ret->size() == expected.size());
@@ -192,7 +192,8 @@ TEST_CASE("Test 6: Follows Unused entity declaration") {
   auto evaluator = new QueryEvaluator(clause, &pkb);
   std::vector<std::string> *ret = evaluator->Evaluate();
 
-  std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
+  std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8",
+                                       "9", "10", "11", "12", "13", "14",
                                        "15", "16", "17", "18", "19", "20", "21", "22", "23"};
 
   REQUIRE(ret->size() == expected.size());
@@ -215,7 +216,8 @@ TEST_CASE("Test 7: Follows Integer, Wildcard") {
     auto evaluator = new QueryEvaluator(clause, &pkb);
     std::vector<std::string> *ret = evaluator->Evaluate();
 
-    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
+    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8",
+                                         "9", "10", "11", "12", "13", "14",
                                          "15", "16", "17", "18", "19", "20", "21", "22", "23"};
 
     REQUIRE(ret->size() == expected.size());
@@ -238,7 +240,8 @@ TEST_CASE("Test 8: Follows Wildcard, Integer") {
     auto evaluator = new QueryEvaluator(clause, &pkb);
     std::vector<std::string> *ret = evaluator->Evaluate();
 
-    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
+    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8",
+                                         "9", "10", "11", "12", "13", "14",
                                          "15", "16", "17", "18", "19", "20", "21", "22", "23"};
 
     REQUIRE(ret->size() == expected.size());
@@ -261,7 +264,8 @@ TEST_CASE("Test 9: Follows Wildcard, Wildcard") {
     auto evaluator = new QueryEvaluator(clause, &pkb);
     std::vector<std::string> *ret = evaluator->Evaluate();
 
-    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
+    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8",
+                                         "9", "10", "11", "12", "13", "14",
                                          "15", "16", "17", "18", "19", "20", "21", "22", "23"};
 
     REQUIRE(ret->size() == expected.size());
@@ -284,7 +288,9 @@ TEST_CASE("Test 9: Follows Synonym, Wildcard") {
     auto evaluator = new QueryEvaluator(clause, &pkb);
     std::vector<std::string> *ret = evaluator->Evaluate();
 
-    std::vector<std::string> expected = {"1", "2", "4", "6", "7", "8", "10", "11", "12", "13", "14", "15", "16", "17", "19", "21"};;
+    std::vector<std::string> expected = {"1", "2", "4", "6", "7", "8", "10",
+                                         "11", "12", "13", "14", "15", "16",
+                                         "17", "19", "21"};;
 
     REQUIRE(ret->size() == expected.size());
     for (int i = 0; i < ret->size(); i++) {
@@ -328,7 +334,8 @@ TEST_CASE("Test 11: Follows* Integer, Integer") {
     auto evaluator = new QueryEvaluator(clause, &pkb);
     std::vector<std::string> *ret = evaluator->Evaluate();
 
-    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
+    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8",
+                                         "9", "10", "11", "12", "13", "14",
                                          "15", "16", "17", "18", "19", "20", "21", "22", "23"};
 
     REQUIRE(ret->size() == expected.size());
@@ -376,7 +383,8 @@ TEST_CASE("Test 13: Parent Integer, Integer") {
 //        printf("whats in ret %s\n", str.c_str());
 //    }
 
-    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
+    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8",
+                                         "9", "10", "11", "12", "13", "14",
                                          "15", "16", "17", "18", "19", "20", "21", "22", "23"};
 
     REQUIRE(ret->size() == expected.size());
@@ -421,13 +429,13 @@ TEST_CASE("Test 15: Parent Integer, Integer") {
     auto evaluator = new QueryEvaluator(clause, &pkb);
     std::vector<std::string> *ret = evaluator->Evaluate();
 
-    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
+    std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8",
+                                         "9", "10", "11", "12", "13", "14",
                                          "15", "16", "17", "18", "19", "20", "21", "22", "23"};
 
-//    REQUIRE(ret->size() == expected.size());
+    REQUIRE(ret->size() == expected.size());
     for (int i = 0; i < ret->size(); i++) {
-        printf("%s\n", ret->at(i).c_str());
-//        REQUIRE(ret->at(i) == expected.at(i));
+        REQUIRE(ret->at(i) == expected.at(i));
     }
 }
 
@@ -490,7 +498,8 @@ TEST_CASE("Test 18: Uses Synonym, Synonym") {
   auto evaluator = new QueryEvaluator(clause, &pkb);
   std::vector<std::string> *ret = evaluator->Evaluate();
 
-  std::vector<std::string> expected = {"2", "3", "6", "7", "8", "9", "14", "15", "16", "17", "19", "21", "22", "23"};
+  std::vector<std::string> expected = {"2", "3", "6", "7", "8", "9", "14",
+                                       "15", "16", "17", "19", "21", "22", "23"};
 
   REQUIRE(ret->size() == expected.size());
   for (int i = 0; i < ret->size(); i++) {
@@ -520,7 +529,7 @@ TEST_CASE("Test 19: UsesP Synonym, Synonym") {
   }
 }
 
-TEST_CASE("Test 18: Modifies Synonym, Synonym") {
+TEST_CASE("Test 20: Modifies Synonym, Synonym") {
   std::string ss = "stmt s1; variable v;\n"
                    "Select s1 such that Modifies(s1, v)";
   auto *query = new QueryPreprocessor(ss);
@@ -534,7 +543,9 @@ TEST_CASE("Test 18: Modifies Synonym, Synonym") {
   auto evaluator = new QueryEvaluator(clause, &pkb);
   std::vector<std::string> *ret = evaluator->Evaluate();
 
-  std::vector<std::string> expected = {"1", "2", "4", "5", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"};
+  std::vector<std::string> expected = {"1", "2", "4", "5", "10", "11", "12",
+                                       "13", "14", "15", "16", "17", "18",
+                                       "19", "20", "21", "22", "23"};
 
   REQUIRE(ret->size() == expected.size());
   for (int i = 0; i < ret->size(); i++) {
@@ -542,7 +553,7 @@ TEST_CASE("Test 18: Modifies Synonym, Synonym") {
   }
 }
 
-TEST_CASE("Test 18: Modifies Synonym, Argument") {
+TEST_CASE("Test 21: Modifies Synonym, Argument") {
   std::string ss = "stmt s1;\n"
                    "Select s1 such that Modifies(s1, 'cenX')";
   auto *query = new QueryPreprocessor(ss);
@@ -564,7 +575,7 @@ TEST_CASE("Test 18: Modifies Synonym, Argument") {
   }
 }
 
-TEST_CASE("Test 17: Sample source query 4") {
+TEST_CASE("Test 22: Sample source query 4") {
   std::string ss = "stmt s;"
                    "Select s such that Modifies(s, 'i')";
   auto *query = new QueryPreprocessor(ss);
@@ -584,5 +595,28 @@ TEST_CASE("Test 17: Sample source query 4") {
   REQUIRE(ret->size() == expected.size());
   for (int i = 0; i < ret->size(); i++) {
     REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("Test 23: ModifiesP Argument, Synonym") {
+  std::string ss = "variable v;\n"
+                   "Select v such that Modifies('main', v)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(sourcePQL.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"x", "y", "count", "cenX", "cenY", "flag", "normSq"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < ret->size(); i++) {
+    printf("items in result: %s\n", ret->at(i).c_str());
+//    REQUIRE(ret->at(i) == expected.at(i));
   }
 }

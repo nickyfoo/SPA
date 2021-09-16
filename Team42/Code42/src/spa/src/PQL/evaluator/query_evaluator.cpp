@@ -122,7 +122,8 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         }
         break;
       }
-      case EntityType::None:return new std::vector<std::string>{};
+      case EntityType::None:
+        return new std::vector<std::string>{};
     }
     synonym_to_entity_result->insert({pair.first, entities});
   }

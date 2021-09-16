@@ -1,6 +1,6 @@
 #include "usesp_modifiesp_handler.h"
 
-UsesPModifiesPHandler::UsesPModifiesPHandler() {}
+UsesPModifiesPHandler::UsesPModifiesPHandler() = default;
 UsesPModifiesPHandler *UsesPModifiesPHandler::instance_ = 0;
 
 UsesPModifiesPHandler *UsesPModifiesPHandler::get_instance() {
@@ -86,8 +86,6 @@ void UsesPModifiesPHandler::Evaluate() {
       right_ent.get_type() == EntRefType::Argument) {  // UsesP(p, "x")
     std::string left_synonym = left_ent.get_synonym();
     std::string right_arg = right_ent.get_argument();
-    // Remove '' from right arg
-    right_arg = right_arg.substr(1, right_arg.size() - 2);
     std::vector<Entity *> *left_entity_vec;
     left_entity_vec = &synonym_to_entity_result_->at(left_synonym);
     for (int i = 0; i < left_entity_vec->size(); i++) {
@@ -101,8 +99,6 @@ void UsesPModifiesPHandler::Evaluate() {
   } else if (left_ent.get_type() == EntRefType::Argument &&
       right_ent.get_type() == EntRefType::Synonym) {  // UsesP("sth", v)
     std::string left_arg = left_ent.get_argument();
-    // Remove '' from left arg
-    left_arg = left_arg.substr(1, left_arg.size() - 2);
     std::string right_synonym = right_ent.get_synonym();
     std::vector<Entity *> *right_entity_vec;
     right_entity_vec = &synonym_to_entity_result_->at(right_synonym);
@@ -117,8 +113,6 @@ void UsesPModifiesPHandler::Evaluate() {
   } else if (left_ent.get_type() == EntRefType::Argument &&
       right_ent.get_type() == EntRefType::WildCard) {  // UsesP("sth", _)
     std::string left_arg = left_ent.get_argument();
-    // Remove '' from left arg
-    left_arg = left_arg.substr(1, left_arg.size() - 2);
     Procedure *proc = pkb_->get_procedure(left_arg);
     if (ProcedureForwarder(get_normal_, proc)->empty()) {
       // If procedure with left arg as name
@@ -128,11 +122,7 @@ void UsesPModifiesPHandler::Evaluate() {
   } else if (left_ent.get_type() == EntRefType::Argument &&
       right_ent.get_type() == EntRefType::Argument) {  // UsesP("sth", "x")
     std::string left_arg = left_ent.get_argument();
-    // Remove '' from left arg
-    left_arg = left_arg.substr(1, left_arg.size() - 2);
     std::string right_arg = right_ent.get_argument();
-    // Remove '' from right arg
-    right_arg = right_arg.substr(1, right_arg.size() - 2);
     Procedure *proc = pkb_->get_procedure(left_arg);
     if (!ProcedureForwarder(get_normal_, proc)->count(right_arg)) {
       // Clear results vector if this relationship_ is false

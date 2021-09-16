@@ -1,6 +1,6 @@
 #include "follows_parents_handler.h"
 
-FollowsParentsHandler::FollowsParentsHandler() {}
+FollowsParentsHandler::FollowsParentsHandler() = default;
 FollowsParentsHandler *FollowsParentsHandler::instance_ = 0;
 
 FollowsParentsHandler *FollowsParentsHandler::get_instance() {

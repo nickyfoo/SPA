@@ -1,6 +1,6 @@
 #include "uses_modifies_handler.h"
 
-UsesModifiesHandler::UsesModifiesHandler() {}
+UsesModifiesHandler::UsesModifiesHandler() = default;
 UsesModifiesHandler *UsesModifiesHandler::instance_ = 0;
 
 UsesModifiesHandler *UsesModifiesHandler::get_instance() {
@@ -86,8 +86,6 @@ void UsesModifiesHandler::Evaluate() {
       right_ent.get_type() == EntRefType::Argument) {  // Uses(s, "x")
     std::string left_synonym = left_ent.get_synonym();
     std::string right_arg = right_ent.get_argument();
-    // Remove '' from right arg
-    right_arg = right_arg.substr(1, right_arg.size() - 2);
     std::vector<Entity *> *left_entity_vec;
     left_entity_vec = &synonym_to_entity_result_->at(left_synonym);
     for (int i = 0; i < left_entity_vec->size(); i++) {
@@ -125,8 +123,6 @@ void UsesModifiesHandler::Evaluate() {
       right_ent.get_type() == EntRefType::Argument) {  // Uses(4, "x")
     int left_arg = left_ent.get_stmt_num();
     std::string right_arg = right_ent.get_argument();
-    // Remove '' from right arg
-    right_arg = right_arg.substr(1, right_arg.size() - 2);
     Statement *stmt = pkb_->get_statement(left_arg);
     if (!StatementForwarder(get_normal_, stmt)->count(right_arg)) {
       // Clear results vector if this relationship_ is false

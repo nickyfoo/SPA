@@ -5,8 +5,8 @@
 #include "string"
 #include "sstream"
 #include "catch.hpp"
-#include "query_preprocessor.h"
-#include "query_evaluator.h"
+#include "pre-processor/query_preprocessor.h"
+#include "evaluator/query_evaluator.h"
 
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;
@@ -28,25 +28,6 @@ TestWrapper::TestWrapper() {
 void TestWrapper::parse(std::string filename) {
 	// call your parser to do the parsing
   // ...rest of your code...
-//  printf("did i come here");
-//  std::stringstream source;
-//  std::fstream file;
-//  file.open(filename, std::ios::in);
-//  if (!file) {
-//      std::cout << "No such file";
-//  }
-//  else {
-//      char ch;
-//
-//      while (1) {
-//          file >> ch;
-//          if (file.eof())
-//              break;
-//          source << ch;
-//      }
-//
-//  }
-//  file.close();
   const std::ifstream input_stream(filename, std::ios_base::binary);
 
   if (input_stream.fail()) {
@@ -60,13 +41,7 @@ void TestWrapper::parse(std::string filename) {
   BufferedLexer lexer(source.c_str());
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
-  printf("PKB\n");
   this->pkb_ = new PKB(p);
-
-//  BufferedLexer *lexer = new BufferedLexer(source.c_str());
-//  ProgramNode *res = ParseProgram(lexer, new ParseState{});
-//  PKB *pkb = new PKB(res);
-//  pkb_ = PKB(p);
 }
 
 // method to evaluating a query

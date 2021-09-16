@@ -31,12 +31,12 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
   for (auto &pair : *synonym_to_entity_dec_) {
     EntityType type = pair.second->get_type();
     std::vector<Entity *> entities;
-    switch (type) {  // TODO: Combine EntityType enum with AST's kind enum
+    switch (type) {  // TODO: Combine EntityType enum with AST's enum
       case EntityType::Stmt: {
         std::vector<Statement *> entities_stmt;
         entities_stmt = pkb_->get_all_statements();
         for (Statement *stmt : entities_stmt) {
-          Entity *entity = static_cast<Entity *>(stmt);
+          auto *entity = static_cast<Entity *>(stmt);
           entities.push_back(entity);
         }
         break;
@@ -45,7 +45,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         std::vector<Statement *> entities_stmt;
         entities_stmt = pkb_->get_statements(NodeType::Read);
         for (Statement *stmt : entities_stmt) {
-          Entity *entity = static_cast<Entity *>(stmt);
+          auto *entity = static_cast<Entity *>(stmt);
           entities.push_back(entity);
         }
         break;
@@ -54,7 +54,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         std::vector<Statement *> entities_stmt;
         entities_stmt = pkb_->get_statements(NodeType::Print);
         for (Statement *stmt : entities_stmt) {
-          Entity *entity = static_cast<Entity *>(stmt);
+          auto *entity = static_cast<Entity *>(stmt);
           entities.push_back(entity);
         }
         break;
@@ -63,7 +63,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         std::vector<Statement *> entities_stmt;
         entities_stmt = pkb_->get_statements(NodeType::Call);
         for (Statement *stmt : entities_stmt) {
-          Entity *entity = static_cast<Entity *>(stmt);
+          auto *entity = static_cast<Entity *>(stmt);
           entities.push_back(entity);
         }
         break;
@@ -72,7 +72,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         std::vector<Statement *> entities_stmt;
         entities_stmt = pkb_->get_statements(NodeType::While);
         for (Statement *stmt : entities_stmt) {
-          Entity *entity = static_cast<Entity *>(stmt);
+          auto *entity = static_cast<Entity *>(stmt);
           entities.push_back(entity);
         }
         break;
@@ -81,7 +81,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         std::vector<Statement *> entities_stmt;
         entities_stmt = pkb_->get_statements(NodeType::If);
         for (Statement *stmt : entities_stmt) {
-          Entity *entity = static_cast<Entity *>(stmt);
+          auto *entity = static_cast<Entity *>(stmt);
           entities.push_back(entity);
         }
         break;
@@ -90,7 +90,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         std::vector<Statement *> entities_stmt;
         entities_stmt = pkb_->get_statements(NodeType::Assign);
         for (Statement *stmt : entities_stmt) {
-          Entity *entity = static_cast<Entity *>(stmt);
+          auto *entity = static_cast<Entity *>(stmt);
           entities.push_back(entity);
         }
         break;
@@ -99,7 +99,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         std::vector<Variable *> entities_var;
         entities_var = pkb_->get_all_variables();
         for (Variable *var : entities_var) {
-          Entity *entity = static_cast<Entity *>(var);
+          auto *entity = static_cast<Entity *>(var);
           entities.push_back(entity);
         }
         break;
@@ -108,7 +108,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         std::vector<Constant *> entities_const;
         entities_const = pkb_->get_all_constants();
         for (Constant *cons : entities_const) {
-          Entity *entity = static_cast<Entity *>(cons);
+          auto *entity = static_cast<Entity *>(cons);
           entities.push_back(entity);
         }
         break;
@@ -117,7 +117,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         std::vector<Procedure *> entities_proc;
         entities_proc = pkb_->get_all_procedures();
         for (Procedure *proc : entities_proc) {
-          Entity *entity = static_cast<Entity *>(proc);
+          auto *entity = static_cast<Entity *>(proc);
           entities.push_back(entity);
         }
         break;
@@ -127,7 +127,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
     }
     synonym_to_entity_result->insert({pair.first, entities});
   }
-  if (relationships_->size() != 0 &&
+  if (!relationships_->empty() &&
       !IsEmpty(synonym_to_entity_result)) {
     RelationshipQueryManager relationshipQueryManager =
         RelationshipQueryManager(synonym_to_entity_result,
@@ -144,7 +144,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
 bool QueryEvaluator::IsEmpty(std::unordered_map<std::string,
                                                 std::vector<Entity *>> *synonym_to_entity_result) {
   for (auto &pair : *synonym_to_entity_result) {
-    if (pair.second.size() == 0) {
+    if (pair.second.empty()) {
       return true;
     }
   }
@@ -162,7 +162,7 @@ std::vector<std::string>
   EntityType entity_type = synonym_to_entity_dec_->at(synonym)->get_type();
   std::vector<Entity *> entities = synonym_to_entity_result->at(synonym);
 
-  // Populating the output vector based on return type_ needed.
+  // Populating the output vector based on return type needed.
   if (QueryEvaluator::IsStmt(entity_type)) {
     for (auto & stmt : entities) {
       auto *entity = dynamic_cast<Statement *>(stmt);

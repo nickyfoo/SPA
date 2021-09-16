@@ -22,5 +22,5 @@ class QueryEvaluator {
     std::vector<std::string> *ConvertToOutput(
             std::unordered_map<std::string,
             std::vector<Entity*>> *synonym_to_entity_result);
-    bool IsStmt(EntityType entity_type);
+    static bool IsStmt(EntityType entity_type);
 };

@@ -116,7 +116,7 @@ TEST_CASE("Test pkb::ExtractUsesModifies() for containerstmts") {
       "if((x==0) && (y==0) ) then {"
       "a = b + c;"
       "} else {"
-      "d = e + f;}" 
+      "d = e + f;}"
       "}";
 
   BufferedLexer lexer(source2.c_str());

@@ -34,6 +34,7 @@ bool SuchThatClause::set_ref(SuchThatRef *left, SuchThatRef *right) {
         this->right_ref_ = right;
         return true;
       }
+      return false;
     case RelRef::Uses:
       if (right->get_type() == SuchThatRefType::Entity) {
         if (left->get_type() == SuchThatRefType::Statement
@@ -51,6 +52,7 @@ bool SuchThatClause::set_ref(SuchThatRef *left, SuchThatRef *right) {
           return true;
         }
       }
+      return false;
     case RelRef::Modifies:
       if (right->get_type() == SuchThatRefType::Entity) {
         if (left->get_type() == SuchThatRefType::Statement
@@ -68,6 +70,7 @@ bool SuchThatClause::set_ref(SuchThatRef *left, SuchThatRef *right) {
           return true;
         }
       }
+      return false;
     default:break;
   }
   return false;
@@ -98,9 +101,9 @@ std::string SuchThatClause::get_type_str() {
 }
 
 SuchThatRef *SuchThatClause::get_left_ref() {
-  return this->left_ref_;
+    return this->left_ref_;
 }
 
 SuchThatRef *SuchThatClause::get_right_ref() {
-  return this->right_ref_;
+    return this->right_ref_;
 }

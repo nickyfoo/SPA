@@ -16,8 +16,6 @@ const Token *BufferedLexer::GetNextToken() {
   }
 
   auto n = lexer_->GetNextToken();
-  std::cout << static_cast<typename std::underlying_type<TokenType>::type>(n->kind_) << "\n";
-
   return n;
 }
 

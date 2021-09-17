@@ -466,3 +466,11 @@ TEST_CASE("57. Weird select clauses_") {
     REQUIRE(clause == nullptr);
 }
 
+TEST_CASE("58. Modifies clause with assignment and argument") {
+  std::string ss = "assign assign;\n"
+                   "Select assign such that Modifies(assign, 'v')";
+  auto* query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+}
+

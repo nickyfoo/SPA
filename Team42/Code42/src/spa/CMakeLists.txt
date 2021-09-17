@@ -17,4 +17,5 @@ target_include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/src/pkb/entities
         ${CMAKE_CURRENT_SOURCE_DIR}/src/pkb/tables
         ${CMAKE_CURRENT_SOURCE_DIR}/src/utils/
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/PQL)
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/PQL/evaluator
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/PQL/preprocessor)

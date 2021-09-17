@@ -257,11 +257,8 @@ std::vector<std::string> SelectClauseParser::SplitSelect(
   std::string token;
 
   while ((pos = select_clause.find(SELECT_DELIM)) != std::string::npos) {
-    if (found_select) {  // two select clauses_ found
-      return {};
-    }
     select_clause.erase(0, pos + SELECT_DELIM.length());
-    found_select = true;
+    break;
   }
 
   select_clause.erase(remove(select_clause.begin(),

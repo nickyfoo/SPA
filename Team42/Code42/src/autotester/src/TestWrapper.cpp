@@ -28,7 +28,7 @@ void TestWrapper::parse(std::string filename) {
 	// call your parser to do the parsing
   // ...rest of your code...
   const std::ifstream input_stream(filename, std::ios_base::binary);
-
+  
   if (input_stream.fail()) {
     throw std::runtime_error("Failed to open file");
   }
@@ -50,7 +50,7 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results){
 
   // store the answers to the query in the results list (it is initially empty)
   // each result must be a string.
-  auto* query_preprocessor = new QueryPreprocessor(query);
+  auto *query_preprocessor = new QueryPreprocessor(query);
   PQLQuery *clause = query_preprocessor->get_pql_query();
   QueryEvaluator *query_evaluator = new QueryEvaluator(clause, pkb_);
   std::vector<std::string> *res = query_evaluator->Evaluate();

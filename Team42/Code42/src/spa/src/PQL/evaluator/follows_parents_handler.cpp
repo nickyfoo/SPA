@@ -91,7 +91,7 @@ void FollowsParentsHandler::Evaluate() {
       }
     }
     for (int j = 0; j < right_entity_vec->size(); j++) {
-      auto *stmt = static_cast<Statement *>(right_entity_vec->at(j));
+      auto *stmt = dynamic_cast<Statement *>(right_entity_vec->at(j));
       if (Forwarder(get_reverse_, stmt)->empty()) {
         // Remove statements that do not have a followee
         right_entity_vec->erase(right_entity_vec->begin() + j);

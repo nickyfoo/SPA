@@ -1,46 +1,46 @@
-#include "uses_modifies_handler.h"
+#include "usess_modifiess_handler.h"
 
-UsesModifiesHandler::UsesModifiesHandler() = default;
-UsesModifiesHandler *UsesModifiesHandler::instance_ = nullptr;
+UsesSModifiesSHandler::UsesSModifiesSHandler() = default;
+UsesSModifiesSHandler *UsesSModifiesSHandler::instance_ = nullptr;
 
-UsesModifiesHandler *UsesModifiesHandler::get_instance() {
+UsesSModifiesSHandler *UsesSModifiesSHandler::get_instance() {
   if (!instance_) {
-    instance_ = new UsesModifiesHandler();
+    instance_ = new UsesSModifiesSHandler();
   }
   return instance_;
 }
 
-void UsesModifiesHandler::set_args(PKB *pkb,
-                                   std::unordered_map<std::string, std::vector<Entity *>>
+void UsesSModifiesSHandler::set_args(PKB *pkb,
+                                     std::unordered_map<std::string, std::vector<Entity *>>
                                    *synonym_to_entity_result,
-                                   SuchThatClause *relationship,
-                                   std::vector<std::string> *entities_to_return) {
+                                     SuchThatClause *relationship,
+                                     std::vector<std::string> *entities_to_return) {
   this->pkb_ = pkb;
   this->synonym_to_entity_result_ = synonym_to_entity_result;
   this->relationship_ = relationship;
   this->entities_to_return_ = entities_to_return;
 }
 
-std::set<std::string> *UsesModifiesHandler::StatementForwarder(
+std::set<std::string> *UsesSModifiesSHandler::StatementForwarder(
     std::set<std::string> *(Statement::*function)(),
     Statement *stmt) {
   return (stmt->*function)();
 }
 
-std::set<int> *UsesModifiesHandler::VariableForwarder(
+std::set<int> *UsesSModifiesSHandler::VariableForwarder(
     std::set<int> *(Variable::*function)(),
     Variable *var) {
   return (var->*function)();
 }
 
-void UsesModifiesHandler::set_function_pointers(
+void UsesSModifiesSHandler::set_function_pointers(
     std::set<std::string> *(Statement::*get_normal)(),
     std::set<int> *(Variable::*get_reverse)()) {
   this->get_normal_ = get_normal;
   this->get_reverse_ = get_reverse;
 }
 
-void UsesModifiesHandler::Evaluate() {
+void UsesSModifiesSHandler::Evaluate() {
   StmtRef left_ent = relationship_->get_left_ref()->get_stmt_ref();
   EntRef right_ent = relationship_->get_right_ref()->get_ent_ref();
 

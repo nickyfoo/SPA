@@ -9,9 +9,9 @@
 #include "entity.hpp"
 #include "such_that_clause.h"
 
-class UsesModifiesHandler {
+class UsesSModifiesSHandler {
  public:
-  static UsesModifiesHandler *get_instance();
+  static UsesSModifiesSHandler *get_instance();
   void set_args(PKB *pkb,
                 std::unordered_map<std::string, std::vector<Entity *>>
                 *synonym_to_entity_result,
@@ -23,8 +23,8 @@ class UsesModifiesHandler {
   void Evaluate();
 
  private:
-  static UsesModifiesHandler *instance_;
-  UsesModifiesHandler();
+  static UsesSModifiesSHandler *instance_;
+  UsesSModifiesSHandler();
   std::set<std::string> *(Statement::*get_normal_)();
   std::set<int> *(Variable::*get_reverse_)();
   PKB *pkb_;

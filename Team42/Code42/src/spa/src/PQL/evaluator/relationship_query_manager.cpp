@@ -2,7 +2,7 @@
 #include "entity_declaration.h"
 #include "statement.h"
 #include "follows_parents_handler.h"
-#include "uses_modifies_handler.h"
+#include "usess_modifiess_handler.h"
 #include "usesp_modifiesp_handler.h"
 #include "variable.h"
 #include "procedure.h"
@@ -22,6 +22,7 @@ RelationshipQueryManager::RelationshipQueryManager(
 void RelationshipQueryManager::EvaluateRelationships() {
   // Iterating through relationships_ and evaluating one by one.
   // For basic requirements, there will be only 1 relationship_.
+  printf("am i evaluating relationships\n");
   for (SuchThatClause *relationship : *relationships_) {
     RelRef relationship_type = relationship->get_type();
     switch (relationship_type) {
@@ -74,8 +75,8 @@ void RelationshipQueryManager::EvaluateRelationships() {
         break;
       }
       case RelRef::UsesS: {
-        UsesModifiesHandler *uses_modifies_handler =
-            UsesModifiesHandler::get_instance();
+        UsesSModifiesSHandler *uses_modifies_handler =
+            UsesSModifiesSHandler::get_instance();
         uses_modifies_handler->set_function_pointers(&Statement::get_uses,
                                                      &Variable::get_stmts_using);
         uses_modifies_handler->set_args(pkb_,
@@ -86,8 +87,8 @@ void RelationshipQueryManager::EvaluateRelationships() {
         break;
       }
       case RelRef::ModifiesS: {
-        UsesModifiesHandler *uses_modifies_handler =
-            UsesModifiesHandler::get_instance();
+        UsesSModifiesSHandler *uses_modifies_handler =
+            UsesSModifiesSHandler::get_instance();
         uses_modifies_handler->set_function_pointers(&Statement::get_modifies,
                                                      &Variable::get_stmts_modifying);
         uses_modifies_handler->set_args(pkb_,

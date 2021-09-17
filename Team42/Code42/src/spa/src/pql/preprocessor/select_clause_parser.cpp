@@ -311,11 +311,21 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
   // first pass to remove all whitespaces within brackets and before brackets
   bool whitespace_found = true;
   bool open_bracket_found = false;
+  std::stringstream prev_word_stream;
   for (char c : input) {
     if (c == ' ') {
       if (!whitespace_found) {
         ss << c;
+        prev_word_stream << c;
         whitespace_found = true;
+      }
+
+      // extra check to account for such that clause without extra spaces 
+      std::string check_for_such = prev_word_stream.str();
+      if (check_for_such == "such ") {
+        prev_word_stream << c;
+      } else if (check_for_such.substr(0, 4) != "such"){
+        prev_word_stream.str("");
       }
     } else if (c == '(' || c == '<') {
       std::string curr_ss = ss.str();
@@ -334,6 +344,11 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
       ss << c;
       if (!open_bracket_found) {
         whitespace_found = false;
+        prev_word_stream << c;
+        std::string check_for_such_that = prev_word_stream.str();
+        if (check_for_such_that == "such  that") { // extra spaces between such that clause
+          return make_tuple(select_clause, such_that_clauses, pattern_clauses);
+        }
       }
     }
   }

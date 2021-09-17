@@ -28,7 +28,7 @@ void TestWrapper::parse(std::string filename) {
 	// call your parser to do the parsing
   // ...rest of your code...
   const std::ifstream input_stream(filename, std::ios_base::binary);
-  
+
   if (input_stream.fail()) {
     throw std::runtime_error("Failed to open file");
   }

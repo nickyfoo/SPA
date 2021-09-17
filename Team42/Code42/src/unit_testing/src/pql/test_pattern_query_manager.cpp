@@ -127,7 +127,6 @@ TEST_CASE("Pattern_AssignVariableAndPartialPattern_ReturnsExpected") {
   std::vector<std::string> *ret = evaluator->Evaluate();
 
   std::vector<std::string> expected = {"16", "21", "23"};
-
   REQUIRE(ret->size() == expected.size());
   for (int i = 0; i < expected.size(); i++) {
     REQUIRE(ret->at(i) == expected.at(i));

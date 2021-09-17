@@ -1,5 +1,7 @@
 #include "parse.h"
 
+#include <iostream>
+
 ProcedureNode *ParseProcedure(BufferedLexer *lexer, ParseState *state) {
   const Token *t = lexer->GetNextToken();
   int start_line = t->line_no_;

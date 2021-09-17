@@ -4,11 +4,11 @@
 #include "statement.h"
 #include <set>
 
-PatternQueryManager::PatternQueryManager(std::unordered_map<std::string,
-                                                            std::vector<Entity *>> *synonym_to_entity_result,
-                                         std::vector<PatternClause *> *patterns,
-                                         std::vector<std::string> *entities_to_return,
-                                         PKB *pkb) {
+PatternQueryManager::PatternQueryManager(
+    std::unordered_map<std::string, std::vector<Entity *>> *synonym_to_entity_result,
+    std::vector<PatternClause *> *patterns,
+    std::vector<std::string> *entities_to_return,
+    PKB *pkb) {
   this->synonym_to_entity_result_ = synonym_to_entity_result;
   this->patterns_ = patterns;
   this->entities_to_return_ = entities_to_return;

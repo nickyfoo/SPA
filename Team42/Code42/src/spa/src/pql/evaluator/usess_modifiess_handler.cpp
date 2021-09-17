@@ -55,7 +55,7 @@ void UsesSModifiesSHandler::Evaluate() {
     right_entity_vec = &synonym_to_entity_result_->at(right_synonym);
     for (int i = 0; i < left_entity_vec->size(); i++) {
       auto *stmt = dynamic_cast<Statement *>(left_entity_vec->at(i));
-      if (StatementForwarder(get_normal_, stmt)->empty()) {
+      if (stmt == nullptr || StatementForwarder(get_normal_, stmt)->empty()) {
         // Remove statements that do not have something it uses.
         left_entity_vec->erase(left_entity_vec->begin() + i);
         i--;
@@ -63,7 +63,7 @@ void UsesSModifiesSHandler::Evaluate() {
     }
     for (int j = 0; j < right_entity_vec->size(); j++) {
       auto *variable = dynamic_cast<Variable *>(right_entity_vec->at(j));
-      if (VariableForwarder(get_reverse_, variable)->empty()) {
+      if (variable == nullptr || VariableForwarder(get_reverse_, variable)->empty()) {
         // Remove variables that are not used
         right_entity_vec->erase(right_entity_vec->begin() + j);
         j--;
@@ -77,7 +77,7 @@ void UsesSModifiesSHandler::Evaluate() {
     for (int i = 0; i < left_entity_vec->size(); i++) {
       auto *stmt = dynamic_cast<Statement *>(left_entity_vec->at(i));
       // Remove each statement that doesnt use anything.
-      if (StatementForwarder(get_normal_, stmt)->empty()) {
+      if (stmt == nullptr || StatementForwarder(get_normal_, stmt)->empty()) {
         left_entity_vec->erase(left_entity_vec->begin() + i);
         i--;
       }
@@ -91,7 +91,7 @@ void UsesSModifiesSHandler::Evaluate() {
     for (int i = 0; i < left_entity_vec->size(); i++) {
       auto *stmt = dynamic_cast<Statement *>(left_entity_vec->at(i));
       // Remove each statement that doesnt have right arg in its uses
-      if (!StatementForwarder(get_normal_, stmt)->count(right_arg)) {
+      if (stmt == nullptr || !StatementForwarder(get_normal_, stmt)->count(right_arg)) {
         left_entity_vec->erase(left_entity_vec->begin() + i);
         i--;
       }
@@ -105,7 +105,7 @@ void UsesSModifiesSHandler::Evaluate() {
     for (int i = 0; i < right_entity_vec->size(); i++) {
       auto *variable = dynamic_cast<Variable *>(right_entity_vec->at(i));
       // Remove each statement that doesnt have left arg in its users.
-      if (!VariableForwarder(get_reverse_, variable)->count(left_arg)) {
+      if (variable == nullptr || !VariableForwarder(get_reverse_, variable)->count(left_arg)) {
         right_entity_vec->erase(right_entity_vec->begin() + i);
         i--;
       }
@@ -114,7 +114,7 @@ void UsesSModifiesSHandler::Evaluate() {
       right_ent.get_type() == EntRefType::WildCard) {  // Uses(4, _)
     int left_arg = left_ent.get_stmt_num();
     Statement *stmt = pkb_->get_statement(left_arg);
-    if (StatementForwarder(get_normal_, stmt)->empty()) {
+    if (stmt == nullptr || StatementForwarder(get_normal_, stmt)->empty()) {
       // If statement with left arg as line number
       // does not use anything then clear results vector
       synonym_to_entity_result_->at(entities_to_return_->at(0)).clear();
@@ -124,7 +124,7 @@ void UsesSModifiesSHandler::Evaluate() {
     int left_arg = left_ent.get_stmt_num();
     std::string right_arg = right_ent.get_argument();
     Statement *stmt = pkb_->get_statement(left_arg);
-    if (!StatementForwarder(get_normal_, stmt)->count(right_arg)) {
+    if (stmt == nullptr || !StatementForwarder(get_normal_, stmt)->count(right_arg)) {
       // Clear results vector if this relationship_ is false
       synonym_to_entity_result_->at(entities_to_return_->at(0)).clear();
     }

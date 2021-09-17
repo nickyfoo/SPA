@@ -670,3 +670,25 @@ TEST_CASE("Test 24: Follows_parents_queries query 1") {
         REQUIRE(ret->at(i) == expected.at(i));
   }
 }
+
+TEST_CASE("Test 25: Follows_parents_queries query 104") {
+  std::string ss = "stmt s;"
+                   "Select s such that Parent(_,0)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(follows_parents_source.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < ret->size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}

@@ -42,8 +42,9 @@ void FollowsParentsHandler::Evaluate() {
     int left_arg = left_ent.get_stmt_num();
     int right_arg = right_ent.get_stmt_num();
     Statement *stmt = pkb_->get_statement(left_arg);
-    if (!Forwarder(get_normal_, stmt)->count(right_arg)) {
+    if (stmt == nullptr || !Forwarder(get_normal_, stmt)->count(right_arg)) {
       // Clear results vector if this relationship_ is false
+      // or if stmt is a nullptr
       synonym_to_entity_result_->at(entities_to_return_->at(0)).clear();
     }
   } else if (left_ent.get_type() == StmtRefType::Synonym &&
@@ -55,7 +56,7 @@ void FollowsParentsHandler::Evaluate() {
     for (int i = 0; i < left_entity_vec->size(); i++) {
       auto *stmt = dynamic_cast<Statement *>(left_entity_vec->at(i));
       // Remove each statement that doesnt have right arg in its followers
-      if (!Forwarder(get_normal_, stmt)->count(right_arg)) {
+      if (stmt == nullptr || !Forwarder(get_normal_, stmt)->count(right_arg)) {
         left_entity_vec->erase(left_entity_vec->begin() + i);
         i--;
       }
@@ -69,7 +70,7 @@ void FollowsParentsHandler::Evaluate() {
     for (int i = 0; i < right_entity_vec->size(); i++) {
       auto *stmt = dynamic_cast<Statement *>(right_entity_vec->at(i));
       // Remove each statement that doesnt have left arg in its followees,
-      if (!Forwarder(get_reverse_, stmt)->count(left_arg)) {
+      if (stmt == nullptr || !Forwarder(get_reverse_, stmt)->count(left_arg)) {
         right_entity_vec->erase(right_entity_vec->begin() + i);
         i--;
       }
@@ -84,7 +85,7 @@ void FollowsParentsHandler::Evaluate() {
     left_entity_vec = &synonym_to_entity_result_->at(left_synonym);
     for (int i = 0; i < left_entity_vec->size(); i++) {
       auto *stmt = dynamic_cast<Statement *>(left_entity_vec->at(i));
-      if (Forwarder(get_normal_, stmt)->empty()) {
+      if (stmt == nullptr || Forwarder(get_normal_, stmt)->empty()) {
         // Remove statements that do not have a follower
         left_entity_vec->erase(left_entity_vec->begin() + i);
         i--;
@@ -92,7 +93,7 @@ void FollowsParentsHandler::Evaluate() {
     }
     for (int j = 0; j < right_entity_vec->size(); j++) {
       auto *stmt = dynamic_cast<Statement *>(right_entity_vec->at(j));
-      if (Forwarder(get_reverse_, stmt)->empty()) {
+      if (stmt == nullptr || Forwarder(get_reverse_, stmt)->empty()) {
         // Remove statements that do not have a followee
         right_entity_vec->erase(right_entity_vec->begin() + j);
         j--;
@@ -105,7 +106,7 @@ void FollowsParentsHandler::Evaluate() {
     bool found_non_empty_vec = false;
     for (int i = 0; i < entity_vec.size(); i++) {
       Statement *stmt = entity_vec.at(i);
-      if (!Forwarder(get_normal_, stmt)->empty()) {
+      if (stmt == nullptr || !Forwarder(get_normal_, stmt)->empty()) {
         found_non_empty_vec = true;
         // As long as any statement has a statement following it
         // then it will return true and move on
@@ -121,7 +122,7 @@ void FollowsParentsHandler::Evaluate() {
       right_ent.get_type() == StmtRefType::StmtNum) {  // eg Follows(_, 4)
     int right_arg = right_ent.get_stmt_num();
     Statement *stmt = pkb_->get_statement(right_arg);
-    if (Forwarder(get_reverse_, stmt)->empty()) {
+    if (stmt == nullptr || Forwarder(get_reverse_, stmt)->empty()) {
       // If statement with right arg as line number
       // does not have any followees then clear results vector
       synonym_to_entity_result_->at(entities_to_return_->at(0)).clear();
@@ -134,7 +135,7 @@ void FollowsParentsHandler::Evaluate() {
     for (int i = 0; i < right_entity_vec->size(); i++) {
       auto *stmt = dynamic_cast<Statement *>(right_entity_vec->at(i));
       // Remove each statement that doesnt have any item in its followees.
-      if (Forwarder(get_reverse_, stmt)->empty()) {
+      if (stmt == nullptr || Forwarder(get_reverse_, stmt)->empty()) {
         right_entity_vec->erase(right_entity_vec->begin() + i);
         i--;
       }
@@ -143,7 +144,7 @@ void FollowsParentsHandler::Evaluate() {
       right_ent.get_type() == StmtRefType::WildCard) {  // eg Follows(4, _)
     int left_arg = left_ent.get_stmt_num();
     Statement *stmt = pkb_->get_statement(left_arg);
-    if (Forwarder(get_normal_, stmt)->empty()) {
+    if (stmt == nullptr || Forwarder(get_normal_, stmt)->empty()) {
       // If statement with left arg as line number
       // does not have any followers then clear results vector
       synonym_to_entity_result_->at(entities_to_return_->at(0)).clear();
@@ -156,7 +157,7 @@ void FollowsParentsHandler::Evaluate() {
     for (int i = 0; i < left_entity_vec->size(); i++) {
       auto *stmt = dynamic_cast<Statement *>(left_entity_vec->at(i));
       // Remove each statement that doesnt have any item in its followers.
-      if (Forwarder(get_normal_, stmt)->empty()) {
+      if (stmt == nullptr || Forwarder(get_normal_, stmt)->empty()) {
         left_entity_vec->erase(left_entity_vec->begin() + i);
         i--;
       }

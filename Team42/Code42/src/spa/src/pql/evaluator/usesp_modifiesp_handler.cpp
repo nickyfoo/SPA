@@ -55,7 +55,7 @@ void UsesPModifiesPHandler::Evaluate() {
     right_entity_vec = &synonym_to_entity_result_->at(right_synonym);
     for (int i = 0; i < left_entity_vec->size(); i++) {
       auto *proc = dynamic_cast<Procedure *>(left_entity_vec->at(i));
-      if (ProcedureForwarder(get_normal_, proc)->empty()) {
+      if (proc == nullptr || ProcedureForwarder(get_normal_, proc)->empty()) {
         // Remove procedures that do not have something it uses.
         left_entity_vec->erase(left_entity_vec->begin() + i);
         i--;
@@ -63,7 +63,7 @@ void UsesPModifiesPHandler::Evaluate() {
     }
     for (int j = 0; j < right_entity_vec->size(); j++) {
       auto *variable = dynamic_cast<Variable *>(right_entity_vec->at(j));
-      if (VariableForwarder(get_reverse_, variable)->empty()) {
+      if (variable == nullptr || VariableForwarder(get_reverse_, variable)->empty()) {
         // Remove variables that are not used
         right_entity_vec->erase(right_entity_vec->begin() + j);
         j--;
@@ -77,7 +77,7 @@ void UsesPModifiesPHandler::Evaluate() {
     for (int i = 0; i < left_entity_vec->size(); i++) {
       auto *proc = dynamic_cast<Procedure *>(left_entity_vec->at(i));
       // Remove each procedure that doesnt use anything.
-      if (ProcedureForwarder(get_normal_, proc)->empty()) {
+      if (proc == nullptr || ProcedureForwarder(get_normal_, proc)->empty()) {
         left_entity_vec->erase(left_entity_vec->begin() + i);
         i--;
       }
@@ -89,9 +89,9 @@ void UsesPModifiesPHandler::Evaluate() {
     std::vector<Entity *> *left_entity_vec;
     left_entity_vec = &synonym_to_entity_result_->at(left_synonym);
     for (int i = 0; i < left_entity_vec->size(); i++) {
-      auto *stmt = dynamic_cast<Procedure *>(left_entity_vec->at(i));
+      auto *proc = dynamic_cast<Procedure *>(left_entity_vec->at(i));
       // Remove each procedure that doesnt have right arg in its uses
-      if (!ProcedureForwarder(get_normal_, stmt)->count(right_arg)) {
+      if (proc == nullptr || !ProcedureForwarder(get_normal_, proc)->count(right_arg)) {
         left_entity_vec->erase(left_entity_vec->begin() + i);
         i--;
       }
@@ -105,7 +105,7 @@ void UsesPModifiesPHandler::Evaluate() {
     for (int i = 0; i < right_entity_vec->size(); i++) {
       auto *variable = dynamic_cast<Variable *>(right_entity_vec->at(i));
       // Remove each variable that doesnt have left arg in its users.
-      if (!VariableForwarder(get_reverse_, variable)->count(left_arg)) {
+      if (variable == nullptr || !VariableForwarder(get_reverse_, variable)->count(left_arg)) {
         right_entity_vec->erase(right_entity_vec->begin() + i);
         i--;
       }
@@ -114,7 +114,7 @@ void UsesPModifiesPHandler::Evaluate() {
       right_ent.get_type() == EntRefType::WildCard) {  // UsesP("sth", _)
     std::string left_arg = left_ent.get_argument();
     Procedure *proc = pkb_->get_procedure(left_arg);
-    if (ProcedureForwarder(get_normal_, proc)->empty()) {
+    if (proc == nullptr || ProcedureForwarder(get_normal_, proc)->empty()) {
       // If procedure with left arg as name
       // does not use anything then clear results vector
       synonym_to_entity_result_->at(entities_to_return_->at(0)).clear();

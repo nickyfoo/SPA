@@ -3,6 +3,7 @@
 #include "statement.h"
 #include "procedure.h"
 #include "variable.h"
+#include "pattern_query_manager.h"
 #include "relationship_query_manager.h"
 #include "pql_query.h"
 #include "pkb.h"
@@ -11,11 +12,13 @@ QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
   if (pql_query != nullptr) {
     QueryEvaluator::entities_to_return_ = pql_query->get_query_entities();
     QueryEvaluator::relationships_ = pql_query->get_query_relationships();
+    QueryEvaluator::patterns_ = pql_query->get_query_patterns();
     QueryEvaluator::synonym_to_entity_dec_ = pql_query->get_synonym_to_entities();
     this->pkb_ = pkb;
   } else {
     QueryEvaluator::entities_to_return_ = nullptr;
     QueryEvaluator::relationships_ = nullptr;
+    QueryEvaluator::patterns_ = nullptr;
     QueryEvaluator::synonym_to_entity_dec_ = nullptr;
     this->pkb_ = nullptr;
   }
@@ -129,14 +132,22 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
   }
   if (!relationships_->empty() &&
       !IsEmpty(synonym_to_entity_result)) {
-    RelationshipQueryManager relationshipQueryManager =
+    RelationshipQueryManager relationship_query_manager =
         RelationshipQueryManager(synonym_to_entity_result,
                                  relationships_,
                                  entities_to_return_,
                                  pkb_);
-    relationshipQueryManager.EvaluateRelationships();
+    relationship_query_manager.EvaluateRelationships();
   }
-  // Do same check for patterns too and pass to PatternManager
+  if (!patterns_->empty() &&
+      !IsEmpty(synonym_to_entity_result)) {
+    PatternQueryManager pattern_query_manager =
+        PatternQueryManager(synonym_to_entity_result,
+                                 patterns_,
+                                 entities_to_return_,
+                                 pkb_);
+    pattern_query_manager.EvaluatePatterns();
+  }
 
   return ConvertToOutput(synonym_to_entity_result);
 }

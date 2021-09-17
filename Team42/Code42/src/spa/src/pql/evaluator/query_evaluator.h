@@ -14,6 +14,7 @@ class QueryEvaluator {
  private:
   std::vector<std::string> *entities_to_return_;
   std::vector<SuchThatClause *> *relationships_;
+  std::vector<PatternClause *> *patterns_;
   PKB *pkb_;
   std::unordered_map<std::string, EntityDeclaration *> *synonym_to_entity_dec_;
   static bool IsEmpty(

@@ -159,7 +159,7 @@ TEST_CASE("Test 4: Select") {
   REQUIRE(ret->at(0) == expected.at(0));
 }
 
-TEST_CASE("Test 5: Incorrect PQL input") {
+TEST_CASE("Test 5: Incorrect pql input") {
   std::string ss = "stmt s1;\n"
                    "Select s1 HELLO";
   auto *query = new QueryPreprocessor(ss);
@@ -379,9 +379,6 @@ TEST_CASE("Test 13: Parent Integer, Integer") {
     PKB pkb = PKB(p);
     auto evaluator = new QueryEvaluator(clause, &pkb);
     std::vector<std::string> *ret = evaluator->Evaluate();
-//    for (std::string str: *ret) {
-//        printf("whats in ret %s\n", str.c_str());
-//    }
 
     std::vector<std::string> expected = {"1", "2", "3", "4", "5", "6", "7", "8",
                                          "9", "10", "11", "12", "13", "14",
@@ -616,7 +613,6 @@ TEST_CASE("Test 23: ModifiesP Argument, Synonym") {
 
   REQUIRE(ret->size() == expected.size());
   for (int i = 0; i < ret->size(); i++) {
-    printf("items in result: %s\n", ret->at(i).c_str());
-//    REQUIRE(ret->at(i) == expected.at(i));
+    REQUIRE(std::find(expected.begin(), expected.end(), ret->at(i)) != expected.end());
   }
 }

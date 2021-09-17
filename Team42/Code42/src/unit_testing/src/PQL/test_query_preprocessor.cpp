@@ -764,3 +764,31 @@ TEST_CASE("Select_InvalidKeywords_ReturnsNullPtr") {
   PQLQuery *clause = query->get_pql_query();
   REQUIRE(clause == nullptr);
 }
+
+TEST_CASE("Select_FollowsPattern_ReturnsCorrect") {
+  std::string ss = "assign a; variable v;\n"
+                   "Select a such that Follows(a,_) pattern a(v, _)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "a");
+  REQUIRE(clause->get_query_relationships()->size() == 1);
+  SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+  REQUIRE(relationship->get_type() == RelRef::Follows);
+  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "a");
+  REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_type() == StmtRefType::WildCard);
+
+  REQUIRE(clause->get_query_patterns()->size() == 1);
+  PatternClause *pattern = clause->get_query_patterns()->at(0);
+  REQUIRE(pattern->get_synonym()->get_synonym() == "a");
+  REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern->get_left_ref()->get_synonym() == "v");
+  REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
+}
+
+TEST_CASE("SuchThat_SpacesBetweenSuchThat_ReturnsNullPtr") {
+  std::string ss = "stmt s; assign a; Select s such       that Follows (_,_)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}

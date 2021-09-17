@@ -36,11 +36,11 @@ PQLQuery *SelectClauseParser::get_clauses() {
   auto *select_ret = new std::vector<std::string>();
   auto *such_that_ret = new std::vector<SuchThatClause *>();
   auto *pattern_ret = new std::vector<PatternClause *>();
-
   std::vector<std::string> select_clauses = SplitSelect(select_clause);
   if (select_clauses.empty()) {  // invalid select syntax
     return nullptr;
   }
+
   for (const std::string &select : select_clauses) {
     // not found in hashmap
     if (synonym_to_entity_->find(select) == synonym_to_entity_->end()) {
@@ -49,6 +49,7 @@ PQLQuery *SelectClauseParser::get_clauses() {
       select_ret->push_back(select);
     }
   }
+
   for (const std::string &such_that_clause : such_that_clauses) {
     SuchThatClause *relationship = MakeSuchThatClause(such_that_clause);
     if (relationship == nullptr) {
@@ -56,6 +57,7 @@ PQLQuery *SelectClauseParser::get_clauses() {
     }
     such_that_ret->push_back(relationship);
   }
+
   for (const std::string &pattern_clause : pattern_clauses) {
     PatternClause *pattern = MakePatternClause(pattern_clause);
     if (pattern == nullptr) {
@@ -246,6 +248,7 @@ std::vector<std::string> SelectClauseParser::SplitSelect(
     std::string select_clause) {
   const std::string WHITESPACE = " \n\r\t\f\v";
   size_t pos = select_clause.find_first_not_of(WHITESPACE);
+
   if (pos == std::string::npos) {
     return {};
   } else {
@@ -265,6 +268,7 @@ std::vector<std::string> SelectClauseParser::SplitSelect(
                              select_clause.end(), '\n'), select_clause.end());
   select_clause.erase(remove(select_clause.begin(), select_clause.end(), ' '),
                       select_clause.end());
+
   if (select_clause.empty()) {
     return {};
   } else if (select_clause.at(0) == '<'
@@ -306,7 +310,6 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
   std::string token;
   bool last_found_such_that = false;
   bool last_found_pattern = false;
-
   std::stringstream ss;
   // first pass to remove all whitespaces within brackets and before brackets
   bool whitespace_found = true;
@@ -314,15 +317,16 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
   std::stringstream prev_word_stream;
   for (char c : input) {
     if (c == ' ') {
+      // extra check to account for such that clause without extra spaces
+      std::string check_for_such = prev_word_stream.str();
+      bool such_clause_found = false;
       if (!whitespace_found) {
         ss << c;
         prev_word_stream << c;
         whitespace_found = true;
+        such_clause_found = true;
       }
-
-      // extra check to account for such that clause without extra spaces 
-      std::string check_for_such = prev_word_stream.str();
-      if (check_for_such == "such ") {
+      if (check_for_such == "such " && !such_clause_found) {
         prev_word_stream << c;
       } else if (check_for_such.substr(0, 4) != "such"){
         prev_word_stream.str("");
@@ -334,10 +338,16 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
         ss << curr_ss.substr(0, curr_ss.length() - 1);
       }
       ss << c;
+      if (open_bracket_found) {  // additional open brackets found
+        return make_tuple(select_clause, such_that_clauses, pattern_clauses);
+      }
       open_bracket_found = true;
       whitespace_found = true;
     } else if (c == ')' || c == '>') {
       ss << c;
+      if (!open_bracket_found) {  // additional close brackets found
+        return make_tuple(select_clause, such_that_clauses, pattern_clauses);
+      }
       open_bracket_found = false;
       whitespace_found = false;
     } else {

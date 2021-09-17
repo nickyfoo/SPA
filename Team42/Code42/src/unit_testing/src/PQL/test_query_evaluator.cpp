@@ -76,6 +76,38 @@ std::string samplePQL = "procedure Example {"
                         "else {"
                         "x = z + x; } }";
 
+std::string follows_parents_source = "procedure Main {\n"
+                                     "    read a;\n"
+                                     "    b = 20;\n"
+                                     "    print c;\n"
+                                     "    d = 10;\n"
+                                     "    read e;\n"
+                                     "    if (f==1) then {\n"
+                                     "        while(g!=f) {\n"
+                                     "            a = b + c;\n"
+                                     "            g = f + 2;\n"
+                                     "        }\n"
+                                     "    } else {\n"
+                                     "        while((h != 0)&&(i!=0)) {\n"
+                                     "            h = i / j;\n"
+                                     "            while (h!=2) {\n"
+                                     "                print j;\n"
+                                     "                if (a==a) then {\n"
+                                     "                    read b;\n"
+                                     "                } else {\n"
+                                     "                   h = h - g;\n"
+                                     "                }\n"
+                                     "                c = 3;\n"
+                                     "           }\n"
+                                     "        }\n"
+                                     "        k = k + 10;\n"
+                                     "        l = l / 4 + k * 2;\n"
+                                     "    }\n"
+                                     "    print a;\n"
+                                     "    b = 2;\n"
+                                     "    c = b + a;\n"
+                                     "}";
+
 TEST_CASE("Test 1: Follows Synonym + Integer") {
   std::string ss = "stmt s1;\n"
                    "Select s1 such that Follows(s1, 3)";
@@ -618,5 +650,27 @@ TEST_CASE("Test 23: ModifiesP Argument, Synonym") {
   for (int i = 0; i < ret->size(); i++) {
     printf("items in result: %s\n", ret->at(i).c_str());
 //    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("Test 24: Follows_parents_queries query 1") {
+  std::string ss = "read r;\n"
+                   "Select r such that Follows(1, 2)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(follows_parents_source.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"1", "5", "15"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < ret->size(); i++) {
+        REQUIRE(ret->at(i) == expected.at(i));
   }
 }

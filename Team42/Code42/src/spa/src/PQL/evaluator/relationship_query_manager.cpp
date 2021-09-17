@@ -22,7 +22,6 @@ RelationshipQueryManager::RelationshipQueryManager(
 void RelationshipQueryManager::EvaluateRelationships() {
   // Iterating through relationships_ and evaluating one by one.
   // For basic requirements, there will be only 1 relationship_.
-  printf("am i evaluating relationships\n");
   for (SuchThatClause *relationship : *relationships_) {
     RelRef relationship_type = relationship->get_type();
     switch (relationship_type) {

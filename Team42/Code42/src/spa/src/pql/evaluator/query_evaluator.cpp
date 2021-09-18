@@ -131,7 +131,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
     synonym_to_entity_result->insert({pair.first, entities});
   }
   if (!relationships_->empty() &&
-      !IsEmpty(synonym_to_entity_result)) {
+  !IsEmpty(synonym_to_entity_result)) {
     RelationshipQueryManager relationship_query_manager =
         RelationshipQueryManager(synonym_to_entity_result,
                                  relationships_,
@@ -139,14 +139,25 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
                                  pkb_);
     relationship_query_manager.EvaluateRelationships();
   }
+  // Check if any entity vector is empty
+  // If it is, return empty result.
+  if (IsEmpty(synonym_to_entity_result)) {
+    return new std::vector<std::string>{};
+  }
+
   if (!patterns_->empty() &&
-      !IsEmpty(synonym_to_entity_result)) {
+  !IsEmpty(synonym_to_entity_result)) {
     PatternQueryManager pattern_query_manager =
         PatternQueryManager(synonym_to_entity_result,
-                                 patterns_,
-                                 entities_to_return_,
-                                 pkb_);
+                            patterns_,
+                            entities_to_return_,
+                            pkb_);
     pattern_query_manager.EvaluatePatterns();
+  }
+  // Check if any entity vector is empty
+  // If it is, return empty result.
+  if (IsEmpty(synonym_to_entity_result)) {
+    return new std::vector<std::string>{};
   }
 
   return ConvertToOutput(synonym_to_entity_result);

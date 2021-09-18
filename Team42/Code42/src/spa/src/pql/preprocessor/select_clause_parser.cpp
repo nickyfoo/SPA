@@ -175,6 +175,7 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRef(
       case EntityType::Stmt:
       case EntityType::While: {
         stmt_ref.set_synonym(ref);
+        stmt_ref.set_entity_type(entity_type);
         ret = new SuchThatRef(stmt_ref);
         break;
       }

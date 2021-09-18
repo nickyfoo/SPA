@@ -692,3 +692,71 @@ TEST_CASE("Test 25: Follows_parents_queries query 104") {
     REQUIRE(ret->at(i) == expected.at(i));
   }
 }
+
+TEST_CASE("Test 26: Follows_parents_queries query 8") {
+  std::string ss = "read r; if ifs;"
+                   "Select r such that Follows(r, ifs)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(follows_parents_source.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"5"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < ret->size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("Test 27: Follows_parents_queries query 87") {
+  std::string ss = "while w; stmt s;"
+                   "Select s such that Parent(w, 16)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(follows_parents_source.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < ret->size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+//TEST_CASE("Test 28: Follows_parents_queries query 87") {
+//  std::string ss = "stmt s, Select; "
+//                   "Select Select such that Parent(s,Select)";
+//  auto *query = new QueryPreprocessor(ss);
+//  PQLQuery *clause = query->get_pql_query();
+//  if (clause == nullptr) {
+//  }
+//
+//  // Parse source
+//  BufferedLexer lexer(follows_parents_source.c_str());
+//  ParseState s{};
+//  ProgramNode *p = ParseProgram(&lexer, &s);
+//  PKB pkb = PKB(p);
+//  auto evaluator = new QueryEvaluator(clause, &pkb);
+//  std::vector<std::string> *ret = evaluator->Evaluate();
+//
+//  std::vector<std::string> expected = {"10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "7", "8", "9"};
+//
+//  REQUIRE(ret->size() == expected.size());
+//  for (int i = 0; i < ret->size(); i++) {
+//    REQUIRE(ret->at(i) == expected.at(i));
+//  }
+//}

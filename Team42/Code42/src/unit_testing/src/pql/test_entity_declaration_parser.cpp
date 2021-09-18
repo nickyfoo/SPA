@@ -53,20 +53,20 @@ TEST_CASE("Test 3: Having multiple synonyms for 1 entity type_") {
     EntityDeclarationParser* entityParser =
             EntityDeclarationParser::get_instance();
     vector<string>* entities =
-            new vector<string>({"stmt s, s2", "procedure p"});
+            new vector<string>({"stmt S, s2", "procedure p"});
     entityParser->set_entities(entities);
 
     unordered_map<string, EntityDeclaration*> expectedEntitiesMap = {
-            {"s", new EntityDeclaration(EntityType::Stmt, "s")},
+            {"S", new EntityDeclaration(EntityType::Stmt, "S")},
             {"s2", new EntityDeclaration(EntityType::Stmt, "s2")},
             {"p", new EntityDeclaration(EntityType::Procedure, "p")}
     };
     unordered_map<string, EntityDeclaration*>* entitiesMap =
             entityParser->get_entities_map();
     REQUIRE(expectedEntitiesMap.size() == entitiesMap->size());
-    REQUIRE(expectedEntitiesMap.at("s")->get_synonym() ==
-    entitiesMap->at("s")->get_synonym());
-    REQUIRE(entitiesMap->at("s")->get_type() == EntityType::Stmt);
+    REQUIRE(expectedEntitiesMap.at("S")->get_synonym() ==
+    entitiesMap->at("S")->get_synonym());
+    REQUIRE(entitiesMap->at("S")->get_type() == EntityType::Stmt);
     REQUIRE(expectedEntitiesMap.at("p")->get_synonym() ==
     entitiesMap->at("p")->get_synonym());
     REQUIRE(entitiesMap->at("p")->get_type() == EntityType::Procedure);
@@ -107,4 +107,19 @@ TEST_CASE("Invalid test: repeat synonym name") {
             entityParser->get_entities_map();
 
     REQUIRE(entitiesMap == nullptr);
+}
+
+TEST_CASE("Having Select in entity declaration") {
+  EntityDeclarationParser* entityParser =
+      EntityDeclarationParser::get_instance();
+  vector<string>* entities =
+      new vector<string>({"stmt s, Select"});
+  entityParser->set_entities(entities);
+  unordered_map<string, EntityDeclaration*>* entitiesMap =
+      entityParser->get_entities_map();
+  unordered_map<string, EntityDeclaration*> expectedEntitiesMap = {
+      {"s", new EntityDeclaration(EntityType::Stmt, "s")},
+      {"Select", new EntityDeclaration(EntityType::Stmt, "Select")}
+  };
+  REQUIRE(entitiesMap != nullptr);
 }

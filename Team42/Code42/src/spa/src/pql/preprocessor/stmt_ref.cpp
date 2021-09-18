@@ -40,3 +40,11 @@ std::string StmtRef::get_value() {
     default:return "No value!";
   }
 }
+
+void StmtRef::set_entity_type(EntityType type) {
+  this->entity_type_ = type;
+}
+
+EntityType StmtRef::get_entity_type() {
+  return this->entity_type_;
+}

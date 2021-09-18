@@ -2,56 +2,35 @@
 #include <stdexcept>
 
 #include "ast.h"
+#include "ast_utils.hpp"
+#include "string_utils.h"
 
-CondExpressionNode::CondExpressionNode(CondExprOp op, Node *left, Node *right,
-                                       std::string expr_string, LocInfo loc)
+CondExpressionNode::CondExpressionNode(CondExprOp op, CondExpressionNodeChild *left,
+                                       CondExpressionNodeChild *right, LocInfo loc)
     : Node(loc) {
-  if (left == nullptr ||
-      left->get_kind() != NodeType::RelExpression && left->get_kind() != NodeType::CondExpression) {
-    throw std::invalid_argument(
-        "CondExpressionNode: expected left to be RelExpression or "
-        "CondExpression");
-  }
-
-  if (op == CondExprOp::Not && right != nullptr) {
-    throw std::invalid_argument("CondExpressionNode: (Not) expected right to be nullptr");
-  }
-
-  if (op != CondExprOp::Not &&
-      (right == nullptr || right->get_kind() != NodeType::RelExpression &&
-                               right->get_kind() != NodeType::CondExpression)) {
-    throw std::invalid_argument(
-        "CondExpressionNode: expected right to be RelExpression or "
-        "CondExpression");
-  }
-
   this->op_ = op;
   this->left_ = left;
   this->right_ = right;
-  this->expr_string_ = expr_string;
 }
 
 NodeType CondExpressionNode::get_kind() { return NodeType::CondExpression; }
 
 CondExprOp CondExpressionNode::get_op() { return this->op_; }
 
-Node *CondExpressionNode::get_left() {
-  assert(this->left_->get_kind() == NodeType::RelExpression ||
-         this->left_->get_kind() == NodeType::CondExpression);
+Node *CondExpressionNode::get_left() { return this->left_; }
 
-  return this->left_;
-}
+Node *CondExpressionNode::get_right() { return this->right_; }
 
-Node *CondExpressionNode::get_right() {
-  if (this->op_ == CondExprOp::Not) {
-    assert(this->right_ == nullptr);
-    return nullptr;
+std::string CondExpressionNode::get_expr_string() {
+  std::string op, left, right;
+
+  op = CondExprOpToString(this->op_);
+  if (this->left_) {
+    left = this->left_->get_expr_string();
+  }
+  if (this->right_) {
+    right = this->right_->get_expr_string();
   }
 
-  assert(this->right_->get_kind() == NodeType::RelExpression ||
-         this->right_->get_kind() == NodeType::CondExpression);
-
-  return this->right_;
+  return StringFormat("%s %s %s", left.c_str(), right.c_str(), op.c_str());
 }
-
-std::string CondExpressionNode::get_expr_string() { return this->expr_string_; }

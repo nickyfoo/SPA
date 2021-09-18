@@ -7,6 +7,49 @@
 
 #include "ast.h"
 
+inline std::string ExprOpToString(ExprOp op) {
+  switch (op) {
+    case ExprOp::Plus:
+      return "+";
+    case ExprOp::Minus:
+      return "-";
+    case ExprOp::Times:
+      return "*";
+    case ExprOp::Divide:
+      return "/";
+    case ExprOp::Modulo:
+      return "%";
+  }
+}
+
+inline std::string RelExprOpToString(RelExprOp op) {
+  switch (op) {
+    case RelExprOp::Gt:
+      return ">";
+    case RelExprOp::Gte:
+      return ">=";
+    case RelExprOp::Lt:
+      return "<";
+    case RelExprOp::Lte:
+      return "<=";
+    case RelExprOp::Eq:
+      return "==";
+    case RelExprOp::Neq:
+      return "!=";
+  }
+}
+
+inline std::string CondExprOpToString(CondExprOp op) {
+  switch (op) {
+    case CondExprOp::And:
+      return "&&";
+    case CondExprOp::Or:
+      return "||";
+    case CondExprOp::Not:
+      return "!";
+  }
+}
+
 bool IsIdentifierEqual(IdentifierNode *i1, IdentifierNode *i2);
 bool IsConstantEqual(ConstantNode *c1, ConstantNode *c2);
 bool IsExpressionEqual(ExpressionNode *e1, ExpressionNode *e2);
@@ -384,7 +427,8 @@ inline std::vector<Node *> NextNodes(Node *node) {
   return next_nodes;
 }
 
-inline void Visit(Node *node, std::map<NodeType, std::vector<std::function<void(Node *)>>> functions) {
+inline void Visit(Node *node,
+                  std::map<NodeType, std::vector<std::function<void(Node *)>>> functions) {
   // TODO: throw an error
   if (node == nullptr) return;
 
@@ -397,10 +441,8 @@ inline void Visit(Node *node, std::map<NodeType, std::vector<std::function<void(
   }
 }
 inline void VisitWithAncestors(
-  Node *node, 
-  std::vector<Node *>& ancestor_list, 
-  std::map<NodeType, 
-  std::vector<std::function<void(Node *, std::vector<Node *>)>>>&functions) {
+    Node *node, std::vector<Node *> &ancestor_list,
+    std::map<NodeType, std::vector<std::function<void(Node *, std::vector<Node *>)>>> &functions) {
   if (node) {
     for (auto func : functions[node->get_kind()]) {
       func(node, ancestor_list);
@@ -415,4 +457,3 @@ inline void VisitWithAncestors(
   }
   ancestor_list.pop_back();
 }
-

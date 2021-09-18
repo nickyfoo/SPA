@@ -2,6 +2,7 @@
 
 #include <map>
 #include <vector>
+#include <string>
 
 #include "ast.h"
 #include "lexer.h"
@@ -11,7 +12,6 @@ enum class IdentifierType { ProcedureType, VariableType };
 class ParseState {
  public:
   int stmt_count_;
-  std::map<std::string, IdentifierType> identifiers_;
 };
 
 class ParseException : public std::exception {

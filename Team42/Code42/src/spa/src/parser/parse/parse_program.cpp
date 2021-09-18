@@ -1,5 +1,6 @@
-#include "parse.h"
 #include "iostream"
+#include "parse.h"
+#include "string_utils.h"
 
 ProgramNode *ParseProgram(BufferedLexer *lexer, ParseState *state) {
   const Token *t = lexer->PeekNextToken();
@@ -8,8 +9,9 @@ ProgramNode *ParseProgram(BufferedLexer *lexer, ParseState *state) {
 
   std::vector<ProcedureNode *> procedures{};
   while (t->kind_ != TokenType::End) {
-    if (t->kind_ != TokenType::Procedure) {
-      throw ParseException("expected Procedure", t->line_no_, t->col_no_);
+    if (t->kind_ != TokenType::Name && t->value_ != "procedure") {
+      throw ParseException(StringFormat("expected 'procedure' but got %s", t->value_.c_str()),
+                           t->line_no_, t->col_no_);
     }
 
     ProcedureNode *p = ParseProcedure(lexer, state);
@@ -20,4 +22,3 @@ ProgramNode *ParseProgram(BufferedLexer *lexer, ParseState *state) {
 
   return new ProgramNode(procedures, {start_line, start_col});
 }
-

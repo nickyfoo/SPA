@@ -56,7 +56,37 @@ class StatementNode : public Node {
   int stmt_no_;
 };
 
-class IdentifierNode : public Node {
+class AssignNodeExpr : public virtual Node {
+ public:
+  virtual NodeType get_kind() = 0;
+  virtual std::string get_expr_string() = 0;
+};
+
+class ExpressionNodeChild : public virtual Node {
+ public:
+  virtual NodeType get_kind() = 0;
+  virtual std::string get_expr_string() = 0;
+};
+
+class RelExpressionNodeChild : public virtual Node {
+ public:
+  virtual NodeType get_kind() = 0;
+  virtual std::string get_expr_string() = 0;
+};
+
+class CondExpressionNodeChild : public virtual Node {
+ public:
+  virtual NodeType get_kind() = 0;
+  virtual std::string get_expr_string() = 0;
+};
+
+class IfWhileNodeCond : public virtual Node {
+ public:
+  virtual NodeType get_kind() = 0;
+  virtual std::string get_expr_string() = 0;
+};
+
+class IdentifierNode : public AssignNodeExpr, ExpressionNodeChild, RelExpressionNodeChild {
  public:
   IdentifierNode(std::string name, LocInfo loc);
   NodeType get_kind();
@@ -67,7 +97,7 @@ class IdentifierNode : public Node {
   std::string name_;
 };
 
-class ConstantNode : public Node {
+class ConstantNode : public AssignNodeExpr, ExpressionNodeChild, RelExpressionNodeChild {
  public:
   ConstantNode(std::string value, LocInfo loc);
   NodeType get_kind();
@@ -78,9 +108,9 @@ class ConstantNode : public Node {
   std::string value_;
 };
 
-class ExpressionNode : public Node {
+class ExpressionNode : public AssignNodeExpr, ExpressionNodeChild, RelExpressionNodeChild {
  public:
-  ExpressionNode(ExprOp op, Node *left, Node *right, std::string expr_string, LocInfo loc);
+  ExpressionNode(ExprOp op, ExpressionNodeChild *left, ExpressionNodeChild *right, LocInfo loc);
   NodeType get_kind();
   ExprOp get_op();
   Node *get_left();
@@ -89,14 +119,14 @@ class ExpressionNode : public Node {
 
  private:
   ExprOp op_;
-  Node *left_;               // must be Expression, Constant or Identifier
-  Node *right_;              // must be Expression, Constant or Identifier
-  std::string expr_string_;  // converted to postfix notation
+  ExpressionNodeChild *left_;
+  ExpressionNodeChild *right_;
 };
 
-class RelExpressionNode : public Node {
+class RelExpressionNode : public CondExpressionNodeChild, IfWhileNodeCond {
  public:
-  RelExpressionNode(RelExprOp op, Node *left, Node *right, std::string expr_string, LocInfo loc);
+  RelExpressionNode(RelExprOp op, RelExpressionNodeChild *left, RelExpressionNodeChild *right,
+                    LocInfo loc);
   NodeType get_kind();
   RelExprOp get_op();
   Node *get_left();
@@ -105,14 +135,14 @@ class RelExpressionNode : public Node {
 
  private:
   RelExprOp op_;
-  Node *left_;               // must be Expresesion, Constant or Identifier
-  Node *right_;              // must be Expression, Constant or Identifier
-  std::string expr_string_;  // converted to postfix notation
+  RelExpressionNodeChild *left_;
+  RelExpressionNodeChild *right_;
 };
 
-class CondExpressionNode : public Node {
+class CondExpressionNode : public CondExpressionNodeChild, IfWhileNodeCond {
  public:
-  CondExpressionNode(CondExprOp op, Node *left, Node *right, std::string expr_string, LocInfo loc);
+  CondExpressionNode(CondExprOp op, CondExpressionNodeChild *left, CondExpressionNodeChild *right,
+                     LocInfo loc);
   NodeType get_kind();
   CondExprOp get_op();
   Node *get_left();
@@ -121,26 +151,25 @@ class CondExpressionNode : public Node {
 
  private:
   CondExprOp op_;
-  Node *left_;               // must be RelExpression or CondExpression
-  Node *right_;              // must be RelExpression or CondExpression
-  std::string expr_string_;  // converted to postfix notation
+  CondExpressionNodeChild *left_;
+  CondExpressionNodeChild *right_;
 };
 
 class AssignNode : public StatementNode {
  public:
-  AssignNode(IdentifierNode *var, Node *expr, int stmt_no, LocInfo loc);
+  AssignNode(IdentifierNode *var, AssignNodeExpr *expr, int stmt_no, LocInfo loc);
   NodeType get_kind();
   IdentifierNode *get_var();
   Node *expr();
 
  private:
   IdentifierNode *var_;
-  Node *expr_;  // must be Expression, Constant or Identifier
+  AssignNodeExpr *expr_;
 };
 
 class IfNode : public StatementNode {
  public:
-  IfNode(Node *cond, std::vector<StatementNode *> then_stmt_lst,
+  IfNode(IfWhileNodeCond *cond, std::vector<StatementNode *> then_stmt_lst,
          std::vector<StatementNode *> else_stmt_lst, int stmt_no, LocInfo loc);
   NodeType get_kind();
   Node *get_cond();
@@ -148,20 +177,20 @@ class IfNode : public StatementNode {
   std::vector<StatementNode *> get_else_stmt_lst();
 
  private:
-  Node *cond_;  // must be RelExprNode or CondExprNode
+  IfWhileNodeCond *cond_;
   std::vector<StatementNode *> then_stmt_lst_;
   std::vector<StatementNode *> else_stmt_lst_;
 };
 
 class WhileNode : public StatementNode {
  public:
-  WhileNode(Node *cond, std::vector<StatementNode *> stmt_lst, int stmt_no, LocInfo loc);
+  WhileNode(IfWhileNodeCond *cond, std::vector<StatementNode *> stmt_lst, int stmt_no, LocInfo loc);
   NodeType get_kind();
   Node *get_cond();
   std::vector<StatementNode *> get_stmt_list();
 
  private:
-  Node *cond_;  // must be RelExprNode or CondExprNode
+  IfWhileNodeCond *cond_;
   std::vector<StatementNode *> stmt_lst_;
 };
 

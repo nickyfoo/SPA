@@ -77,7 +77,7 @@ TEST_CASE("Test PatternManager TestAssignmentPattern") {
                          "}";
 
     // Parse source code
-    BufferedLexer lexer(source.c_str());
+    BufferedLexer lexer(source);
     ParseState s{};
     ProgramNode *p = ParseProgram(&lexer, &s);
     PKB pkb = PKB(p);

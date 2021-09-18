@@ -21,7 +21,7 @@ std::vector<StatementNode *> IfNode::get_then_stmt_lst() { return this->then_stm
 std::vector<StatementNode *> IfNode::get_else_stmt_lst() { return this->else_stmt_lst_; }
 
 std::string IfNode::ToString() {
-  std::string res = StringFormat("IfNode:\nCond:\n%s\nThen:", this->cond_->ToString().c_str());
+  std::string res = StringFormat("IfNode: {\nCond:\n%s\nThen:", this->cond_->ToString().c_str());
   for (auto i = 0; i < this->then_stmt_lst_.size(); i++) {
     res += StringFormat("\n#%d:\n%s", i + 1, this->then_stmt_lst_[i]->ToString().c_str());
   }
@@ -30,6 +30,8 @@ std::string IfNode::ToString() {
   for (auto i = 0; i < this->else_stmt_lst_.size(); i++) {
     res += StringFormat("\n#%d:\n%s", i + 1, this->else_stmt_lst_[i]->ToString().c_str());
   }
+
+  res += "\n}";
 
   return res;
 }

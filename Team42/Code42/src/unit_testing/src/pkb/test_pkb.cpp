@@ -40,7 +40,7 @@ std::string source = "procedure main {\n"
                      "}";
 
 TEST_CASE("Test PKB::Initialise()") {
-  BufferedLexer lexer(source.c_str());
+  BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -48,7 +48,7 @@ TEST_CASE("Test PKB::Initialise()") {
 }
 
 TEST_CASE("Test pkb::GetFollows()") {
-  BufferedLexer lexer(source.c_str());
+  BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -61,7 +61,7 @@ TEST_CASE("Test pkb::GetFollows()") {
 }
 
 TEST_CASE("Test pkb::GetParent()") {
-  BufferedLexer lexer(source.c_str());
+  BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -74,7 +74,7 @@ TEST_CASE("Test pkb::GetParent()") {
 }
 
 TEST_CASE("Test pkb::ExtractCalls()") {
-  BufferedLexer lexer(source.c_str());
+  BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -86,7 +86,7 @@ TEST_CASE("Test pkb::ExtractCalls()") {
 }
 
 TEST_CASE("Test pkb::ExtractUsesModifies()") {
-  BufferedLexer lexer(source.c_str());
+  BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -119,7 +119,7 @@ TEST_CASE("Test pkb::ExtractUsesModifies() for containerstmts") {
       "d = e + f;}"
       "}";
 
-  BufferedLexer lexer(source2.c_str());
+  BufferedLexer lexer(source2);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);

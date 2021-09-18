@@ -1,10 +1,11 @@
+#include <iostream>
 #include <stdexcept>
 
 #include "parse.h"
 #include "string_utils.h"
 
 RelExpressionNode *ParseRelExpression(BufferedLexer *lexer, ParseState *state) {
-  const Token *t = lexer->GetNextToken();
+  const Token *t = lexer->PeekNextToken();
   int start_line = t->line_no_;
   int start_col = t->col_no_;
 

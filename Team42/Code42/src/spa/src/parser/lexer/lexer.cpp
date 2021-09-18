@@ -70,34 +70,34 @@ const Token *Lexer::GetNextToken() {
   switch (this->GetCurChar()) {
     case ';':
       this->AdvancePointer();
-      return new Token(TokenType::Semicolon, "", cur_line_, cur_col_);
+      return new Token(TokenType::Semicolon, ";", cur_line_, cur_col_);
     case '(':
       this->AdvancePointer();
-      return new Token(TokenType::LParen, "", cur_line_, cur_col_);
+      return new Token(TokenType::LParen, "(", cur_line_, cur_col_);
     case ')':
       this->AdvancePointer();
-      return new Token(TokenType::RParen, "", cur_line_, cur_col_);
+      return new Token(TokenType::RParen, ")", cur_line_, cur_col_);
     case '{':
       this->AdvancePointer();
-      return new Token(TokenType::LBrace, "", cur_line_, cur_col_);
+      return new Token(TokenType::LBrace, "{", cur_line_, cur_col_);
     case '}':
       this->AdvancePointer();
-      return new Token(TokenType::RBrace, "", cur_line_, cur_col_);
+      return new Token(TokenType::RBrace, "}", cur_line_, cur_col_);
     case '+':
       this->AdvancePointer();
-      return new Token(TokenType::Plus, "", cur_line_, cur_col_);
+      return new Token(TokenType::Plus, "+", cur_line_, cur_col_);
     case '-':
       this->AdvancePointer();
-      return new Token(TokenType::Minus, "", cur_line_, cur_col_);
+      return new Token(TokenType::Minus, "-", cur_line_, cur_col_);
     case '/':
       this->AdvancePointer();
-      return new Token(TokenType::Divide, "", cur_line_, cur_col_);
+      return new Token(TokenType::Divide, "/", cur_line_, cur_col_);
     case '*':
       this->AdvancePointer();
-      return new Token(TokenType::Multiply, "", cur_line_, cur_col_);
+      return new Token(TokenType::Multiply, "*", cur_line_, cur_col_);
     case '%':
       this->AdvancePointer();
-      return new Token(TokenType::Modulo, "", cur_line_, cur_col_);
+      return new Token(TokenType::Modulo, "%", cur_line_, cur_col_);
     default:
       std::string value = std::string(1, this->GetCurChar());
       this->AdvancePointer();

@@ -10,5 +10,5 @@ std::string ConstantNode::get_value() { return this->value_; }
 std::string ConstantNode::get_expr_string() { return this->value_; }
 
 std::string ConstantNode::ToString() {
-  return StringFormat("ConstantNode:\nVal: %s", this->value_.c_str());
+  return StringFormat("ConstantNode: {\nVal: %s\n}", this->value_.c_str());
 }

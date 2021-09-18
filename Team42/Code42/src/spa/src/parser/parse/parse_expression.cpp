@@ -38,7 +38,7 @@ std::variant<ExpressionNode *, ConstantNode *, IdentifierNode *> ParseExpression
 
           if (result_stack.size() < 2) {
             throw ParseException(
-                StringFormat("missing operands for '%s' expression", op_token->value_),
+                StringFormat("missing operands for '%s' expression", op_token->value_.c_str()),
                 op_token->line_no_, op_token->col_no_);
           }
 
@@ -46,20 +46,20 @@ std::variant<ExpressionNode *, ConstantNode *, IdentifierNode *> ParseExpression
           auto next_res = result_stack.top();
           result_stack.pop();
           if (std::holds_alternative<ConstantNode *>(next_res)) {
-            left = static_cast<ExpressionNodeChild *>(std::get<ConstantNode *>(next_res));
-          } else if (std::holds_alternative<IdentifierNode *>(next_res)) {
-            left = static_cast<ExpressionNodeChild *>(std::get<IdentifierNode *>(next_res));
-          } else {
-            left = static_cast<ExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
-          }
-          next_res = result_stack.top();
-          result_stack.pop();
-          if (std::holds_alternative<ConstantNode *>(next_res)) {
             right = static_cast<ExpressionNodeChild *>(std::get<ConstantNode *>(next_res));
           } else if (std::holds_alternative<IdentifierNode *>(next_res)) {
             right = static_cast<ExpressionNodeChild *>(std::get<IdentifierNode *>(next_res));
           } else {
             right = static_cast<ExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
+          }
+          next_res = result_stack.top();
+          result_stack.pop();
+          if (std::holds_alternative<ConstantNode *>(next_res)) {
+            left = static_cast<ExpressionNodeChild *>(std::get<ConstantNode *>(next_res));
+          } else if (std::holds_alternative<IdentifierNode *>(next_res)) {
+            left = static_cast<ExpressionNodeChild *>(std::get<IdentifierNode *>(next_res));
+          } else {
+            left = static_cast<ExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
           }
 
           auto res = new ExpressionNode(ExprOpFromToken(op_token), left, right,
@@ -69,8 +69,13 @@ std::variant<ExpressionNode *, ConstantNode *, IdentifierNode *> ParseExpression
 
         // we expect a LParen at top of stack
         if (operator_stack.empty()) {
+          if (result_stack.size() == 1) {
+            // this additional ')' might be from a surrounding node
+            return result_stack.top();
+          }
           throw ParseException("matching '(' not found", next_token->line_no_, next_token->col_no_);
         }
+        operator_stack.pop();
         break;
 
       default:
@@ -81,7 +86,7 @@ std::variant<ExpressionNode *, ConstantNode *, IdentifierNode *> ParseExpression
           operator_stack.pop();
           if (result_stack.size() < 2) {
             throw ParseException(
-                StringFormat("missing operands for '%s' expression", op_token->value_),
+                StringFormat("missing operands for '%s' expression", op_token->value_.c_str()),
                 op_token->line_no_, op_token->col_no_);
           }
 
@@ -89,20 +94,20 @@ std::variant<ExpressionNode *, ConstantNode *, IdentifierNode *> ParseExpression
           auto next_res = result_stack.top();
           result_stack.pop();
           if (std::holds_alternative<ConstantNode *>(next_res)) {
-            left = static_cast<ExpressionNodeChild *>(std::get<ConstantNode *>(next_res));
-          } else if (std::holds_alternative<IdentifierNode *>(next_res)) {
-            left = static_cast<ExpressionNodeChild *>(std::get<IdentifierNode *>(next_res));
-          } else {
-            left = static_cast<ExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
-          }
-          next_res = result_stack.top();
-          result_stack.pop();
-          if (std::holds_alternative<ConstantNode *>(next_res)) {
             right = static_cast<ExpressionNodeChild *>(std::get<ConstantNode *>(next_res));
           } else if (std::holds_alternative<IdentifierNode *>(next_res)) {
             right = static_cast<ExpressionNodeChild *>(std::get<IdentifierNode *>(next_res));
           } else {
             right = static_cast<ExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
+          }
+          next_res = result_stack.top();
+          result_stack.pop();
+          if (std::holds_alternative<ConstantNode *>(next_res)) {
+            left = static_cast<ExpressionNodeChild *>(std::get<ConstantNode *>(next_res));
+          } else if (std::holds_alternative<IdentifierNode *>(next_res)) {
+            left = static_cast<ExpressionNodeChild *>(std::get<IdentifierNode *>(next_res));
+          } else {
+            left = static_cast<ExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
           }
 
           auto res = new ExpressionNode(ExprOpFromToken(op_token), left, right,
@@ -128,20 +133,20 @@ std::variant<ExpressionNode *, ConstantNode *, IdentifierNode *> ParseExpression
     auto next_res = result_stack.top();
     result_stack.pop();
     if (std::holds_alternative<ConstantNode *>(next_res)) {
-      left = static_cast<ExpressionNodeChild *>(std::get<ConstantNode *>(next_res));
-    } else if (std::holds_alternative<IdentifierNode *>(next_res)) {
-      left = static_cast<ExpressionNodeChild *>(std::get<IdentifierNode *>(next_res));
-    } else {
-      left = static_cast<ExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
-    }
-    next_res = result_stack.top();
-    result_stack.pop();
-    if (std::holds_alternative<ConstantNode *>(next_res)) {
       right = static_cast<ExpressionNodeChild *>(std::get<ConstantNode *>(next_res));
     } else if (std::holds_alternative<IdentifierNode *>(next_res)) {
       right = static_cast<ExpressionNodeChild *>(std::get<IdentifierNode *>(next_res));
     } else {
       right = static_cast<ExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
+    }
+    next_res = result_stack.top();
+    result_stack.pop();
+    if (std::holds_alternative<ConstantNode *>(next_res)) {
+      left = static_cast<ExpressionNodeChild *>(std::get<ConstantNode *>(next_res));
+    } else if (std::holds_alternative<IdentifierNode *>(next_res)) {
+      left = static_cast<ExpressionNodeChild *>(std::get<IdentifierNode *>(next_res));
+    } else {
+      left = static_cast<ExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
     }
 
     auto res = new ExpressionNode(ExprOpFromToken(op_token), left, right,

@@ -22,17 +22,18 @@ Node *CondExpressionNode::get_left() { return this->left_; }
 Node *CondExpressionNode::get_right() { return this->right_; }
 
 std::string CondExpressionNode::get_expr_string() {
-  std::string op, left, right;
-
-  op = CondExprOpToString(this->op_);
-  if (this->left_) {
-    left = this->left_->get_expr_string();
-  }
+  std::string expr_string = CondExprOpToString(this->op_);
   if (this->right_) {
-    right = this->right_->get_expr_string();
+    expr_string =
+        StringFormat("%s %s", this->right_->get_expr_string().c_str(), expr_string.c_str());
   }
 
-  return StringFormat("%s %s %s", left.c_str(), right.c_str(), op.c_str());
+  if (this->left_) {
+    expr_string =
+        StringFormat("%s %s", this->left_->get_expr_string().c_str(), expr_string.c_str());
+  }
+
+  return expr_string;
 }
 
 std::string CondExpressionNode::ToString() {
@@ -45,6 +46,6 @@ std::string CondExpressionNode::ToString() {
   if (this->right_) {
     right = this->right_->ToString();
   }
-  return StringFormat("CondExpresionNode:\nOp: %s\nLeft:\n%s\nRight:\n%s", op.c_str(), left.c_str(),
-                      right.c_str());
+  return StringFormat("CondExpresionNode: {\nOp: %s\nLeft:\n%s\nRight:\n%s\n}", op.c_str(),
+                      left.c_str(), right.c_str());
 }

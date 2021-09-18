@@ -10,10 +10,11 @@ NodeType ProgramNode::get_kind() { return NodeType::Program; }
 std::vector<ProcedureNode *> ProgramNode::get_procedures() { return this->procedures_; }
 
 std::string ProgramNode::ToString() {
-  std::string res = "ProgramNode:\nProcedures:";
+  std::string res = "ProgramNode: {\nProcedures:";
   for (auto i = 0; i < this->procedures_.size(); i++) {
     res += StringFormat("\n#%d:\n%s", i + 1, this->procedures_[i]->ToString().c_str());
   }
+  res += "\n}";
 
   return res;
 }

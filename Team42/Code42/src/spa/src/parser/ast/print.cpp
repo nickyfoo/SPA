@@ -10,5 +10,5 @@ NodeType PrintNode::get_kind() { return NodeType::Print; }
 IdentifierNode *PrintNode::get_var() { return this->var_; }
 
 std::string PrintNode::ToString() {
-  return StringFormat("PrintNode:\nVar:\n%s", this->var_->ToString().c_str());
+  return StringFormat("PrintNode: {\nVar:\n%s\n}", this->var_->ToString().c_str());
 }

@@ -92,7 +92,7 @@ void ProcTable::DFS(int u, std::vector<std::vector<int>> &al,
     if (status[v] == UNVISITED) {
       DFS(v, al, status, ans);
     } else if (status[v] == VISITED) {
-      throw PKBException("Cycle detected!");
+      throw PKBException("Cyclic procedure calls detected");
     }
   }
   status[u] = EXPLORED;

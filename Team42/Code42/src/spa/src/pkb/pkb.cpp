@@ -518,11 +518,11 @@ void PKB::CallsProcessCallNode(Node *node, std::vector<Node *> &ancestorList) {
   for (Node *n : ancestorList) {
     if (n->get_kind() == NodeType::Procedure) {
       auto *procedure_node = dynamic_cast<ProcedureNode *>(n);
-      auto* calling_procedure = proc_table_.get_procedure(procedure_node->get_name());
+      auto *calling_procedure = proc_table_.get_procedure(procedure_node->get_name());
       calling_procedure->AddCalls(call_node->get_proc()->get_name());
-      auto* called_procedure = proc_table_.get_procedure(call_node->get_proc()->get_name());
+      auto *called_procedure = proc_table_.get_procedure(call_node->get_proc()->get_name());
       if (called_procedure == nullptr) {
-        throw PKBException(StringFormat("Called an undefined procedure: \"%s\"\n", call_node->get_proc()->get_name().c_str()));
+        throw PKBException(StringFormat("Called an undefined procedure: \"%s\"", call_node->get_proc()->get_name().c_str()));
       }
       called_procedure->AddCallers(procedure_node->get_name());
     }

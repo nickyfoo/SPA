@@ -90,14 +90,14 @@ void StmtTable::ProcessParentStar() {
   int n = num_statements_ + 1;
   std::vector<std::vector<int>> d = GetTransitiveClosure(parent_, n);
   for (int i = 0; i < n; i++) {
-      Statement *stmt = get_statement(i);
-      if (stmt == nullptr) continue;
+    Statement *stmt = get_statement(i);
+    if (stmt == nullptr) continue;
 
-      for (int j = 0; j < n; j++) {
-        if (d[i][j] == kInf) continue;
-        stmt->AddChildStar(j);
-        get_statement(j)->AddParentStar(i);
-      }
+    for (int j = 0; j < n; j++) {
+      if (d[i][j] == kInf) continue;
+      stmt->AddChildStar(j);
+      get_statement(j)->AddParentStar(i);
+    }
   }
 }
 

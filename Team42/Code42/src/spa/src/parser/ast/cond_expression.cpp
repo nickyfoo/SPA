@@ -34,3 +34,17 @@ std::string CondExpressionNode::get_expr_string() {
 
   return StringFormat("%s %s %s", left.c_str(), right.c_str(), op.c_str());
 }
+
+std::string CondExpressionNode::ToString() {
+  std::string op, left, right;
+
+  op = CondExprOpToString(this->op_);
+  if (this->left_) {
+    left = this->left_->ToString();
+  }
+  if (this->right_) {
+    right = this->right_->ToString();
+  }
+  return StringFormat("CondExpresionNode:\nOp: %s\nLeft:\n%s\nRight:\n%s", op.c_str(), left.c_str(),
+                      right.c_str());
+}

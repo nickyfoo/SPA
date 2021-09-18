@@ -30,9 +30,11 @@ struct LocInfo {
   int col_no;
 };
 
+// abstract classes
 class Node {
  public:
   virtual NodeType get_kind() = 0;
+  virtual std::string ToString() = 0;
   int get_line_no();
   int get_col_no();
 
@@ -46,7 +48,6 @@ class Node {
 
 class StatementNode : public Node {
  public:
-  virtual NodeType get_kind() = 0;
   int get_stmt_no();
 
  protected:
@@ -58,40 +59,37 @@ class StatementNode : public Node {
 
 class AssignNodeExpr : public virtual Node {
  public:
-  virtual NodeType get_kind() = 0;
   virtual std::string get_expr_string() = 0;
 };
 
 class ExpressionNodeChild : public virtual Node {
  public:
-  virtual NodeType get_kind() = 0;
   virtual std::string get_expr_string() = 0;
 };
 
 class RelExpressionNodeChild : public virtual Node {
  public:
-  virtual NodeType get_kind() = 0;
   virtual std::string get_expr_string() = 0;
 };
 
 class CondExpressionNodeChild : public virtual Node {
  public:
-  virtual NodeType get_kind() = 0;
   virtual std::string get_expr_string() = 0;
 };
 
 class IfWhileNodeCond : public virtual Node {
  public:
-  virtual NodeType get_kind() = 0;
   virtual std::string get_expr_string() = 0;
 };
 
+// concrete classes
 class IdentifierNode : public AssignNodeExpr,
                        public ExpressionNodeChild,
                        public RelExpressionNodeChild {
  public:
   IdentifierNode(std::string name, LocInfo loc);
   NodeType get_kind();
+  std::string ToString();
   std::string get_name();
   std::string get_expr_string();
 
@@ -105,6 +103,7 @@ class ConstantNode : public AssignNodeExpr,
  public:
   ConstantNode(std::string value, LocInfo loc);
   NodeType get_kind();
+  std::string ToString();
   std::string get_value();
   std::string get_expr_string();
 
@@ -118,6 +117,7 @@ class ExpressionNode : public AssignNodeExpr,
  public:
   ExpressionNode(ExprOp op, ExpressionNodeChild *left, ExpressionNodeChild *right, LocInfo loc);
   NodeType get_kind();
+  std::string ToString();
   ExprOp get_op();
   Node *get_left();
   Node *get_right();
@@ -134,6 +134,7 @@ class RelExpressionNode : public CondExpressionNodeChild, public IfWhileNodeCond
   RelExpressionNode(RelExprOp op, RelExpressionNodeChild *left, RelExpressionNodeChild *right,
                     LocInfo loc);
   NodeType get_kind();
+  std::string ToString();
   RelExprOp get_op();
   Node *get_left();
   Node *get_right();
@@ -150,6 +151,7 @@ class CondExpressionNode : public CondExpressionNodeChild, public IfWhileNodeCon
   CondExpressionNode(CondExprOp op, CondExpressionNodeChild *left, CondExpressionNodeChild *right,
                      LocInfo loc);
   NodeType get_kind();
+  std::string ToString();
   CondExprOp get_op();
   Node *get_left();
   Node *get_right();
@@ -165,6 +167,7 @@ class AssignNode : public StatementNode {
  public:
   AssignNode(IdentifierNode *var, AssignNodeExpr *expr, int stmt_no, LocInfo loc);
   NodeType get_kind();
+  std::string ToString();
   IdentifierNode *get_var();
   Node *expr();
 
@@ -178,6 +181,7 @@ class IfNode : public StatementNode {
   IfNode(IfWhileNodeCond *cond, std::vector<StatementNode *> then_stmt_lst,
          std::vector<StatementNode *> else_stmt_lst, int stmt_no, LocInfo loc);
   NodeType get_kind();
+  std::string ToString();
   Node *get_cond();
   std::vector<StatementNode *> get_then_stmt_lst();
   std::vector<StatementNode *> get_else_stmt_lst();
@@ -192,6 +196,7 @@ class WhileNode : public StatementNode {
  public:
   WhileNode(IfWhileNodeCond *cond, std::vector<StatementNode *> stmt_lst, int stmt_no, LocInfo loc);
   NodeType get_kind();
+  std::string ToString();
   Node *get_cond();
   std::vector<StatementNode *> get_stmt_list();
 
@@ -204,6 +209,7 @@ class ReadNode : public StatementNode {
  public:
   ReadNode(IdentifierNode *var, int stmt_no, LocInfo loc);
   NodeType get_kind();
+  std::string ToString();
   IdentifierNode *get_var();
 
  private:
@@ -214,6 +220,7 @@ class PrintNode : public StatementNode {
  public:
   PrintNode(IdentifierNode *var, int stmt_no, LocInfo loc);
   NodeType get_kind();
+  std::string ToString();
   IdentifierNode *get_var();
 
  private:
@@ -224,6 +231,7 @@ class CallNode : public StatementNode {
  public:
   CallNode(IdentifierNode *proc, int stmt_no, LocInfo loc);
   NodeType get_kind();
+  std::string ToString();
   IdentifierNode *get_proc();
 
  private:
@@ -234,6 +242,7 @@ class ProcedureNode : public Node {
  public:
   ProcedureNode(std::string name, std::vector<StatementNode *> stmt_lst, LocInfo loc);
   NodeType get_kind();
+  std::string ToString();
   std::string get_name();
   std::vector<StatementNode *> get_stmt_lst();
 
@@ -246,6 +255,7 @@ class ProgramNode : public Node {
  public:
   ProgramNode(std::vector<ProcedureNode *> procedures, LocInfo loc);
   NodeType get_kind();
+  std::string ToString();
   std::vector<ProcedureNode *> get_procedures();
 
  private:

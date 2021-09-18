@@ -34,3 +34,17 @@ std::string ExpressionNode::get_expr_string() {
 
   return StringFormat("%s %s %s", left.c_str(), right.c_str(), op.c_str());
 }
+
+std::string ExpressionNode::ToString() {
+  std::string op, left, right;
+
+  op = ExprOpToString(this->op_);
+  if (this->left_) {
+    left = this->left_->ToString();
+  }
+  if (this->right_) {
+    right = this->right_->ToString();
+  }
+
+  return StringFormat("ExpressionNode:\nOp: %s\n Left:\n%s\nRight:\n%s", left.c_str(), right.c_str(), op.c_str());
+}

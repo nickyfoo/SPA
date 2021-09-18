@@ -1,4 +1,5 @@
 #include "ast.h"
+#include "string_utils.h"
 
 CallNode::CallNode(IdentifierNode *proc, int stmt_no, LocInfo loc) : StatementNode(stmt_no, loc) {
   this->proc_ = proc;
@@ -7,3 +8,7 @@ CallNode::CallNode(IdentifierNode *proc, int stmt_no, LocInfo loc) : StatementNo
 NodeType CallNode::get_kind() { return NodeType::Call; }
 
 IdentifierNode *CallNode::get_proc() { return this->proc_; }
+
+std::string CallNode::ToString() {
+  return StringFormat("CallNode:\nProc:\n%s\nExpr:\n%s", this->proc_->ToString().c_str());
+}

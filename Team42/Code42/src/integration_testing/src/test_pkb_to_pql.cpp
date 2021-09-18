@@ -42,10 +42,10 @@ std::string s = "procedure main {"
                 "normSq = cenX * cenX + cenY * cenY;"
                 "}";
 
-TEST_CASE("Pattern_AssignVariableAndWildCard_ReturnsExpected") {
+TEST_CASE("PQL_FollowsAndPattern_ReturnsExpected") {
 
   std::string ss = "assign a; variable v;\n"
-                   "Select a pattern a(v, _)";
+                   "Select a such that Follows(a,_) pattern a(v, _)";
   auto *query = new QueryPreprocessor(ss);
   PQLQuery *clause = query->get_pql_query();
 
@@ -58,7 +58,7 @@ TEST_CASE("Pattern_AssignVariableAndWildCard_ReturnsExpected") {
   auto evaluator = new QueryEvaluator(clause, &pkb);
   std::vector<std::string> *ret = evaluator->Evaluate();
 
-  std::vector<std::string> expected = {"1", "10", "11", "12", "15", "16", "17", "20", "21", "22", "23"};
+  std::vector<std::string> expected = {"1", "10", "11", "12", "15", "16", "17", "21" };
 
   REQUIRE(ret->size() == expected.size());
   for (int i = 0; i < expected.size(); i++) {
@@ -66,9 +66,180 @@ TEST_CASE("Pattern_AssignVariableAndWildCard_ReturnsExpected") {
   }
 }
 
-TEST_CASE("Pattern_AssignVariableAndPattern_ReturnsExpected") {
+TEST_CASE("PQL_PatternAndFollows_ReturnsExpected") {
+
   std::string ss = "assign a; variable v;\n"
-                   "Select a pattern a(v, '0')";
+                   "Select a pattern a(v, _) such that Follows(a,_)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(s.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"1", "10", "11", "12", "15", "16", "17", "21" };
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < expected.size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("PQL_PatternAndFollowsWithExtraWords_ReturnsEmpty") {
+
+  std::string ss = "assign a; variable v;\n"
+                   "Select a pattern a(v, _) and such that Follows(a,_)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(s.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < expected.size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+// HERE ONWARDS
+
+TEST_CASE("PQL_FollowsAndPatternUnrelated_ReturnsExpected") {
+
+  std::string ss = "assign a; variable v; while w;\n"
+                   "Select w such that Follows(w,_) pattern a(v, _)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(s.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"14"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < expected.size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("PQL_FollowsStarAndPattern_ReturnsExpected") {
+
+  std::string ss = "assign a; variable v; while w;\n"
+                   "Select a such that Follows*(_,a) pattern a(_, _'cenY'_)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(s.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"17", "22", "23"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < expected.size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("PQL_ParentAndPattern_ReturnsExpected") {
+
+  std::string ss = "stmt s; assign a; variable v; while w;\n"
+                   "Select s such that Parent(s,a) pattern a(_, _'cenX'_)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(s.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"14", "19"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < expected.size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("PQL_ParentStarAndPattern_ReturnsExpected") {
+
+  std::string ss = "assign a; variable v; while w;\n"
+                   "Select a such that Parent*(_,a) pattern a(v, _'1'_)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(s.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"15", "20"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < expected.size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("PQL_UsesAndPattern_ReturnsExpected") {
+
+  std::string ss = "assign a; variable v; while w;\n"
+                   "Select a such that Uses(a, v) pattern a(_, _)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(s.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"15", "16", "17", "21", "22", "23"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < expected.size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("PQL_ModifiesAndPattern_ReturnsExpected") {
+
+  std::string ss = "assign a; variable v; while w;\n"
+                   "Select a such that Modifies(a, v) pattern a(v, _'0'_) ";
   auto *query = new QueryPreprocessor(ss);
   PQLQuery *clause = query->get_pql_query();
 
@@ -82,15 +253,18 @@ TEST_CASE("Pattern_AssignVariableAndPattern_ReturnsExpected") {
   std::vector<std::string> *ret = evaluator->Evaluate();
 
   std::vector<std::string> expected = {"1", "10", "11", "12"};
+
   REQUIRE(ret->size() == expected.size());
   for (int i = 0; i < expected.size(); i++) {
     REQUIRE(ret->at(i) == expected.at(i));
   }
 }
 
-TEST_CASE("Pattern_AssignVariableAndVariable_ReturnsEmpty") {
-  std::string ss = "assign a; variable v1, v2; \n"
-                   "Select a pattern a(v1, v2)";
+TEST_CASE("PQL_KeywordAsSynonym_ReturnsExpected") {
+
+  std::string ss = "assign pattern; variable v; while w;\n"
+                   "Select pattern such that Follows(pattern , _) pattern pattern (v, _'cenX'_)";
+
   auto *query = new QueryPreprocessor(ss);
   PQLQuery *clause = query->get_pql_query();
 
@@ -103,190 +277,7 @@ TEST_CASE("Pattern_AssignVariableAndVariable_ReturnsEmpty") {
   auto evaluator = new QueryEvaluator(clause, &pkb);
   std::vector<std::string> *ret = evaluator->Evaluate();
 
-  std::vector<std::string> expected = {};
-
-  REQUIRE(ret->size() == expected.size());
-  for (int i = 0; i < expected.size(); i++) {
-    REQUIRE(ret->at(i) == expected.at(i));
-  }
-}
-
-TEST_CASE("Pattern_AssignVariableAndPartialPattern_ReturnsExpected") {
-  std::string ss = "assign a; variable v;\n"
-                   "Select a pattern a(v, _'cenX'_)";
-  auto *query = new QueryPreprocessor(ss);
-  PQLQuery *clause = query->get_pql_query();
-
-  // Parse source
-  BufferedLexer lexer(s.c_str());
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
-
-  auto evaluator = new QueryEvaluator(clause, &pkb);
-  std::vector<std::string> *ret = evaluator->Evaluate();
-
-  std::vector<std::string> expected = {"16", "21", "23"};
-  REQUIRE(ret->size() == expected.size());
-  for (int i = 0; i < expected.size(); i++) {
-    REQUIRE(ret->at(i) == expected.at(i));
-  }
-}
-
-TEST_CASE("Pattern_AssignWildCardAndWildCard_ReturnsExpected") {
-  std::string ss = "assign a; variable v;\n"
-                   "Select a pattern a(_, _)";
-  auto *query = new QueryPreprocessor(ss);
-  PQLQuery *clause = query->get_pql_query();
-
-  // Parse source
-  BufferedLexer lexer(s.c_str());
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
-
-  auto evaluator = new QueryEvaluator(clause, &pkb);
-  std::vector<std::string> *ret = evaluator->Evaluate();
-
-  std::vector<std::string> expected = {"1", "10", "11", "12", "15", "16", "17", "20", "21", "22", "23"};
-
-  REQUIRE(ret->size() == expected.size());
-  for (int i = 0; i < expected.size(); i++) {
-    REQUIRE(ret->at(i) == expected.at(i));
-  }
-}
-
-TEST_CASE("Pattern_AssignWildCardAndPattern_ReturnsExpected") {
-  std::string ss = "assign a; variable v;\n"
-                   "Select a pattern a(_, '0')";
-  auto *query = new QueryPreprocessor(ss);
-  PQLQuery *clause = query->get_pql_query();
-
-  // Parse source
-  BufferedLexer lexer(s.c_str());
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
-
-  auto evaluator = new QueryEvaluator(clause, &pkb);
-  std::vector<std::string> *ret = evaluator->Evaluate();
-
-  std::vector<std::string> expected = {"1", "10", "11", "12"};
-
-  REQUIRE(ret->size() == expected.size());
-  for (int i = 0; i < expected.size(); i++) {
-    REQUIRE(ret->at(i) == expected.at(i));
-  }
-}
-
-TEST_CASE("Pattern_AssignWildCardAndPartialPattern_ReturnsExpected") {
-  std::string ss = "assign a; variable v;\n"
-                   "Select a pattern a(_, _'cenX'_)";
-  auto *query = new QueryPreprocessor(ss);
-  PQLQuery *clause = query->get_pql_query();
-
-  // Parse source
-  BufferedLexer lexer(s.c_str());
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
-
-  auto evaluator = new QueryEvaluator(clause, &pkb);
-  std::vector<std::string> *ret = evaluator->Evaluate();
-
-  std::vector<std::string> expected = {"16", "21", "23"};
-
-  REQUIRE(ret->size() == expected.size());
-  for (int i = 0; i < expected.size(); i++) {
-    REQUIRE(ret->at(i) == expected.at(i));
-  }
-}
-
-TEST_CASE("Pattern_PrintWildCardAndPattern_ReturnsEmpty") {
-  std::string ss = "print p; variable v;\n"
-                   "Select p pattern p(_, _'cenX'_)";
-  auto *query = new QueryPreprocessor(ss);
-  PQLQuery *clause = query->get_pql_query();
-
-  // Parse source
-  BufferedLexer lexer(s.c_str());
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
-
-  auto evaluator = new QueryEvaluator(clause, &pkb);
-  std::vector<std::string> *ret = evaluator->Evaluate();
-
-  std::vector<std::string> expected = {};
-
-  REQUIRE(ret->size() == expected.size());
-  for (int i = 0; i < expected.size(); i++) {
-    REQUIRE(ret->at(i) == expected.at(i));
-  }
-}
-
-TEST_CASE("Pattern_AssignWildCardAndWrongPartialPattern_ReturnsEmpty") {
-  std::string ss = "assign a; variable v;\n"
-                   "Select a pattern a(_, 'cenX'_)";
-  auto *query = new QueryPreprocessor(ss);
-  PQLQuery *clause = query->get_pql_query();
-
-  // Parse source
-  BufferedLexer lexer(s.c_str());
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
-
-  auto evaluator = new QueryEvaluator(clause, &pkb);
-  std::vector<std::string> *ret = evaluator->Evaluate();
-
-  std::vector<std::string> expected = {};
-
-  REQUIRE(ret->size() == expected.size());
-  for (int i = 0; i < expected.size(); i++) {
-    REQUIRE(ret->at(i) == expected.at(i));
-  }
-}
-
-TEST_CASE("Pattern_AssignStmtAndPartialPattern_ReturnsEmpty") {
-  std::string ss = "assign a; stmt s;\n"
-                   "Select a pattern a(s, _'cenX'_)";
-  auto *query = new QueryPreprocessor(ss);
-  PQLQuery *clause = query->get_pql_query();
-
-  // Parse source
-  BufferedLexer lexer(s.c_str());
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
-
-  auto evaluator = new QueryEvaluator(clause, &pkb);
-  std::vector<std::string> *ret = evaluator->Evaluate();
-
-  std::vector<std::string> expected = {};
-
-  REQUIRE(ret->size() == expected.size());
-  for (int i = 0; i < expected.size(); i++) {
-    REQUIRE(ret->at(i) == expected.at(i));
-  }
-}
-
-TEST_CASE("Pattern_AssignStmtAndPartialPattern_ReturnsEmpty") {
-  std::string ss = "assign a; stmt s;\n"
-                   "Select a pattern a(s, _'cenX'_)";
-  auto *query = new QueryPreprocessor(ss);
-  PQLQuery *clause = query->get_pql_query();
-
-  // Parse source
-  BufferedLexer lexer(s.c_str());
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
-
-  auto evaluator = new QueryEvaluator(clause, &pkb);
-  std::vector<std::string> *ret = evaluator->Evaluate();
-
-  std::vector<std::string> expected = {};
+  std::vector<std::string> expected = {"16", "21"};
 
   REQUIRE(ret->size() == expected.size());
   for (int i = 0; i < expected.size(); i++) {

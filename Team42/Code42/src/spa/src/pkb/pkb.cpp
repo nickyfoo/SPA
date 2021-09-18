@@ -493,7 +493,7 @@ void PKB::UsesModifiesProcessWhileNode(Node *node,
   }
   for (Node *n : ancestorList) {
     if (n->get_kind() == NodeType::Procedure) {
-      auto *procedure_node = dynamic_cast<ProcedureNode*>(n);
+      auto *procedure_node = dynamic_cast<ProcedureNode *>(n);
       Procedure *proc = proc_table_.get_procedure(procedure_node->get_name());
       for (auto &var : *(while_statement->get_uses())) {
         proc->AddUses(var);
@@ -505,7 +505,7 @@ void PKB::UsesModifiesProcessWhileNode(Node *node,
       }
     }
     if (n->get_kind() == NodeType::If || n->get_kind() == NodeType::While) {
-      auto statement_node = dynamic_cast<StatementNode*>(n);
+      auto statement_node = dynamic_cast<StatementNode *>(n);
       for (auto &var : *(while_statement->get_uses())) {
         stmt_table_.get_statement(statement_node->get_stmt_no())->AddUses(var);
         var_table_.get_variable(var)->AddStmtUsing(statement_node->get_stmt_no());

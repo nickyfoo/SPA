@@ -1,9 +1,8 @@
-#include "parse.h"
 #include <vector>
 #include "pkb.h"
 #include "catch.hpp"
 
-TEST_CASE("ProcedureGetName_ValidNames_ReturnsName", "[procedure][entity]") {
+TEST_CASE("GetName_ValidNames_ReturnsName", "[procedure][entity]") {
   SECTION("Test names with lower case letters") {
     std::string proc_name = "computecentroid";
     Procedure p(proc_name);
@@ -23,7 +22,7 @@ TEST_CASE("ProcedureGetName_ValidNames_ReturnsName", "[procedure][entity]") {
   }
 }
 
-TEST_CASE("ProcedureAddGetUses_DifferentSetSizes_ReturnsVariableSet", "[procedure][entity]") {
+TEST_CASE("AddGetUses_DifferentSetSizes_ReturnsVariableSet", "[procedure][entity]") {
   std::string proc_name = "ComputeCentroid";
   Procedure p(proc_name);
 
@@ -38,7 +37,7 @@ TEST_CASE("ProcedureAddGetUses_DifferentSetSizes_ReturnsVariableSet", "[procedur
     REQUIRE(uses_set->count("b") == 0);
   }
 
-  SECTION("Ten Uses Variables") {
+  SECTION("10 Uses Variables") {
     std::set<std::string> uses_variables {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"};
 
     for (auto &var_name : uses_variables) p.AddUses(var_name);
@@ -57,7 +56,7 @@ TEST_CASE("ProcedureAddGetUses_DifferentSetSizes_ReturnsVariableSet", "[procedur
   }
 }
 
-TEST_CASE("ProcedureAddGetModifies_DifferentSetSizes_ReturnsVariableSet", "[procedure][entity]") {
+TEST_CASE("AddGetModifies_DifferentSetSizes_ReturnsVariableSet", "[procedure][entity]") {
   std::string proc_name = "ComputeCentroid";
   Procedure p(proc_name);
 
@@ -72,7 +71,7 @@ TEST_CASE("ProcedureAddGetModifies_DifferentSetSizes_ReturnsVariableSet", "[proc
     REQUIRE(modifies_set->count("b") == 0);
   }
 
-  SECTION("Ten Modifies Variables") {
+  SECTION("10 Modifies Variables") {
     std::set<std::string> modifies_variables {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"};
 
     for (auto &var_name : modifies_variables) p.AddModifies(var_name);
@@ -91,7 +90,7 @@ TEST_CASE("ProcedureAddGetModifies_DifferentSetSizes_ReturnsVariableSet", "[proc
   }
 }
 
-TEST_CASE("ProcedureAddGetCalls_DifferentSetSizes_ReturnsProceduresSet", "[procedure][entity]") {
+TEST_CASE("AddGetCalls_DifferentSetSizes_ReturnsProceduresSet", "[procedure][entity]") {
   std::string proc_name = "ComputeCentroid";
   Procedure p(proc_name);
 
@@ -106,7 +105,7 @@ TEST_CASE("ProcedureAddGetCalls_DifferentSetSizes_ReturnsProceduresSet", "[proce
     REQUIRE(calls_set->count("banana") == 0);
   }
 
-  SECTION("Ten Calls Procedures") {
+  SECTION("10 Calls Procedures") {
     std::set<std::string> calls_procs {"apple", "banana", "carrot", "donut", "either"};
 
     for (auto &calls_proc : calls_procs) p.AddCalls(calls_proc);
@@ -125,7 +124,7 @@ TEST_CASE("ProcedureAddGetCalls_DifferentSetSizes_ReturnsProceduresSet", "[proce
   }
 }
 
-TEST_CASE("ProcedureAddGetCallsStar_DifferentSetSizes_ReturnsProceduresSet", "[procedure][entity]") {
+TEST_CASE("AddGetCallsStar_DifferentSetSizes_ReturnsProceduresSet", "[procedure][entity]") {
   std::string proc_name = "ComputeCentroid";
   Procedure p(proc_name);
 
@@ -140,7 +139,7 @@ TEST_CASE("ProcedureAddGetCallsStar_DifferentSetSizes_ReturnsProceduresSet", "[p
     REQUIRE(calls_star_set->count("banana") == 0);
   }
 
-  SECTION("Ten Calls Star Procedures") {
+  SECTION("10 Calls Star Procedures") {
     std::set<std::string> calls_star_procs {"apple", "banana", "carrot", "donut", "either"};
 
     for (auto &calls_star_proc : calls_star_procs) p.AddCallsStar(calls_star_proc);
@@ -159,7 +158,7 @@ TEST_CASE("ProcedureAddGetCallsStar_DifferentSetSizes_ReturnsProceduresSet", "[p
   }
 }
 
-TEST_CASE("ProcedureAddGetCallers_DifferentSetSizes_ReturnsProceduresSet", "[procedure][entity]") {
+TEST_CASE("AddGetCallers_DifferentSetSizes_ReturnsProceduresSet", "[procedure][entity]") {
   std::string proc_name = "ComputeCentroid";
   Procedure p(proc_name);
 
@@ -174,7 +173,7 @@ TEST_CASE("ProcedureAddGetCallers_DifferentSetSizes_ReturnsProceduresSet", "[pro
     REQUIRE(callers_set->count("banana") == 0);
   }
 
-  SECTION("Ten Caller Procedures") {
+  SECTION("10 Caller Procedures") {
     std::set<std::string> caller_procs {"apple", "banana", "carrot", "donut", "either"};
 
     for (auto &caller_proc : caller_procs) p.AddCallers(caller_proc);
@@ -193,7 +192,7 @@ TEST_CASE("ProcedureAddGetCallers_DifferentSetSizes_ReturnsProceduresSet", "[pro
   }
 }
 
-TEST_CASE("ProcedureAddGetCallersStar_DifferentSetSizes_ReturnsProceduresSet", "[procedure][entity]") {
+TEST_CASE("AddGetCallersStar_DifferentSetSizes_ReturnsProceduresSet", "[procedure][entity]") {
   std::string proc_name = "ComputeCentroid";
   Procedure p(proc_name);
 
@@ -208,7 +207,7 @@ TEST_CASE("ProcedureAddGetCallersStar_DifferentSetSizes_ReturnsProceduresSet", "
     REQUIRE(callers_star_set->count("banana") == 0);
   }
 
-  SECTION("Ten Caller Star Procedures") {
+  SECTION("10 Caller Star Procedures") {
     std::set<std::string> caller_star_procs {"apple", "banana", "carrot", "donut", "either"};
 
     for (auto &caller_star_proc : caller_star_procs) p.AddCallersStar(caller_star_proc);

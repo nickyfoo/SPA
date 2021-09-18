@@ -8,12 +8,6 @@
 
 class StmtTable : public Table {
  public:
-  // List of valid kinds of statements
-  inline static const std::vector<NodeType> kValidStmts = {
-      NodeType::Assign, NodeType::If, NodeType::While,
-      NodeType::Read, NodeType::Print, NodeType::Call
-  };
-
   StmtTable();
 
   ~StmtTable();

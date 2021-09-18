@@ -121,8 +121,7 @@ void RelationshipQueryManager::EvaluateRelationships() {
         usesp_modifiesp_handler->Evaluate();
         break;
       }
-      default:
-        break;
+      default:break;
     }
   }
 }

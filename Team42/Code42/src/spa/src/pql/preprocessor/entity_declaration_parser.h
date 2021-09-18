@@ -15,7 +15,7 @@ class EntityDeclarationParser {
   bool IsValidSynonym(std::vector<std::string> tokens,
                       std::vector<std::string> *synonyms);
   static std::vector<std::string> SplitString(std::string str,
-                                       std::string delimiter);
+                                              std::string delimiter);
   static bool AddToEntitiesMap(
       std::unordered_map<std::string, EntityDeclaration *> *entities_map,
       std::vector<std::string> *synonyms,

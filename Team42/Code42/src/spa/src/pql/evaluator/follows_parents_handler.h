@@ -18,7 +18,7 @@ class FollowsParentsHandler {
                 SuchThatClause *relationship,
                 std::vector<std::string> *entities_to_return);
   void set_function_pointers(std::set<int> *(Statement::*get_normal)(),
-      std::set<int> *(Statement::*get_reverse)());
+                             std::set<int> *(Statement::*get_reverse)());
   void Evaluate();
 
  private:

@@ -107,10 +107,13 @@ void FollowsParentsHandler::Evaluate() {
                                           left_entity_vec->end(),
                                           [this, &right_type, &right_entity_type](Entity *entity) {
                                             auto *stmt = dynamic_cast<Statement *>(entity);
-                                            bool has_correct_follower_type = right_entity_type == EntityType::Stmt;
-                                            std::set<int> *follower_set = Forwarder(get_normal_, stmt);
+                                            bool has_correct_follower_type =
+                                                right_entity_type == EntityType::Stmt;
+                                            std::set<int> *follower_set =
+                                                Forwarder(get_normal_, stmt);
                                             for (int follower : *follower_set) {
-                                              if (pkb_->get_statement(follower)->get_kind() == right_type) {
+                                              if (pkb_->get_statement(follower)->get_kind() ==
+                                                  right_type) {
                                                 has_correct_follower_type = true;
                                                 break;
                                               }
@@ -126,10 +129,13 @@ void FollowsParentsHandler::Evaluate() {
                                            right_entity_vec->end(),
                                            [this, &left_type, &left_entity_type](Entity *entity) {
                                              auto *stmt = dynamic_cast<Statement *>(entity);
-                                             bool has_correct_followee_type = left_entity_type == EntityType::Stmt;
-                                             std::set<int> *followee_set = Forwarder(get_reverse_, stmt);
+                                             bool has_correct_followee_type =
+                                                 left_entity_type == EntityType::Stmt;
+                                             std::set<int> *followee_set =
+                                                 Forwarder(get_reverse_, stmt);
                                              for (int followee : *followee_set) {
-                                               if (pkb_->get_statement(followee)->get_kind() == left_type) {
+                                               if (pkb_->get_statement(followee)->get_kind() ==
+                                                   left_type) {
                                                  has_correct_followee_type = true;
                                                  break;
                                                }

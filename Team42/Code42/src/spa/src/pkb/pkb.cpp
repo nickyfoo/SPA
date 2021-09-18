@@ -2,6 +2,9 @@
 #include <algorithm>
 #include <vector>
 #include "ast_utils.hpp"
+#include <string_utils.h>
+
+PKB::PKB() = default;
 
 PKB::PKB(Node *programRoot) {
   this->root_ = programRoot;
@@ -515,10 +518,14 @@ void PKB::CallsProcessCallNode(Node *node, std::vector<Node *> &ancestorList) {
   for (Node *n : ancestorList) {
     if (n->get_kind() == NodeType::Procedure) {
       auto *procedure_node = dynamic_cast<ProcedureNode *>(n);
-      proc_table_.get_procedure(procedure_node->get_name())
-          ->AddCalls(call_node->get_proc()->get_name());
-      proc_table_.get_procedure(call_node->get_proc()->get_name())
-          ->AddCallers(procedure_node->get_name());
+      auto* calling_procedure = proc_table_.get_procedure(procedure_node->get_name());
+      calling_procedure->AddCalls(call_node->get_proc()->get_name());
+      auto* called_procedure = proc_table_.get_procedure(call_node->get_proc()->get_name());
+      if (called_procedure == nullptr) {
+        std::cout << call_node->get_proc()->get_name() << '\n';
+        throw PKBException(StringFormat("Called an undefined procedure: \"%s\"\n", call_node->get_proc()->get_name().c_str()));
+      }
+      called_procedure->AddCallers(procedure_node->get_name());
     }
   }
 }

@@ -1,6 +1,9 @@
 #include "stmt_table.h"
+#include "../exception.h"
 #include <iostream>
 #include <algorithm>
+#include <format>
+#include <string_utils.h>
 
 StmtTable::StmtTable() {
   num_statements_ = 0;
@@ -39,9 +42,10 @@ std::vector<Statement *> StmtTable::get_statements(NodeType type) {
 }
 
 Statement *StmtTable::get_statement(int line_no) {
-  auto it = table_.find(line_no);
-  if (it == table_.end()) return nullptr;
-  return &(it->second);
+  if (table_.find(line_no) == table_.end()) {
+    return nullptr;
+  }
+  return &table_[line_no];
 }
 
 void StmtTable::CategorizeStatements() {
@@ -86,14 +90,14 @@ void StmtTable::ProcessParentStar() {
   int n = num_statements_ + 1;
   std::vector<std::vector<int>> d = GetTransitiveClosure(parent_, n);
   for (int i = 0; i < n; i++) {
-    Statement *stmt = get_statement(i);
-    if (stmt == nullptr) continue;
+      Statement *stmt = get_statement(i);
+      if (stmt == nullptr) continue;
 
-    for (int j = 0; j < n; j++) {
-      if (d[i][j] == kInf) continue;
-      stmt->AddChildStar(j);
-      get_statement(j)->AddParentStar(i);
-    }
+      for (int j = 0; j < n; j++) {
+        if (d[i][j] == kInf) continue;
+        stmt->AddChildStar(j);
+        get_statement(j)->AddParentStar(i);
+      }
   }
 }
 

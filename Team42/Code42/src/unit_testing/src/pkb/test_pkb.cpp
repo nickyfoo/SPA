@@ -39,27 +39,6 @@ std::string source = "procedure main {\n"
                      "\tnormSq = cenX * cenX + cenY * cenY;\n"
                      "}";
 
-TEST_CASE("Test PKB::Initialise()") {
-  BufferedLexer lexer(source.c_str());
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
-  pkb.PrintStatements();
-}
-
-TEST_CASE("Test pkb::GetFollows()") {
-  BufferedLexer lexer(source.c_str());
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
-  pkb.PrintStatements();
-  for (int i = 1; i <= pkb.get_num_statements() + 1; i++) {
-    Statement *stmt = pkb.get_statement(i);
-    // checking for NULL response
-    if (stmt) stmt->FollowsInfo();
-  }
-}
-
 TEST_CASE("Test pkb::GetParent()") {
   BufferedLexer lexer(source.c_str());
   ParseState s{};
@@ -144,6 +123,121 @@ TEST_CASE("Test pkb::ExtractUsesModifies() for containerstmts") {
 }
 
 
+TEST_CASE("PKB_FollowsSampleProgram_Correct") {
+  BufferedLexer lexer(source.c_str());
+  ParseState s{};
+  ProgramNode* p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+
+  std::map<int, std::vector<int>> follows_ans;
+  follows_ans[1] = { 2 };
+  follows_ans[2] = { 3 };
+  follows_ans[4] = { 5 };
+  follows_ans[6] = { 7 };
+  follows_ans[7] = { 8 };
+  follows_ans[8] = { 9 };
+  follows_ans[10] = { 11 };
+  follows_ans[11] = { 12 };
+  follows_ans[12] = { 13 };
+  follows_ans[13] = { 14 };
+  follows_ans[14] = { 19 };
+  follows_ans[15] = { 16 };
+  follows_ans[16] = { 17 };
+  follows_ans[17] = { 18 };
+  follows_ans[19] = { 23 };
+  follows_ans[21] = { 22 };
+
+  for (auto stmt : pkb.get_all_statements()) {
+    std::set<int>* stmt_followers = stmt->get_followers();
+    std::vector<int> followers = follows_ans[stmt->get_stmt_no()];
+    REQUIRE(stmt_followers->size() == followers.size());
+    for (auto& follower : followers) {
+      REQUIRE(stmt_followers->find(follower) != stmt_followers->end());
+    }
+  }
+
+  std::map<int, std::vector<int>> follows_star_ans;
+  follows_star_ans[1] = { 2,3 };
+  follows_star_ans[2] = { 3 };
+  follows_star_ans[4] = { 5 };
+  follows_star_ans[6] = { 7,8,9 };
+  follows_star_ans[7] = { 8,9 };
+  follows_star_ans[8] = { 9 };
+  follows_star_ans[10] = { 11,12,13,14,19,23 };
+  follows_star_ans[11] = { 12,13,14,19,23 };
+  follows_star_ans[12] = { 13,14,19,23 };
+  follows_star_ans[13] = { 14,19,23 };
+  follows_star_ans[14] = { 19,23 };
+  follows_star_ans[15] = { 16,17,18 };
+  follows_star_ans[16] = { 17,18 };
+  follows_star_ans[17] = { 18 };
+  follows_star_ans[19] = { 23 };
+  follows_star_ans[21] = { 22 };
+
+  for (auto stmt : pkb.get_all_statements()) {
+    std::set<int>* stmt_followers_star = stmt->get_followers_star();
+    std::vector<int> followers_star = follows_star_ans[stmt->get_stmt_no()];
+    REQUIRE(stmt_followers_star->size() == followers_star.size());
+    for (auto& follower_star : followers_star) {
+      REQUIRE(stmt_followers_star->find(follower_star) != stmt_followers_star->end());
+    }
+  }
+
+  std::map<int, std::vector<int>> followees_ans;
+  followees_ans[2] = { 1 };
+  followees_ans[3] = { 2 };
+  followees_ans[5] = { 4 };
+  followees_ans[7] = { 6 };
+  followees_ans[8] = { 7 };
+  followees_ans[9] = { 8 };
+  followees_ans[11] = { 10 };
+  followees_ans[12] = { 11 };
+  followees_ans[13] = { 12 };
+  followees_ans[14] = { 13 };
+  followees_ans[16] = { 15 };
+  followees_ans[17] = { 16 };
+  followees_ans[18] = { 17 };
+  followees_ans[19] = { 14 };
+  followees_ans[22] = { 21 };
+  followees_ans[23] = { 19 };
+  for (auto stmt : pkb.get_all_statements()) {
+    std::set<int>* stmt_followees = stmt->get_followees();
+    std::vector<int> followees = followees_ans[stmt->get_stmt_no()];
+    REQUIRE(stmt_followees->size() == followees.size());
+    for (auto& followee : followees) {
+      REQUIRE(stmt_followees->find(followee) != stmt_followees->end());
+    }
+  }
+
+  std::map<int, std::vector<int>> followees_star_ans;
+  followees_star_ans[2] = { 1 };
+  followees_star_ans[3] = { 2,1 };
+  followees_star_ans[5] = { 4 };
+  followees_star_ans[7] = { 6 };
+  followees_star_ans[8] = { 7,6 };
+  followees_star_ans[9] = { 8,7,6 };
+  followees_star_ans[11] = { 10 };
+  followees_star_ans[12] = { 11,10 };
+  followees_star_ans[13] = { 12,11,10 };
+  followees_star_ans[14] = { 13,12,11,10 };
+  followees_star_ans[19] = { 14,13,12,11,10 };
+  followees_star_ans[16] = { 15 };
+  followees_star_ans[17] = { 16,15 };
+  followees_star_ans[18] = { 17,16,15 };
+  followees_star_ans[23] = { 19,14,13,12,11,10 };
+  followees_star_ans[22] = { 21 };
+  for (auto stmt : pkb.get_all_statements()) {
+    std::set<int>* stmt_followees_star = stmt->get_followees_star();
+    std::vector<int> followees_star = followees_star_ans[stmt->get_stmt_no()];
+    REQUIRE(stmt_followees_star->size() == followees_star.size());
+    for (auto& followee_star : followees_star) {
+      REQUIRE(stmt_followees_star->find(followee_star) != stmt_followees_star->end());
+    }
+  }
+}
+
+
+
 TEST_CASE("PKB_FollowsNested_Correct") {
   std::string source =
     "procedure nestedproc{"
@@ -177,12 +271,6 @@ TEST_CASE("PKB_FollowsNested_Correct") {
   ParseState s{};
   ProgramNode* p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
-  pkb.PrintStatements();
-  pkb.PrintProcedures();
-  pkb.PrintVariables();
-  for (auto stmt : pkb.get_all_statements()) {
-    stmt->FollowsInfo();
-  }
 
   std::map<int, std::vector<int>> follows_ans;
   follows_ans[1] = { 2 };
@@ -248,6 +336,5 @@ TEST_CASE("PKB_FollowsNested_Correct") {
       REQUIRE(stmt_followees_star->find(followee_star) != stmt_followees_star->end());
     }
   }
-
-
 }
+

@@ -23,8 +23,16 @@ std::set<std::string> *Procedure::get_calls() {
   return &calls_;
 }
 
+std::set<std::string> *Procedure::get_calls_star() {
+  return &calls_star_;
+}
+
 std::set<std::string> *Procedure::get_callers() {
   return &callers_;
+}
+
+std::set<std::string> *Procedure::get_callers_star() {
+  return &callers_star_;
 }
 
 void Procedure::AddUses(std::string var_name) {

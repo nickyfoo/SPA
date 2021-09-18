@@ -17,8 +17,12 @@ class Procedure : public Entity {
   std::set<std::string> *get_modifies();
   // Gets the procedures called by the procedure.
   std::set<std::string> *get_calls();
+  // Gets the procedures called star by the procedure.
+  std::set<std::string> *get_calls_star();
   // Gets the procedures called by the procedure.
   std::set<std::string> *get_callers();
+  // Gets the procedures called star by the procedure.
+  std::set<std::string> *get_callers_star();
 
   // Adds a variable that this procedure uses.
   void AddUses(std::string var_name);

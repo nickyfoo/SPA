@@ -2,7 +2,7 @@
 
 #include "iostream"
 
-BufferedLexer::BufferedLexer(const char *source) {
+BufferedLexer::BufferedLexer(const std::string &source) {
   // this implementation of BufferedLexer uses Lexer
   this->lexer_ = new Lexer(source);
   this->next_token_ = nullptr;

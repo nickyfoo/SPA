@@ -4,6 +4,9 @@
 
 enum class TokenType {
   End,
+  Unknown,
+  Number,
+  Name,
   LParen,
   RParen,
   LBrace,
@@ -23,18 +26,7 @@ enum class TokenType {
   Not,
   Neq,
   And,
-  Or,
-  If,
-  Then,
-  Else,
-  While,
-  Read,
-  Print,
-  Call,
-  Procedure,
-  Identifier,
-  Constant,
-  Unknown
+  Or
 };
 
 class Token {
@@ -49,18 +41,19 @@ class Token {
 
 class Lexer {
  public:
-  explicit Lexer(const char *source);
+  Lexer(const std::string &source);
   const Token *GetNextToken();
 
  private:
-  const char *source_;
+  const std::string &source_;
+  size_t ptr_;
   int cur_line_;
   int cur_col_;
-  const char *cur_char_pointer_;
 
-  void AdvanceCharPointer();
-  const Token *ConstantOrUnknown();
-  const Token *IdentifierOrKeyword();
+  void AdvancePointer();
+  char GetCurChar();
+  const Token *NumberOrUnknown();
+  const Token *Name();
   const Token *GtOrGte();
   const Token *LtOrLte();
   const Token *EqualOrEq();
@@ -71,7 +64,7 @@ class Lexer {
 
 class BufferedLexer {
  public:
-  explicit BufferedLexer(const char *source);
+  explicit BufferedLexer(const std::string &source);
   const Token *GetNextToken();
   const Token *PeekNextToken();
 

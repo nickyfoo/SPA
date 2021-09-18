@@ -51,6 +51,7 @@ class Lexer {
   int cur_col_;
 
   void AdvancePointer();
+  bool PointerAtEnd();
   char GetCurChar();
   const Token *NumberOrUnknown();
   const Token *Name();

@@ -108,8 +108,8 @@ std::variant<ExpressionNode *, ConstantNode *, IdentifierNode *> ParseExpression
           auto res = new ExpressionNode(ExprOpFromToken(op_token), left, right,
                                         {left->get_line_no(), left->get_col_no()});
           result_stack.push(res);
-          operator_stack.push(next_token);
         }
+        operator_stack.push(next_token);
     }
     lexer->GetNextToken();
     next_token = lexer->PeekNextToken();

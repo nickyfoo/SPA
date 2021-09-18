@@ -10,17 +10,17 @@ class EntityDeclarationParser {
   std::vector<std::string> *entity_declaration_strings_;
   static EntityDeclarationParser *instance_;
   EntityDeclarationParser();
-  bool IsValidIdentifier(std::string str);
-  EntityType CheckEntityType(std::string type);
+  static bool IsValidIdentifier(std::string str);
+  static EntityType CheckEntityType(std::string type);
   bool IsValidSynonym(std::vector<std::string> tokens,
                       std::vector<std::string> *synonyms);
-  std::vector<std::string> SplitString(std::string str,
+  static std::vector<std::string> SplitString(std::string str,
                                        std::string delimiter);
-  bool AddToEntitiesMap(
+  static bool AddToEntitiesMap(
       std::unordered_map<std::string, EntityDeclaration *> *entities_map,
       std::vector<std::string> *synonyms,
       EntityType entity_type);
-  std::string trim(std::string str);
+  static std::string trim(std::string str);
 
  public:
   static EntityDeclarationParser *get_instance();

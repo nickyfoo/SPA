@@ -109,17 +109,13 @@ TEST_CASE("Invalid test: repeat synonym name") {
     REQUIRE(entitiesMap == nullptr);
 }
 
-TEST_CASE("Having Select in entity declaration") {
+TEST_CASE("Missing entity declaration") {
   EntityDeclarationParser* entityParser =
       EntityDeclarationParser::get_instance();
   vector<string>* entities =
-      new vector<string>({"stmt s, Select"});
+      new vector<string>({"assign"});
   entityParser->set_entities(entities);
   unordered_map<string, EntityDeclaration*>* entitiesMap =
       entityParser->get_entities_map();
-  unordered_map<string, EntityDeclaration*> expectedEntitiesMap = {
-      {"s", new EntityDeclaration(EntityType::Stmt, "s")},
-      {"Select", new EntityDeclaration(EntityType::Stmt, "Select")}
-  };
-  REQUIRE(entitiesMap != nullptr);
+  REQUIRE(entitiesMap == nullptr);
 }

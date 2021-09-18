@@ -86,7 +86,9 @@ class IfWhileNodeCond : public virtual Node {
   virtual std::string get_expr_string() = 0;
 };
 
-class IdentifierNode : public AssignNodeExpr, ExpressionNodeChild, RelExpressionNodeChild {
+class IdentifierNode : public AssignNodeExpr,
+                       public ExpressionNodeChild,
+                       public RelExpressionNodeChild {
  public:
   IdentifierNode(std::string name, LocInfo loc);
   NodeType get_kind();
@@ -97,7 +99,9 @@ class IdentifierNode : public AssignNodeExpr, ExpressionNodeChild, RelExpression
   std::string name_;
 };
 
-class ConstantNode : public AssignNodeExpr, ExpressionNodeChild, RelExpressionNodeChild {
+class ConstantNode : public AssignNodeExpr,
+                     public ExpressionNodeChild,
+                     public RelExpressionNodeChild {
  public:
   ConstantNode(std::string value, LocInfo loc);
   NodeType get_kind();
@@ -108,7 +112,9 @@ class ConstantNode : public AssignNodeExpr, ExpressionNodeChild, RelExpressionNo
   std::string value_;
 };
 
-class ExpressionNode : public AssignNodeExpr, ExpressionNodeChild, RelExpressionNodeChild {
+class ExpressionNode : public AssignNodeExpr,
+                       public ExpressionNodeChild,
+                       public RelExpressionNodeChild {
  public:
   ExpressionNode(ExprOp op, ExpressionNodeChild *left, ExpressionNodeChild *right, LocInfo loc);
   NodeType get_kind();
@@ -123,7 +129,7 @@ class ExpressionNode : public AssignNodeExpr, ExpressionNodeChild, RelExpression
   ExpressionNodeChild *right_;
 };
 
-class RelExpressionNode : public CondExpressionNodeChild, IfWhileNodeCond {
+class RelExpressionNode : public CondExpressionNodeChild, public IfWhileNodeCond {
  public:
   RelExpressionNode(RelExprOp op, RelExpressionNodeChild *left, RelExpressionNodeChild *right,
                     LocInfo loc);
@@ -139,7 +145,7 @@ class RelExpressionNode : public CondExpressionNodeChild, IfWhileNodeCond {
   RelExpressionNodeChild *right_;
 };
 
-class CondExpressionNode : public CondExpressionNodeChild, IfWhileNodeCond {
+class CondExpressionNode : public CondExpressionNodeChild, public IfWhileNodeCond {
  public:
   CondExpressionNode(CondExprOp op, CondExpressionNodeChild *left, CondExpressionNodeChild *right,
                      LocInfo loc);

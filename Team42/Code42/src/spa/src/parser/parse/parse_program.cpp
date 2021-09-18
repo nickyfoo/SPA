@@ -9,11 +9,6 @@ ProgramNode *ParseProgram(BufferedLexer *lexer, ParseState *state) {
 
   std::vector<ProcedureNode *> procedures{};
   while (t->kind_ != TokenType::End) {
-    if (t->kind_ != TokenType::Name && t->value_ != "procedure") {
-      throw ParseException(StringFormat("expected 'procedure' but got %s", t->value_.c_str()),
-                           t->line_no_, t->col_no_);
-    }
-
     ProcedureNode *p = ParseProcedure(lexer, state);
     procedures.push_back(p);
 

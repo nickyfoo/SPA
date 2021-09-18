@@ -4,8 +4,10 @@
 #include <functional>
 #include <iostream>
 #include <map>
+#include <stdexcept>
 
 #include "ast.h"
+#include "lexer.h"
 
 inline std::string ExprOpToString(ExprOp op) {
   switch (op) {
@@ -20,6 +22,8 @@ inline std::string ExprOpToString(ExprOp op) {
     case ExprOp::Modulo:
       return "%";
   }
+
+  throw std::invalid_argument("ExprOpToString: unrecognized op");
 }
 
 inline std::string RelExprOpToString(RelExprOp op) {
@@ -37,6 +41,8 @@ inline std::string RelExprOpToString(RelExprOp op) {
     case RelExprOp::Neq:
       return "!=";
   }
+
+  throw std::invalid_argument("RelExprOpToString: unrecognized op");
 }
 
 inline std::string CondExprOpToString(CondExprOp op) {
@@ -48,6 +54,8 @@ inline std::string CondExprOpToString(CondExprOp op) {
     case CondExprOp::Not:
       return "!";
   }
+
+  throw std::invalid_argument("CondExprOpToString: unrecognized op");
 }
 
 bool IsIdentifierEqual(IdentifierNode *i1, IdentifierNode *i2);

@@ -203,10 +203,6 @@ void PKB::ExtractEntities() {
   std::vector<Node *> ancestors;
   VisitWithAncestors(root_, ancestors, functions);
   stmt_table_.CategorizeStatements();
-  // stmt_table_.PrintStatements();
-  // proc_table_.PrintProcedures();
-  // var_table_.PrintVariables();
-  // const_table_.PrintConstants();
 }
 
 void PKB::ExtractFollows() {

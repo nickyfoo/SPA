@@ -349,10 +349,6 @@ TEST_CASE("PKB_ParentNested_Correct") {
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
-  pkb.PrintStatements();
-  for (auto stmt : pkb.get_all_statements()) {
-    stmt->ParentInfo();
-  }
 
   std::map<int, std::vector<int>> children_ans;
   children_ans[4] = { 5,6 };
@@ -659,24 +655,6 @@ TEST_CASE("PKB_UsesModifiesContainerStmt_Correct") {
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
-  pkb.PrintStatements();
-  pkb.PrintProcedures();
-  pkb.PrintVariables();
-  std::vector<Statement*> statements = pkb.get_all_statements();
-  for (auto &stmt : statements) {
-    stmt->UsesInfo();
-    stmt->ModifiesInfo();
-  }
-  std::vector<Procedure*> procedures = pkb.get_all_procedures();
-  for (auto &proc : procedures) {
-    proc->UsesInfo();
-    proc->ModifiesInfo();
-  }
-  std::vector<Variable*> variables = pkb.get_all_variables();
-  for (auto &var : variables) {
-    var->UsesInfo();
-    var->ModifiesInfo();
-  }
 
   std::map<int, std::vector<std::string>> stmt_uses_ans;
   stmt_uses_ans[1] = { "x","y","b","c","e","f" };

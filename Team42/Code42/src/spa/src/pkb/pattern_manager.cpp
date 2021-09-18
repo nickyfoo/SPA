@@ -101,6 +101,7 @@ std::string PatternManager::GetPostfixExpr(std::string infix_expr) {
 }
 
 bool PatternManager::TestAssignmentPattern(Statement *assignment_stmt, std::string pattern, bool is_partial_match) {
+  if (pattern.size() == 0) return false;
   std::string postfix_pattern = GetPostfixExpr(pattern);
   postfix_pattern.pop_back();
   std::string assignment_expr = assignment_stmt->get_expr_string();

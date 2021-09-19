@@ -26,6 +26,7 @@ std::unordered_map<std::string, EntityDeclaration *>
     std::string entity = entity_str.substr(0, index_of_entity);
     // Trimming entity_str to remove entity type.
     entity_str = entity_str.substr(index_of_entity + 1);
+    entity_str = EntityDeclarationParser::trim(entity_str);
     // If there are no commas but multiple for the
     // same entity type, or if there's only 1 word, return nullptr. eg stmt s p c;
     std::vector<std::string> tokens = SplitString(entity_str, " ");

@@ -227,8 +227,13 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRef(
     stmt_ref.set_stmt_num(std::stoi(ref));
     ret = new SuchThatRef(stmt_ref);
   } else if (ref == "_") {  // wild card
-    stmt_ref.set_wild_card();
-    ret = new SuchThatRef(stmt_ref);
+    if (relationship->get_type() == RelRef::Uses || relationship->get_type() == RelRef::Modifies) {
+      ent_ref.set_wild_card();
+      ret = new SuchThatRef(ent_ref);
+    } else {
+      stmt_ref.set_wild_card();
+      ret = new SuchThatRef(stmt_ref);
+    }
   } else if (IsValidIdentifier(ref)) {
     ent_ref.set_argument(ref.substr(1, ref.length() - 2));
     ret = new SuchThatRef(ent_ref);

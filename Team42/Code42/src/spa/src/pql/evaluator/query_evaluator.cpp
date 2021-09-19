@@ -8,7 +8,6 @@
 #include "pql_query.h"
 #include "pkb.h"
 
-// TODO(Sheryl): Refactor everything after iteration 1.
 QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
   if (pql_query != nullptr) {
     QueryEvaluator::entities_to_return_ = pql_query->get_query_entities();
@@ -187,12 +186,18 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
     auto *output = new std::vector<std::string>();
     if (patterns_->at(0)->get_synonym()->get_synonym() == entities_to_return_->at(0)) {
       for (std::pair<int, std::string> pair : result) {
-        output->push_back(std::to_string(pair.first));
+        // Add item to results vector if it doesn't already exist in vector.
+        if (std::find(output->begin(), output->end(), std::to_string(pair.first)) == output->end()) {
+          output->push_back(std::to_string(pair.first));
+        }
       }
       return output;
     } else if (patterns_->at(0)->get_left_ref()->get_synonym() == entities_to_return_->at(0)) {
       for (std::pair<int, std::string> pair : result) {
-        output->push_back(pair.second);
+        // Add item to results vector if it doesn't already exist in vector.
+        if (std::find(output->begin(), output->end(), pair.second) == output->end()) {
+          output->push_back(pair.second);
+        }
       }
       return output;
     } else if (!result.empty()) {

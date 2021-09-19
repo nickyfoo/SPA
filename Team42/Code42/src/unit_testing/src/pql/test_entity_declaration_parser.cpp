@@ -119,3 +119,14 @@ TEST_CASE("Missing entity declaration") {
       entity_parser->get_entities_map();
   REQUIRE(entitiesMap == nullptr);
 }
+
+TEST_CASE("Extra space entity declaration") {
+  EntityDeclarationParser *entity_parser =
+      EntityDeclarationParser::get_instance();
+  vector<string> *entities =
+      new vector<string>({"while        while", "call call"});
+  entity_parser->set_entities(entities);
+  unordered_map<string, EntityDeclaration *> *entitiesMap =
+      entity_parser->get_entities_map();
+  REQUIRE(entitiesMap != nullptr);
+}

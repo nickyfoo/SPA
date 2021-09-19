@@ -120,21 +120,161 @@ Select s such that Follows* (s, w)
 5000
 25 - Invalid Follows* with procedure and statement
 stmt s; procedure p;
-Select p such that Follows (p, s)
+Select p such that Follows* (p, s)
 
 5000
 26 - Invalid Follows* with variable and statement
 stmt s; variable v;
-Select v such that Follows (s, v)
+Select v such that Follows* (s, v)
 
 5000
 27 - Invalid Follows* with constant and statement
 stmt s; constant c;
-Select c such that Follows(c, s)
+Select c such that Follows*(c, s)
 
 5000
 28 - Invalid Follows* with variable name and statement
 stmt s;
-Select s such that Follows ("x", s)
+Select s such that Follows* ("x", s)
+
+5000
+29 - Valid Parent with 2 statement numbers
+stmt s;
+Select s such that Parent (1, 2)
+
+5000
+30 - Valid Parent with statement number and statement
+stmt s;
+Select s such that Parent (4, s)
+5,6,8,9
+5000
+31 - Valid Parent with statement and statement number
+stmt s;
+Select s such that Parent (s, 7)
+6
+5000
+32 - Valid Parent with statement and statement
+stmt s1, s2;
+Select s1 such that Parent (s1, s2)
+4,6,15
+5000
+33 - Valid Parent with assign and statement
+stmt s; assign a;
+Select a such that Parent(s,a)
+7,16,17
+5000
+34 - Valid Parent with call and statement
+stmt s; call c;
+Select c such that Parent(s, c)
+9
+5000
+35 - Valid Parent with if and statement
+stmt s; if ifs;
+Select ifs such that Parent(ifs, s)
+4,15
+5000
+36 - Valid Parent with print and statement
+stmt s; print p;
+Select p such that Parent(s, p)
+8
+5000
+37 - Valid Parent with read and statement
+stmt s; read r;
+Select r such that Parent(s, r)
+5
+5000
+38 - Valid Parent with while and statement
+stmt s; while w;
+Select w such that Parent (s, w)
+6
+5000
+39 - Invalid Parent with procedure and statement
+stmt s; procedure p;
+Select p such that Parent (p, s)
+
+5000
+40 - Invalid Parent with variable and statement
+stmt s; variable v;
+Select v such that Parent (s, v)
+
+5000
+41 - Invalid Parent with constant and statement
+stmt s; constant c;
+Select c such that Parent(c, s)
+
+5000
+42 - Invalid Parent with variable name and statement
+stmt s;
+Select s such that Parent ("x", s)
+
+5000
+43 - Valid Parent* with 2 statement numbers
+stmt s;
+Select s such that Parent* (4, 8)
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
+5000
+44 - Valid Parent* with statement number and statement
+stmt s;
+Select s such that Parent* (4, s)
+5,6,7,8,9
+5000
+45 - Valid Parent* with statement and statement number
+stmt s;
+Select s such that Parent* (s, 7)
+4,6
+5000
+46 - Valid Parent* with statement and statement
+stmt s1, s2;
+Select s1 such that Parent* (s1, s2)
+4,6,15
+5000
+47 - Valid Parent* with assign and statement number
+stmt s; assign a;
+Select a such that Parent*(4, a)
+7
+5000
+48 - Valid Parent* with call and statement number
+stmt s; call c;
+Select c such that Parent*(6, c)
+
+5000
+49 - Valid Parent* with if and statement
+stmt s; if ifs;
+Select ifs such that Parent*(ifs, s)
+4,15
+5000
+50 - Valid Parent with print and statement
+stmt s; print p;
+Select s such that Parent*(s, p)
+4
+5000
+51 - Valid Parent* with read and statement number
+stmt s; read r;
+Select r such that Parent*(4, r)
+5
+5000
+52 - Valid Parent* with while and statement
+stmt s; while w;
+Select s such that Parent* (s, w)
+4
+5000
+53 - Invalid Parent* with procedure and statement
+stmt s; procedure p;
+Select p such that Parent* (p, s)
+
+5000
+54 - Invalid Parent* with variable and statement
+stmt s; variable v;
+Select v such that Parent* (s, v)
+
+5000
+55 - Invalid Parent* with constant and statement
+stmt s; constant c;
+Select c such that Parent*(c, s)
+
+5000
+56 - Invalid Parent* with variable name and statement
+stmt s;
+Select s such that Parent* ("x", s)
 
 5000

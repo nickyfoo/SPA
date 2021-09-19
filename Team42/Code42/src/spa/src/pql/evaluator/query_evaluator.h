@@ -17,6 +17,8 @@ class QueryEvaluator {
   std::vector<PatternClause *> *patterns_;
   PKB *pkb_;
   std::unordered_map<std::string, EntityDeclaration *> *synonym_to_entity_dec_;
+  bool has_one_repeated_synonym_;
+  bool has_two_repeated_synonyms_;
   static bool IsEmpty(
       std::unordered_map<std::string, std::vector<Entity *>>
       *synonym_to_entity_result);

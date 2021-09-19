@@ -14,6 +14,8 @@ QueryPreprocessor::QueryPreprocessor(std::string input) {
   this->clauses_ = pql_query;
 }
 
+QueryPreprocessor::~QueryPreprocessor() = default;
+
 PQLQuery *QueryPreprocessor::get_pql_query() {
   return this->clauses_;
 }

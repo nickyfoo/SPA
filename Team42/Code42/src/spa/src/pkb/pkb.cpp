@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <vector>
 #include "ast_utils.hpp"
+#include "pkb_exception.h"
 #include <string_utils.h>
 
 PKB::PKB() = default;

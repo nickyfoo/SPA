@@ -765,3 +765,37 @@ TEST_CASE("PKB_UsesModifiesContainerStmt_Correct") {
     }
   }
 }
+
+
+TEST_CASE("PKB_UndefinedProcCalled_ThrowsException") {
+  std::string source =
+    "procedure main {"
+    "call undefinedproc;"
+    "}";
+
+  BufferedLexer lexer(source.c_str());
+  ParseState s{};
+  ProgramNode* p = ParseProgram(&lexer, &s);
+  PKB pkb;
+  REQUIRE_THROWS_AS(pkb = PKB(p), PKBException);
+}
+
+
+TEST_CASE("PKB_CyclicProcCalls_ThrowsException") {
+  std::string source =
+    "procedure proc1 {"
+    "call proc2;"
+    "}"
+    "procedure proc2 {"
+    "call proc3;"
+    "}"
+    "procedure proc3 {"
+    "call proc1;"
+    "}";
+
+  BufferedLexer lexer(source.c_str());
+  ParseState s{};
+  ProgramNode* p = ParseProgram(&lexer, &s);
+  PKB pkb;
+  REQUIRE_THROWS_AS(pkb = PKB(p), PKBException);
+}

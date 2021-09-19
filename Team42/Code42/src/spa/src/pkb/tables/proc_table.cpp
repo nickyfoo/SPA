@@ -1,5 +1,5 @@
 #include "proc_table.h"
-#include "../exception.h"
+#include "../pkb_exception.h"
 #include <iostream>
 #include <string_utils.h>
 

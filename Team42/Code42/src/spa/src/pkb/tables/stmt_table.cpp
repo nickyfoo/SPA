@@ -1,5 +1,4 @@
 #include "stmt_table.h"
-#include "../exception.h"
 #include <iostream>
 #include <algorithm>
 #include <format>

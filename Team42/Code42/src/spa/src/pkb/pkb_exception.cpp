@@ -1,6 +1,6 @@
 #include <cstdio>
 
-#include "exception.h"
+#include "pkb_exception.h"
 #include "string_utils.h"
 
 PKBException::PKBException(std::string error) {

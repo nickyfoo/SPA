@@ -10,7 +10,7 @@
 #include "tables/var_table.h"
 #include "tables/const_table.h"
 #include "pattern_manager.h"
-#include "exception.h"
+#include "pkb_exception.h"
 
 class PKB {
  public:

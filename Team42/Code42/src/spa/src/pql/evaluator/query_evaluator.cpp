@@ -135,7 +135,6 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
     }
     synonym_to_entity_result->insert({pair.first, entities});
   }
-
   RelationshipQueryManager *relationship_query_manager;
   PatternQueryManager *pattern_query_manager;
   if (!relationships_->empty() &&

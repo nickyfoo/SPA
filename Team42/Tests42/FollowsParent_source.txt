@@ -28,4 +28,9 @@ procedure t {
         v = v + 3;
     }
     print v;
+    call h;
+}
+
+procedure h {
+    read t;
 }

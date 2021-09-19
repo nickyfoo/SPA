@@ -46,7 +46,6 @@ void UsesSModifiesSHandler::set_function_pointers(
 void UsesSModifiesSHandler::Evaluate() {
   StmtRef left_ent = relationship_->get_left_ref()->get_stmt_ref();
   EntRef right_ent = relationship_->get_right_ref()->get_ent_ref();
-
   // Going through 6 different cases for UsesS
   if (left_ent.get_type() == StmtRefType::Synonym &&
       right_ent.get_type() == EntRefType::Synonym) {  // Uses(s, v)

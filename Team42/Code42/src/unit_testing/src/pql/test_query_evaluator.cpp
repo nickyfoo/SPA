@@ -781,27 +781,51 @@ TEST_CASE("Test 27: Follows_parents_queries query 87") {
   }
 }
 
-//TEST_CASE("Test 28: Follows_parents_queries query 87") {
-//  std::string ss = "stmt s, Select; "
-//                   "Select Select such that Parent(s,Select)";
-//  auto *query = new QueryPreprocessor(ss);
-//  PQLQuery *clause = query->get_pql_query();
-//  if (clause == nullptr) {
-//  }
-//
-//  // Parse source
-//  BufferedLexer lexer(follows_parents_source.c_str());
-//  ParseState s{};
-//  ProgramNode *p = ParseProgram(&lexer, &s);
-//  PKB pkb = PKB(p);
-//  auto evaluator = new QueryEvaluator(clause, &pkb);
-//  std::vector<std::string> *ret = evaluator->Evaluate();
-//
-//  std::vector<std::string> expected = {"10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "7", "8", "9"};
-//
-//  REQUIRE(ret->size() == expected.size());
-//  for (int i = 0; i < ret->size(); i++) {
-//    REQUIRE(ret->at(i) == expected.at(i));
-//  }
-//}
+TEST_CASE("Test 28: Follows_parents_queries query 87") {
+  std::string ss = "stmt s, Select; "
+                   "Select Select such that Parent(s,Select)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  if (clause == nullptr) {
+  }
 
+  // Parse source
+  BufferedLexer lexer(follows_parents_source.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"7", "8", "9", "10", "11", "12", "13", "14",
+                                       "15", "16", "17", "18", "19"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < ret->size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("Test 29: Uses with wild card") {
+  std::string ss = "assign a;"
+                   "Select a such that Uses(a, _)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  if (clause == nullptr) {
+  }
+
+  // Parse source
+  BufferedLexer lexer(follows_parents_source.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"8", "9", "11", "16", "18", "19", "22"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < ret->size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}

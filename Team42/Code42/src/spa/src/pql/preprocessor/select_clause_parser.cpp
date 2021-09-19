@@ -119,7 +119,6 @@ SuchThatClause *SelectClauseParser::MakeSuchThatClause(
   if (relationship_clauses.size() > 3) {
     return nullptr;
   }
-
   auto *relationship = new SuchThatClause(relationship_clauses.at(0));
   if (relationship->get_type() == RelRef::None) {  // invalid relation
     return nullptr;
@@ -197,7 +196,6 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRef(
   SuchThatRef *ret;
   StmtRef stmt_ref;
   EntRef ent_ref;
-
   // existing synonym_
   if (synonym_to_entity_->find(ref) != synonym_to_entity_->end()) {
     EntityType entity_type = synonym_to_entity_->at(ref)->get_type();
@@ -227,8 +225,13 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRef(
     stmt_ref.set_stmt_num(std::stoi(ref));
     ret = new SuchThatRef(stmt_ref);
   } else if (ref == "_") {  // wild card
-    stmt_ref.set_wild_card();
-    ret = new SuchThatRef(stmt_ref);
+    if (relationship->get_type() == RelRef::Uses || relationship->get_type() == RelRef::Modifies) {
+      ent_ref.set_wild_card();
+      ret = new SuchThatRef(ent_ref);
+    } else {
+      stmt_ref.set_wild_card();
+      ret = new SuchThatRef(stmt_ref);
+    }
   } else if (IsValidIdentifier(ref)) {
     ent_ref.set_argument(ref.substr(1, ref.length() - 2));
     ret = new SuchThatRef(ent_ref);
@@ -282,7 +285,6 @@ std::vector<std::string> SelectClauseParser::SplitSelect(
     std::string select_clause) {
   const std::string WHITESPACE = " \n\r\t\f\v";
   size_t pos = select_clause.find_first_not_of(WHITESPACE);
-
   if (pos == std::string::npos) {
     return {};
   } else {

@@ -1,0 +1,315 @@
+1 - Valid Uses with assignment and variable
+assign a; variable v;
+Select a such that Uses(a, v)
+5,7,8,14
+5000
+2 - Valid Uses with print and variable
+print pn; variable v;
+Select pn such that Uses(pn, v)
+10,11,16,18,20
+5000
+3 - Valid Uses with if and variable
+if ifs; variable v;
+Select ifs such that Uses(ifs, v)
+6,15
+5000
+4 - Valid Uses with while and variable
+while whiles; variable v;
+Select whiles such that Uses(whiles, v)
+4
+5000
+5 - Valid Uses with procedure and variable
+procedure p; variable v;
+Select p such that Uses(p, v)
+Example,f,g
+5000
+6 - Valid Uses with call and variable
+call c; variable v;
+Select c such that Uses(c, v)
+9,17
+5000
+7 - Invalid Uses with read and variable
+read r; variable v;
+Select r such that Uses(r, v)
+
+5000
+8 - Valid Uses with assignment statement number and variable
+variable v;
+Select v such that Uses(5, v)
+a,c
+5000
+9 - Valid Uses with print statement number and variable
+variable v;
+Select v such that Uses(10, v)
+c
+5000
+10 - Valid Uses with if statement number and variable
+variable v;
+Select v such that Uses(15, v)
+v,z
+5000
+11 - Valid Uses with while statement number and variable
+variable v;
+Select v such that Uses(4, v)
+a,b,c,v,x,y,z
+5000
+12 - Valid Uses with call statement number and variable
+variable v;
+Select v such that Uses(17, v)
+v
+5000
+13 - Invalid Uses with read statement number and variable
+variable v;
+Select v such that Uses(12, v)
+
+5000
+14 - Valid Uses with procedure name and variable
+variable v;
+Select v such that Uses("f", v)
+v,x,y,z
+5000
+15 - Valid Uses with assignment and variable name
+assign a;
+Select a such that Uses(a, "c")
+5,8
+5000
+16 - Valid Uses with print and variable name
+print pn;
+Select pn such that Uses(pn, "z")
+16,18
+5000
+17 - Valid Uses with if and variable name
+if ifs;
+Select ifs such that Uses(ifs, "t")
+
+5000
+18 - Valid Uses with while and variable name
+while whiles;
+Select whiles such that Uses(whiles, "x")
+4
+5000
+19 - Valid Uses with procedure and variable name
+procedure p; variable v;
+Select p such that Uses(p, "v")
+Example,f,g
+5000
+20 - Valid Uses with call and variable name
+call c;
+Select c such that Uses(c, "v")
+9,17
+5000
+21 - Invalid Uses with read and variable name
+read r;
+Select r such that Uses(r, "z")
+
+5000
+22 - Invalid Uses with assign and while non-variable
+assign a; while whiles;
+Select a such that Uses(a, whiles)
+
+5000
+23 - Invalid Uses with assign and read non-variable
+assign a; read r;
+Select a such that Uses(a, r)
+
+5000
+24 - Valid Uses with assign and wild card
+assign a;
+Select a such that Uses(a, _)
+5,7,8,14
+5000
+25 - Valid Uses with print and wild card
+print pn;
+Select pn such that Uses(pn, _)
+10,11,16,18,20
+5000
+26 - Valid Uses with if and wild card
+if ifs;
+Select ifs such that Uses(ifs, _)
+6,15
+5000
+27 - Valid Uses with while and wild card
+while whiles;
+Select whiles such that Uses(whiles, _)
+4
+5000
+28 - Valid Uses with procedure and wild card
+procedure p;
+Select p such that Uses(p, _)
+Example,f,g
+5000
+29 - Valid Uses with call and wild card
+call c;
+Select c such that Uses(c, _)
+9,17
+5000
+30 - Invalid Uses with read and wild card
+read r;
+Select r such that Uses(r, _)
+
+5000
+31 - Invalid Uses with wild card and variable
+variable v;
+Select v such that Uses(_, v)
+
+5000
+32 - Invalid Uses with wild card and wild card
+variable v;
+Select v such that Uses(_,_)
+
+5000
+33 - Valid Modifies with assignment and variable
+assign a; variable v;
+Select a such that Modifies(a, v)
+1,2,3,5,7,8,14,19
+5000
+34 - Valid Modifies with read and variable
+read r; variable v;
+Select r such that Modifies(r, v)
+12,13,22
+5000
+35 - Valid Modifies with if and variable
+if ifs; variable v;
+Select ifs such that Modifies(ifs, v)
+6,15
+5000
+36 - Valid Modifies with while and variable
+while whiles; variable v;
+Select whiles such that Modifies(whiles, v)
+4
+5000
+37 - Valid Modifies with procedure and variable
+procedure p; variable v;
+Select p such that Modifies(p, v)
+Example,f,g,h
+5000
+38 - Valid Modifies with call and variable
+call c; variable v;
+Select c such that Modifies(c, v)
+9,17,21
+5000
+39 - Invalid Modifies with print and variable
+print pn; variable v;
+Select pn such that Modifies(pn, v)
+
+5000
+40 - Valid Modifies with assignment statement number and variable
+variable v;
+Select v such that Modifies(5, v)
+c
+5000
+41 - Valid Modifies with read statement number and variable
+variable v;
+Select v such that Modifies(22, v)
+t
+5000
+42 - Valid Modifies with if statement number and variable
+variable v;
+Select v such that Modifies(7, v)
+b
+5000
+43 - Valid Modifies with while statement number and variable
+variable v;
+Select v such that Modifies(4, v)
+b,c,t,v,x,y,z
+5000
+44 - Valid Modifies with call statement number and variable
+variable v;
+Select v such that Modifies(17, v)
+t,v
+5000
+45 - Invalid Modifies with print statement number and variable
+variable v;
+Select v such that Modifies(10, v)
+
+5000
+46 - Valid Modifies with procedure name and variable
+variable v;
+Select v such that Modifies("f", v)
+t,v,x,y,z
+5000
+47 - Valid Modifies with assignment and variable name
+assign a;
+Select a such that Modifies(a, "c")
+3,5
+5000
+48 - Valid Modifies with read and variable name
+read r;
+Select r such that Modifies(r, "y")
+13
+5000
+49 - Valid Modifies with if and variable name
+if ifs;
+Select ifs such that Modifies(ifs, "b")
+6
+5000
+50 - Valid Modifies with while and variable name
+while whiles;
+Select whiles such that Modifies(whiles, "t")
+4
+5000
+51 - Valid Modifies with procedure and variable name
+procedure p; variable v;
+Select p such that Modifies(p, "v")
+Example,f,g
+5000
+52 - Valid Modifies with call and variable name
+call c;
+Select c such that Modifies(c, "t")
+9,17,21
+5000
+53 - Invalid Modifies with print and variable name
+print pn;
+Select pn such that Modifies(pn, "z")
+
+5000
+54 - Invalid Modifies with assign and while non-variable
+assign a; while whiles;
+Select a such that Modifies(a, whiles)
+
+5000
+55 - Invalid Modifies with assign and print non-variable
+assign a; print pn;
+Select a such that Modifies(a, pn)
+
+5000
+56 - Valid Modifies with assign and wild card
+assign a;
+Select a such that Modifies(a, _)
+1,2,3,5,7,8,14,19
+5000
+57 - Valid Modifies with read and wild card
+read r;
+Select r such that Modifies(r, _)
+12,13,22
+5000
+58 - Valid Modifies with if and wild card
+if ifs;
+Select ifs such that Modifies(ifs, _)
+6, 15
+5000
+59 - Valid Modifies with while and wild card
+while w;
+Select w such that Modifies(w, _)
+4
+5000
+60 - Valid Modifies with procedure and wild card
+procedure p;
+Select p such that Modifies(p, _)
+Example,f,g,h
+5000
+61 - Valid Modifies with call and wild card
+call c;
+Select c such that Modifies(c, _)
+9,17,21
+5000
+62 - Invalid Modifies with wild card and variable
+variable v;
+Select v such that Modifies(_, v)
+
+5000
+63 - Invalid Modifies with wild card and wild card
+variable v;
+Select v such that Modifies(_,_)
+
+5000

@@ -41,6 +41,50 @@ std::string source =
     "\tnormSq = cenX * cenX + cenY * cenY;\n"
     "}";
 
+TEST_CASE("PKBExtractEntities_SampleProgram_Correct") {
+  BufferedLexer lexer(source.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+
+  SECTION("Test procedures") {
+    std::set<std::string> correct_procedures =
+        {"main", "readPoint", "printResults", "computeCentroid"};
+    std::vector<Procedure *> proc_vec = pkb.get_all_procedures();
+
+    REQUIRE(pkb.get_num_procedures() == correct_procedures.size());
+    for (auto proc: proc_vec) {
+      REQUIRE(correct_procedures.count(proc->get_name()) == 1);
+    }
+  }
+
+  SECTION("Test statements") {
+    int correct_num_statements = 23;
+    REQUIRE(pkb.get_num_statements() == correct_num_statements);
+  }
+
+  SECTION("Test procedures") {
+    std::set<std::string> correct_variables =
+        {"flag", "x", "y", "cenX", "cenY", "normSq", "count"};
+    std::vector<Variable *> var_vec = pkb.get_all_variables();
+
+    REQUIRE(var_vec.size() == correct_variables.size());
+    for (auto var: var_vec) {
+      REQUIRE(correct_variables.count(var->get_name()) == 1);
+    }
+  }
+
+  SECTION("Test constants") {
+    std::set<std::string> correct_constants = {"0", "1"};
+    std::vector<Constant *> const_vec = pkb.get_all_constants();
+
+    REQUIRE(const_vec.size() == correct_constants.size());
+    for (auto constant: const_vec) {
+      REQUIRE(correct_constants.count(constant->get_value()) == 1);
+    }
+  }
+}
+
 TEST_CASE("PKB_FollowsSampleProgram_Correct") {
   BufferedLexer lexer(source);
   ParseState s{};

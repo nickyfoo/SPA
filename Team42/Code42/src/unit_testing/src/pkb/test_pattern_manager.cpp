@@ -4,7 +4,48 @@
 #include "catch.hpp"
 #include "entities/statement.h"
 
-TEST_CASE("PatternManager 1st Test") {
+TEST_CASE("TestAssignmentPattern_OnlyOneVariable", "[pattern_manager]") {
+  SECTION("Constant") {
+    Statement s2(1, NodeType::Assign);
+    s2.set_expr_string("1");
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "1", false) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "1", true) == true);
+  }
+
+  SECTION("Variable") {
+    Statement s2(1, NodeType::Assign);
+    s2.set_expr_string("x");
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "x", false) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "x", true) == true);
+  }
+}
+
+TEST_CASE("TestAssignmentPattern_OnlyOneOperator", "[pattern_manager]") {
+  SECTION("Variable PLUS constant") {
+    Statement s2(1, NodeType::Assign);
+    s2.set_expr_string("count 1 +");
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "count + 1", false) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "count + 1", true) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "count", true) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "1", true) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "count", false) == false);
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "1", false) == false);
+  }
+
+  SECTION("Variable PLUS variable") {
+    Statement s2(1, NodeType::Assign);
+    s2.set_expr_string("x y +");
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "x + y", false) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "x + y", true) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "x", true) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "y", true) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "x", false) == false);
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "y", false) == false);
+  }
+}
+
+TEST_CASE("TestAssignmentPattern_TwoDifferentPrecedenceOperators_Success", "[pattern_manager]") {
+  SECTION("Expression PLUS Expression") {
     Statement s1(1, NodeType::Assign);
     s1.set_expr_string("cenX cenX * cenY cenY * +");
 
@@ -15,15 +56,9 @@ TEST_CASE("PatternManager 1st Test") {
     REQUIRE(PKB::TestAssignmentPattern(&s1, "cenX * cenX", false) == false);
     REQUIRE(PKB::TestAssignmentPattern(&s1, "cenY * cenY", false) == false);
     REQUIRE(PKB::TestAssignmentPattern(&s1, "cenX + cenY", true) == false);
+  }
 
-    Statement s2(1, NodeType::Assign);
-    s2.set_expr_string("count 1 +");
-    REQUIRE(PKB::TestAssignmentPattern(&s2, "count 1 +", false) == true);
-    REQUIRE(PKB::TestAssignmentPattern(&s2, "count", true) == true);
-
-}
-
-TEST_CASE("PatternManager 2nd Test") {
+  SECTION("Variable PLUS Expression PLUS Expression") {
     // Which of the patterns match this assignment statement?
     // x = v + x * y + z * t
     Statement s1(1, NodeType::Assign);
@@ -38,63 +73,19 @@ TEST_CASE("PatternManager 2nd Test") {
     REQUIRE(PKB::TestAssignmentPattern(&s1, "y + z * t", true) == false);
     REQUIRE(PKB::TestAssignmentPattern(&s1, "x * y + z * t", true) == false);
     REQUIRE(PKB::TestAssignmentPattern(&s1, "v + x * y + z * t", true) == true);
+  }
 }
 
-TEST_CASE("Test PatternManager TestAssignmentPattern") {
-    std::string source = "procedure main {"
-                         "flag = 0;"
-                         "call computeCentroid;"
-                         "call printResults;"
-                         "}"
-                         "procedure readPoint {"
-                         "read x;"
-                         "read y;"
-                         "}"
-                         "procedure printResults {"
-                         "print flag;"
-                         "print cenX;"
-                         "print cenY;"
-                         "print normSq;"
-                         "}"
-                         "procedure computeCentroid {"
-                         "count = 0;"
-                         "cenX = 0;"
-                         "cenY = 0;"
-                         "call readPoint;"
-                         "while((x != 0) && (y != 0)) {"
-                         "count = count+1;"
-                         "cenX = cenX + x;"
-                         "cenY = cenY + y;"
-                         "call readPoint;"
-                         "}"
-                         "if (count == 0) then {"
-                         "flag = 1;"
-                         "} else {"
-                         "cenX = cenX / count;"
-                         "cenY = cenY / count;"
-                         "}"
-                         "normSq = cenX * cenX + cenY * cenY;"
-                         "}";
+TEST_CASE("TestAssignmentPattern_MixedPrecedenceOperators_Success", "[pattern_manager]") {
+    // Which of the patterns match this assignment statement? /
+    // x = v + 3 / (y - z * t)
+    Statement s1(1, NodeType::Assign);
+    s1.set_expr_string("v 3 y z t * - / +");
 
-    // Parse source code
-    BufferedLexer lexer(source);
-    ParseState s{};
-    ProgramNode *p = ParseProgram(&lexer, &s);
-    PKB pkb = PKB(p);
-    std::vector<Statement*> assignment_stmts = pkb.get_statements(NodeType::Assign);
-    std::string pattern = "cenX * cenX + cenY * cenY";
-    std::cout << "---------- PatternManager TestAssignmentPattern" << "\n";
-    std::cout << "checking for " << pattern << "\n";
-    for (Statement *stmt : assignment_stmts) {
-      bool matchesPattern = PKB::TestAssignmentPattern(stmt, pattern, false);
-
-        std::string exprString = stmt->get_expr_string();
-        if (matchesPattern) {
-            std::cout << exprString;
-            std::cout << " matches \n";
-        } else {
-            std::cout << exprString;
-            std::cout << " does not match \n";
-        }
-    }
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "v + 3 / (y - z * t)", false) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "v + 3", true) == false);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "(y - z * t)", true) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "(y - z)", true) == false);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "3 / y - z * t", true) == false);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "3 / (y - z * t)", true) == true);
 }

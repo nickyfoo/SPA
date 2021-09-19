@@ -22,6 +22,7 @@ std::set<std::string> *Procedure::get_modifies() {
 std::set<std::string> *Procedure::get_calls() {
   return &calls_;
 }
+
 std::set<std::string> *Procedure::get_calls_star() {
   return &calls_star_;
 }

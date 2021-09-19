@@ -85,7 +85,7 @@ TEST_CASE("Test PatternManager TestAssignmentPattern") {
     std::string pattern = "cenX * cenX + cenY * cenY";
     std::cout << "---------- PatternManager TestAssignmentPattern" << "\n";
     std::cout << "checking for " << pattern << "\n";
-    for (Statement* stmt : assignment_stmts) {
+    for (Statement *stmt : assignment_stmts) {
       bool matchesPattern = PKB::TestAssignmentPattern(stmt, pattern, false);
 
         std::string exprString = stmt->get_expr_string();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 enum class TokenType {
   End,
@@ -68,9 +69,10 @@ class BufferedLexer {
   explicit BufferedLexer(const std::string &source);
   const Token *GetNextToken();
   const Token *PeekNextToken();
+  const Token *PeekNextToken(int offset);
 
  private:
   Lexer *lexer_;
-  const Token *next_token_;
+  std::vector<const Token *> buffer_;
 };
 

@@ -522,25 +522,6 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
   auto final_res = result_stack.top();
   result_stack.pop();
 
-  if (std::holds_alternative<ConstantNode *>(final_res)) {
-    auto first_res = std::get<ConstantNode *>(final_res);
-    std::cout << first_res->ToString() << "\n";
-  } else if (std::holds_alternative<IdentifierNode *>(final_res)) {
-    auto first_res = std::get<IdentifierNode *>(final_res);
-    std::cout << first_res->ToString() << "\n";
-  } else if (std::holds_alternative<ExpressionNode *>(final_res)) {
-    auto first_res = std::get<ExpressionNode *>(final_res);
-    std::cout << first_res->ToString() << "\n";
-  } else if (std::holds_alternative<RelExpressionNode *>(final_res)) {
-    auto first_res = std::get<RelExpressionNode *>(final_res);
-    std::cout << first_res->ToString() << "\n";
-  } else {
-    auto first_res = std::get<CondExpressionNode *>(final_res);
-    std::cout << first_res->ToString() << "\n";
-  }
-
-  std::cout << "==================================================================================\n";
-
   if (result_stack.size() > 0) {
     // annoying but we need to get the first element of stack to get the start location
     std::variant<CondExpressionNode *, RelExpressionNode *, ExpressionNode *, ConstantNode *,
@@ -552,23 +533,18 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
     }
     if (std::holds_alternative<ConstantNode *>(next_res)) {
       auto first_res = std::get<ConstantNode *>(next_res);
-      std::cout << first_res->ToString() << "\n";
       throw ParseException("invalid expression", first_res->get_line_no(), first_res->get_col_no());
     } else if (std::holds_alternative<IdentifierNode *>(next_res)) {
       auto first_res = std::get<IdentifierNode *>(next_res);
-      std::cout << first_res->ToString() << "\n";
       throw ParseException("invalid expression", first_res->get_line_no(), first_res->get_col_no());
     } else if (std::holds_alternative<ExpressionNode *>(next_res)) {
       auto first_res = std::get<ExpressionNode *>(next_res);
-      std::cout << first_res->ToString() << "\n";
       throw ParseException("invalid expression", first_res->get_line_no(), first_res->get_col_no());
     } else if (std::holds_alternative<RelExpressionNode *>(next_res)) {
       auto first_res = std::get<RelExpressionNode *>(next_res);
-      std::cout << first_res->ToString() << "\n";
       throw ParseException("invalid expression", first_res->get_line_no(), first_res->get_col_no());
     } else {
       auto first_res = std::get<CondExpressionNode *>(next_res);
-      std::cout << first_res->ToString() << "\n";
       throw ParseException("invalid expression", first_res->get_line_no(), first_res->get_col_no());
     }
   }

@@ -44,8 +44,6 @@ IfNode *ParseIf(BufferedLexer *lexer, ParseState *state) {
 
   std::vector<StatementNode *> then_stmt_lst = ParseStmtLst(lexer, state);
 
-  std::cout << "then list parsed\n";
-
   t = lexer->GetNextToken();
   if (t->kind_ != TokenType::Name && t->value_ != "else") {
     throw ParseException(StringFormat("expected 'else' but got '%s'", t->value_.c_str()),

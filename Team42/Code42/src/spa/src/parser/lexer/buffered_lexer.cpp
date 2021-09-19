@@ -5,26 +5,38 @@
 BufferedLexer::BufferedLexer(const std::string &source) {
   // this implementation of BufferedLexer uses Lexer
   this->lexer_ = new Lexer(source);
-  this->next_token_ = nullptr;
+  this->buffer_ = std::vector<const Token *>();
 }
 
 const Token *BufferedLexer::GetNextToken() {
-  if (next_token_ != nullptr) {
-    const Token *tmp = next_token_;
-    next_token_ = nullptr;
-    return tmp;
+  if (!this->buffer_.empty()) {
+    const Token *res = this->buffer_.front();
+    this->buffer_.erase(this->buffer_.begin());
+    return res;
   }
 
-  auto n = lexer_->GetNextToken();
+  auto n = this->lexer_->GetNextToken();
   return n;
 }
 
 const Token *BufferedLexer::PeekNextToken() {
-  if (next_token_ != nullptr) {
-    return next_token_;
+  if (!this->buffer_.empty()) {
+    return this->buffer_.front();
   }
 
-  next_token_ = lexer_->GetNextToken();
-  return next_token_;
+  this->buffer_.push_back(lexer_->GetNextToken());
+  return this->buffer_.front();
 }
 
+
+const Token *BufferedLexer::PeekNextToken(int offset) {
+  if (this->buffer_.size() > offset) {
+    return this->buffer_[offset];
+  }
+
+  for (auto i = this->buffer_.size(); i <= offset; i++) {
+    this->buffer_.push_back(this->lexer_->GetNextToken());
+  }
+
+  return this->buffer_[offset];
+}

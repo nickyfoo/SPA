@@ -21,33 +21,83 @@ std::vector<StatementNode *> ParseStmtLst(BufferedLexer *lexer, ParseState *stat
     }
 
     if (t->value_ == "read") {
-      stmt_lst.push_back(ParseRead(lexer, state));
-      t = lexer->PeekNextToken();
-      continue;
+      if (lexer->PeekNextToken(1)->kind_ == TokenType::Equal) {
+        stmt_lst.push_back(ParseAssign(lexer, state));
+        t = lexer->PeekNextToken();
+        continue;
+      }
+
+      if (lexer->PeekNextToken(1)->kind_ == TokenType::Name) {
+        stmt_lst.push_back(ParseRead(lexer, state));
+        t = lexer->PeekNextToken();
+        continue;
+      }
+
+      throw ParseException("invalid read or assign statement", t->line_no_, t->col_no_);
     }
 
     if (t->value_ == "print") {
-      stmt_lst.push_back(ParsePrint(lexer, state));
-      t = lexer->PeekNextToken();
-      continue;
+      if (lexer->PeekNextToken(1)->kind_ == TokenType::Equal) {
+        stmt_lst.push_back(ParseAssign(lexer, state));
+        t = lexer->PeekNextToken();
+        continue;
+      }
+
+      if (lexer->PeekNextToken(1)->kind_ == TokenType::Name) {
+        stmt_lst.push_back(ParsePrint(lexer, state));
+        t = lexer->PeekNextToken();
+        continue;
+      }
+
+      throw ParseException("invalid print or assign statement", t->line_no_, t->col_no_);
     }
 
     if (t->value_ == "call") {
-      stmt_lst.push_back(ParseCall(lexer, state));
-      t = lexer->PeekNextToken();
-      continue;
+      if (lexer->PeekNextToken(1)->kind_ == TokenType::Equal) {
+        stmt_lst.push_back(ParseAssign(lexer, state));
+        t = lexer->PeekNextToken();
+        continue;
+      }
+
+      if (lexer->PeekNextToken(1)->kind_ == TokenType::Name) {
+        stmt_lst.push_back(ParseCall(lexer, state));
+        t = lexer->PeekNextToken();
+        continue;
+      }
+
+      throw ParseException("invalid call or assign statement", t->line_no_, t->col_no_);
     }
 
     if (t->value_ == "while") {
-      stmt_lst.push_back(ParseWhile(lexer, state));
-      t = lexer->PeekNextToken();
-      continue;
+      if (lexer->PeekNextToken(1)->kind_ == TokenType::Equal) {
+        stmt_lst.push_back(ParseAssign(lexer, state));
+        t = lexer->PeekNextToken();
+        continue;
+      }
+
+      if (lexer->PeekNextToken(1)->kind_ == TokenType::LParen) {
+        stmt_lst.push_back(ParseWhile(lexer, state));
+        t = lexer->PeekNextToken();
+        continue;
+      }
+
+      throw ParseException("invalid while or assign statement", t->line_no_, t->col_no_);
     }
 
     if (t->value_ == "if") {
-      stmt_lst.push_back(ParseIf(lexer, state));
-      t = lexer->PeekNextToken();
-      continue;
+      if (lexer->PeekNextToken(1)->kind_ == TokenType::Equal) {
+        stmt_lst.push_back(ParseAssign(lexer, state));
+        t = lexer->PeekNextToken();
+        continue;
+      }
+
+      if (lexer->PeekNextToken(1)->kind_ == TokenType::LParen) {
+        stmt_lst.push_back(ParseIf(lexer, state));
+        t = lexer->PeekNextToken();
+        continue;
+      }
+
+      throw ParseException("invalid if or assign statement", t->line_no_, t->col_no_);
     }
 
     // must be assign

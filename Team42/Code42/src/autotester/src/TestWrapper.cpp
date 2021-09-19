@@ -40,6 +40,8 @@ void TestWrapper::parse(std::string filename) {
   BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
+
+  std::cout << "Program parsed!\n";
   this->pkb_ = new PKB(p);
 }
 

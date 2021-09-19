@@ -290,6 +290,11 @@ std::pair<SuchThatRef*, SuchThatRef*> SelectClauseParser::MakeSuchThatRefBoth(
         break;
       }
       case EntityType::Procedure:
+        if (type == RelRef::Uses || type == RelRef::Modifies) {
+          left_ent_ref.set_synonym(left_ref);
+          left_such_that_ref = new SuchThatRef(left_ent_ref);
+          break;
+        }
       case EntityType::Variable: {
         if (type != RelRef::Uses && type != RelRef::Modifies) {
           printf("HERE3\n");

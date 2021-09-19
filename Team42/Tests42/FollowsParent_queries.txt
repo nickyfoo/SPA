@@ -1,7 +1,7 @@
 1 - Valid Follows with 2 statement numbers
 stmt s;
 Select s such that Follows (1, 2)
-1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
 5000
 2 - Valid Follows with statement number and statement
 stmt s;
@@ -16,7 +16,7 @@ Select s such that Follows (s, 4)
 4 - Valid Follows with statement and statement
 stmt s1, s2;
 Select s1 such that Follows (s1, s2)
-1,2,3,6,8,10,11,12,14,15
+1,2,3,6,8,10,11,12,14,15,18
 5000
 5 - Valid Follows with assign and statement
 stmt s; assign a;
@@ -26,7 +26,7 @@ Select a such that Follows(a, s)
 6 - Valid Follows with call and statement
 stmt s; call c;
 Select c such that Follows(s, c)
-9
+9,19
 5000
 7 - Valid Follows with if and statement
 stmt s; if ifs;
@@ -71,7 +71,7 @@ Select s such that Follows ("x", s)
 15 - Valid Follows* with 2 statement numbers
 stmt s;
 Select s such that Follows* (1, 2)
-1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
 5000
 16 - Valid Follows* with statement number and statement
 stmt s;
@@ -86,7 +86,7 @@ Select s such that Follows* (s, 4)
 18 - Valid Follows* with statement and statement
 stmt s1, s2;
 Select s1 such that Follows* (s1, s2)
-1,2,3,6,8,10,11,12,14,15
+1,2,3,6,8,10,11,12,14,15,18
 5000
 19 - Valid Follows* with assign and statement number
 stmt s; assign a;
@@ -211,7 +211,7 @@ Select s such that Parent ("x", s)
 43 - Valid Parent* with 2 statement numbers
 stmt s;
 Select s such that Parent* (4, 8)
-1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
 5000
 44 - Valid Parent* with statement number and statement
 stmt s;

@@ -187,6 +187,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
   // If there are repeated synonyms between relationship and pattern
   // run relationship manager again
   if (has_one_repeated_synonym_) {
+    printf("came back here again\n");
     relationship_query_manager->EvaluateRelationships();
   }
 

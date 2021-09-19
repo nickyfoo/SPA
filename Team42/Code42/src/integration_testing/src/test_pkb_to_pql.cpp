@@ -356,7 +356,7 @@ TEST_CASE("PQL_UsesPAndPatternOneCommonSynonym_ReturnsExpected") {
   }
 }
 
-TEST_CASE("PQL_InvalidUsesAndPatternReturnsExpected") {
+TEST_CASE("PQL_InvalidUsesAndPattern_ReturnsExpected") {
   std::string ss = "read r,r1; print pn; while w; if ifs; assign a; variable v; procedure p; stmt s; constant c;\n"
                    "Select a such that Uses(c,v) pattern a(v, _)";
   auto *query = new QueryPreprocessor(ss);

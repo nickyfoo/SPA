@@ -36,7 +36,6 @@ bool SuchThatClause::set_ref(SuchThatRef *left, SuchThatRef *right) {
       }
       return false;
     case RelRef::Uses:
-      printf("came into here\n");
       if (right->get_type() == SuchThatRefType::Entity) {
         if (left->get_type() == SuchThatRefType::Statement
             && left->get_stmt_ref().get_type()

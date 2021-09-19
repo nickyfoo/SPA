@@ -611,7 +611,7 @@ TEST_CASE("Invalid Modifies print stmt, Argument") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -633,7 +633,7 @@ TEST_CASE("Invalid Modifies read stmt, Argument") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -700,7 +700,7 @@ TEST_CASE("Test 24: Follows_parents_queries query 1") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(follows_parents_source.c_str());
+  BufferedLexer lexer(follows_parents_source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -722,7 +722,7 @@ TEST_CASE("Test 25: Follows_parents_queries query 104") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(follows_parents_source.c_str());
+  BufferedLexer lexer(follows_parents_source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -744,7 +744,7 @@ TEST_CASE("Test 26: Follows_parents_queries query 8") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(follows_parents_source.c_str());
+  BufferedLexer lexer(follows_parents_source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -766,7 +766,7 @@ TEST_CASE("Test 27: Follows_parents_queries query 87") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(follows_parents_source.c_str());
+  BufferedLexer lexer(follows_parents_source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -790,7 +790,7 @@ TEST_CASE("Test 28: Follows_parents_queries query 87") {
   }
 
   // Parse source
-  BufferedLexer lexer(follows_parents_source.c_str());
+  BufferedLexer lexer(follows_parents_source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -815,7 +815,7 @@ TEST_CASE("Test 29: Uses with wild card") {
   }
 
   // Parse source
-  BufferedLexer lexer(follows_parents_source.c_str());
+  BufferedLexer lexer(follows_parents_source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);

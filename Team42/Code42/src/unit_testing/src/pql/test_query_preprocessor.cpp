@@ -309,17 +309,17 @@ TEST_CASE("Modifies_AssignAndVar_ReturnsCorrect") {
   REQUIRE(clause->has_two_repeated_synonyms() == false);
 }
 
-TEST_CASE("Modifies_PrintAndVar_ReturnsCorrect") {
-  std::string ss = "print pn; variable v;\n"
-                   "Select pn such that Modifies(pn, v)";
+TEST_CASE("Modifies_ReadndVar_ReturnsCorrect") {
+  std::string ss = "read r; variable v;\n"
+                   "Select r such that Modifies(r, v)";
   auto *query = new QueryPreprocessor(ss);
   PQLQuery *clause = query->get_pql_query();
   REQUIRE(clause != nullptr);
-  REQUIRE(clause->get_query_entities()->at(0) == "pn");
+  REQUIRE(clause->get_query_entities()->at(0) == "r");
   REQUIRE(clause->get_query_relationships()->size() == 1);
   SuchThatClause *relationship = clause->get_query_relationships()->at(0);
   REQUIRE(relationship->get_type() == RelRef::ModifiesS);
-  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "pn");
+  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "r");
   REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
   REQUIRE(clause->get_query_patterns()->size() == 0);
   REQUIRE(clause->has_one_repeated_synonym() == false);
@@ -823,14 +823,6 @@ TEST_CASE("Pattern_EndingWithSymbol_ReturnsNullPtr") {
 TEST_CASE("Pattern_HavingTwoContinuousSymbols_ReturnsNullPtr") {
   std::string ss = "assign a;"
                    "Select a pattern a ( _ , 'x+*y')";
-  auto *query = new QueryPreprocessor(ss);
-  PQLQuery *clause = query->get_pql_query();
-  REQUIRE(clause == nullptr);
-}
-
-TEST_CASE("Pattern_HavingTwoContinuousVariable_ReturnsNullPtr") {
-  std::string ss = "assign a;"
-                   "Select a pattern a ( _ , _'x y'_)";
   auto *query = new QueryPreprocessor(ss);
   PQLQuery *clause = query->get_pql_query();
   REQUIRE(clause == nullptr);

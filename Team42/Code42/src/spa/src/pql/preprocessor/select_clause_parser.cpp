@@ -599,7 +599,7 @@ std::vector<std::string> SelectClauseParser::SplitTokensByMultipleDelimiters(
     size_t prev = 0, pos;
     while ((pos = line.find_first_of(delimiters, prev))
         != std::string::npos) {
-      if (pos > prev)
+      if (pos >= prev)
         tokens.push_back(line.substr(prev, pos - prev));
       prev = pos + 1;
     }

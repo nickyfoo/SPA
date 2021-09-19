@@ -1,7 +1,6 @@
 #include "pattern_manager.h"
 
 #include <iostream>
-#include <unordered_map>
 #include <stack>
 #include <sstream>
 
@@ -23,6 +22,7 @@ std::string PatternManager::GetPostfixExpr(std::string infix_expr) {
   std::stringstream output;
   std::string::iterator it;
   try {
+    output << ' ';
     for (it = infix_expr.begin(); it != infix_expr.end(); ++it) {
       if (std::isalpha(*it) || std::isdigit(*it)) {
         // Flag for whether variable is an identifier or a constant
@@ -103,11 +103,12 @@ std::string PatternManager::GetPostfixExpr(std::string infix_expr) {
 bool PatternManager::TestAssignmentPattern(Statement *assignment_stmt, std::string pattern, bool is_partial_match) {
   if (pattern.size() == 0) return false;
   std::string postfix_pattern = GetPostfixExpr(pattern);
-  postfix_pattern.pop_back();
-  std::string assignment_expr = assignment_stmt->get_expr_string();
+  std::stringstream assign_expr_ss;
+  assign_expr_ss << " " << assignment_stmt->get_expr_string() << " ";
+  std::string assign_expr = assign_expr_ss.str();
   if (is_partial_match) {
-    return assignment_expr.find(postfix_pattern) != std::string::npos;
+    return assign_expr.find(postfix_pattern) != std::string::npos;
   } else {
-    return assignment_expr == postfix_pattern;
+    return assign_expr == postfix_pattern;
   }
 }

@@ -264,26 +264,20 @@ std::pair<SuchThatRef*, SuchThatRef*> SelectClauseParser::MakeSuchThatRefBoth(
   // existing synonym_
   if (synonym_to_entity_->find(left_ref) != synonym_to_entity_->end()) {
     EntityType entity_type = synonym_to_entity_->at(left_ref)->get_type();
-    printf("HERE\n");
     switch (entity_type) {
       case EntityType::Assign:
-        printf("HEREEE2\n");
       case EntityType::Call:
       case EntityType::If:
       case EntityType::Print:
         if (type == RelRef::Modifies && entity_type == EntityType::Print) {
-          printf("HEREEE1\n");
           return std::make_pair(nullptr, nullptr);
         }
-        printf("HERE1\n");
       case EntityType::Read:
         if (type == RelRef::Uses && entity_type == EntityType::Read) {
           return std::make_pair(nullptr, nullptr);
         }
-        printf("HERE2\n");
       case EntityType::Stmt:
       case EntityType::While: {
-        printf("am here actually\n");
         left_stmt_ref.set_synonym(left_ref);
         left_stmt_ref.set_entity_type(entity_type);
         left_such_that_ref = new SuchThatRef(left_stmt_ref);
@@ -297,16 +291,13 @@ std::pair<SuchThatRef*, SuchThatRef*> SelectClauseParser::MakeSuchThatRefBoth(
         }
       case EntityType::Variable: {
         if (type != RelRef::Uses && type != RelRef::Modifies) {
-          printf("HERE3\n");
           left_ent_ref.set_synonym(left_ref);
           left_such_that_ref = new SuchThatRef(left_ent_ref);
           break;
         }
       }
       case EntityType::Constant:
-        printf("HERE4\n");
       default:
-        printf("HERE5\n");
         return std::make_pair(nullptr, nullptr);;
     }
   } else if (IsInteger(left_ref)) {  // statement number

@@ -56,7 +56,6 @@ void UsesSModifiesSHandler::Evaluate() {
     std::vector<Entity *> *right_entity_vec;
     right_entity_vec = &synonym_to_entity_result_->at(right_synonym);
     stmt_var_pair_vector_ = new std::vector<std::pair<int, std::string>>();
-
     left_entity_vec->erase(std::remove_if(left_entity_vec->begin(),
                                           left_entity_vec->end(),
                                           [this, &right_entity_vec](Entity *entity) {
@@ -85,7 +84,6 @@ void UsesSModifiesSHandler::Evaluate() {
                                                 !has_matching_follower;
                                           }),
                            left_entity_vec->end());
-
     right_entity_vec->erase(std::remove_if(right_entity_vec->begin(),
                                            right_entity_vec->end(),
                                            [this, &left_entity_vec](Entity *entity) {

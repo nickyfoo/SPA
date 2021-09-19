@@ -61,13 +61,17 @@ void PatternQueryManager::ManagePatterns(PatternClause *pattern) {
           }
         } else {
           // for each variable object
-          printf("CAME TO HERE\n");
+          bool found_variable = false;
           for (int j = 0; j < variable_vec->size(); j++) {
             auto *variable = dynamic_cast<Variable *>(variable_vec->at(j));
             if (assign->get_modifies()->count(variable->get_name())) {
-              printf("HEREEEEE\n");
+              found_variable = true;
               var_set.insert(variable_vec->at(j));
             }
+          }
+          if (!found_variable) {
+            entity_vec->erase(entity_vec->begin() + i);
+            i--;
           }
         }
       } else if (left_ent->get_type() == EntRefType::Argument) {
@@ -78,24 +82,18 @@ void PatternQueryManager::ManagePatterns(PatternClause *pattern) {
       }
     }
   }
-  printf("done\n");
   if (!var_set.empty()) {
-    printf("actually came\n");
     std::vector<Entity *> *variable_vec = &synonym_to_entity_result_->at(left_synonym);
     // getting list of variable objects
     for (int k = 0; k < variable_vec->size(); k++) {
       if (!var_set.count(variable_vec->at(k))) {
         variable_vec->erase(variable_vec->begin() + k);
         k--;
-      } else {
-        printf("has variable: %s\n", variable_vec->at(k));
       }
     }
   } else if (var_set.empty() && left_ent->get_type() == EntRefType::Synonym
   && !has_two_repeated_synonyms_) {
-//    synonym_to_entity_result_->at(synonym->get_synonym()).clear();
-//    printf("syn: %s\n", left_ent->get_synonym().c_str());
-//    synonym_to_entity_result_->clear();
+    synonym_to_entity_result_->clear();
   }
 }
 

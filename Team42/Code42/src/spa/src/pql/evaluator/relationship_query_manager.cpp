@@ -79,7 +79,6 @@ void RelationshipQueryManager::EvaluateRelationships() {
         break;
       }
       case RelRef::UsesS: {
-        printf("came back to here\n");
         UsesSModifiesSHandler *uses_modifies_handler =
             UsesSModifiesSHandler::get_instance();
         uses_modifies_handler->set_function_pointers(&Statement::get_uses,

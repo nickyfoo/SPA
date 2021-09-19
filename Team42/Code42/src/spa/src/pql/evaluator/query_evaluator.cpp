@@ -33,7 +33,6 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
   if (synonym_to_entity_dec_ == nullptr) {
     return new std::vector<std::string>{};
   }
-  printf("finished here1\n");
 
   // Initialising an unordered map mapping synonym_ to Entity objects.
   auto *synonym_to_entity_result =
@@ -137,45 +136,36 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
     }
     synonym_to_entity_result->insert({pair.first, entities});
   }
-  printf("finished here2\n");
   RelationshipQueryManager *relationship_query_manager;
   PatternQueryManager *pattern_query_manager;
   if (!relationships_->empty() &&
       !IsEmpty(synonym_to_entity_result)) {
-    printf("finished here3\n");
 
     relationship_query_manager = new RelationshipQueryManager(synonym_to_entity_result,
                                                               relationships_,
                                                               entities_to_return_,
                                                               pkb_,
                                                               has_two_repeated_synonyms_);
-    printf("finished here4\n");
 
     relationship_query_manager->EvaluateRelationships();
-    printf("finished here5\n");
 
   }
   // Check if any entity vector is empty
   // If it is, return empty result.
   if (IsEmpty(synonym_to_entity_result)) {
-    printf("finished here6\n");
-
     return new std::vector<std::string>{};
   }
 
   if (!patterns_->empty() &&
       !IsEmpty(synonym_to_entity_result)) {
-    printf("finished here7\n");
 
     pattern_query_manager = new PatternQueryManager(synonym_to_entity_result,
                                                     patterns_,
                                                     entities_to_return_,
                                                     pkb_,
                                                     has_two_repeated_synonyms_);
-    printf("finished here8\n");
 
     pattern_query_manager->EvaluatePatterns();
-    printf("finished here9\n");
 
   }
   // Check if any entity vector is empty
@@ -187,7 +177,6 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
   // If there are repeated synonyms between relationship and pattern
   // run relationship manager again
   if (has_one_repeated_synonym_) {
-    printf("came back here again\n");
     relationship_query_manager->EvaluateRelationships();
   }
 
@@ -228,6 +217,7 @@ bool QueryEvaluator::IsEmpty(std::unordered_map<std::string,
       return true;
     }
   }
+  if (synonym_to_entity_result->empty()) return true;
   return false;
 }
 

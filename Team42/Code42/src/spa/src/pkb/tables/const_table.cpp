@@ -15,8 +15,8 @@ void ConstTable::AddConstant(std::string value) {
 
 std::vector<Constant *> ConstTable::get_all_constants() {
   std::vector<Constant *> ans;
-  for (auto &[stmt_no, stmt] : table_) {
-    ans.push_back(&stmt);
+  for (auto &[const_value, constant] : table_) {
+    ans.push_back(&constant);
   }
   return ans;
 }

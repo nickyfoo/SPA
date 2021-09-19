@@ -10,9 +10,11 @@
 #include "tables/var_table.h"
 #include "tables/const_table.h"
 #include "pattern_manager.h"
+#include "exception.h"
 
 class PKB {
  public:
+   PKB();
   explicit PKB(Node *programRoot);
 
   ~PKB();

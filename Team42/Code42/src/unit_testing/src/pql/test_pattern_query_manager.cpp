@@ -50,7 +50,7 @@ TEST_CASE("Pattern_AssignVariableAndWildCard_ReturnsExpected") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -73,7 +73,7 @@ TEST_CASE("Pattern_AssignVariableAndPattern_ReturnsExpected") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -95,7 +95,7 @@ TEST_CASE("Pattern_AssignVariableAndVariable_ReturnsEmpty") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -118,7 +118,7 @@ TEST_CASE("Pattern_AssignVariableAndPartialPattern_ReturnsExpected") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -140,7 +140,7 @@ TEST_CASE("Pattern_AssignWildCardAndWildCard_ReturnsExpected") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -163,7 +163,7 @@ TEST_CASE("Pattern_AssignWildCardAndPattern_ReturnsExpected") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -186,7 +186,7 @@ TEST_CASE("Pattern_AssignWildCardAndPartialPattern_ReturnsExpected") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -209,7 +209,7 @@ TEST_CASE("Pattern_PrintWildCardAndPattern_ReturnsEmpty") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -232,7 +232,7 @@ TEST_CASE("Pattern_AssignWildCardAndWrongPartialPattern_ReturnsEmpty") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -255,7 +255,7 @@ TEST_CASE("Pattern_AssignStmtAndPartialPattern_ReturnsEmpty") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);

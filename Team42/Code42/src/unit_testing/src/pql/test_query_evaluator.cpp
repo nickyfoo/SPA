@@ -115,7 +115,7 @@ TEST_CASE("Test 1: Follows Synonym + Integer") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -135,7 +135,7 @@ TEST_CASE("Test 2: Follows Synonym + Synonym") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -156,7 +156,7 @@ TEST_CASE("Test 3: Follows Integer + Synonym") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -176,7 +176,7 @@ TEST_CASE("Test 4: Select") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -198,7 +198,7 @@ TEST_CASE("Test 5: Incorrect pql input") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -217,7 +217,7 @@ TEST_CASE("Test 6: Follows Unused entity declaration") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -241,7 +241,7 @@ TEST_CASE("Test 7: Follows Integer, Wildcard") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -265,7 +265,7 @@ TEST_CASE("Test 8: Follows Wildcard, Integer") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -289,7 +289,7 @@ TEST_CASE("Test 9: Follows Wildcard, Wildcard") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -313,7 +313,7 @@ TEST_CASE("Test 9: Follows Synonym, Wildcard") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -337,7 +337,7 @@ TEST_CASE("Test 10: Follows* Synonym, Integer") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -359,7 +359,7 @@ TEST_CASE("Test 11: Follows* Integer, Integer") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -383,7 +383,7 @@ TEST_CASE("Test 12: Follows* Integer, Synonym") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -405,7 +405,7 @@ TEST_CASE("Test 13: Parent Integer, Integer") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -429,7 +429,7 @@ TEST_CASE("Test 14: Parent Synonym, Wildcard") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -451,7 +451,7 @@ TEST_CASE("Test 15: Parent Integer, Integer") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -475,7 +475,7 @@ TEST_CASE("Test 16: Sample source query 1") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(samplePQL.c_str());
+  BufferedLexer lexer(samplePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -497,7 +497,7 @@ TEST_CASE("Test 17: Sample source query 1") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(samplePQL.c_str());
+  BufferedLexer lexer(samplePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -520,7 +520,7 @@ TEST_CASE("Test 18: Uses Synonym, Synonym") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -543,7 +543,7 @@ TEST_CASE("Test 19: UsesP Synonym, Synonym") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -565,7 +565,7 @@ TEST_CASE("Test 20: Modifies Synonym, Synonym") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -589,7 +589,7 @@ TEST_CASE("Test 21: Modifies Synonym, Argument") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -655,7 +655,7 @@ TEST_CASE("Test 22: Sample source query 4") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(samplePQL.c_str());
+  BufferedLexer lexer(samplePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -678,7 +678,7 @@ TEST_CASE("Test 23: ModifiesP Argument, Synonym") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(sourcePQL.c_str());
+  BufferedLexer lexer(sourcePQL);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);

@@ -2,20 +2,10 @@
 #include <stdexcept>
 
 #include "ast.h"
+#include "string_utils.h"
 
-AssignNode::AssignNode(IdentifierNode *var, Node *expr, int stmt_no, LocInfo loc)
+AssignNode::AssignNode(IdentifierNode *var, AssignNodeExpr *expr, int stmt_no, LocInfo loc)
     : StatementNode(stmt_no, loc) {
-  if (var == nullptr) {
-    throw std::invalid_argument("AssignNode: expected var to be Identifier");
-  }
-
-  if (expr == nullptr || expr->get_kind() != NodeType::Expression &&
-                             expr->get_kind() != NodeType::Constant &&
-                             expr->get_kind() != NodeType::Identifier) {
-    throw std::invalid_argument(
-        "AssignNode: expected expr to be Expression, Constant or Identifier");
-  }
-
   this->var_ = var;
   this->expr_ = expr;
 }
@@ -24,10 +14,10 @@ NodeType AssignNode::get_kind() { return NodeType::Assign; }
 
 IdentifierNode *AssignNode::get_var() { return this->var_; }
 
-Node *AssignNode::expr() {
-  assert(this->expr_->get_kind() == NodeType::Expression || this->expr_->get_kind() == NodeType::Constant ||
-         this->expr_->get_kind() == NodeType::Identifier);
+Node *AssignNode::expr() { return this->expr_; }
 
-  return this->expr_;
+std::string AssignNode::ToString() {
+  return StringFormat("AssignNode: {\nVar:\n%s\nExpr:\n%s\nLine: %d\n, Col: %d\n}",
+                      this->var_->ToString().c_str(), this->expr_->ToString().c_str(),
+                      this->get_line_no(), this->get_col_no());
 }
-

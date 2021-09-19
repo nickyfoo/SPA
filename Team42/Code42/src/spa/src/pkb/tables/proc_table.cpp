@@ -1,5 +1,7 @@
 #include "proc_table.h"
+#include "../pkb_exception.h"
 #include <iostream>
+#include <string_utils.h>
 
 ProcTable::ProcTable() = default;
 
@@ -29,7 +31,10 @@ std::vector<Procedure *> ProcTable::get_all_procedures() {
   return ans;
 }
 
-Procedure *ProcTable::get_procedure(std::string name) {
+Procedure *ProcTable::get_procedure(std::string name) { 
+  if (name_to_index_.find(name) == name_to_index_.end()) {
+    return nullptr;
+  }
   return &table_[name_to_index_[name]];
 }
 
@@ -87,7 +92,7 @@ void ProcTable::DFS(int u, std::vector<std::vector<int>> &al,
     if (status[v] == UNVISITED) {
       DFS(v, al, status, ans);
     } else if (status[v] == VISITED) {
-      throw "Cycle detected!";
+      throw PKBException("Cyclic procedure calls detected");
     }
   }
   status[u] = EXPLORED;

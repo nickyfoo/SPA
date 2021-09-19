@@ -448,6 +448,7 @@ inline void Visit(Node *node,
     if (n) Visit(n, functions);
   }
 }
+
 inline void VisitWithAncestors(
     Node *node, std::vector<Node *> &ancestor_list,
     std::map<NodeType, std::vector<std::function<void(Node *, std::vector<Node *>)>>> &functions) {

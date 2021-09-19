@@ -284,3 +284,27 @@ TEST_CASE("PQL_KeywordAsSynonym_ReturnsExpected") {
     REQUIRE(ret->at(i) == expected.at(i));
   }
 }
+
+TEST_CASE("PQL_RelationshipAndPatternDependencies_ReturnsExpected") {
+
+  std::string ss = "assign a; variable v; while w;\n"
+                   "Select a such that Uses(a, v) pattern a(v, _)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(s.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"15", "16", "17", "21", "22"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < expected.size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}

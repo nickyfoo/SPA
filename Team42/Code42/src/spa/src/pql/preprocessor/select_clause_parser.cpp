@@ -83,14 +83,15 @@ PQLQuery *SelectClauseParser::get_clauses() {
     } else {
       right_relationship_str = relationship->get_right_ref()->get_ent_ref().get_value();
     }
+
     for (PatternClause *pattern : *pattern_ret) {
-      if (pattern->get_synonym()->get_synonym() == left_relationship_str
-      || pattern->get_left_ref()->get_value() == left_relationship_str) {
+      if (left_relationship_str != "_" && (pattern->get_synonym()->get_synonym() == left_relationship_str
+      || pattern->get_left_ref()->get_value() == left_relationship_str)) {
         has_one_repeated_synonym = true;
       }
 
-      if (pattern->get_synonym()->get_synonym() == right_relationship_str
-      || pattern->get_left_ref()->get_value() == right_relationship_str) {
+      if (right_relationship_str != "_" && (pattern->get_synonym()->get_synonym() == right_relationship_str
+      || pattern->get_left_ref()->get_value() == right_relationship_str)) {
         has_one_repeated_synonym ? has_two_repeated_synonyms = true : has_one_repeated_synonym = true;
       }
     }

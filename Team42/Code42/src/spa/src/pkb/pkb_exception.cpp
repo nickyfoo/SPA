@@ -1,5 +1,3 @@
-#include <cstdio>
-
 #include "pkb_exception.h"
 
 PKBException::PKBException(std::string error) {

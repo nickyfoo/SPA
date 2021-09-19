@@ -1,6 +1,5 @@
 #pragma once
 #include <map>
-#include <set>
 #include <string>
 #include <vector>
 #include "../entities/variable.h"

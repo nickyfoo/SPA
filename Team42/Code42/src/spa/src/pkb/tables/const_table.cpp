@@ -1,6 +1,5 @@
 #include "const_table.h"
 #include <iostream>
-#include <sstream>
 
 ConstTable::ConstTable() = default;
 

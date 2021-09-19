@@ -1,7 +1,6 @@
 #include "proc_table.h"
 #include "../pkb_exception.h"
 #include <iostream>
-#include <string_utils.h>
 
 ProcTable::ProcTable() = default;
 

@@ -107,7 +107,7 @@ void PKB::AddVariable(Node *node, std::vector<Node *> ancestor_list) {
 
 void PKB::AddConstant(Node *node, std::vector<Node *> ancestor_list) {
   auto *constant_node = dynamic_cast<ConstantNode *>(node);
-  const_table_.AddConstant(std::stoi(constant_node->get_value()));
+  const_table_.AddConstant(constant_node->get_value());
 }
 
 int PKB::get_num_procedures() {

@@ -396,6 +396,7 @@ inline void Visit(Node *node, std::map<NodeType, std::vector<std::function<void(
     if (n) Visit(n, functions);
   }
 }
+
 inline void VisitWithAncestors(
   Node *node, 
   std::vector<Node *>& ancestor_list, 

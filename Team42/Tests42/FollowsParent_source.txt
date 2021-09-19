@@ -1,0 +1,31 @@
+procedure main {
+    read a;
+    read b;
+    c = a + b;
+    if (c == 0) then {
+        read c;
+    } else {
+        while (c > 0) {
+            c = c - 1;
+        }
+        print c;
+        call p;
+    }
+}
+
+procedure p {
+    read x;
+    read y;
+    x = x + 5;
+    y = x;
+}
+
+procedure t {
+    read v;
+    if (v < 15) then {
+        v = v - 1;
+    } else {
+        v = v + 3;
+    }
+    print v;
+}

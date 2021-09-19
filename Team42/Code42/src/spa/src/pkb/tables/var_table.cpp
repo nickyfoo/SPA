@@ -1,5 +1,4 @@
 #include "var_table.h"
-#include "../exception.h"
 #include <iostream>
 #include <string>
 #include <string_utils.h>

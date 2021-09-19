@@ -212,13 +212,13 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRef(
         ret = new SuchThatRef(stmt_ref);
         break;
       }
-      case EntityType::Constant:
       case EntityType::Procedure:
       case EntityType::Variable: {
         ent_ref.set_synonym(ref);
         ret = new SuchThatRef(ent_ref);
         break;
       }
+      case EntityType::Constant:
       default:return nullptr;
     }
   } else if (IsInteger(ref)) {  // statement number

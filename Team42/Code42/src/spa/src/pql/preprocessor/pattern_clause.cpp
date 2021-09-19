@@ -24,7 +24,6 @@ ExpressionSpec *PatternClause::get_right_ref() {
 }
 
 bool PatternClause::IsValidRightRef(std::string ref) {
-  printf("ref is: %s\n", ref.c_str());
   bool partial_pattern;
   auto *exp_spec = new ExpressionSpec();
   if (ref == "_") {
@@ -48,23 +47,13 @@ bool PatternClause::IsValidRightRef(std::string ref) {
 
   ref = ref.substr(1, ref.length() - 2);  // remove ""
   bool expecting_exp = false;
-  bool must_be_exp = false;
-  printf("ref is: %s\n", ref.c_str());
   for (char &c : ref) {
-    printf("c now is: %c\n", c);
     if (!expecting_exp && IsExp(c)) {
       return false;
-    } else if (std::isspace(c)) {
-      printf("got come here not\n");
-      if (expecting_exp) must_be_exp = true;
     } else {
       if (IsExp(c)) {
         expecting_exp = false;
-        must_be_exp = false;
       } else if (IsChar(c)) {
-        printf("char here is: %c\n", c);
-        printf("must be exp is: %d\n", must_be_exp);
-        if (must_be_exp) return false;
         expecting_exp = true;
       } else {
         return false;

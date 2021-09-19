@@ -144,11 +144,23 @@ Select a such that Modifies(a,"c") pattern a(_, "64 / 2")
 3
 5000
 30 - Modifies with no common synonyms
-assign a; stmt s; variable v;
-Select s such that Modifies(s,v) pattern a(_,_)
-5,7,8,14
+assign a1, a2; variable v;
+Select a1 such that Modifies(a1,v) pattern a2(_,_)
+1,2,3,5,7,8,14,19
 5000
 31 - Selecting synonym not used in clauses
-read r; assign a;
-Select r such that Modifies(a,"c"), pattern a(v,_)
+read r; assign a; variable v;
+Select r such that Modifies(a,"c") pattern a(v,_)
 12,13,22
+5000
+32 - Selecting synonym not used in clauses and is an empty set in clause
+read r; assign a; variable v;
+Select r such that Modifies(a,"c") pattern a("test",_)
+
+5000
+33 - Select with keywords as synonyms
+assign Select; variable pattern;
+Select Select such that Uses(Select,pattern) pattern Select(pattern,_)
+5,7
+5000
+

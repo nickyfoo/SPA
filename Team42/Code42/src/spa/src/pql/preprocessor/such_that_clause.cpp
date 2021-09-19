@@ -36,6 +36,7 @@ bool SuchThatClause::set_ref(SuchThatRef *left, SuchThatRef *right) {
       }
       return false;
     case RelRef::Uses:
+      printf("came into here\n");
       if (right->get_type() == SuchThatRefType::Entity) {
         if (left->get_type() == SuchThatRefType::Statement
             && left->get_stmt_ref().get_type()
@@ -51,6 +52,7 @@ bool SuchThatClause::set_ref(SuchThatRef *left, SuchThatRef *right) {
           this->type_ = RelRef::UsesP;
           return true;
         }
+        printf("got come here?\n");
       }
       return false;
     case RelRef::Modifies:
@@ -58,12 +60,14 @@ bool SuchThatClause::set_ref(SuchThatRef *left, SuchThatRef *right) {
         if (left->get_type() == SuchThatRefType::Statement
             && left->get_stmt_ref().get_type()
                 != StmtRefType::WildCard) {
+          printf("HERE??1\n");
           this->left_ref_ = left;
           this->right_ref_ = right;
           this->type_ = RelRef::ModifiesS;
           return true;
         } else if (left->get_type() == SuchThatRefType::Entity
             && left->get_ent_ref().get_type() != EntRefType::WildCard) {
+          printf("HERE??2\n");
           this->left_ref_ = left;
           this->right_ref_ = right;
           this->type_ = RelRef::ModifiesP;

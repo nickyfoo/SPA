@@ -1,6 +1,8 @@
 #include "stmt_table.h"
 #include <iostream>
 #include <algorithm>
+#include <format>
+#include <string_utils.h>
 
 StmtTable::StmtTable() {
   num_statements_ = 0;
@@ -39,9 +41,10 @@ std::vector<Statement *> StmtTable::get_statements(NodeType type) {
 }
 
 Statement *StmtTable::get_statement(int line_no) {
-  auto it = table_.find(line_no);
-  if (it == table_.end()) return nullptr;
-  return &(it->second);
+  if (table_.find(line_no) == table_.end()) {
+    return nullptr;
+  }
+  return &table_[line_no];
 }
 
 void StmtTable::CategorizeStatements() {

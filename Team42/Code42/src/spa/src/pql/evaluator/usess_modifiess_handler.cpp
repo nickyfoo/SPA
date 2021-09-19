@@ -12,13 +12,16 @@ UsesSModifiesSHandler *UsesSModifiesSHandler::get_instance() {
 
 void UsesSModifiesSHandler::set_args(PKB *pkb,
                                      std::unordered_map<std::string, std::vector<Entity *>>
-                                   *synonym_to_entity_result,
+                                     *synonym_to_entity_result,
                                      SuchThatClause *relationship,
-                                     std::vector<std::string> *entities_to_return) {
+                                     std::vector<std::string> *entities_to_return,
+                                     bool has_two_repeated_synonyms) {
   this->pkb_ = pkb;
   this->synonym_to_entity_result_ = synonym_to_entity_result;
   this->relationship_ = relationship;
   this->entities_to_return_ = entities_to_return;
+  this->stmt_var_pair_vector_ = nullptr;
+  this->has_two_repeated_synonyms_ = has_two_repeated_synonyms;
 }
 
 std::set<std::string> *UsesSModifiesSHandler::StatementForwarder(
@@ -53,22 +56,60 @@ void UsesSModifiesSHandler::Evaluate() {
     left_entity_vec = &synonym_to_entity_result_->at(left_synonym);
     std::vector<Entity *> *right_entity_vec;
     right_entity_vec = &synonym_to_entity_result_->at(right_synonym);
-    for (int i = 0; i < left_entity_vec->size(); i++) {
-      auto *stmt = dynamic_cast<Statement *>(left_entity_vec->at(i));
-      if (StatementForwarder(get_normal_, stmt)->empty()) {
-        // Remove statements that do not have something it uses.
-        left_entity_vec->erase(left_entity_vec->begin() + i);
-        i--;
-      }
-    }
-    for (int j = 0; j < right_entity_vec->size(); j++) {
-      auto *variable = dynamic_cast<Variable *>(right_entity_vec->at(j));
-      if (VariableForwarder(get_reverse_, variable)->empty()) {
-        // Remove variables that are not used
-        right_entity_vec->erase(right_entity_vec->begin() + j);
-        j--;
-      }
-    }
+    stmt_var_pair_vector_ = new std::vector<std::pair<int, std::string>>();
+
+    left_entity_vec->erase(std::remove_if(left_entity_vec->begin(),
+                                          left_entity_vec->end(),
+                                          [this, &right_entity_vec](Entity *entity) {
+                                            auto *stmt = dynamic_cast<Statement *>(entity);
+                                            bool has_matching_follower = false;
+                                            std::set<std::string> *follower_set =
+                                                StatementForwarder(get_normal_, stmt);
+                                            // Check if followers contain something from right arg vector
+                                            // remove that statement if it doesn't
+                                            for (std::string follower : *follower_set) {
+                                              if (has_two_repeated_synonyms_) {
+                                                stmt_var_pair_vector_->push_back({stmt->get_stmt_no(),
+                                                                                  follower});
+                                              }
+                                              for (Entity *ent : *right_entity_vec) {
+                                                std::string right_name =
+                                                    dynamic_cast<Variable *>(ent)->get_name();
+                                                if (right_name == follower) {
+                                                  has_matching_follower = true;
+                                                  break;
+                                                }
+                                              }
+                                            }
+                                            return stmt == nullptr ||
+                                                follower_set->empty() ||
+                                                !has_matching_follower;
+                                          }),
+                           left_entity_vec->end());
+
+    right_entity_vec->erase(std::remove_if(right_entity_vec->begin(),
+                                           right_entity_vec->end(),
+                                           [this, &left_entity_vec](Entity *entity) {
+                                             auto *variable = dynamic_cast<Variable *>(entity);
+                                             bool has_matching_followee = false;
+                                             std::set<int> *followee_set =
+                                                 VariableForwarder(get_reverse_, variable);
+                                             // Check if followees contain something from left arg vector
+                                             // remove that variable if it doesn't
+                                             for (int followee : *followee_set) {
+                                               for (Entity *ent : *left_entity_vec) {
+                                                 int left_num = dynamic_cast<Statement *>(ent)->get_stmt_no();
+                                                 if (left_num == followee) {
+                                                   has_matching_followee = true;
+                                                   break;
+                                                 }
+                                               }
+                                             }
+                                             return variable == nullptr ||
+                                                 followee_set->empty() ||
+                                                 !has_matching_followee;
+                                           }),
+                            right_entity_vec->end());
   } else if (left_ent.get_type() == StmtRefType::Synonym &&
       right_ent.get_type() == EntRefType::WildCard) {  // Uses(s, _)
     std::string left_synonym = left_ent.get_synonym();
@@ -77,7 +118,7 @@ void UsesSModifiesSHandler::Evaluate() {
     for (int i = 0; i < left_entity_vec->size(); i++) {
       auto *stmt = dynamic_cast<Statement *>(left_entity_vec->at(i));
       // Remove each statement that doesnt use anything.
-      if (StatementForwarder(get_normal_, stmt)->empty()) {
+      if (stmt == nullptr || StatementForwarder(get_normal_, stmt)->empty()) {
         left_entity_vec->erase(left_entity_vec->begin() + i);
         i--;
       }
@@ -91,7 +132,7 @@ void UsesSModifiesSHandler::Evaluate() {
     for (int i = 0; i < left_entity_vec->size(); i++) {
       auto *stmt = dynamic_cast<Statement *>(left_entity_vec->at(i));
       // Remove each statement that doesnt have right arg in its uses
-      if (!StatementForwarder(get_normal_, stmt)->count(right_arg)) {
+      if (stmt == nullptr || !StatementForwarder(get_normal_, stmt)->count(right_arg)) {
         left_entity_vec->erase(left_entity_vec->begin() + i);
         i--;
       }
@@ -102,10 +143,14 @@ void UsesSModifiesSHandler::Evaluate() {
     std::string right_synonym = right_ent.get_synonym();
     std::vector<Entity *> *right_entity_vec;
     right_entity_vec = &synonym_to_entity_result_->at(right_synonym);
+
+    Statement *stmt = pkb_->get_statement(left_arg);
+    stmt->ModifiesInfo();
+
     for (int i = 0; i < right_entity_vec->size(); i++) {
       auto *variable = dynamic_cast<Variable *>(right_entity_vec->at(i));
       // Remove each statement that doesnt have left arg in its users.
-      if (!VariableForwarder(get_reverse_, variable)->count(left_arg)) {
+      if (variable == nullptr || !VariableForwarder(get_reverse_, variable)->count(left_arg)) {
         right_entity_vec->erase(right_entity_vec->begin() + i);
         i--;
       }
@@ -114,7 +159,7 @@ void UsesSModifiesSHandler::Evaluate() {
       right_ent.get_type() == EntRefType::WildCard) {  // Uses(4, _)
     int left_arg = left_ent.get_stmt_num();
     Statement *stmt = pkb_->get_statement(left_arg);
-    if (StatementForwarder(get_normal_, stmt)->empty()) {
+    if (stmt == nullptr || StatementForwarder(get_normal_, stmt)->empty()) {
       // If statement with left arg as line number
       // does not use anything then clear results vector
       synonym_to_entity_result_->at(entities_to_return_->at(0)).clear();
@@ -124,9 +169,13 @@ void UsesSModifiesSHandler::Evaluate() {
     int left_arg = left_ent.get_stmt_num();
     std::string right_arg = right_ent.get_argument();
     Statement *stmt = pkb_->get_statement(left_arg);
-    if (!StatementForwarder(get_normal_, stmt)->count(right_arg)) {
+    if (stmt == nullptr || !StatementForwarder(get_normal_, stmt)->count(right_arg)) {
       // Clear results vector if this relationship_ is false
       synonym_to_entity_result_->at(entities_to_return_->at(0)).clear();
     }
   }
+}
+
+std::vector<std::pair<int, std::string>> *UsesSModifiesSHandler::get_stmt_var_pair_vector() {
+  return this->stmt_var_pair_vector_;
 }

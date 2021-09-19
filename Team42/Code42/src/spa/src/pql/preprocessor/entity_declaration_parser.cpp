@@ -26,12 +26,12 @@ std::unordered_map<std::string, EntityDeclaration *>
     std::string entity = entity_str.substr(0, index_of_entity);
     // Trimming entity_str to remove entity type.
     entity_str = entity_str.substr(index_of_entity + 1);
-
-    // If there are no commas but multiple synonym declarations for the
-    // same entity type, return nullptr. eg stmt s p c;
+    // If there are no commas but multiple for the
+    // same entity type, or if there's only 1 word, return nullptr. eg stmt s p c;
     std::vector<std::string> tokens = SplitString(entity_str, " ");
-    if (entity_str.find(",") == -1 &&
-        tokens.size() > 1) {
+    if (((entity_str.find(",") == -1 &&
+        tokens.size() > 1)) ||
+        index_of_entity == -1) {
       return nullptr;
     }
     auto *synonyms = new std::vector<std::string>();
@@ -55,9 +55,9 @@ std::string EntityDeclarationParser::trim(std::string str) {
   auto end = str.end();
   do {
     end--;
-  } while (std::distance(start, end) > 0 && std::isspace(*end));
+  } while (std::distance(start, end) > -1 && std::isspace(*end));
 
-  return std::string(start, end + 1);
+  return {start, end + 1};
 }
 
 bool EntityDeclarationParser::AddToEntitiesMap(

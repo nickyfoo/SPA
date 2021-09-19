@@ -8,6 +8,7 @@
 #include "pql_query.h"
 #include "pkb.h"
 
+// TODO(Sheryl): Refactor everything after iteration 1.
 QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
   if (pql_query != nullptr) {
     QueryEvaluator::entities_to_return_ = pql_query->get_query_entities();
@@ -140,25 +141,42 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
   if (!relationships_->empty() &&
       !IsEmpty(synonym_to_entity_result)) {
     relationship_query_manager = new RelationshipQueryManager(synonym_to_entity_result,
-                                 relationships_,
-                                 entities_to_return_,
-                                 pkb_);
+                                                              relationships_,
+                                                              entities_to_return_,
+                                                              pkb_,
+                                                              has_two_repeated_synonyms_);
     relationship_query_manager->EvaluateRelationships();
+  }
+  // Check if any entity vector is empty
+  // If it is, return empty result.
+  if (IsEmpty(synonym_to_entity_result)) {
+    return new std::vector<std::string>{};
   }
 
   if (!patterns_->empty() &&
       !IsEmpty(synonym_to_entity_result)) {
     pattern_query_manager = new PatternQueryManager(synonym_to_entity_result,
-                                 patterns_,
-                                 entities_to_return_,
-                                 pkb_,
-                                 has_two_repeated_synonyms_);
+                                                    patterns_,
+                                                    entities_to_return_,
+                                                    pkb_,
+                                                    has_two_repeated_synonyms_);
     pattern_query_manager->EvaluatePatterns();
   }
+  // Check if any entity vector is empty
+  // If it is, return empty result.
+  if (IsEmpty(synonym_to_entity_result)) {
+    return new std::vector<std::string>{};
+  }
 
+  // If there are repeated synonyms between relationship and pattern
+  // run relationship manager again
+  if (has_one_repeated_synonym_) {
+    relationship_query_manager->EvaluateRelationships();
+  }
 
   if (has_two_repeated_synonyms_) {
-    std::vector<std::pair<int, std::string>> *relationship_vec = new std::vector<std::pair<int, std::string>>();
+    std::vector<std::pair<int, std::string>> *relationship_vec =
+        relationship_query_manager->get_stmt_var_pair_vector();
     std::vector<std::pair<int, std::string>> *pattern_vec = pattern_query_manager->get_vec_results();
     sort(relationship_vec->begin(), relationship_vec->end());
     sort(pattern_vec->begin(), pattern_vec->end());
@@ -166,7 +184,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
     std::set_intersection(relationship_vec->begin(), relationship_vec->end(),
                           pattern_vec->begin(), pattern_vec->end(), std::back_inserter(result));
 
-    std::vector<std::string> *output = new std::vector<std::string>();
+    auto *output = new std::vector<std::string>();
     if (patterns_->at(0)->get_synonym()->get_synonym() == entities_to_return_->at(0)) {
       for (std::pair<int, std::string> pair : result) {
         output->push_back(std::to_string(pair.first));
@@ -182,8 +200,6 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
     } else {
       return {};
     }
-
-    //
   }
   return ConvertToOutput(synonym_to_entity_result);
 }

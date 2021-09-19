@@ -308,3 +308,52 @@ TEST_CASE("PQL_RelationshipAndPatternDependencies_ReturnsExpected") {
     REQUIRE(ret->at(i) == expected.at(i));
   }
 }
+
+TEST_CASE("PQL_RelationshipAndPatternOneCommonSynonym_ReturnsExpected") {
+
+  std::string ss = "assign a; variable v; stmt s;\n"
+                   "Select s such that Follows(s, a) pattern a(v, _'count'_)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(s.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"21"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < expected.size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("PQL_UsesPAndPatternOneCommonSynonym_ReturnsExpected") {
+
+  std::string ss = "assign a; variable v; procedure p;\n"
+                   "Select p such that Uses(p, v) pattern a(v, _'count'_)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(s.c_str());
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"main", "computeCentroid", "printResults"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < expected.size(); i++) {
+    std::cout << ret->at(i);
+//    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}

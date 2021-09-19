@@ -8,6 +8,7 @@
 #include "pql_query.h"
 #include "pkb.h"
 
+// TODO(Sheryl): Refactor everything after iteration 1.
 QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
   if (pql_query != nullptr) {
     QueryEvaluator::entities_to_return_ = pql_query->get_query_entities();
@@ -129,7 +130,8 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         }
         break;
       }
-      case EntityType::None:return new std::vector<std::string>{};
+      case EntityType::None:
+        return new std::vector<std::string>{};
     }
     synonym_to_entity_result->insert({pair.first, entities});
   }
@@ -141,7 +143,8 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
     relationship_query_manager = new RelationshipQueryManager(synonym_to_entity_result,
                                                               relationships_,
                                                               entities_to_return_,
-                                                              pkb_);
+                                                              pkb_,
+                                                              has_two_repeated_synonyms_);
     relationship_query_manager->EvaluateRelationships();
   }
   // Check if any entity vector is empty

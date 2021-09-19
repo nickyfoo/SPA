@@ -15,7 +15,8 @@ class RelationshipQueryManager {
       *synonym_to_entity_result,
       std::vector<SuchThatClause *> *relationships,
       std::vector<std::string> *entities_to_return,
-      PKB *pkb);
+      PKB *pkb,
+      bool has_two_repeated_synonyms);
   void EvaluateRelationships();
   ~RelationshipQueryManager();
   std::vector<std::pair<int, std::string>> *get_stmt_var_pair_vector();
@@ -25,5 +26,6 @@ class RelationshipQueryManager {
   std::vector<SuchThatClause *> *relationships_;
   std::vector<std::string> *entities_to_return_;
   PKB *pkb_;
+  bool has_two_repeated_synonyms_;
   std::vector<std::pair<int, std::string>> *stmt_var_pair_vector_;
 };

@@ -91,39 +91,14 @@ void FollowsParentsHandler::Evaluate() {
       synonym_to_entity_result_->at(entities_to_return_->at(0)).clear();
       return;
     }
-    EntityType right_entity_type = right_ent.get_entity_type();
-    EntityType left_entity_type = left_ent.get_entity_type();
 
     std::vector<Entity *> *right_entity_vec;
     right_entity_vec = &synonym_to_entity_result_->at(right_synonym);
     std::vector<Entity *> *left_entity_vec;
     left_entity_vec = &synonym_to_entity_result_->at(left_synonym);
 
-    // Getting type of Statement
-    NodeType right_type = dynamic_cast<Statement *>(right_entity_vec->at(0))->get_kind();
-    NodeType left_type = dynamic_cast<Statement *>(left_entity_vec->at(0))->get_kind();
     // Remove statements that do not have a follower
     // or do not have any follower that's part of right arg vector
-//    left_entity_vec->erase(std::remove_if(left_entity_vec->begin(),
-//                                          left_entity_vec->end(),
-//                                          [this, &right_type, &right_entity_type](Entity *entity) {
-//                                            auto *stmt = dynamic_cast<Statement *>(entity);
-//                                            bool has_correct_follower_type =
-//                                                right_entity_type == EntityType::Stmt;
-//                                            std::set<int> *follower_set =
-//                                                Forwarder(get_normal_, stmt);
-//                                            for (int follower : *follower_set) {
-//                                              if (pkb_->get_statement(follower)->get_kind() ==
-//                                                  right_type) {
-//                                                has_correct_follower_type = true;
-//                                                break;
-//                                              }
-//                                            }
-//                                            return stmt == nullptr ||
-//                                                follower_set->empty() ||
-//                                                !has_correct_follower_type;
-//                                          }),
-//                           left_entity_vec->end());
     left_entity_vec->erase(std::remove_if(left_entity_vec->begin(),
                                           left_entity_vec->end(),
                                           [this, &right_entity_vec](Entity *entity) {
@@ -145,28 +120,6 @@ void FollowsParentsHandler::Evaluate() {
                                                 !has_matching_follower;
                                           }),
                            left_entity_vec->end());
-    // Remove statements that do not have a followee
-    // or do not have any correct followee type
-//    right_entity_vec->erase(std::remove_if(right_entity_vec->begin(),
-//                                           right_entity_vec->end(),
-//                                           [this, &left_type, &left_entity_type](Entity *entity) {
-//                                             auto *stmt = dynamic_cast<Statement *>(entity);
-//                                             bool has_correct_followee_type =
-//                                                 left_entity_type == EntityType::Stmt;
-//                                             std::set<int> *followee_set =
-//                                                 Forwarder(get_reverse_, stmt);
-//                                             for (int followee : *followee_set) {
-//                                               if (pkb_->get_statement(followee)->get_kind() ==
-//                                                   left_type) {
-//                                                 has_correct_followee_type = true;
-//                                                 break;
-//                                               }
-//                                             }
-//                                             return stmt == nullptr ||
-//                                                 followee_set->empty() ||
-//                                                 !has_correct_followee_type;
-//                                           }),
-//                            right_entity_vec->end());
     // Remove statements that do not have a followee
     // or do not have any followee that's part of left arg vector
     right_entity_vec->erase(std::remove_if(right_entity_vec->begin(),

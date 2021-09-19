@@ -14,12 +14,14 @@ void UsesSModifiesSHandler::set_args(PKB *pkb,
                                      std::unordered_map<std::string, std::vector<Entity *>>
                                      *synonym_to_entity_result,
                                      SuchThatClause *relationship,
-                                     std::vector<std::string> *entities_to_return) {
+                                     std::vector<std::string> *entities_to_return,
+                                     bool has_two_repeated_synonyms) {
   this->pkb_ = pkb;
   this->synonym_to_entity_result_ = synonym_to_entity_result;
   this->relationship_ = relationship;
   this->entities_to_return_ = entities_to_return;
   this->stmt_var_pair_vector_ = nullptr;
+  this->has_two_repeated_synonyms_ = has_two_repeated_synonyms;
 }
 
 std::set<std::string> *UsesSModifiesSHandler::StatementForwarder(
@@ -55,14 +57,7 @@ void UsesSModifiesSHandler::Evaluate() {
     std::vector<Entity *> *right_entity_vec;
     right_entity_vec = &synonym_to_entity_result_->at(right_synonym);
     stmt_var_pair_vector_ = new std::vector<std::pair<int, std::string>>();
-//    for (int i = 0; i < left_entity_vec->size(); i++) {
-//      auto *stmt = dynamic_cast<Statement *>(left_entity_vec->at(i));
-//      if (stmt == nullptr || StatementForwarder(get_normal_, stmt)->empty()) {
-//        // Remove statements that do not have something it uses.
-//        left_entity_vec->erase(left_entity_vec->begin() + i);
-//        i--;
-//      }
-//    }
+
     left_entity_vec->erase(std::remove_if(left_entity_vec->begin(),
                                           left_entity_vec->end(),
                                           [this, &right_entity_vec](Entity *entity) {
@@ -72,13 +67,14 @@ void UsesSModifiesSHandler::Evaluate() {
                                                 StatementForwarder(get_normal_, stmt);
                                             // Check if followers contain something from right arg vector
                                             // remove that statement if it doesn't
-                                            //TODO: add a check here if has two repeated synonym. if there is then add to set
                                             for (std::string follower : *follower_set) {
-                                              if (true) {  // TODO: change this to the has two repeated synonym check
-                                                stmt_var_pair_vector_->push_back({stmt->get_stmt_no(), follower});
+                                              if (has_two_repeated_synonyms_) {
+                                                stmt_var_pair_vector_->push_back({stmt->get_stmt_no(),
+                                                                                  follower});
                                               }
                                               for (Entity *ent : *right_entity_vec) {
-                                                std::string right_name = dynamic_cast<Variable *>(ent)->get_name();
+                                                std::string right_name =
+                                                    dynamic_cast<Variable *>(ent)->get_name();
                                                 if (right_name == follower) {
                                                   has_matching_follower = true;
                                                   break;
@@ -90,14 +86,7 @@ void UsesSModifiesSHandler::Evaluate() {
                                                 !has_matching_follower;
                                           }),
                            left_entity_vec->end());
-//    for (int j = 0; j < right_entity_vec->size(); j++) {
-//      auto *variable = dynamic_cast<Variable *>(right_entity_vec->at(j));
-//      if (variable == nullptr || VariableForwarder(get_reverse_, variable)->empty()) {
-//        // Remove variables that are not used
-//        right_entity_vec->erase(right_entity_vec->begin() + j);
-//        j--;
-//      }
-//    }
+
     right_entity_vec->erase(std::remove_if(right_entity_vec->begin(),
                                            right_entity_vec->end(),
                                            [this, &left_entity_vec](Entity *entity) {
@@ -161,7 +150,6 @@ void UsesSModifiesSHandler::Evaluate() {
     for (int i = 0; i < right_entity_vec->size(); i++) {
       auto *variable = dynamic_cast<Variable *>(right_entity_vec->at(i));
       // Remove each statement that doesnt have left arg in its users.
-      variable->ModifiesInfo();
       if (variable == nullptr || !VariableForwarder(get_reverse_, variable)->count(left_arg)) {
         right_entity_vec->erase(right_entity_vec->begin() + i);
         i--;

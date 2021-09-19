@@ -1,7 +1,6 @@
 #include "pattern_manager.h"
 
 #include <iostream>
-#include <unordered_map>
 #include <stack>
 #include <sstream>
 

@@ -114,8 +114,6 @@ TEST_CASE("PQL_PatternAndFollowsWithExtraWords_ReturnsEmpty") {
   }
 }
 
-// HERE ONWARDS
-
 TEST_CASE("PQL_FollowsAndPatternUnrelated_ReturnsExpected") {
 
   std::string ss = "assign a; variable v; while w;\n"

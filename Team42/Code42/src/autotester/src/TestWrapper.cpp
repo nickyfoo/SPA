@@ -43,6 +43,7 @@ void TestWrapper::parse(std::string filename) {
 
   std::cout << "Program parsed!\n";
   this->pkb_ = new PKB(p);
+  std::cout << "PKB initialized\n";
 }
 
 // method to evaluating a query

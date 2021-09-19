@@ -1,0 +1,75 @@
+1 - Valid Pattern with variable and exact match
+assign a; variable v;
+Select a pattern a(v, "0")
+4,23
+5000
+2 - Valid Pattern with variable and partial match
+assign a; variable v;
+Select a pattern a(v, _"c"_)
+2,10,12
+5000
+3 - Valid Pattern with variable and wild card
+assign a; variable v;
+Select a pattern a(v, _)
+2,3,4,5,10,12,23
+5000
+4 - Valid Pattern with variable name and exact match
+assign a;
+Select a pattern a("x", "i - c + v")
+10
+5000
+5 - Valid Pattern with variable name and partial match
+assign a;
+Select a pattern a("x", _"v"_)
+3,10
+5000
+6 - Valid Pattern with variable name and wild card
+assign a;
+Select a pattern a("g", _)
+5,23
+5000
+7 - Valid Pattern with wild card and exact match
+assign a;
+Select a pattern a(_, "0")
+4,23
+5000
+8 - Valid Pattern with wild card and partial match
+assign a;
+Select a pattern a(_, _"c"_)
+2,10,12
+5000
+9 - Valid Pattern with wild card and wild card
+assign a;
+Select a pattern a(_, _)
+2,3,4,5,10,12,23
+5000
+10 - Invalid print Pattern with wild card and wild card
+print p;
+Select p pattern p(_, _)
+
+5000
+11 - Invalid if Pattern with wild card and wild card
+if ifs;
+Select ifs pattern ifs(_, _)
+
+5000
+12 - Invalid while Pattern with wild card and wild card
+while whiles;
+Select whiles pattern whiles(_, _)
+
+5000
+13 - Invalid Pattern with statement number and wild card
+assign a;
+Select a pattern a(5, _)
+
+5000
+14 - Invalid Pattern with wild card and statement number
+assign a;
+Select a pattern a(_, 3)
+
+5000
+15 - Invalid Pattern with wild card and incomplete partial pattern
+assign a;
+Select a pattern a(_, _"x")
+
+5000

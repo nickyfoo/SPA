@@ -36,6 +36,7 @@ PQLQuery *SelectClauseParser::get_clauses() {
   auto *select_ret = new std::vector<std::string>();
   auto *such_that_ret = new std::vector<SuchThatClause *>();
   auto *pattern_ret = new std::vector<PatternClause *>();
+
   std::vector<std::string> select_clauses = SplitSelect(select_clause);
   if (select_clauses.empty()) {  // invalid select syntax
     return nullptr;
@@ -66,8 +67,38 @@ PQLQuery *SelectClauseParser::get_clauses() {
     pattern_ret->push_back(pattern);
   }
 
+  // check for whether there are repeated synonyms
+  bool has_one_repeated_synonym = false;
+  bool has_two_repeated_synonyms = false;
+  for (SuchThatClause *relationship : *such_that_ret) {
+    std::string left_relationship_str, right_relationship_str;
+    if (relationship->get_left_ref()->get_type() == SuchThatRefType::Statement) {
+      left_relationship_str = relationship->get_left_ref()->get_stmt_ref().get_value();
+    } else {
+      left_relationship_str = relationship->get_left_ref()->get_ent_ref().get_value();
+    }
+
+    if (relationship->get_right_ref()->get_type() == SuchThatRefType::Statement) {
+      right_relationship_str = relationship->get_right_ref()->get_stmt_ref().get_value();
+    } else {
+      right_relationship_str = relationship->get_right_ref()->get_ent_ref().get_value();
+    }
+    for (PatternClause *pattern : *pattern_ret) {
+      if (pattern->get_synonym()->get_synonym() == left_relationship_str
+      || pattern->get_left_ref()->get_value() == left_relationship_str) {
+        has_one_repeated_synonym = true;
+      }
+
+      if (pattern->get_synonym()->get_synonym() == right_relationship_str
+      || pattern->get_left_ref()->get_value() == right_relationship_str) {
+        has_one_repeated_synonym ? has_two_repeated_synonyms = true : has_one_repeated_synonym = true;
+      }
+    }
+  }
+
   auto *ret = new PQLQuery(select_ret, such_that_ret,
-                           pattern_ret, synonym_to_entity_);
+                           pattern_ret, synonym_to_entity_, has_one_repeated_synonym, has_two_repeated_synonyms);
+
   return ret;
 }
 
@@ -128,6 +159,7 @@ PatternClause *SelectClauseParser::MakePatternClause(
   if (pattern == nullptr) {
     return nullptr;
   }
+
   return pattern;
 }
 

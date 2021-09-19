@@ -13,7 +13,7 @@ class ConstTable : public Table {
   ~ConstTable();
 
   // Adds a constant to the table.
-  void AddConstant(int value);
+  void AddConstant(std::string value);
 
   // Get all constants.
   std::vector<Constant *> get_all_constants();
@@ -23,5 +23,5 @@ class ConstTable : public Table {
 
  private:
   // Table mapping each constant value to its corresponding constant.
-  std::map<int, Constant> table_;
+  std::map<std::string, Constant> table_;
 };

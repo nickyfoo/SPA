@@ -828,6 +828,15 @@ TEST_CASE("Pattern_HavingTwoContinuousSymbols_ReturnsNullPtr") {
   REQUIRE(clause == nullptr);
 }
 
+TEST_CASE("Pattern_HavingTwoContinuousVariable_ReturnsNullPtr") {
+  std::string ss = "assign a;"
+                   "Select a pattern a ( _ , _'x y'_)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+
 TEST_CASE("Pattern_KeywordPatternInPattern_ReturnsCorrect") {
   std::string ss = "assign a;"
                    "Select a pattern a ( _ , ' pattern ')";

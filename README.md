@@ -16,11 +16,12 @@ No additional instructions required.
 
 | Name                   | Mobile   | Email                 | Development OS/Toolchain |
 | ---------------------- | -------- | --------------------- | ------------------------ |
-| Loh Wei Kiat           | 81125027 | loh.weikiat@u.nus.edu | Mac/cmake                |
-| Tay Sheryl             | ________ | e0323809@u.nus.edu    | Mac/cmake                |
-| Lee Hui Ting           | ________ | huiting.lee@u.nus.edu | Mac/cmake                |
 | Foo Chuan Le, Nicholas | 93259928 | e0303296@u.nus.edu    | Windows/cmake            |
+| Lee Hui Ting           | 81384011 | huiting.lee@u.nus.edu | Mac/cmake                |
 | Lim Haw Jia            | 96992328 | hawjia.lim@u.nus.edu  | Ubuntu/cmake             |
+| Loh Wei Kiat           | 81125027 | loh.weikiat@u.nus.edu | Mac/cmake                |
+| Tay Sheryl             | 83387906 | e0323809@u.nus.edu    | Mac/cmake                |
+
 
 ## Conventions
 

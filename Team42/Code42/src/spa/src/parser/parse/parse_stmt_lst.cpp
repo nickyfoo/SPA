@@ -1,14 +1,12 @@
 #include <iostream>
 #include "parse.h"
-#include "string_utils.h"
 
 std::vector<StatementNode *> ParseStmtLst(BufferedLexer *lexer, ParseState *state) {
   // include parsing of "{" and "}" that always surrounds a stmtLst
   const Token *t = lexer->GetNextToken();
 
   if (t->kind_ != TokenType::LBrace) {
-    throw ParseException(StringFormat("expected '{' but got '%s'", t->value_.c_str()), t->line_no_,
-                         t->col_no_);
+    throw ParseException("expected '{' but got '" + t->value_ + "'", t->line_no_, t->col_no_);
   }
 
   std::vector<StatementNode *> stmt_lst{};
@@ -16,8 +14,7 @@ std::vector<StatementNode *> ParseStmtLst(BufferedLexer *lexer, ParseState *stat
 
   while (t->kind_ != TokenType::RBrace) {
     if (t->kind_ != TokenType::Name) {
-      throw ParseException(StringFormat("expected statement but got '%s'", t->value_), t->line_no_,
-                           t->col_no_);
+    throw ParseException("expected statement but got '" + t->value_ + "'", t->line_no_, t->col_no_);
     }
 
     if (t->value_ == "read") {

@@ -7,7 +7,6 @@
 #include "ast_utils.hpp"
 #include "lexer.h"
 #include "parse.h"
-#include "string_utils.h"
 
 std::variant<CondExpressionNode *, RelExpressionNode *, ExpressionNode *, ConstantNode *,
              IdentifierNode *>
@@ -47,9 +46,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
 
           if (IsExprOp(op_token->kind_)) {
             if (result_stack.size() < 2) {
-              throw ParseException(
-                  StringFormat("missing operands for '%s' expression", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("missing operands for '" + op_token->value_ + "' expresion",
+                                   op_token->line_no_, op_token->col_no_);
             }
 
             ExpressionNodeChild *left, *right;
@@ -63,9 +61,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
             } else if (std::holds_alternative<ExpressionNode *>(next_res)) {
               right = static_cast<ExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
             } else {
-              throw ParseException(
-                  StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                                   op_token->line_no_, op_token->col_no_);
             }
             next_res = result_stack.top();
             result_stack.pop();
@@ -76,9 +73,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
             } else if (std::holds_alternative<ExpressionNode *>(next_res)) {
               left = static_cast<ExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
             } else {
-              throw ParseException(
-                  StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                                   op_token->line_no_, op_token->col_no_);
             }
 
             auto res = new ExpressionNode(ExprOpFromToken(op_token), left, right,
@@ -86,9 +82,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
             result_stack.push(res);
           } else if (IsRelExprOp(op_token->kind_)) {
             if (result_stack.size() < 2) {
-              throw ParseException(
-                  StringFormat("missing operands for '%s' expression", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("missing operands for '" + op_token->value_ + "' expresion",
+                                   op_token->line_no_, op_token->col_no_);
             }
 
             RelExpressionNodeChild *left, *right;
@@ -102,9 +97,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
             } else if (std::holds_alternative<ExpressionNode *>(next_res)) {
               right = static_cast<RelExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
             } else {
-              throw ParseException(
-                  StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                                   op_token->line_no_, op_token->col_no_);
             }
             next_res = result_stack.top();
             result_stack.pop();
@@ -115,9 +109,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
             } else if (std::holds_alternative<ExpressionNode *>(next_res)) {
               left = static_cast<RelExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
             } else {
-              throw ParseException(
-                  StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                                   op_token->line_no_, op_token->col_no_);
             }
 
             auto res = new RelExpressionNode(RelExprOpFromToken(op_token), left, right,
@@ -125,9 +118,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
             result_stack.push(res);
           } else if (op_token->kind_ == TokenType::Not) {
             if (result_stack.size() < 1) {
-              throw ParseException(
-                  StringFormat("missing operands for '%s' expression", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("missing operands for '" + op_token->value_ + "' expresion",
+                                   op_token->line_no_, op_token->col_no_);
             }
 
             CondExpressionNodeChild *left;
@@ -141,9 +133,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
               left =
                   static_cast<CondExpressionNodeChild *>(std::get<RelExpressionNode *>(next_res));
             } else {
-              throw ParseException(
-                  StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                                   op_token->line_no_, op_token->col_no_);
             }
 
             auto res = new CondExpressionNode(CondExprOpFromToken(op_token), left, nullptr,
@@ -152,9 +143,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
           } else if (IsCondExprOp(op_token->kind_)) {
             // And or Or
             if (result_stack.size() < 2) {
-              throw ParseException(
-                  StringFormat("missing operands for '%s' expression", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("missing operands for '" + op_token->value_ + "' expresion",
+                                   op_token->line_no_, op_token->col_no_);
             }
 
             CondExpressionNodeChild *left, *right;
@@ -168,9 +158,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
               right =
                   static_cast<CondExpressionNodeChild *>(std::get<RelExpressionNode *>(next_res));
             } else {
-              throw ParseException(
-                  StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                                   op_token->line_no_, op_token->col_no_);
             }
             next_res = result_stack.top();
             result_stack.pop();
@@ -181,9 +170,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
               left =
                   static_cast<CondExpressionNodeChild *>(std::get<RelExpressionNode *>(next_res));
             } else {
-              throw ParseException(
-                  StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                                   op_token->line_no_, op_token->col_no_);
             }
 
             auto res = new CondExpressionNode(CondExprOpFromToken(op_token), left, right,
@@ -211,9 +199,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
 
           if (IsExprOp(op_token->kind_)) {
             if (result_stack.size() < 2) {
-              throw ParseException(
-                  StringFormat("missing operands for '%s' expression", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("missing operands for '" + op_token->value_ + "' expresion",
+                                   op_token->line_no_, op_token->col_no_);
             }
 
             ExpressionNodeChild *left, *right;
@@ -227,9 +214,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
             } else if (std::holds_alternative<ExpressionNode *>(next_res)) {
               right = static_cast<ExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
             } else {
-              throw ParseException(
-                  StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                                   op_token->line_no_, op_token->col_no_);
             }
             next_res = result_stack.top();
             result_stack.pop();
@@ -240,9 +226,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
             } else if (std::holds_alternative<ExpressionNode *>(next_res)) {
               left = static_cast<ExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
             } else {
-              throw ParseException(
-                  StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                                   op_token->line_no_, op_token->col_no_);
             }
 
             auto res = new ExpressionNode(ExprOpFromToken(op_token), left, right,
@@ -250,9 +235,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
             result_stack.push(res);
           } else if (IsRelExprOp(op_token->kind_)) {
             if (result_stack.size() < 2) {
-              throw ParseException(
-                  StringFormat("missing operands for '%s' expression", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("missing operands for '" + op_token->value_ + "' expresion",
+                                   op_token->line_no_, op_token->col_no_);
             }
 
             RelExpressionNodeChild *left, *right;
@@ -266,9 +250,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
             } else if (std::holds_alternative<ExpressionNode *>(next_res)) {
               right = static_cast<RelExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
             } else {
-              throw ParseException(
-                  StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                                   op_token->line_no_, op_token->col_no_);
             }
             next_res = result_stack.top();
             result_stack.pop();
@@ -279,9 +262,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
             } else if (std::holds_alternative<ExpressionNode *>(next_res)) {
               left = static_cast<RelExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
             } else {
-              throw ParseException(
-                  StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                                   op_token->line_no_, op_token->col_no_);
             }
 
             auto res = new RelExpressionNode(RelExprOpFromToken(op_token), left, right,
@@ -289,9 +271,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
             result_stack.push(res);
           } else if (op_token->kind_ == TokenType::Not) {
             if (result_stack.size() < 1) {
-              throw ParseException(
-                  StringFormat("missing operands for '%s' expression", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("missing operands for '" + op_token->value_ + "' expresion",
+                                   op_token->line_no_, op_token->col_no_);
             }
 
             CondExpressionNodeChild *left;
@@ -305,9 +286,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
               left =
                   static_cast<CondExpressionNodeChild *>(std::get<RelExpressionNode *>(next_res));
             } else {
-              throw ParseException(
-                  StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                                   op_token->line_no_, op_token->col_no_);
             }
 
             auto res = new CondExpressionNode(CondExprOpFromToken(op_token), left, nullptr,
@@ -316,9 +296,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
           } else if (IsCondExprOp(op_token->kind_)) {
             // And or Or
             if (result_stack.size() < 2) {
-              throw ParseException(
-                  StringFormat("missing operands for '%s' expression", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("missing operands for '" + op_token->value_ + "' expresion",
+                                   op_token->line_no_, op_token->col_no_);
             }
 
             CondExpressionNodeChild *left, *right;
@@ -332,9 +311,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
               right =
                   static_cast<CondExpressionNodeChild *>(std::get<RelExpressionNode *>(next_res));
             } else {
-              throw ParseException(
-                  StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                                   op_token->line_no_, op_token->col_no_);
             }
             next_res = result_stack.top();
             result_stack.pop();
@@ -345,9 +323,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
               left =
                   static_cast<CondExpressionNodeChild *>(std::get<RelExpressionNode *>(next_res));
             } else {
-              throw ParseException(
-                  StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-                  op_token->line_no_, op_token->col_no_);
+              throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                                   op_token->line_no_, op_token->col_no_);
             }
 
             auto res = new CondExpressionNode(CondExprOpFromToken(op_token), left, right,
@@ -376,9 +353,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
 
     if (IsExprOp(op_token->kind_)) {
       if (result_stack.size() < 2) {
-        throw ParseException(
-            StringFormat("missing operands for '%s' expression", op_token->value_.c_str()),
-            op_token->line_no_, op_token->col_no_);
+        throw ParseException("missing operands for '" + op_token->value_ + "' expresion",
+                             op_token->line_no_, op_token->col_no_);
       }
 
       ExpressionNodeChild *left, *right;
@@ -392,9 +368,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
       } else if (std::holds_alternative<ExpressionNode *>(next_res)) {
         right = static_cast<ExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
       } else {
-        throw ParseException(
-            StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-            op_token->line_no_, op_token->col_no_);
+        throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                             op_token->line_no_, op_token->col_no_);
       }
       next_res = result_stack.top();
       result_stack.pop();
@@ -405,9 +380,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
       } else if (std::holds_alternative<ExpressionNode *>(next_res)) {
         left = static_cast<ExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
       } else {
-        throw ParseException(
-            StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-            op_token->line_no_, op_token->col_no_);
+        throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                             op_token->line_no_, op_token->col_no_);
       }
 
       auto res = new ExpressionNode(ExprOpFromToken(op_token), left, right,
@@ -415,9 +389,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
       result_stack.push(res);
     } else if (IsRelExprOp(op_token->kind_)) {
       if (result_stack.size() < 2) {
-        throw ParseException(
-            StringFormat("missing operands for '%s' expression", op_token->value_.c_str()),
-            op_token->line_no_, op_token->col_no_);
+        throw ParseException("missing operands for '" + op_token->value_ + "' expresion",
+                             op_token->line_no_, op_token->col_no_);
       }
 
       RelExpressionNodeChild *left, *right;
@@ -431,9 +404,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
       } else if (std::holds_alternative<ExpressionNode *>(next_res)) {
         right = static_cast<RelExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
       } else {
-        throw ParseException(
-            StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-            op_token->line_no_, op_token->col_no_);
+        throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                             op_token->line_no_, op_token->col_no_);
       }
       next_res = result_stack.top();
       result_stack.pop();
@@ -444,9 +416,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
       } else if (std::holds_alternative<ExpressionNode *>(next_res)) {
         left = static_cast<RelExpressionNodeChild *>(std::get<ExpressionNode *>(next_res));
       } else {
-        throw ParseException(
-            StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-            op_token->line_no_, op_token->col_no_);
+        throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                             op_token->line_no_, op_token->col_no_);
       }
 
       auto res = new RelExpressionNode(RelExprOpFromToken(op_token), left, right,
@@ -454,9 +425,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
       result_stack.push(res);
     } else if (op_token->kind_ == TokenType::Not) {
       if (result_stack.size() < 1) {
-        throw ParseException(
-            StringFormat("missing operands for '%s' expression", op_token->value_.c_str()),
-            op_token->line_no_, op_token->col_no_);
+        throw ParseException("missing operands for '" + op_token->value_ + "' expresion",
+                             op_token->line_no_, op_token->col_no_);
       }
 
       CondExpressionNodeChild *left;
@@ -468,9 +438,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
       } else if (std::holds_alternative<RelExpressionNode *>(next_res)) {
         left = static_cast<CondExpressionNodeChild *>(std::get<RelExpressionNode *>(next_res));
       } else {
-        throw ParseException(
-            StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-            op_token->line_no_, op_token->col_no_);
+        throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                             op_token->line_no_, op_token->col_no_);
       }
 
       auto res = new CondExpressionNode(CondExprOpFromToken(op_token), left, nullptr,
@@ -479,9 +448,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
     } else if (IsCondExprOp(op_token->kind_)) {
       // And or Or
       if (result_stack.size() < 2) {
-        throw ParseException(
-            StringFormat("missing operands for '%s' expression", op_token->value_.c_str()),
-            op_token->line_no_, op_token->col_no_);
+        throw ParseException("missing operands for '" + op_token->value_ + "' expresion",
+                             op_token->line_no_, op_token->col_no_);
       }
 
       CondExpressionNodeChild *left, *right;
@@ -493,9 +461,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
       } else if (std::holds_alternative<RelExpressionNode *>(next_res)) {
         right = static_cast<CondExpressionNodeChild *>(std::get<RelExpressionNode *>(next_res));
       } else {
-        throw ParseException(
-            StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-            op_token->line_no_, op_token->col_no_);
+        throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                             op_token->line_no_, op_token->col_no_);
       }
       next_res = result_stack.top();
       result_stack.pop();
@@ -504,9 +471,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
       } else if (std::holds_alternative<RelExpressionNode *>(next_res)) {
         left = static_cast<CondExpressionNodeChild *>(std::get<RelExpressionNode *>(next_res));
       } else {
-        throw ParseException(
-            StringFormat("invalid operands for '%s' operator", op_token->value_.c_str()),
-            op_token->line_no_, op_token->col_no_);
+        throw ParseException("invalid operands for '" + op_token->value_ + "' operator",
+                             op_token->line_no_, op_token->col_no_);
       }
 
       auto res = new CondExpressionNode(CondExprOpFromToken(op_token), left, right,

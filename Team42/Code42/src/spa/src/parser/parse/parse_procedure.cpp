@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include "parse.h"
-#include "string_utils.h"
 
 ProcedureNode *ParseProcedure(BufferedLexer *lexer, ParseState *state) {
   const Token *t = lexer->GetNextToken();
@@ -9,15 +8,13 @@ ProcedureNode *ParseProcedure(BufferedLexer *lexer, ParseState *state) {
   int start_col = t->col_no_;
 
   if (t->kind_ != TokenType::Name || t->value_ != "procedure") {
-    throw ParseException(StringFormat("expected 'procedure' but got '%s'", t->value_.c_str()),
-                         t->line_no_, t->col_no_);
+    throw ParseException("expected 'procedure' but got '" + t->value_ + "'", t->line_no_, t->col_no_);
   }
 
   // procedure name
   t = lexer->GetNextToken();
   if (t->kind_ != TokenType::Name) {
-    throw ParseException(StringFormat("expected name but got '%s'", t->value_.c_str()), t->line_no_,
-                         t->col_no_);
+    throw ParseException("expected name but got '" + t->value_ + "'", t->line_no_, t->col_no_);
   }
   std::string proc_name = t->value_;
 

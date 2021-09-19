@@ -1,9 +1,9 @@
 #include <cassert>
+#include <sstream>
 #include <stdexcept>
 
 #include "ast.h"
 #include "ast_utils.hpp"
-#include "string_utils.h"
 
 CondExpressionNode::CondExpressionNode(CondExprOp op, CondExpressionNodeChild *left,
                                        CondExpressionNodeChild *right, LocInfo loc)
@@ -24,13 +24,11 @@ Node *CondExpressionNode::get_right() { return this->right_; }
 std::string CondExpressionNode::get_expr_string() {
   std::string expr_string = CondExprOpToString(this->op_);
   if (this->right_) {
-    expr_string =
-        StringFormat("%s %s", this->right_->get_expr_string().c_str(), expr_string.c_str());
+    expr_string = this->right_->get_expr_string() + " " + expr_string;
   }
 
   if (this->left_) {
-    expr_string =
-        StringFormat("%s %s", this->left_->get_expr_string().c_str(), expr_string.c_str());
+    expr_string = this->left_->get_expr_string() + " " + expr_string;
   }
 
   return expr_string;
@@ -46,7 +44,16 @@ std::string CondExpressionNode::ToString() {
   if (this->right_) {
     right = this->right_->ToString();
   }
-  return StringFormat("CondExpresionNode: {\nOp: %s\nLeft:\n%s\nRight:\n%s\nLine: %d\nCol: %d\n}",
-                      op.c_str(), left.c_str(), right.c_str(), this->get_line_no(),
-                      this->get_col_no());
+
+  std::stringstream res;
+  res << "CondExpressionNode: {\n"
+      << "Op: " + op + "\n"
+      << "Left:\n"
+      << left + "\n"
+      << "Right:\n"
+      << right + "\n"
+      << "Loc: " + LocToString(this->get_line_no(), this->get_col_no()) + "\n"
+      << "}\n";
+
+  return res.str();
 }

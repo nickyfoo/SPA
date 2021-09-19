@@ -1,8 +1,9 @@
 #include <cassert>
+#include <sstream>
 #include <stdexcept>
 
 #include "ast.h"
-#include "string_utils.h"
+#include "ast_utils.hpp"
 
 IfNode::IfNode(IfWhileNodeCond *cond, std::vector<StatementNode *> then_stmt_lst,
                std::vector<StatementNode *> else_stmt_lst, int stmt_no, LocInfo loc)
@@ -21,17 +22,23 @@ std::vector<StatementNode *> IfNode::get_then_stmt_lst() { return this->then_stm
 std::vector<StatementNode *> IfNode::get_else_stmt_lst() { return this->else_stmt_lst_; }
 
 std::string IfNode::ToString() {
-  std::string res = StringFormat("IfNode: {\nCond:\n%s\nThen:", this->cond_->ToString().c_str());
+  std::stringstream res;
+  res << "IfNode: {\n"
+      << "Cond:\n"
+      << this->cond_->ToString() + "\n"
+      << "Then:";
+
   for (auto i = 0; i < this->then_stmt_lst_.size(); i++) {
-    res += StringFormat("\n#%d:\n%s", i + 1, this->then_stmt_lst_[i]->ToString().c_str());
+    res << "\n#" + std::to_string(i) + ":\n" << this->then_stmt_lst_[i]->ToString();
   }
 
-  res += "\nElse:";
-  for (auto i = 0; i < this->else_stmt_lst_.size(); i++) {
-    res += StringFormat("\n#%d:\n%s", i + 1, this->else_stmt_lst_[i]->ToString().c_str());
+  res << "\nElse:";
+  for (auto i = 0; i < this->then_stmt_lst_.size(); i++) {
+    res << "\n#" + std::to_string(i) + ":\n" << this->else_stmt_lst_[i]->ToString();
   }
 
-  res += StringFormat("\nLine: %d\nCol: %d\n}", this->get_line_no(), this->get_col_no());
+  res << "\nLoc: " + LocToString(this->get_line_no(), this->get_col_no()) + "\n"
+      << "}\n";
 
-  return res;
+  return res.str();
 }

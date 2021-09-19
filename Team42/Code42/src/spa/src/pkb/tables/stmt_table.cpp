@@ -1,7 +1,6 @@
 #include "stmt_table.h"
 #include <iostream>
 #include <algorithm>
-#include <string_utils.h>
 
 StmtTable::StmtTable() {
   num_statements_ = 0;

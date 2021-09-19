@@ -1,9 +1,9 @@
 #include <cassert>
 #include <stdexcept>
+#include <sstream>
 
 #include "ast.h"
 #include "ast_utils.hpp"
-#include "string_utils.h"
 
 ExpressionNode::ExpressionNode(ExprOp op, ExpressionNodeChild *left, ExpressionNodeChild *right,
                                LocInfo loc)
@@ -24,13 +24,11 @@ Node *ExpressionNode::get_right() { return this->right_; }
 std::string ExpressionNode::get_expr_string() {
   std::string expr_string = ExprOpToString(this->op_);
   if (this->right_) {
-    expr_string =
-        StringFormat("%s %s", this->right_->get_expr_string().c_str(), expr_string.c_str());
+    expr_string = this->right_->get_expr_string() + " " + expr_string;
   }
 
   if (this->left_) {
-    expr_string =
-        StringFormat("%s %s", this->left_->get_expr_string().c_str(), expr_string.c_str());
+    expr_string = this->left_->get_expr_string() + " " + expr_string;
   }
 
   return expr_string;
@@ -47,7 +45,15 @@ std::string ExpressionNode::ToString() {
     right = this->right_->ToString();
   }
 
-  return StringFormat("ExpressionNode: {\nOp: %s\nLeft:\n%s\nRight:\n%s\nLine: %d\nCol: %d\n}",
-                      op.c_str(), left.c_str(), right.c_str(), this->get_line_no(),
-                      this->get_col_no());
+  std::stringstream res;
+  res << "ExpressionNode: {\n"
+      << "Op: " + op + "\n"
+      << "Left:\n" 
+      << left + "\n"
+      << "Right:\n"
+      << right + "\n"
+      << "Loc: " + LocToString(this->get_line_no(), this->get_col_no()) + "\n"
+      << "}\n";
+
+  return res.str();
 }

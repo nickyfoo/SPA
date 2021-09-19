@@ -1,5 +1,4 @@
 #include "parse.h"
-#include "string_utils.h"
 
 AssignNode *ParseAssign(BufferedLexer *lexer, ParseState *state) {
   int stmt_no = ++(state->stmt_count_);
@@ -9,16 +8,14 @@ AssignNode *ParseAssign(BufferedLexer *lexer, ParseState *state) {
   int start_col = t->col_no_;
 
   if (t->kind_ != TokenType::Name) {
-    throw ParseException(StringFormat("expected name but got '%s'", t->value_.c_str()), t->line_no_,
-                         t->col_no_);
+    throw ParseException("expected name but got '" + t->value_ + "'", t->line_no_, t->col_no_);
   }
 
   auto var = new IdentifierNode(t->value_, {t->line_no_, t->col_no_});
 
   t = lexer->GetNextToken();
   if (t->kind_ != TokenType::Equal) {
-    throw ParseException(StringFormat("expected '=' but got '%s'", t->value_.c_str()), t->line_no_,
-                         t->col_no_);
+    throw ParseException("expected '=' but got '" + t->value_ + "'", t->line_no_, t->col_no_);
   }
 
   auto parse_result = ParseExpression(lexer, state, "");
@@ -41,8 +38,7 @@ AssignNode *ParseAssign(BufferedLexer *lexer, ParseState *state) {
 
   t = lexer->GetNextToken();
   if (t->kind_ != TokenType::Semicolon) {
-    throw ParseException(StringFormat("expected ';' but got '%s'", t->value_.c_str()), t->line_no_,
-                         t->col_no_);
+    throw ParseException("expected ';' but got '" + t->value_ + "'", t->line_no_, t->col_no_);
   }
 
   return new AssignNode(var, expr, stmt_no, {start_line, start_col});

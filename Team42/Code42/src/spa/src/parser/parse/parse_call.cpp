@@ -1,5 +1,4 @@
 #include "parse.h"
-#include "string_utils.h"
 
 CallNode *ParseCall(BufferedLexer *lexer, ParseState *state) {
   int stmt_no = ++(state->stmt_count_);
@@ -9,21 +8,18 @@ CallNode *ParseCall(BufferedLexer *lexer, ParseState *state) {
   int start_col = t->col_no_;
 
   if (t->kind_ != TokenType::Name || t->value_ != "call") {
-    throw ParseException(StringFormat("expected 'call' but got '%s'", t->value_.c_str()),
-                         t->line_no_, t->col_no_);
+    throw ParseException("expected 'call' but got '" + t->value_ + "'", t->line_no_, t->col_no_);
   }
 
   t = lexer->GetNextToken();
   if (t->kind_ != TokenType::Name) {
-    throw ParseException(StringFormat("expected procedure but got '%s'", t->value_.c_str()),
-                         t->line_no_, t->col_no_);
+    throw ParseException("expected procedure but got '" + t->value_ + "'", t->line_no_, t->col_no_);
   }
   auto var = new IdentifierNode(t->value_, {t->line_no_, t->col_no_});
 
   t = lexer->GetNextToken();
   if (t->kind_ != TokenType::Semicolon) {
-    throw ParseException(StringFormat("expected ';' but got '%s'", t->value_.c_str()), t->line_no_,
-                         t->col_no_);
+    throw ParseException("expected ';' but got '" + t->value_ + "'", t->line_no_, t->col_no_);
   }
 
   return new CallNode(var, stmt_no, {start_line, start_col});

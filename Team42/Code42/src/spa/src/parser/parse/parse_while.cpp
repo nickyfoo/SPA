@@ -1,5 +1,4 @@
 #include "parse.h"
-#include "string_utils.h"
 
 WhileNode *ParseWhile(BufferedLexer *lexer, ParseState *state) {
   int stmt_no = ++(state->stmt_count_);
@@ -9,8 +8,7 @@ WhileNode *ParseWhile(BufferedLexer *lexer, ParseState *state) {
   int start_col = t->col_no_;
 
   if (t->kind_ != TokenType::Name || t->value_ != "while") {
-    throw ParseException(StringFormat("expected 'while' but got '%s'", t->value_.c_str()),
-                         t->line_no_, t->col_no_);
+    throw ParseException("expected 'while' but got '" + t->value_ + "'", t->line_no_, t->col_no_);
   }
 
   auto parse_result = ParseExpression(lexer, state, "");

@@ -58,6 +58,10 @@ inline std::string CondExprOpToString(CondExprOp op) {
   throw std::invalid_argument("CondExprOpToString: unrecognized op");
 }
 
+inline std::string LocToString(int line_no, int col_no) {
+  return "{" + std::to_string(line_no) + ", " + std::to_string(col_no) + "}";
+}
+
 bool IsIdentifierEqual(IdentifierNode *i1, IdentifierNode *i2);
 bool IsConstantEqual(ConstantNode *c1, ConstantNode *c2);
 bool IsExpressionEqual(ExpressionNode *e1, ExpressionNode *e2);

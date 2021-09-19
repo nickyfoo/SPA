@@ -1,8 +1,9 @@
 #include <cassert>
+#include <sstream>
 #include <stdexcept>
 
 #include "ast.h"
-#include "string_utils.h"
+#include "ast_utils.hpp"
 
 AssignNode::AssignNode(IdentifierNode *var, AssignNodeExpr *expr, int stmt_no, LocInfo loc)
     : StatementNode(stmt_no, loc) {
@@ -17,7 +18,14 @@ IdentifierNode *AssignNode::get_var() { return this->var_; }
 Node *AssignNode::expr() { return this->expr_; }
 
 std::string AssignNode::ToString() {
-  return StringFormat("AssignNode: {\nVar:\n%s\nExpr:\n%s\nLine: %d\n, Col: %d\n}",
-                      this->var_->ToString().c_str(), this->expr_->ToString().c_str(),
-                      this->get_line_no(), this->get_col_no());
+  std::stringstream res;
+  res << "AssignNode: {\n"
+      << "Var:\n"
+      << this->var_->ToString() + "\n"
+      << "Expr:\n"
+      << this->expr_->ToString() + "\n"
+      << "Loc: " + LocToString(this->get_line_no(), this->get_col_no()) + "\n"
+      << "}\n";
+
+  return res.str();
 }

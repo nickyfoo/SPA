@@ -1,6 +1,8 @@
 #include "var_table.h"
+#include "../exception.h"
 #include <iostream>
 #include <string>
+#include <string_utils.h>
 
 VarTable::VarTable() = default;
 
@@ -31,6 +33,9 @@ std::vector<Variable *> VarTable::get_all_variables() {
 }
 
 Variable *VarTable::get_variable(std::string var_name) {
+  if (name_to_index_.find(var_name) == name_to_index_.end()) {
+    return nullptr;
+  }
   return &table_[name_to_index_[var_name]];
 }
 

@@ -17,7 +17,10 @@ RelationshipQueryManager::RelationshipQueryManager(
   this->relationships_ = relationships;
   this->entities_to_return_ = entities_to_return;
   this->pkb_ = pkb;
+  this->stmt_var_pair_vector_ = nullptr;
 }
+
+RelationshipQueryManager::~RelationshipQueryManager() = default;
 
 void RelationshipQueryManager::EvaluateRelationships() {
   // Iterating through relationships_ and evaluating one by one.
@@ -83,6 +86,7 @@ void RelationshipQueryManager::EvaluateRelationships() {
                                         relationship,
                                         entities_to_return_);
         uses_modifies_handler->Evaluate();
+        this->stmt_var_pair_vector_ = uses_modifies_handler->get_stmt_var_pair_vector();
         break;
       }
       case RelRef::ModifiesS: {
@@ -95,6 +99,7 @@ void RelationshipQueryManager::EvaluateRelationships() {
                                         relationship,
                                         entities_to_return_);
         uses_modifies_handler->Evaluate();
+        this->stmt_var_pair_vector_ = uses_modifies_handler->get_stmt_var_pair_vector();
         break;
       }
       case RelRef::UsesP: {
@@ -124,4 +129,8 @@ void RelationshipQueryManager::EvaluateRelationships() {
       default:break;
     }
   }
+}
+
+std::vector<std::pair<int, std::string>> *RelationshipQueryManager::get_stmt_var_pair_vector() {
+  return this->stmt_var_pair_vector_;
 }

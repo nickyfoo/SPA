@@ -129,14 +129,17 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
     }
     synonym_to_entity_result->insert({pair.first, entities});
   }
+
+  RelationshipQueryManager *relationship_query_manager;
+
   if (!relationships_->empty() &&
       !IsEmpty(synonym_to_entity_result)) {
-    RelationshipQueryManager relationship_query_manager =
-        RelationshipQueryManager(synonym_to_entity_result,
+    relationship_query_manager =
+        new RelationshipQueryManager(synonym_to_entity_result,
                                  relationships_,
                                  entities_to_return_,
                                  pkb_);
-    relationship_query_manager.EvaluateRelationships();
+    relationship_query_manager->EvaluateRelationships();
   }
   // Check if any entity vector is empty
   // If it is, return empty result.
@@ -157,6 +160,16 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
   // If it is, return empty result.
   if (IsEmpty(synonym_to_entity_result)) {
     return new std::vector<std::string>{};
+  }
+
+  // If there are repeated synonyms between relationship and pattern
+  // run relationship manager again
+  if (false) {  // TODO: change this to has_repeated_synonym after pulling.
+    relationship_query_manager->EvaluateRelationships();
+  }
+
+  if (true) {  // TODO: change this to has_two_repeated_synonym
+    
   }
 
   return ConvertToOutput(synonym_to_entity_result);

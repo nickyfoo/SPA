@@ -34,6 +34,7 @@ std::set<int> *FollowsParentsHandler::Forwarder(std::set<int> *(Statement::*func
   return (stmt->*function)();
 }
 
+// TODO(Sheryl): Refactor this whole part
 void FollowsParentsHandler::Evaluate() {
   StmtRef left_ent = relationship_->get_left_ref()->get_stmt_ref();
   StmtRef right_ent = relationship_->get_right_ref()->get_stmt_ref();
@@ -102,47 +103,91 @@ void FollowsParentsHandler::Evaluate() {
     NodeType right_type = dynamic_cast<Statement *>(right_entity_vec->at(0))->get_kind();
     NodeType left_type = dynamic_cast<Statement *>(left_entity_vec->at(0))->get_kind();
     // Remove statements that do not have a follower
-    // or do not have any correct follower type
+    // or do not have any follower that's part of right arg vector
+//    left_entity_vec->erase(std::remove_if(left_entity_vec->begin(),
+//                                          left_entity_vec->end(),
+//                                          [this, &right_type, &right_entity_type](Entity *entity) {
+//                                            auto *stmt = dynamic_cast<Statement *>(entity);
+//                                            bool has_correct_follower_type =
+//                                                right_entity_type == EntityType::Stmt;
+//                                            std::set<int> *follower_set =
+//                                                Forwarder(get_normal_, stmt);
+//                                            for (int follower : *follower_set) {
+//                                              if (pkb_->get_statement(follower)->get_kind() ==
+//                                                  right_type) {
+//                                                has_correct_follower_type = true;
+//                                                break;
+//                                              }
+//                                            }
+//                                            return stmt == nullptr ||
+//                                                follower_set->empty() ||
+//                                                !has_correct_follower_type;
+//                                          }),
+//                           left_entity_vec->end());
     left_entity_vec->erase(std::remove_if(left_entity_vec->begin(),
                                           left_entity_vec->end(),
-                                          [this, &right_type, &right_entity_type](Entity *entity) {
+                                          [this, &right_entity_vec](Entity *entity) {
                                             auto *stmt = dynamic_cast<Statement *>(entity);
-                                            bool has_correct_follower_type =
-                                                right_entity_type == EntityType::Stmt;
+                                            bool has_matching_follower = false;
                                             std::set<int> *follower_set =
                                                 Forwarder(get_normal_, stmt);
                                             for (int follower : *follower_set) {
-                                              if (pkb_->get_statement(follower)->get_kind() ==
-                                                  right_type) {
-                                                has_correct_follower_type = true;
-                                                break;
+                                              for (Entity *ent : *right_entity_vec) {
+                                                int right_num = dynamic_cast<Statement *>(ent)->get_stmt_no();
+                                                if (right_num == follower) {
+                                                  has_matching_follower = true;
+                                                  break;
+                                                }
                                               }
                                             }
                                             return stmt == nullptr ||
                                                 follower_set->empty() ||
-                                                !has_correct_follower_type;
+                                                !has_matching_follower;
                                           }),
                            left_entity_vec->end());
     // Remove statements that do not have a followee
     // or do not have any correct followee type
+//    right_entity_vec->erase(std::remove_if(right_entity_vec->begin(),
+//                                           right_entity_vec->end(),
+//                                           [this, &left_type, &left_entity_type](Entity *entity) {
+//                                             auto *stmt = dynamic_cast<Statement *>(entity);
+//                                             bool has_correct_followee_type =
+//                                                 left_entity_type == EntityType::Stmt;
+//                                             std::set<int> *followee_set =
+//                                                 Forwarder(get_reverse_, stmt);
+//                                             for (int followee : *followee_set) {
+//                                               if (pkb_->get_statement(followee)->get_kind() ==
+//                                                   left_type) {
+//                                                 has_correct_followee_type = true;
+//                                                 break;
+//                                               }
+//                                             }
+//                                             return stmt == nullptr ||
+//                                                 followee_set->empty() ||
+//                                                 !has_correct_followee_type;
+//                                           }),
+//                            right_entity_vec->end());
+    // Remove statements that do not have a followee
+    // or do not have any followee that's part of left arg vector
     right_entity_vec->erase(std::remove_if(right_entity_vec->begin(),
                                            right_entity_vec->end(),
-                                           [this, &left_type, &left_entity_type](Entity *entity) {
+                                           [this, &left_entity_vec](Entity *entity) {
                                              auto *stmt = dynamic_cast<Statement *>(entity);
-                                             bool has_correct_followee_type =
-                                                 left_entity_type == EntityType::Stmt;
+                                             bool has_matching_followee = false;
                                              std::set<int> *followee_set =
                                                  Forwarder(get_reverse_, stmt);
                                              for (int followee : *followee_set) {
-                                               if (pkb_->get_statement(followee)->get_kind() ==
-                                                   left_type) {
-                                                 has_correct_followee_type = true;
-                                                 break;
+                                               for (Entity *ent : *left_entity_vec) {
+                                                 int left_num = dynamic_cast<Statement *>(ent)->get_stmt_no();
+                                                 if (left_num == followee) {
+                                                   has_matching_followee = true;
+                                                   break;
+                                                 }
                                                }
                                              }
                                              return stmt == nullptr ||
                                                  followee_set->empty() ||
-                                                 !has_correct_followee_type;
+                                                 !has_matching_followee;
                                            }),
                             right_entity_vec->end());
   } else if (left_ent.get_type() == StmtRefType::WildCard &&

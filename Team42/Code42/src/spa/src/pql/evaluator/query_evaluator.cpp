@@ -140,7 +140,6 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
   PatternQueryManager *pattern_query_manager;
   if (!relationships_->empty() &&
       !IsEmpty(synonym_to_entity_result)) {
-
     relationship_query_manager = new RelationshipQueryManager(synonym_to_entity_result,
                                                               relationships_,
                                                               entities_to_return_,
@@ -148,7 +147,6 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
                                                               has_two_repeated_synonyms_);
 
     relationship_query_manager->EvaluateRelationships();
-
   }
   // Check if any entity vector is empty
   // If it is, return empty result.
@@ -158,7 +156,6 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
 
   if (!patterns_->empty() &&
       !IsEmpty(synonym_to_entity_result)) {
-
     pattern_query_manager = new PatternQueryManager(synonym_to_entity_result,
                                                     patterns_,
                                                     entities_to_return_,
@@ -166,7 +163,6 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
                                                     has_two_repeated_synonyms_);
 
     pattern_query_manager->EvaluatePatterns();
-
   }
   // Check if any entity vector is empty
   // If it is, return empty result.
@@ -183,7 +179,8 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
   if (has_two_repeated_synonyms_) {
     std::vector<std::pair<int, std::string>> *relationship_vec =
         relationship_query_manager->get_stmt_var_pair_vector();
-    std::vector<std::pair<int, std::string>> *pattern_vec = pattern_query_manager->get_vec_results();
+    std::vector<std::pair<int, std::string>> *pattern_vec =
+        pattern_query_manager->get_vec_results();
     sort(relationship_vec->begin(), relationship_vec->end());
     sort(pattern_vec->begin(), pattern_vec->end());
     std::vector<std::pair<int, std::string>> result;

@@ -1,3 +1,4 @@
+#include <iostream>
 #include <variant>
 
 #include "parse.h"
@@ -15,12 +16,24 @@ IfNode *ParseIf(BufferedLexer *lexer, ParseState *state) {
                          t->col_no_);
   }
 
-  auto parse_result = ParseCondExpression(lexer, state);
+  auto parse_result = ParseExpression(lexer, state, "then");
   IfWhileNodeCond *cond;
   if (std::holds_alternative<RelExpressionNode *>(parse_result)) {
     cond = static_cast<IfWhileNodeCond *>(std::get<RelExpressionNode *>(parse_result));
-  } else {
+  } else if (std::holds_alternative<CondExpressionNode *>(parse_result)) {
     cond = static_cast<IfWhileNodeCond *>(std::get<CondExpressionNode *>(parse_result));
+  } else if (std::holds_alternative<ExpressionNode *>(parse_result)) {
+    auto node = std::get<ExpressionNode *>(parse_result);
+    throw ParseException("expected CondExpression but got Expression", node->get_line_no(),
+                         node->get_col_no());
+  } else if (std::holds_alternative<ConstantNode *>(parse_result)) {
+    auto node = std::get<ConstantNode *>(parse_result);
+    throw ParseException("expected CondExpression but got Constant", node->get_line_no(),
+                         node->get_col_no());
+  } else {
+    auto node = std::get<IdentifierNode *>(parse_result);
+    throw ParseException("expected CondExpression but got Identifier", node->get_line_no(),
+                         node->get_col_no());
   }
 
   t = lexer->GetNextToken();
@@ -30,6 +43,8 @@ IfNode *ParseIf(BufferedLexer *lexer, ParseState *state) {
   }
 
   std::vector<StatementNode *> then_stmt_lst = ParseStmtLst(lexer, state);
+
+  std::cout << "then list parsed\n";
 
   t = lexer->GetNextToken();
   if (t->kind_ != TokenType::Name && t->value_ != "else") {

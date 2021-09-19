@@ -21,14 +21,22 @@ AssignNode *ParseAssign(BufferedLexer *lexer, ParseState *state) {
                          t->col_no_);
   }
 
-  auto parse_result = ParseExpression(lexer, state);
+  auto parse_result = ParseExpression(lexer, state, "");
   AssignNodeExpr *expr;
   if (std::holds_alternative<ConstantNode *>(parse_result)) {
     expr = static_cast<AssignNodeExpr *>(std::get<ConstantNode *>(parse_result));
   } else if (std::holds_alternative<IdentifierNode *>(parse_result)) {
     expr = static_cast<AssignNodeExpr *>(std::get<IdentifierNode *>(parse_result));
-  } else {
+  } else if (std::holds_alternative<ExpressionNode *>(parse_result)) {
     expr = static_cast<AssignNodeExpr *>(std::get<ExpressionNode *>(parse_result));
+  } else if (std::holds_alternative<RelExpressionNode *>(parse_result)) {
+    auto node = std::get<RelExpressionNode *>(parse_result);
+    throw ParseException("expected Expression but got RelExpression", node->get_line_no(),
+                         node->get_col_no());
+  } else {
+    auto node = std::get<CondExpressionNode *>(parse_result);
+    throw ParseException("expected Expression but got CondExpression", node->get_line_no(),
+                         node->get_col_no());
   }
 
   t = lexer->GetNextToken();

@@ -31,7 +31,7 @@ std::string IfNode::ToString() {
     res += StringFormat("\n#%d:\n%s", i + 1, this->else_stmt_lst_[i]->ToString().c_str());
   }
 
-  res += "\n}";
+  res += StringFormat("\nLine: %d\nCol: %d\n}", this->get_line_no(), this->get_col_no());
 
   return res;
 }

@@ -14,7 +14,7 @@ std::string ProgramNode::ToString() {
   for (auto i = 0; i < this->procedures_.size(); i++) {
     res += StringFormat("\n#%d:\n%s", i + 1, this->procedures_[i]->ToString().c_str());
   }
-  res += "\n}";
+  res += StringFormat("\nLine: %d\nCol: %d\n}", this->get_line_no(), this->get_col_no());
 
   return res;
 }

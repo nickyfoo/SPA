@@ -47,6 +47,7 @@ std::string ExpressionNode::ToString() {
     right = this->right_->ToString();
   }
 
-  return StringFormat("ExpressionNode: {\nOp: %s\nLeft:\n%s\nRight:\n%s\n}", op.c_str(),
-                      left.c_str(), right.c_str());
+  return StringFormat("ExpressionNode: {\nOp: %s\nLeft:\n%s\nRight:\n%s\nLine: %d\nCol: %d\n}",
+                      op.c_str(), left.c_str(), right.c_str(), this->get_line_no(),
+                      this->get_col_no());
 }

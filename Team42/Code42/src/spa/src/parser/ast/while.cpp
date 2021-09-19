@@ -22,7 +22,7 @@ std::string WhileNode::ToString() {
   for (auto i = 0; i < this->stmt_lst_.size(); i++) {
     res += StringFormat("\n#%d:\n%s", i + 1, this->stmt_lst_[i]->ToString());
   }
-  res += "\n}";
+  res += StringFormat("\nLine: %d\nCol: %d\n}", this->get_line_no(), this->get_col_no());
 
   return res;
 }

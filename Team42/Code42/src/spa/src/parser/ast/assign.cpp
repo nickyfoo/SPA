@@ -17,6 +17,7 @@ IdentifierNode *AssignNode::get_var() { return this->var_; }
 Node *AssignNode::expr() { return this->expr_; }
 
 std::string AssignNode::ToString() {
-  return StringFormat("AssignNode: {\nVar:\n%s\nExpr:\n%s\n}", this->var_->ToString().c_str(),
-                      this->expr_->ToString().c_str());
+  return StringFormat("AssignNode: {\nVar:\n%s\nExpr:\n%s\nLine: %d\n, Col: %d\n}",
+                      this->var_->ToString().c_str(), this->expr_->ToString().c_str(),
+                      this->get_line_no(), this->get_col_no());
 }

@@ -13,7 +13,7 @@ TEST_CASE("ParseExpression_Constant_TreeHeightOne") {
   auto *expected = new ConstantNode("102", {1, 0});
 
   BufferedLexer *lexer = new BufferedLexer(source);
-  auto parse_result = ParseExpression(lexer, new ParseState{});
+  auto parse_result = ParseExpression(lexer, new ParseState{}, "");
 
   REQUIRE(std::holds_alternative<ConstantNode *>(parse_result));
   auto res = std::get<ConstantNode *>(parse_result);
@@ -32,7 +32,7 @@ TEST_CASE("ParseExpression_AdditionMultiplication_TreeHeightTwo") {
                          {1, 0});
 
   BufferedLexer *lexer = new BufferedLexer(source);
-  auto parse_result = ParseExpression(lexer, new ParseState{});
+  auto parse_result = ParseExpression(lexer, new ParseState{}, "");
 
   REQUIRE(std::holds_alternative<ExpressionNode *>(parse_result));
   auto res = std::get<ExpressionNode *>(parse_result);
@@ -52,7 +52,7 @@ TEST_CASE("ParseExpression_AdditionMultiplicationSubtractoin_TreeHeightThree") {
       new IdentifierNode("b", {1, 12}), {1, 0});
 
   BufferedLexer *lexer = new BufferedLexer(source);
-  auto parse_result = ParseExpression(lexer, new ParseState{});
+  auto parse_result = ParseExpression(lexer, new ParseState{}, "");
 
   REQUIRE(std::holds_alternative<ExpressionNode *>(parse_result));
   auto res = std::get<ExpressionNode *>(parse_result);
@@ -72,7 +72,7 @@ TEST_CASE("ParseExpression_AdditionMultiplicationDivision_TreeHeightThree") {
       new ConstantNode("5", {1, 12}), {1, 0});
 
   BufferedLexer *lexer = new BufferedLexer(source);
-  auto parse_result = ParseExpression(lexer, new ParseState{});
+  auto parse_result = ParseExpression(lexer, new ParseState{}, "");
 
   REQUIRE(std::holds_alternative<ExpressionNode *>(parse_result));
   auto res = std::get<ExpressionNode *>(parse_result);
@@ -92,7 +92,7 @@ TEST_CASE("ParseExpression_Parenthesis_TreeHeightThree") {
       new ConstantNode("4", {1, 14}), {1, 1});
 
   BufferedLexer *lexer = new BufferedLexer(source);
-  auto parse_result = ParseExpression(lexer, new ParseState{});
+  auto parse_result = ParseExpression(lexer, new ParseState{}, "");
 
   REQUIRE(std::holds_alternative<ExpressionNode *>(parse_result));
   auto res = std::get<ExpressionNode *>(parse_result);
@@ -104,13 +104,13 @@ TEST_CASE("ParseExpression_Parenthesis_TreeHeightThree") {
 TEST_CASE("ParseExpression_MissingEndParenthesis_ThrowsException") {
   std::string source = "(3 + 1";
   BufferedLexer *lexer = new BufferedLexer(source);
-  REQUIRE_THROWS_AS(ParseExpression(lexer, new ParseState{}), ParseException);
+  REQUIRE_THROWS_AS(ParseExpression(lexer, new ParseState{}, ""), ParseException);
 }
 
 TEST_CASE("ParseExpression_Missing_Operator_ThrowsException") {
   std::string source = "1 + 1 3 * 2";
   BufferedLexer *lexer = new BufferedLexer(source);
-  REQUIRE_THROWS_AS(ParseExpression(lexer, new ParseState{}), ParseException);
+  REQUIRE_THROWS_AS(ParseExpression(lexer, new ParseState{}, ""), ParseException);
 }
 
 TEST_CASE("ParseRelExpression_Gt_TreeHeightTwo") {
@@ -119,7 +119,10 @@ TEST_CASE("ParseRelExpression_Gt_TreeHeightTwo") {
 
   auto *expected = new RelExpressionNode(RelExprOp::Gt, new IdentifierNode("x", {1, 0}),
                                          new ConstantNode("1", {1, 4}), {1, 0});
-  auto *res = ParseRelExpression(lexer, new ParseState{});
+  auto parse_result = ParseExpression(lexer, new ParseState{}, "");
+
+  REQUIRE(std::holds_alternative<RelExpressionNode *>(parse_result));
+  auto res = std::get<RelExpressionNode *>(parse_result);
 
   REQUIRE(IsNodeEqual(expected, res));
   REQUIRE(res->get_expr_string() == "x 1 >");
@@ -134,7 +137,10 @@ TEST_CASE("ParseRelExpression_Gte_TreeHeightTwo") {
                             new ExpressionNode(ExprOp::Plus, new IdentifierNode("Z", {1, 5}),
                                                new ConstantNode("1", {1, 9}), {1, 5}),
                             {1, 0});
-  auto *res = ParseRelExpression(lexer, new ParseState{});
+  auto parse_result = ParseExpression(lexer, new ParseState{}, "");
+
+  REQUIRE(std::holds_alternative<RelExpressionNode *>(parse_result));
+  auto res = std::get<RelExpressionNode *>(parse_result);
 
   REQUIRE(IsNodeEqual(expected, res));
   REQUIRE(res->get_expr_string() == "Y Z 1 + >=");
@@ -151,7 +157,10 @@ TEST_CASE("ParseRelExpression_Lt_TreeHeightTwo") {
                             new ExpressionNode(ExprOp::Minus, new ConstantNode("1", {1, 10}),
                                                new ConstantNode("2", {1, 14}), {1, 10}),
                             {1, 0});
-  auto *res = ParseRelExpression(lexer, new ParseState{});
+  auto parse_result = ParseExpression(lexer, new ParseState{}, "");
+
+  REQUIRE(std::holds_alternative<RelExpressionNode *>(parse_result));
+  auto res = std::get<RelExpressionNode *>(parse_result);
 
   REQUIRE(IsNodeEqual(expected, res));
   REQUIRE(res->get_expr_string() == "103 3 + 1 2 - <");
@@ -163,7 +172,10 @@ TEST_CASE("ParseRelExpression_Lte_TreeHeightTwo") {
 
   auto *expected = new RelExpressionNode(RelExprOp::Lte, new ConstantNode("50", {1, 0}),
                                          new IdentifierNode("foo", {1, 6}), {1, 0});
-  auto *res = ParseRelExpression(lexer, new ParseState{});
+  auto parse_result = ParseExpression(lexer, new ParseState{}, "");
+
+  REQUIRE(std::holds_alternative<RelExpressionNode *>(parse_result));
+  auto res = std::get<RelExpressionNode *>(parse_result);
 
   REQUIRE(IsNodeEqual(expected, res));
   REQUIRE(res->get_expr_string() == "50 foo <=");
@@ -178,7 +190,10 @@ TEST_CASE("ParseRelExpression_Eq_TreeHeightTwo") {
                             new ExpressionNode(ExprOp::Divide, new IdentifierNode("FoO", {1, 0}),
                                                new ConstantNode("3", {1, 5}), {1, 0}),
                             new IdentifierNode("BaR", {1, 9}), {1, 0});
-  auto *res = ParseRelExpression(lexer, new ParseState{});
+  auto parse_result = ParseExpression(lexer, new ParseState{}, "");
+
+  REQUIRE(std::holds_alternative<RelExpressionNode *>(parse_result));
+  auto res = std::get<RelExpressionNode *>(parse_result);
 
   REQUIRE(IsNodeEqual(expected, res));
   REQUIRE(res->get_expr_string() == "FoO 3 / BaR ==");
@@ -193,7 +208,10 @@ TEST_CASE("ParseRelExpression_Neq_TreeHeightTwo") {
                             new ExpressionNode(ExprOp::Modulo, new IdentifierNode("tsa", {1, 6}),
                                                new ConstantNode("3", {1, 12}), {1, 6}),
                             {1, 0});
-  auto *res = ParseRelExpression(lexer, new ParseState{});
+  auto parse_result = ParseExpression(lexer, new ParseState{}, "");
+
+  REQUIRE(std::holds_alternative<RelExpressionNode *>(parse_result));
+  auto res = std::get<RelExpressionNode *>(parse_result);
 
   REQUIRE(IsNodeEqual(expected, res));
   REQUIRE(res->get_expr_string() == "ast tsa 3 % !=");
@@ -202,7 +220,7 @@ TEST_CASE("ParseRelExpression_Neq_TreeHeightTwo") {
 TEST_CASE("ParseRelExpression_MissingOperator_ThrowsException") {
   std::string source = "x 1";
   BufferedLexer *lexer = new BufferedLexer(source);
-  REQUIRE_THROWS_AS(ParseRelExpression(lexer, new ParseState{}), ParseException);
+  REQUIRE_THROWS_AS(ParseExpression(lexer, new ParseState{}, ""), ParseException);
 }
 
 TEST_CASE("ParseCondExpression_Not_TreeHeightTwo") {
@@ -215,7 +233,7 @@ TEST_CASE("ParseCondExpression_Not_TreeHeightTwo") {
                                                    new IdentifierNode("bar", {1, 9}), {1, 3}),
                              nullptr, {1, 1});
 
-  auto parse_result = ParseCondExpression(lexer, new ParseState{});
+  auto parse_result = ParseExpression(lexer, new ParseState{}, "");
 
   REQUIRE(std::holds_alternative<CondExpressionNode *>(parse_result));
   auto res = std::get<CondExpressionNode *>(parse_result);
@@ -234,9 +252,9 @@ TEST_CASE("ParseCondExpression_And_TreeHeightTwo") {
                                                    new IdentifierNode("bar", {1, 8}), {1, 2}),
                              new RelExpressionNode(RelExprOp::Eq, new ConstantNode("1", {1, 17}),
                                                    new ConstantNode("1", {1, 22}), {1, 17}),
-                             {1, 1});
+                             {1, 2});
 
-  auto parse_result = ParseCondExpression(lexer, new ParseState{});
+  auto parse_result = ParseExpression(lexer, new ParseState{}, "");
   REQUIRE(std::holds_alternative<CondExpressionNode *>(parse_result));
   auto res = std::get<CondExpressionNode *>(parse_result);
 
@@ -254,9 +272,9 @@ TEST_CASE("ParseCondExpression_Or_TreeHeightTwo") {
                                                    new IdentifierNode("bar", {1, 8}), {1, 2}),
                              new RelExpressionNode(RelExprOp::Eq, new ConstantNode("1", {1, 17}),
                                                    new ConstantNode("1", {1, 22}), {1, 17}),
-                             {1, 1});
+                             {1, 2});
 
-  auto parse_result = ParseCondExpression(lexer, new ParseState{});
+  auto parse_result = ParseExpression(lexer, new ParseState{}, "");
   REQUIRE(std::holds_alternative<CondExpressionNode *>(parse_result));
   auto res = std::get<CondExpressionNode *>(parse_result);
 
@@ -275,12 +293,12 @@ TEST_CASE("ParseCondExpression_Or_And_TreeHeightThree") {
                                                    new IdentifierNode("bar", {1, 9}), {1, 3}),
                              new RelExpressionNode(RelExprOp::Eq, new ConstantNode("1", {1, 18}),
                                                    new ConstantNode("1", {1, 23}), {1, 18}),
-                             {1, 2}),
+                             {1, 3}),
       new RelExpressionNode(RelExprOp::Lte, new ConstantNode("1", {1, 31}),
                             new IdentifierNode("x", {1, 36}), {1, 31}),
-      {1, 1});
+      {1, 3});
 
-  auto parse_result = ParseCondExpression(lexer, new ParseState{});
+  auto parse_result = ParseExpression(lexer, new ParseState{}, "");
   REQUIRE(std::holds_alternative<CondExpressionNode *>(parse_result));
   auto res = std::get<CondExpressionNode *>(parse_result);
 
@@ -299,12 +317,12 @@ TEST_CASE("ParseCondExpression_And_Or_TreeHeightThree") {
                                                    new IdentifierNode("bar", {1, 9}), {1, 3}),
                              new RelExpressionNode(RelExprOp::Eq, new ConstantNode("1", {1, 18}),
                                                    new ConstantNode("1", {1, 23}), {1, 18}),
-                             {1, 2}),
+                             {1, 3}),
       new RelExpressionNode(RelExprOp::Lte, new ConstantNode("1", {1, 31}),
                             new IdentifierNode("x", {1, 36}), {1, 31}),
-      {1, 1});
+      {1, 3});
 
-  auto parse_result = ParseCondExpression(lexer, new ParseState{});
+  auto parse_result = ParseExpression(lexer, new ParseState{}, "");
   REQUIRE(std::holds_alternative<CondExpressionNode *>(parse_result));
   auto res = std::get<CondExpressionNode *>(parse_result);
 
@@ -323,10 +341,10 @@ TEST_CASE("ParseCondExpression_Not_Or_TreeHeightThree") {
                                                    new IdentifierNode("bar", {1, 10}), {1, 4}),
                              new RelExpressionNode(RelExprOp::Eq, new ConstantNode("1", {1, 19}),
                                                    new ConstantNode("1", {1, 24}), {1, 19}),
-                             {1, 3}),
+                             {1, 4}),
       nullptr, {1, 1});
 
-  auto parse_result = ParseCondExpression(lexer, new ParseState{});
+  auto parse_result = ParseExpression(lexer, new ParseState{}, "");
   REQUIRE(std::holds_alternative<CondExpressionNode *>(parse_result));
   auto res = std::get<CondExpressionNode *>(parse_result);
 
@@ -345,10 +363,10 @@ TEST_CASE("ParseCondExpression_Not_And_TreeHeightThree") {
                                                    new IdentifierNode("bar", {1, 10}), {1, 4}),
                              new RelExpressionNode(RelExprOp::Eq, new ConstantNode("1", {1, 19}),
                                                    new ConstantNode("1", {1, 24}), {1, 19}),
-                             {1, 3}),
+                             {1, 4}),
       nullptr, {1, 1});
 
-  auto parse_result = ParseCondExpression(lexer, new ParseState{});
+  auto parse_result = ParseExpression(lexer, new ParseState{}, "");
   REQUIRE(std::holds_alternative<CondExpressionNode *>(parse_result));
   auto res = std::get<CondExpressionNode *>(parse_result);
 

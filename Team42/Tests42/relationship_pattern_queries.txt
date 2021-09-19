@@ -68,3 +68,53 @@ assign a;
 Select a such that Follows(a,a)
 
 5000
+15 - Invalid Follows* with procedure as arg
+stmt s; procedure proc;
+Select s such that Follows*(s, proc)
+
+5000
+16 - Valid Follows* for while
+stmt s; while w;
+Select s such that Follows*(w, s)
+19,20,23,24,36
+5000
+17 - Valid Follows* with wildcard on LHS and if on RHS
+if ifs; 
+Select ifs such that Follows*(_, ifs)
+15,20,30
+5000
+18 - Invalid Parents with constant as arg
+constant con; read r;
+Select s such that Parent(con, r)
+
+5000
+19 - Valid Parents with 2 assignment statements returning false
+assign a, a1;
+Select a such that Parent(a, a1)
+
+5000
+20 - Valid Parents with while and if
+while w; if ifs;
+Select w such that Parent(w, ifs)
+10,28
+5000
+20 - Invalid Parents* with invalid syntax
+while w; if ifs;
+Select w such that Parents*(w, ifs)
+
+5000
+21 - Valid Parents* with assign on RHS
+assign a;
+Select a such that Parent*(10, a)
+11,12,13,14,16,17,18
+5000
+22 - Invalid Parents with wildcard and string
+while w;
+Select w such that Parent*(_, "hi")
+
+5000
+23 - Invalid Modifies with wildcard on LHS
+variable v;
+Select v such that Modifies(_, v)
+
+5000

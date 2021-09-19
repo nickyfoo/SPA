@@ -1,5 +1,5 @@
 #include <vector>
-#include "pkb.h"
+#include "constant.h"
 #include "catch.hpp"
 
 TEST_CASE("GetValue_Value_ReturnsValue", "[constant][entity]") {

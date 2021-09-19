@@ -1,5 +1,5 @@
 #include <vector>
-#include "pkb.h"
+#include "variable.h"
 #include "catch.hpp"
 
 TEST_CASE("GetName_ValidVariable_ReturnsName", "[variable][entity]") {

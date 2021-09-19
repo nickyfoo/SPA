@@ -45,7 +45,7 @@ class StmtTable : public Table {
 
  private:
   // Number of statements in the table.
-  int num_statements_;
+  int num_statements_ = 0;
   // Table mapping each line number to its corresponding statement.
   std::map<int, Statement> table_;
   // Table mapping each statement type to a list of its corresponding

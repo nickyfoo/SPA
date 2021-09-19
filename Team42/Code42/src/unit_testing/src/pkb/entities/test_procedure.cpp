@@ -1,5 +1,5 @@
 #include <vector>
-#include "pkb.h"
+#include "procedure.h"
 #include "catch.hpp"
 
 TEST_CASE("GetName_ValidNames_ReturnsName", "[procedure][entity]") {
@@ -38,7 +38,7 @@ TEST_CASE("AddGetUses_DifferentSetSizes_ReturnsVariableSet", "[procedure][entity
   }
 
   SECTION("10 Uses Variables") {
-    std::set<std::string> uses_variables {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"};
+    std::set<std::string> uses_variables{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"};
 
     for (auto &var_name : uses_variables) p.AddUses(var_name);
     auto uses_set = p.get_uses();
@@ -72,7 +72,7 @@ TEST_CASE("AddGetModifies_DifferentSetSizes_ReturnsVariableSet", "[procedure][en
   }
 
   SECTION("10 Modifies Variables") {
-    std::set<std::string> modifies_variables {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"};
+    std::set<std::string> modifies_variables{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j"};
 
     for (auto &var_name : modifies_variables) p.AddModifies(var_name);
     auto modifies_set = p.get_modifies();
@@ -106,7 +106,7 @@ TEST_CASE("AddGetCalls_DifferentSetSizes_ReturnsProceduresSet", "[procedure][ent
   }
 
   SECTION("10 Calls Procedures") {
-    std::set<std::string> calls_procs {"apple", "banana", "carrot", "donut", "either"};
+    std::set<std::string> calls_procs{"apple", "banana", "carrot", "donut", "either"};
 
     for (auto &calls_proc : calls_procs) p.AddCalls(calls_proc);
     auto calls_set = p.get_calls();
@@ -140,7 +140,7 @@ TEST_CASE("AddGetCallsStar_DifferentSetSizes_ReturnsProceduresSet", "[procedure]
   }
 
   SECTION("10 Calls Star Procedures") {
-    std::set<std::string> calls_star_procs {"apple", "banana", "carrot", "donut", "either"};
+    std::set<std::string> calls_star_procs{"apple", "banana", "carrot", "donut", "either"};
 
     for (auto &calls_star_proc : calls_star_procs) p.AddCallsStar(calls_star_proc);
     auto calls_star_set = p.get_calls_star();
@@ -174,7 +174,7 @@ TEST_CASE("AddGetCallers_DifferentSetSizes_ReturnsProceduresSet", "[procedure][e
   }
 
   SECTION("10 Caller Procedures") {
-    std::set<std::string> caller_procs {"apple", "banana", "carrot", "donut", "either"};
+    std::set<std::string> caller_procs{"apple", "banana", "carrot", "donut", "either"};
 
     for (auto &caller_proc : caller_procs) p.AddCallers(caller_proc);
     auto callers_set = p.get_callers();
@@ -208,7 +208,7 @@ TEST_CASE("AddGetCallersStar_DifferentSetSizes_ReturnsProceduresSet", "[procedur
   }
 
   SECTION("10 Caller Star Procedures") {
-    std::set<std::string> caller_star_procs {"apple", "banana", "carrot", "donut", "either"};
+    std::set<std::string> caller_star_procs{"apple", "banana", "carrot", "donut", "either"};
 
     for (auto &caller_star_proc : caller_star_procs) p.AddCallersStar(caller_star_proc);
     auto callers_star_set = p.get_callers_star();

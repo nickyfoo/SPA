@@ -1,5 +1,5 @@
 #include <vector>
-#include "pkb.h"
+#include "statement.h"
 #include "catch.hpp"
 
 TEST_CASE("GetStmtNo_ValidStatement_ReturnsNumber", "[statement][entity]") {

@@ -184,6 +184,7 @@ void PKB::Initialise() {
   ExtractUsesModifies();
   ExtractCFG();
   ExtractNext();
+  ExtractAffects();
 }
 
 void PKB::ExtractEntities() {
@@ -372,6 +373,59 @@ void PKB::ExtractNext() {
 
   stmt_table_.ProcessNext();
   stmt_table_.ProcessNextStar();
+}
+
+void PKB::ExtractAffects() {
+  for (auto& stmt : stmt_table_.get_statements(NodeType::Assign)) {
+    ProcessAffectsForStatement(stmt->get_stmt_no());
+  }
+  stmt_table_.ProcessAffects();
+  stmt_table_.ProcessAffectsStar();
+}
+
+void PKB::ProcessAffectsForStatement(int stmt_no) {
+  Statement* stmt = stmt_table_.get_statement(stmt_no);
+  if (stmt->get_kind() != NodeType::Assign) return;
+  if (stmt->get_modifies()->size() != 1) return;
+  std::string var_name = *(stmt->get_modifies()->begin());
+  // Setup for Dijkstra
+  std::vector<int> d(stmt_table_.get_num_statements() + 1, kInf);
+  std::set<std::pair<int, int>> pq;
+  d[stmt_no] = 0;
+  pq.insert({ d[stmt_no],stmt_no });
+  bool processed_self = false;
+
+  // Dijkstra's algorithm
+  while (pq.size()) {
+    auto [du, u] = *pq.begin();
+    pq.erase(pq.begin());
+    for (auto& v : CFGAL_[u]) {
+      Statement* stmt_v = stmt_table_.get_statement(v);
+      if (v == stmt_no && !processed_self) {
+        processed_self = true;
+        std::set<std::string>* uses = stmt_v->get_uses();
+        if (stmt_v->get_kind() == NodeType::Assign && uses->find(var_name) != uses->end()) {
+          stmt->AddAffects(v);
+          stmt_v->AddAffectedBy(stmt_no);
+        }
+      }
+      if (d[u] + 1 < d[v]) {
+        d[v] = d[u] + 1;
+        std::set<std::string>* uses = stmt_v->get_uses();
+        if (stmt_v->get_kind() == NodeType::Assign && uses->find(var_name) != uses->end()) {
+          stmt->AddAffects(v);
+          stmt_v->AddAffectedBy(stmt_no);
+        }
+        std::set<std::string>* modifies = stmt_v->get_modifies();
+        if (stmt_v->get_kind() == NodeType::Assign || stmt_v->get_kind() == NodeType::Read || stmt_v->get_kind() == NodeType::Call) {
+          if (modifies->find(var_name) != modifies->end()) {
+            continue;
+          }
+        }
+        pq.insert({ d[v],v });
+      }
+    }
+  }
 }
 
 

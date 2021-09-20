@@ -4,7 +4,7 @@
 #include "entities/statement.h"
 #include "parse.h"
 #include "pkb.h"
-
+/*
 std::string source =
     "procedure main {\n"
     "\tflag = 0;\n"
@@ -1175,6 +1175,111 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
     REQUIRE(stmt_prev_star->size() == prevs_star.size());
     for (auto& prev_star : prevs_star) {
       REQUIRE(stmt_prev_star->find(prev_star) != stmt_prev_star->end());
+    }
+  }
+}
+*/
+
+TEST_CASE("PKB_AffectsSample_Correct") {
+  std::string source =
+    "procedure First {"
+    "read x;"
+    "read y;"
+    "call Second; }"
+    "procedure Second {"
+    "x = 0;"
+    "i = 5;"
+    "while (i != 0) {"
+    "x = x + 2 * y;"
+    "call Third;"
+    "i = i - 1; "
+    "}"
+    "if (x == 1) then {"
+    "x = x + 1; }"
+    "else {"
+    "z = 1;"
+    "}"
+    "z = z + x + i;"
+    "y = z + 2;"
+    "x = x * y + z; }"
+    "procedure Third {"
+    "z = 5;"
+    "v = z;"
+    "print v; }";
+
+  BufferedLexer lexer(source);
+  ParseState s{};
+  ProgramNode* p = ParseProgram(&lexer, &s);
+  PKB pkb(p);
+  std::map<int, std::vector<int>> affects_ans;
+  affects_ans[4] = { 7,11,13,15 };
+  affects_ans[5] = { 9,13 };
+  affects_ans[7] = { 7,11,13,15 };
+  affects_ans[9] = { 9,13 };
+  affects_ans[11] = { 13,15 };
+  affects_ans[12] = { 13 };
+  affects_ans[13] = { 14,15 };
+  affects_ans[14] = { 15 };
+  affects_ans[16] = { 17 };
+  for (auto stmt : pkb.get_all_statements()) {
+    std::set<int>* stmt_affects = stmt->get_affects();
+    std::vector<int> affects = affects_ans[stmt->get_stmt_no()];
+    REQUIRE(stmt_affects->size() == affects.size());
+    for (auto& affect : affects) {
+      REQUIRE(stmt_affects->find(affect) != stmt_affects->end());
+    }
+  }
+
+  std::map<int, std::vector<int>> affects_star_ans;
+  affects_star_ans[4] = { 7,11,13,14,15 };
+  affects_star_ans[5] = { 9,13,14,15 };
+  affects_star_ans[7] = { 7,11,13,14,15 };
+  affects_star_ans[9] = { 9,13,14,15 };
+  affects_star_ans[11] = { 13,14,15 };
+  affects_star_ans[12] = { 13,14,15 };
+  affects_star_ans[13] = { 14,15 };
+  affects_star_ans[14] = { 15 };
+  affects_star_ans[16] = { 17 };
+  for (auto stmt : pkb.get_all_statements()) {
+    std::set<int>* stmt_affects_star = stmt->get_affects_star();
+    std::vector<int> affects_star = affects_star_ans[stmt->get_stmt_no()];
+    REQUIRE(stmt_affects_star->size() == affects_star.size());
+    for (auto& affect_star : affects_star) {
+      REQUIRE(stmt_affects_star->find(affect_star) != stmt_affects_star->end());
+    }
+  }
+
+  std::map<int, std::vector<int>> affected_by_ans;
+  affected_by_ans[7] = { 4,7 };
+  affected_by_ans[9] = { 5,9 };
+  affected_by_ans[11] = { 4,7 };
+  affected_by_ans[13] = { 4,5,7,9,11,12 };
+  affected_by_ans[14] = { 13 };
+  affected_by_ans[15] = { 4,7,11,13,14 };
+  affected_by_ans[17] = { 16 };
+  for (auto stmt : pkb.get_all_statements()) {
+    std::set<int>* stmt_affected_by = stmt->get_affected_by();
+    std::vector<int> affected_bys = affected_by_ans[stmt->get_stmt_no()];
+    REQUIRE(stmt_affected_by->size() == affected_bys.size());
+    for (auto& affected_by : affected_bys) {
+      REQUIRE(stmt_affected_by->find(affected_by) != stmt_affected_by->end());
+    }
+  }
+
+  std::map<int, std::vector<int>> affected_by_star_ans;
+  affected_by_star_ans[7] = { 4,7 };
+  affected_by_star_ans[9] = { 5,9 };
+  affected_by_star_ans[11] = { 4,7 };
+  affected_by_star_ans[13] = { 4,5,7,9,11,12 };
+  affected_by_star_ans[14] = { 4,5,7,9,11,12,13 };
+  affected_by_star_ans[15] = { 4,5,7,9,11,12,13,14 };
+  affected_by_star_ans[17] = { 16 };
+  for (auto stmt : pkb.get_all_statements()) {
+    std::set<int>* stmt_affected_by_star = stmt->get_affected_by_star();
+    std::vector<int> affected_bys_star = affected_by_star_ans[stmt->get_stmt_no()];
+    REQUIRE(stmt_affected_by_star->size() == affected_bys_star.size());
+    for (auto& affected_by_star : affected_bys_star) {
+      REQUIRE(stmt_affected_by_star->find(affected_by_star) != stmt_affected_by_star->end());
     }
   }
 }

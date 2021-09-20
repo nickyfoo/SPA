@@ -46,6 +46,12 @@ class StmtTable : public Table {
   // Gets Next_Star relationship using transitive closure.
   void ProcessNextStar();
 
+  // Gets Affects relationship from Statements in preparation to get transitive closure.
+  void ProcessAffects();
+  // Gets Affects_Star relationship from Statements in preparation to get transitive closure.
+  void ProcessAffectsStar();
+
+
   // Prints entity information of all statements.
   void PrintStatements();
   // Prints relationship information of all statements.
@@ -66,5 +72,8 @@ class StmtTable : public Table {
 
   // for <v1, v2> in next_, Next(v1, v2) is true.
   std::set<std::pair<int, int>> next_, next_star_;
+
+  // for <v1, v2> in affects_[var_name], Affects(v1, v2) is true, where var_name is the variable being modified by v1.
+  std::set<std::pair<int, int>> affects_, affects_star_;
 
 };

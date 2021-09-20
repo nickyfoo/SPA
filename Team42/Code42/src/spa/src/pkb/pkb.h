@@ -85,6 +85,8 @@ class PKB {
   void ExtractCFG();
   // Extracts Next/Next* relationships in the CFG.
   void ExtractNext();
+  // Extracts Affects/Affects* relationships in the CFG.
+  void ExtractAffects();
 
   // Updates procs_using_ and procs_modifying_ in var_table_.
   void UpdateVarTableWithProcs();
@@ -123,6 +125,9 @@ class PKB {
   void CFGProcessIfNode(Node* node);
   // Process and store the AST while node into the CFG.
   void CFGProcessWhileNode(Node* node);
+  
+  // Process and store Affects relationships for the stmt_no.
+  void ProcessAffectsForStatement(int stmt_no);
 
   // Root AST node of the program.
   Node *root_;
@@ -136,4 +141,7 @@ class PKB {
   ConstTable const_table_;
   // Adjacency List of CFG for Next and Affects.
   std::map<int, std::set<int>> CFGAL_;
+
+  // Infinite value.
+  inline static const int kInf = 1e9;
 };

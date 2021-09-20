@@ -121,6 +121,31 @@ void StmtTable::ProcessNextStar() {
   }
 }
 
+// Gets Affects relationship from Statements in preparation to get transitive closure.
+void StmtTable::ProcessAffects() {
+  for (auto& [line_no, stmt] : table_) {
+    for (auto& affects_line_no : *(stmt.get_affects())) {
+      affects_.insert({ line_no, affects_line_no });
+    }
+  }
+}
+// Gets Affects_Star relationship from Statements in preparation to get transitive closure.
+void StmtTable::ProcessAffectsStar() {
+  int n = num_statements_ + 1;
+  std::vector<std::vector<int>> d = GetTransitiveClosure(affects_, n);
+  for (int i = 0; i < n; i++) {
+    Statement* stmt = get_statement(i);
+    if (stmt == nullptr) continue;
+
+    for (int j = 0; j < n; j++) {
+      if (d[i][j] == kInf) continue;
+      stmt->AddAffectsStar(j);
+      get_statement(j)->AddAffectedByStar(i);
+    }
+  }
+}
+
+
 void StmtTable::PrintStatements() {
   std::cout << "StmtTable size: " << table_.size() << '\n';
   for (auto&[k, x] : table_) {

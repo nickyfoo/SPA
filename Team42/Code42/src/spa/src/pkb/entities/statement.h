@@ -51,6 +51,14 @@ class Statement : public Entity {
   std::set<int>* get_prev();
   // Gets the prev star statements.
   std::set<int>* get_prev_star();
+  // Gets the statements this affects.
+  std::set<int>* get_affects();
+  // Gets the statements this affects star.
+  std::set<int>* get_affects_star();
+  // Gets the statements affected by this.
+  std::set<int>* get_affected_by();
+  // Gets the statements affected star by this.
+  std::set<int>* get_affected_by_star();
 
   // Sets the postfix expression string of this statement.
   void set_expr_string(std::string expr_string);
@@ -85,6 +93,14 @@ class Statement : public Entity {
   void AddPrev(int line_no);
   // Adds a statment that is prev star.
   void AddPrevStar(int line_no);
+  // Adds a statement that this affects.
+  void AddAffects(int line_no);
+  // Adds a statement that this affectsstar.
+  void AddAffectsStar(int line_no);
+  // Adds a statment that this is affected by.
+  void AddAffectedBy(int line_no);
+  // Adds a statment that this is affected by.
+  void AddAffectedByStar(int line_no);
 
   // Prints the follows information for this statement.
   void FollowsInfo();
@@ -96,6 +112,8 @@ class Statement : public Entity {
   void ModifiesInfo();
   // Prints the next information for this statement.
   void NextInfo();
+  // Prints the affects information for this statement.
+  void AffectsInfo();
 
  private:
   // Statement number in program.
@@ -125,4 +143,9 @@ class Statement : public Entity {
   std::set<int> next_, next_star_;
   // for stmt in prev_, Next(stmt, this) is true.
   std::set<int> prev_, prev_star_;
+
+  // for stmt in affects_, Affects(this, stmt) is true.
+  std::set<int> affects_, affects_star_;
+  // for stmt in affected_by_, Affects(stmt, this) is true.
+  std::set<int> affected_by_, affected_by_star_;
 };

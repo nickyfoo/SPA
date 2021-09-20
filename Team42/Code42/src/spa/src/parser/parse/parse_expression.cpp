@@ -18,6 +18,7 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
   std::stack<const Token *> operator_stack{};
 
   auto *next_token = lexer->PeekNextToken();
+
   while (IsExpressionToken(next_token)) {
     if (next_token->value_ == end && operator_stack.empty() && result_stack.size() == 1) {
       // terminate early
@@ -485,6 +486,9 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
   }
 
   // now we should only have one tree in the results stack
+  if (result_stack.empty()) {
+    throw ParseException("empty expression found", next_token->line_no_, next_token->col_no_);
+  }
   auto final_res = result_stack.top();
   result_stack.pop();
 

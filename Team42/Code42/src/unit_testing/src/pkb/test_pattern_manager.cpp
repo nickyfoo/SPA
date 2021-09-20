@@ -15,7 +15,6 @@ TEST_CASE("TestAssignmentPattern_OnlyOneVariable", "[pattern_manager]") {
 
   SECTION("Variable") {
     Statement s2(1, NodeType::Assign);
-    s2.set_expr_string("x");
     s2.set_expr_string("count");
     REQUIRE(PKB::TestAssignmentPattern(&s2, "count", false) == true);
     REQUIRE(PKB::TestAssignmentPattern(&s2, "count", true) == true);

@@ -176,7 +176,8 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
   if (has_two_repeated_synonyms_) {
     std::vector<std::pair<int, std::string>> *relationship_vec =
         relationship_query_manager->get_stmt_var_pair_vector();
-    std::vector<std::pair<int, std::string>> *pattern_vec = pattern_query_manager->get_vec_results();
+    std::vector<std::pair<int, std::string>> *pattern_vec =
+        pattern_query_manager->get_vec_results();
     sort(relationship_vec->begin(), relationship_vec->end());
     sort(pattern_vec->begin(), pattern_vec->end());
     std::vector<std::pair<int, std::string>> result;
@@ -187,7 +188,8 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
     if (patterns_->at(0)->get_synonym()->get_synonym() == entities_to_return_->at(0)) {
       for (std::pair<int, std::string> pair : result) {
         // Add item to results vector if it doesn't already exist in vector.
-        if (std::find(output->begin(), output->end(), std::to_string(pair.first)) == output->end()) {
+        if (std::find(output->begin(), output->end(), std::to_string(pair.first)) ==
+        output->end()) {
           output->push_back(std::to_string(pair.first));
         }
       }

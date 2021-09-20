@@ -85,20 +85,24 @@ PQLQuery *SelectClauseParser::get_clauses() {
     }
 
     for (PatternClause *pattern : *pattern_ret) {
-      if (left_relationship_str != "_" && (pattern->get_synonym()->get_synonym() == left_relationship_str
+      if (left_relationship_str != "_" &&
+      (pattern->get_synonym()->get_synonym() == left_relationship_str
       || pattern->get_left_ref()->get_value() == left_relationship_str)) {
         has_one_repeated_synonym = true;
       }
 
-      if (right_relationship_str != "_" && (pattern->get_synonym()->get_synonym() == right_relationship_str
+      if (right_relationship_str != "_" &&
+      (pattern->get_synonym()->get_synonym() == right_relationship_str
       || pattern->get_left_ref()->get_value() == right_relationship_str)) {
-        has_one_repeated_synonym ? has_two_repeated_synonyms = true : has_one_repeated_synonym = true;
+        has_one_repeated_synonym ? has_two_repeated_synonyms =
+            true : has_one_repeated_synonym = true;
       }
     }
   }
 
   auto *ret = new PQLQuery(select_ret, such_that_ret,
-                           pattern_ret, synonym_to_entity_, has_one_repeated_synonym, has_two_repeated_synonyms);
+                           pattern_ret, synonym_to_entity_,
+                           has_one_repeated_synonym, has_two_repeated_synonyms);
 
   return ret;
 }
@@ -250,7 +254,6 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRef(
 
 // Function that returns true if str is a valid identifier
 bool SelectClauseParser::IsValidIdentifier(const std::string &str) {
-
   if (!((str[0] == '\'' && str[str.length() - 1] == '\'')
       || (str[0] == '\"' && str[str.length() - 1] == '\"'))) {
     return false;
@@ -367,7 +370,7 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
       }
       if (check_for_such == "such " && !such_clause_found) {
         prev_word_stream << c;
-      } else if (check_for_such.substr(0, 4) != "such"){
+      } else if (check_for_such.substr(0, 4) != "such") {
         prev_word_stream.str("");
       }
     } else if (c == '(' || c == '<') {
@@ -395,7 +398,7 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
         whitespace_found = false;
         prev_word_stream << c;
         std::string check_for_such_that = prev_word_stream.str();
-        if (check_for_such_that == "such  that") { // extra spaces between such that clause
+        if (check_for_such_that == "such  that") {  // extra spaces between such that clause
           return make_tuple(select_clause, such_that_clauses, pattern_clauses);
         }
       }

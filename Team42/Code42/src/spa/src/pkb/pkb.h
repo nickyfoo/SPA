@@ -128,6 +128,7 @@ class PKB {
   
   // Process and store Affects relationships for the stmt_no.
   void ProcessAffectsForStatement(int stmt_no);
+  void ProcessAffectsForStatementDFS(int u, int stmt_no, std::string var_name, std::vector<bool>& visited);
 
   // Root AST node of the program.
   Node *root_;

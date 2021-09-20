@@ -377,7 +377,9 @@ void PKB::ExtractNext() {
 
 void PKB::ExtractAffects() {
   for (auto &stmt : stmt_table_.get_statements(NodeType::Assign)) {
-    ProcessAffectsForStatement(stmt->get_stmt_no());
+    std::vector<bool> visited(stmt_table_.get_num_statements() + 1, false);
+    ProcessAffectsForStatementDFS(stmt->get_stmt_no(), stmt->get_stmt_no(), *(stmt->get_modifies()->begin()), visited);
+    //ProcessAffectsForStatement(stmt->get_stmt_no());
   }
   stmt_table_.ProcessAffects();
   stmt_table_.ProcessAffectsStar();
@@ -425,6 +427,30 @@ void PKB::ProcessAffectsForStatement(int stmt_no) {
         }
         pq.insert({ d[v],v });
       }
+    }
+  }
+}
+
+
+void PKB::ProcessAffectsForStatementDFS(int u, int stmt_no, std::string var_name, std::vector<bool>&visited) {
+  Statement *stmt = stmt_table_.get_statement(stmt_no);
+  if (CFGAL_.find(u) == CFGAL_.end()) return;
+  for (auto &v : CFGAL_[u]) {
+    Statement *stmt_v = stmt_table_.get_statement(v);
+    if (!visited[v]) {
+      visited[v] = true;
+      std::set<std::string> *uses = stmt_v->get_uses();
+      if (stmt_v->get_kind() == NodeType::Assign && uses->find(var_name) != uses->end()) {
+        stmt->AddAffects(v);
+        stmt_v->AddAffectedBy(stmt_no);
+      }
+      std::set<std::string> *modifies = stmt_v->get_modifies();
+      if (stmt_v->get_kind() == NodeType::Assign || stmt_v->get_kind() == NodeType::Read || stmt_v->get_kind() == NodeType::Call) {
+        if (modifies->find(var_name) != modifies->end()) {
+          continue;
+        }
+      }
+      ProcessAffectsForStatementDFS(v, stmt_no, var_name, visited);
     }
   }
 }

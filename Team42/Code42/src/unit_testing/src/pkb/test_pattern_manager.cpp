@@ -7,16 +7,19 @@
 TEST_CASE("TestAssignmentPattern_OnlyOneVariable", "[pattern_manager]") {
   SECTION("Constant") {
     Statement s2(1, NodeType::Assign);
-    s2.set_expr_string("1");
-    REQUIRE(PKB::TestAssignmentPattern(&s2, "1", false) == true);
-    REQUIRE(PKB::TestAssignmentPattern(&s2, "1", true) == true);
+    s2.set_expr_string("100");
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "100", false) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "100", true) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "1", true) == false);
   }
 
   SECTION("Variable") {
     Statement s2(1, NodeType::Assign);
-    s2.set_expr_string("x");
-    REQUIRE(PKB::TestAssignmentPattern(&s2, "x", false) == true);
-    REQUIRE(PKB::TestAssignmentPattern(&s2, "x", true) == true);
+    s2.set_expr_string("count");
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "count", false) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "count", true) == true);
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "nt", true) == false);
+    REQUIRE(PKB::TestAssignmentPattern(&s2, "coun", true) == false);
   }
 }
 

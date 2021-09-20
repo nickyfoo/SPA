@@ -946,3 +946,235 @@ TEST_CASE("PKB_CFGNestedIf_Correct") {
     }
   }
 }
+
+
+TEST_CASE("PKB_NextSample_Correct") {
+  std::string source =
+    "procedure First {"
+    "read x;"
+    "read y;"
+    "call Second; }"
+    "procedure Second {"
+    "x = 0;"
+    "i = 5;"
+    "while (i != 0) {"
+    "x = x + 2 * y;"
+    "call Third;"
+    "i = i - 1; "
+    "}"
+    "if (x == 1) then {"
+    "x = x + 1; }"
+    "else {"
+    "z = 1;"
+    "}"
+    "z = z + x + i;"
+    "y = z + 2;"
+    "x = x * y + z; }"
+    "procedure Third {"
+    "z = 5;"
+    "v = z;"
+    "print v; }";
+
+  BufferedLexer lexer(source);
+  ParseState s{};
+  ProgramNode* p = ParseProgram(&lexer, &s);
+  PKB pkb(p);
+  std::map<int, std::vector<int>> next_ans;
+  next_ans[1] = { 2 };
+  next_ans[2] = { 3 };
+  next_ans[4] = { 5 };
+  next_ans[5] = { 6 };
+  next_ans[6] = { 7,10 };
+  next_ans[7] = { 8 };
+  next_ans[8] = { 9 };
+  next_ans[9] = { 6 };
+  next_ans[10] = { 11,12 };
+  next_ans[11] = { 13 };
+  next_ans[12] = { 13 };
+  next_ans[13] = { 14 };
+  next_ans[14] = { 15 };
+  next_ans[16] = { 17 };
+  next_ans[17] = { 18 };
+  for (auto stmt : pkb.get_all_statements()) {
+    std::set<int>* stmt_next = stmt->get_next();
+    std::vector<int> nexts = next_ans[stmt->get_stmt_no()];
+    REQUIRE(stmt_next->size() == nexts.size());
+    for (auto& next : nexts) {
+      REQUIRE(stmt_next->find(next) != stmt_next->end());
+    }
+  }
+
+  std::map<int, std::vector<int>> next_star_ans;
+  next_star_ans[1] = { 2,3 };
+  next_star_ans[2] = { 3 };
+  next_star_ans[4] = { 5,6,7,8,9,10,11,12,13,14,15 };
+  next_star_ans[5] = { 6,7,8,9,10,11,12,13,14,15 };
+  next_star_ans[6] = { 6,7,8,9,10,11,12,13,14,15 };
+  next_star_ans[7] = { 6,7,8,9,10,11,12,13,14,15 };
+  next_star_ans[8] = { 6,7,8,9,10,11,12,13,14,15 };
+  next_star_ans[9] = { 6,7,8,9,10,11,12,13,14,15 };
+  next_star_ans[10] = { 11,12,13,14,15 };
+  next_star_ans[11] = { 13,14,15 };
+  next_star_ans[12] = { 13,14,15 };
+  next_star_ans[13] = { 14,15 };
+  next_star_ans[14] = { 15 };
+  next_star_ans[16] = { 17,18 };
+  next_star_ans[17] = { 18 };
+  for (auto stmt : pkb.get_all_statements()) {
+    std::set<int>* stmt_next_star = stmt->get_next_star();
+    std::vector<int> nexts_star = next_star_ans[stmt->get_stmt_no()];
+    REQUIRE(stmt_next_star->size() == nexts_star.size());
+    for (auto& next_star : nexts_star) {
+      REQUIRE(stmt_next_star->find(next_star) != stmt_next_star->end());
+    }
+  }
+
+  std::map<int, std::vector<int>> prev_ans;
+  prev_ans[2] = { 1 };
+  prev_ans[3] = { 2 };
+  prev_ans[5] = { 4 };
+  prev_ans[6] = { 5,9 };
+  prev_ans[7] = { 6 };
+  prev_ans[8] = { 7 };
+  prev_ans[9] = { 8 };
+  prev_ans[10] = { 6 };
+  prev_ans[11] = { 10 };
+  prev_ans[12] = { 10 };
+  prev_ans[13] = { 11,12 };
+  prev_ans[14] = { 13 };
+  prev_ans[15] = { 14 };
+  prev_ans[17] = { 16 };
+  prev_ans[18] = { 17 };
+  for (auto stmt : pkb.get_all_statements()) {
+    std::set<int>* stmt_prev = stmt->get_prev();
+    std::vector<int> prevs = prev_ans[stmt->get_stmt_no()];
+    REQUIRE(stmt_prev->size() == prevs.size());
+    for (auto& prev : prevs) {
+      REQUIRE(stmt_prev->find(prev) != stmt_prev->end());
+    }
+  }
+
+  std::map<int, std::vector<int>> prev_star_ans;
+  prev_star_ans[2] = { 1 };
+  prev_star_ans[3] = { 1,2 };
+  prev_star_ans[5] = { 4 };
+  prev_star_ans[6] = { 4,5,6,7,8,9 };
+  prev_star_ans[7] = { 4,5,6,7,8,9 };
+  prev_star_ans[8] = { 4,5,6,7,8,9 };
+  prev_star_ans[9] = { 4,5,6,7,8,9 };
+  prev_star_ans[10] = { 4,5,6,7,8,9 };
+  prev_star_ans[11] = { 4,5,6,7,8,9,10 };
+  prev_star_ans[12] = { 4,5,6,7,8,9,10 };
+  prev_star_ans[13] = { 4,5,6,7,8,9,10,11,12 };
+  prev_star_ans[14] = { 4,5,6,7,8,9,10,11,12,13 };
+  prev_star_ans[15] = { 4,5,6,7,8,9,10,11,12,13,14 };
+  prev_star_ans[17] = { 16 };
+  prev_star_ans[18] = { 16,17 };
+
+  for (auto stmt : pkb.get_all_statements()) {
+    std::set<int>* stmt_prev_star = stmt->get_prev_star();
+    std::vector<int> prevs_star = prev_star_ans[stmt->get_stmt_no()];
+    REQUIRE(stmt_prev_star->size() == prevs_star.size());
+    for (auto& prev_star : prevs_star) {
+      REQUIRE(stmt_prev_star->find(prev_star) != stmt_prev_star->end());
+    }
+  }
+}
+
+TEST_CASE("PKB_NextNestedIf_Correct") {
+    std::string source =
+      "procedure main {"
+      "zero = 1;"
+      "if(a==1) then {"
+      "if(b==1) then {"
+      "first = 1;"
+      "}else{"
+      "second = 1;"
+      "}"
+      "} else {"
+      "if(c==1) then {"
+      "third = 1;"
+      "} else {"
+      "fourth = 1;"
+      "}"
+      "}"
+      "fifth = 1;"
+      "}";
+
+  BufferedLexer lexer(source);
+  ParseState s{};
+  ProgramNode* p = ParseProgram(&lexer, &s);
+  PKB pkb(p);
+  std::map<int, std::vector<int>> next_ans;
+  next_ans[1] = { 2 };
+  next_ans[2] = { 3,6 };
+  next_ans[3] = { 4,5 };
+  next_ans[4] = { 9 };
+  next_ans[5] = { 9 };
+  next_ans[6] = { 7,8 };
+  next_ans[7] = { 9 };
+  next_ans[8] = { 9 };
+  for (auto stmt : pkb.get_all_statements()) {
+    std::set<int>* stmt_next = stmt->get_next();
+    std::vector<int> nexts = next_ans[stmt->get_stmt_no()];
+    REQUIRE(stmt_next->size() == nexts.size());
+    for (auto& next : nexts) {
+      REQUIRE(stmt_next->find(next) != stmt_next->end());
+    }
+  }
+
+  std::map<int, std::vector<int>> next_star_ans;
+  next_star_ans[1] = { 2,3,4,5,6,7,8,9 };
+  next_star_ans[2] = { 3,4,5,6,7,8,9 };
+  next_star_ans[3] = { 4,5,9 };
+  next_star_ans[4] = { 9 };
+  next_star_ans[5] = { 9 };
+  next_star_ans[6] = { 7,8,9 };
+  next_star_ans[7] = { 9 };
+  next_star_ans[8] = { 9 };
+  for (auto stmt : pkb.get_all_statements()) {
+    std::set<int>* stmt_next_star = stmt->get_next_star();
+    std::vector<int> nexts_star = next_star_ans[stmt->get_stmt_no()];
+    REQUIRE(stmt_next_star->size() == nexts_star.size());
+    for (auto& next_star : nexts_star) {
+      REQUIRE(stmt_next_star->find(next_star) != stmt_next_star->end());
+    }
+  }
+
+  std::map<int, std::vector<int>> prev_ans;
+  prev_ans[2] = { 1 };
+  prev_ans[3] = { 2 };
+  prev_ans[4] = { 3 };
+  prev_ans[5] = { 3 };
+  prev_ans[6] = { 2 };
+  prev_ans[7] = { 6 };
+  prev_ans[8] = { 6 };
+  prev_ans[9] = { 4,5,7,8 };
+  for (auto stmt : pkb.get_all_statements()) {
+    std::set<int>* stmt_prev = stmt->get_prev();
+    std::vector<int> prevs = prev_ans[stmt->get_stmt_no()];
+    REQUIRE(stmt_prev->size() == prevs.size());
+    for (auto& prev : prevs) {
+      REQUIRE(stmt_prev->find(prev) != stmt_prev->end());
+    }
+  }
+
+  std::map<int, std::vector<int>> prev_star_ans;
+  prev_star_ans[2] = { 1 };
+  prev_star_ans[3] = { 1,2 };
+  prev_star_ans[4] = { 1,2,3 };
+  prev_star_ans[5] = { 1,2,3 };
+  prev_star_ans[6] = { 1,2 };
+  prev_star_ans[7] = { 1,2,6 };
+  prev_star_ans[8] = { 1,2,6 };
+  prev_star_ans[9] = { 1,2,3,4,5,6,7,8 };
+
+  for (auto stmt : pkb.get_all_statements()) {
+    std::set<int>* stmt_prev_star = stmt->get_prev_star();
+    std::vector<int> prevs_star = prev_star_ans[stmt->get_stmt_no()];
+    REQUIRE(stmt_prev_star->size() == prevs_star.size());
+    for (auto& prev_star : prevs_star) {
+      REQUIRE(stmt_prev_star->find(prev_star) != stmt_prev_star->end());
+    }
+  }
+}

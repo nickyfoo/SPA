@@ -183,6 +183,7 @@ void PKB::Initialise() {
   ExtractCalls();
   ExtractUsesModifies();
   ExtractCFG();
+  ExtractNext();
 }
 
 void PKB::ExtractEntities() {
@@ -359,6 +360,20 @@ void PKB::ExtractCFG() {
   Visit(root_, functions);
 
 }
+
+
+void PKB::ExtractNext() {
+  for (auto& [u, al_u] : CFGAL_) {
+    for (auto& v : al_u) {
+      stmt_table_.get_statement(u)->AddNext(v);
+      stmt_table_.get_statement(v)->AddPrev(u);
+    }
+  }
+
+  stmt_table_.ProcessNext();
+  stmt_table_.ProcessNextStar();
+}
+
 
 void PKB::UpdateVarTableWithProcs() {
   for (auto &proc : proc_table_.get_all_procedures()) {

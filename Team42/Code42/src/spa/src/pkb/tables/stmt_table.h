@@ -32,11 +32,19 @@ class StmtTable : public Table {
   void ProcessFollows();
   // Gets Follows_Star relationship using transitive closure.
   void ProcessFollowsStar();
+
   // Gets Parents relationship from Statements in preparation to get
   // transitive closure.
   void ProcessParent();
   // Gets Parents_Star relationship using transitive closure.
   void ProcessParentStar();
+  
+
+  // Gets Next relationship from Statements in preparation to get
+  // transitive closure.
+  void ProcessNext();
+  // Gets Next_Star relationship using transitive closure.
+  void ProcessNextStar();
 
   // Prints entity information of all statements.
   void PrintStatements();
@@ -55,4 +63,8 @@ class StmtTable : public Table {
   std::set<std::pair<int, int>> follows_, follows_star_;
   // for <v1, v2> in parent_, Parent(v1, v2) is true.
   std::set<std::pair<int, int>> parent_, parent_star_;
+
+  // for <v1, v2> in next_, Next(v1, v2) is true.
+  std::set<std::pair<int, int>> next_, next_star_;
+
 };

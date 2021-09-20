@@ -43,6 +43,14 @@ class Statement : public Entity {
   std::set<std::string> *get_uses();
   // Gets the variables which this statement modifies.
   std::set<std::string> *get_modifies();
+  // Gets the next statements.
+  std::set<int>* get_next();
+  // Gets the next star statements.
+  std::set<int>* get_next_star();
+  // Gets the prev statements.
+  std::set<int>* get_prev();
+  // Gets the prev star statements.
+  std::set<int>* get_prev_star();
 
   // Sets the postfix expression string of this statement.
   void set_expr_string(std::string expr_string);
@@ -71,8 +79,12 @@ class Statement : public Entity {
   void AddModifies(std::string var_name);
   // Adds a statement that is next.
   void AddNext(int line_no);
+  // Adds a statement that is next star.
+  void AddNextStar(int line_no);
   // Adds a statment that is prev.
   void AddPrev(int line_no);
+  // Adds a statment that is prev star.
+  void AddPrevStar(int line_no);
 
   // Prints the follows information for this statement.
   void FollowsInfo();
@@ -82,6 +94,8 @@ class Statement : public Entity {
   void UsesInfo();
   // Prints the variables modified by this statement.
   void ModifiesInfo();
+  // Prints the next information for this statement.
+  void NextInfo();
 
  private:
   // Statement number in program.
@@ -108,7 +122,7 @@ class Statement : public Entity {
   std::set<std::string> modifies_;
 
   // for stmt in next_, Next(this, stmt) is true.
-  std::set<int> next_;
+  std::set<int> next_, next_star_;
   // for stmt in prev_, Next(stmt, this) is true.
-  std::set<int> prev_;
+  std::set<int> prev_, prev_star_;
 };

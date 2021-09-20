@@ -97,6 +97,30 @@ void StmtTable::ProcessParentStar() {
   }
 }
 
+
+void StmtTable::ProcessNext() {
+  for (auto& [line_no, stmt] : table_) {
+    for (auto& next_line_no : *(stmt.get_next())) {
+      next_.insert({ line_no, next_line_no });
+    }
+  }
+}
+
+void StmtTable::ProcessNextStar() {
+  int n = num_statements_ + 1;
+  std::vector<std::vector<int>> d = GetTransitiveClosure(next_, n);
+  for (int i = 0; i < n; i++) {
+    Statement* stmt = get_statement(i);
+    if (stmt == nullptr) continue;
+
+    for (int j = 0; j < n; j++) {
+      if (d[i][j] == kInf) continue;
+      stmt->AddNextStar(j);
+      get_statement(j)->AddPrevStar(i);
+    }
+  }
+}
+
 void StmtTable::PrintStatements() {
   std::cout << "StmtTable size: " << table_.size() << '\n';
   for (auto&[k, x] : table_) {

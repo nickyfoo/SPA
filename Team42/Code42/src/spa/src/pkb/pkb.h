@@ -81,6 +81,11 @@ class PKB {
   void ExtractUsesModifies();
   // Extracts Calls/Calls* relationships in the AST.
   void ExtractCalls();
+  // Stores adjacency list into CFGAL_
+  void ExtractCFG();
+  // Extracts Next/Next* relationships in the CFG.
+  void ExtractNext();
+
   // Updates procs_using_ and procs_modifying_ in var_table_.
   void UpdateVarTableWithProcs();
 
@@ -112,8 +117,6 @@ class PKB {
 
   // Recursively gets the last stmts of a statement.
   std::set<int> PKB::LastStmts(StatementNode* node);
-  // Stores adjacency list into CFGAL_
-  void ExtractCFG();
   // Process and store the AST procedure node into the CFG.
   void CFGProcessProcedureNode(Node* node);
   // Process and store the AST if node into the CFG.

@@ -91,6 +91,22 @@ std::set<std::string> *Statement::get_modifies() {
   return &modifies_;
 }
 
+std::set<int>* Statement::get_next() {
+  return &next_;
+}
+
+std::set<int>* Statement::get_next_star() {
+  return &next_star_;
+}
+
+std::set<int>* Statement::get_prev() {
+  return &prev_;
+}
+// Gets the prev star statements.
+std::set<int>* Statement::get_prev_star() {
+  return &prev_star_;
+}
+
 void Statement::set_expr_string(std::string expr_string) {
   this->expr_string_ = expr_string;
 }
@@ -145,8 +161,16 @@ void Statement::AddNext(int line_no) {
   next_.insert(line_no);
 }
 
+void Statement::AddNextStar(int line_no) {
+  next_star_.insert(line_no);
+}
+
 void Statement::AddPrev(int line_no) {
   prev_.insert(line_no);
+}
+
+void Statement::AddPrevStar(int line_no) {
+  prev_star_.insert(line_no);
 }
 
 void Statement::FollowsInfo() {
@@ -212,6 +236,32 @@ void Statement::ModifiesInfo() {
   std::cout << "Statement " << stmt_no_ << " modifies:\n";
   std::cout << "Modifies: ";
   for (auto &x : modifies_) {
+    std::cout << x << ' ';
+  }
+  std::cout << '\n' << '\n';
+}
+
+
+void Statement::NextInfo() {
+  std::cout << "Statement " << stmt_no_ << " has next:\n";
+  std::cout << "Next: ";
+  for (auto& x : next_) {
+    std::cout << x << ' ';
+  }
+  std::cout << '\n';
+  std::cout << "NextStar: ";
+  for (auto& x : next_star_) {
+    std::cout << x << ' ';
+  }
+  std::cout << '\n';
+  std::cout << "Statement " << stmt_no_ << " has prev:\n";
+  std::cout << "Prev: ";
+  for (auto& x : prev_) {
+    std::cout << x << ' ';
+  }
+  std::cout << '\n';
+  std::cout << "PrevStar: ";
+  for (auto& x : prev_star_) {
     std::cout << x << ' ';
   }
   std::cout << '\n' << '\n';

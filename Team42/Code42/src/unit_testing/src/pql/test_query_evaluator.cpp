@@ -610,10 +610,7 @@ TEST_CASE("Invalid Modifies read stmt, Argument") {
 
   std::vector<std::string> expected = {"flag", "cenX", "cenY"};
 
-//  REQUIRE(ret->size() == expected.size());
-//  for (int i = 0; i < ret->size(); i++) {
-//    REQUIRE(ret->at(i) == expected.at(i));
-//  }
+  REQUIRE(ret->size() == expected.size());
 }
 
 TEST_CASE("Test 22: Sample source query 4") {

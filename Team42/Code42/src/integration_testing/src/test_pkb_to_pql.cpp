@@ -50,7 +50,7 @@ TEST_CASE("PQL_FollowsAndPattern_ReturnsExpected") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -74,7 +74,7 @@ TEST_CASE("PQL_PatternAndFollows_ReturnsExpected") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -98,7 +98,7 @@ TEST_CASE("PQL_PatternAndFollowsWithExtraWords_ReturnsEmpty") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -124,7 +124,7 @@ TEST_CASE("PQL_FollowsAndPatternUnrelated_ReturnsExpected") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -148,7 +148,7 @@ TEST_CASE("PQL_FollowsStarAndPattern_ReturnsExpected") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -172,7 +172,7 @@ TEST_CASE("PQL_ParentAndPattern_ReturnsExpected") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -196,7 +196,7 @@ TEST_CASE("PQL_ParentStarAndPattern_ReturnsExpected") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -220,7 +220,7 @@ TEST_CASE("PQL_UsesAndPattern_ReturnsExpected") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -244,7 +244,7 @@ TEST_CASE("PQL_ModifiesAndPattern_ReturnsExpected") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -269,7 +269,7 @@ TEST_CASE("PQL_KeywordAsSynonym_ReturnsExpected") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -293,7 +293,7 @@ TEST_CASE("PQL_RelationshipAndPatternDependencies_ReturnsExpected") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -317,7 +317,7 @@ TEST_CASE("PQL_RelationshipAndPatternOneCommonSynonym_ReturnsExpected") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -341,7 +341,7 @@ TEST_CASE("PQL_UsesPAndPatternOneCommonSynonym_ReturnsExpected") {
   PQLQuery *clause = query->get_pql_query();
 
   // Parse source
-  BufferedLexer lexer(s.c_str());
+  BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -354,6 +354,6 @@ TEST_CASE("PQL_UsesPAndPatternOneCommonSynonym_ReturnsExpected") {
   REQUIRE(ret->size() == expected.size());
   for (int i = 0; i < expected.size(); i++) {
     std::cout << ret->at(i);
-//    REQUIRE(ret->at(i) == expected.at(i));
+    REQUIRE(std::find(expected.begin(), expected.end(), ret->at(i)) != expected.end());
   }
 }

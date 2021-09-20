@@ -63,12 +63,16 @@ void UsesSModifiesSHandler::Evaluate() {
                                             bool has_matching_follower = false;
                                             std::set<std::string> *follower_set =
                                                 StatementForwarder(get_normal_, stmt);
-                                            // Check if followers contain something from right arg vector
+                                            // Check if followers contain something
+                                            // from right arg vector
                                             // remove that statement if it doesn't
                                             for (std::string follower : *follower_set) {
                                               if (has_two_repeated_synonyms_) {
-                                                stmt_var_pair_vector_->push_back({stmt->get_stmt_no(),
-                                                                                  follower});
+                                                // Adding to set if there are 2 common synonyms with
+                                                // pattern.
+                                                stmt_var_pair_vector_->push_back(
+                                                    {stmt->get_stmt_no(),
+                                                     follower});
                                               }
                                               for (Entity *ent : *right_entity_vec) {
                                                 std::string right_name =
@@ -91,11 +95,13 @@ void UsesSModifiesSHandler::Evaluate() {
                                              bool has_matching_followee = false;
                                              std::set<int> *followee_set =
                                                  VariableForwarder(get_reverse_, variable);
-                                             // Check if followees contain something from left arg vector
+                                             // Check if followees contain something
+                                             // from left arg vector
                                              // remove that variable if it doesn't
                                              for (int followee : *followee_set) {
                                                for (Entity *ent : *left_entity_vec) {
-                                                 int left_num = dynamic_cast<Statement *>(ent)->get_stmt_no();
+                                                 int left_num =
+                                                     dynamic_cast<Statement *>(ent)->get_stmt_no();
                                                  if (left_num == followee) {
                                                    has_matching_followee = true;
                                                    break;

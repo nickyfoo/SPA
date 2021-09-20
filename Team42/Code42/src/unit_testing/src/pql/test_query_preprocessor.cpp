@@ -887,3 +887,10 @@ TEST_CASE("SuchThat_SpacesBetweenSuchThat_ReturnsNullPtr") {
   PQLQuery *clause = query->get_pql_query();
   REQUIRE(clause == nullptr);
 }
+
+TEST_CASE("Space between 2 entity declarations") {
+  std::string ss = "while       while;      call call; Select call such that Follows(call, while)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+}

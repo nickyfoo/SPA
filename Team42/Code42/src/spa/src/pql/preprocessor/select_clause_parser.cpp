@@ -327,7 +327,6 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefRight(
 
 // Function that returns true if str is a valid identifier
 bool SelectClauseParser::IsValidIdentifier(const std::string &str) {
-
   if (!((str[0] == '\'' && str[str.length() - 1] == '\'')
       || (str[0] == '\"' && str[str.length() - 1] == '\"'))) {
     return false;

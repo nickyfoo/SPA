@@ -15,7 +15,7 @@ class PatternManager {
   // Map of operands to its order of precedence.
   inline static const std::unordered_map<char, int>
       kOpsMap = {{'(', 1}, {')', 1},
-                 {'*', 2}, {'/', 2},
+                 {'*', 2}, {'/', 2}, {'%', 2},
                  {'+', 3}, {'-', 3}};
   // Gets the postfix expression from an infix expression string.
   static std::string GetPostfixExpr(std::string infix_expr);

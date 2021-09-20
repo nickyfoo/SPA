@@ -37,10 +37,13 @@ void TestWrapper::parse(std::string filename) {
   buffer << input_stream.rdbuf();
   std::string source = buffer.str();
 
-  BufferedLexer lexer(source.c_str());
+  BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
+
+  std::cout << "Program parsed!\n";
   this->pkb_ = new PKB(p);
+  std::cout << "PKB initialized\n";
 }
 
 // method to evaluating a query

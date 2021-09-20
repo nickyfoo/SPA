@@ -1,6 +1,8 @@
 #pragma once
 
 #include <map>
+#include <string>
+#include <variant>
 #include <vector>
 
 #include "ast.h"
@@ -11,7 +13,6 @@ enum class IdentifierType { ProcedureType, VariableType };
 class ParseState {
  public:
   int stmt_count_;
-  std::map<std::string, IdentifierType> identifiers_;
 };
 
 class ParseException : public std::exception {
@@ -39,11 +40,20 @@ IfNode *ParseIf(BufferedLexer *lexer, ParseState *state);
 
 AssignNode *ParseAssign(BufferedLexer *lexer, ParseState *state);
 
-Node *ParseExpression(BufferedLexer *lexer, ParseState *state);
-
-Node *ParseCondExpression(BufferedLexer *lexer, ParseState *state);
-
-RelExpressionNode *ParseRelExpression(BufferedLexer *lexer, ParseState *state);
+std::variant<CondExpressionNode *, RelExpressionNode *, ExpressionNode *, ConstantNode *,
+             IdentifierNode *>
+ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end);
 
 std::vector<StatementNode *> ParseStmtLst(BufferedLexer *lexer, ParseState *state);
 
+// util functions
+bool IsExprOp(TokenType t);
+bool IsCondExprOp(TokenType t);
+bool IsRelExprOp(TokenType t);
+ExprOp ExprOpFromToken(const Token *t);
+RelExprOp RelExprOpFromToken(const Token *t);
+CondExprOp CondExprOpFromToken(const Token *t);
+bool IsExpressionToken(const Token *t);
+bool Precedes(TokenType op1, TokenType op2);
+ConstantNode *MakeConstantNodeFromToken(const Token *t);
+IdentifierNode *MakeIdentifierNodeFromToken(const Token *t);

@@ -1,51 +1,59 @@
 #include <cassert>
+#include <sstream>
 #include <stdexcept>
 
 #include "ast.h"
+#include "ast_utils.hpp"
 
-RelExpressionNode::RelExpressionNode(RelExprOp op, Node *left, Node *right, std::string expr_string,
-                                     LocInfo loc)
+RelExpressionNode::RelExpressionNode(RelExprOp op, RelExpressionNodeChild *left,
+                                     RelExpressionNodeChild *right, LocInfo loc)
     : Node(loc) {
-  if (left == nullptr || left->get_kind() != NodeType::Expression &&
-                             left->get_kind() != NodeType::Constant &&
-                             left->get_kind() != NodeType::Identifier) {
-    throw std::invalid_argument(
-        "RelExpressionNode: expected left to be Expression, Constant or "
-        "Identifier");
-  }
-
-  if (right == nullptr || right->get_kind() != NodeType::Expression &&
-                              right->get_kind() != NodeType::Constant &&
-                              right->get_kind() != NodeType::Identifier) {
-    throw std::invalid_argument(
-        "RelExpressionNode: expected right to be Expression, Constant or "
-        "Identifier");
-  }
-
   this->op_ = op;
   this->left_ = left;
   this->right_ = right;
-  this->expr_string_ = expr_string;
 }
 
 NodeType RelExpressionNode::get_kind() { return NodeType::RelExpression; }
 
 RelExprOp RelExpressionNode::get_op() { return this->op_; }
 
-Node *RelExpressionNode::get_left() {
-  assert(this->left_->get_kind() == NodeType::Expression ||
-         this->left_->get_kind() == NodeType::Constant ||
-         this->left_->get_kind() == NodeType::Identifier);
+Node *RelExpressionNode::get_left() { return this->left_; }
 
-  return this->left_;
+Node *RelExpressionNode::get_right() { return this->right_; }
+
+std::string RelExpressionNode::get_expr_string() {
+  std::string expr_string = RelExprOpToString(this->op_);
+  if (this->right_) {
+    expr_string = this->right_->get_expr_string() + " " + expr_string;
+  }
+
+  if (this->left_) {
+    expr_string = this->left_->get_expr_string() + " " + expr_string;
+  }
+
+  return expr_string;
 }
 
-Node *RelExpressionNode::get_right() {
-  assert(this->right_->get_kind() == NodeType::Expression ||
-         this->right_->get_kind() == NodeType::Constant ||
-         this->right_->get_kind() == NodeType::Identifier);
+std::string RelExpressionNode::ToString() {
+  std::string op, left, right;
 
-  return this->right_;
+  op = RelExprOpToString(this->op_);
+  if (this->left_) {
+    left = this->left_->ToString();
+  }
+  if (this->right_) {
+    right = this->right_->ToString();
+  }
+
+  std::stringstream res;
+  res << "RelExpressionNode: {\n"
+      << "Op: " + op + "\n"
+      << "Left:\n"
+      << left + "\n"
+      << "Right:\n"
+      << right + "\n"
+      << "Loc: " + LocToString(this->get_line_no(), this->get_col_no()) + "\n"
+      << "}\n";
+
+  return res.str();
 }
-
-std::string RelExpressionNode::get_expr_string() { return this->expr_string_; }

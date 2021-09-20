@@ -4,8 +4,63 @@
 #include <functional>
 #include <iostream>
 #include <map>
+#include <stdexcept>
 
 #include "ast.h"
+#include "lexer.h"
+
+inline std::string ExprOpToString(ExprOp op) {
+  switch (op) {
+    case ExprOp::Plus:
+      return "+";
+    case ExprOp::Minus:
+      return "-";
+    case ExprOp::Times:
+      return "*";
+    case ExprOp::Divide:
+      return "/";
+    case ExprOp::Modulo:
+      return "%";
+  }
+
+  throw std::invalid_argument("ExprOpToString: unrecognized op");
+}
+
+inline std::string RelExprOpToString(RelExprOp op) {
+  switch (op) {
+    case RelExprOp::Gt:
+      return ">";
+    case RelExprOp::Gte:
+      return ">=";
+    case RelExprOp::Lt:
+      return "<";
+    case RelExprOp::Lte:
+      return "<=";
+    case RelExprOp::Eq:
+      return "==";
+    case RelExprOp::Neq:
+      return "!=";
+  }
+
+  throw std::invalid_argument("RelExprOpToString: unrecognized op");
+}
+
+inline std::string CondExprOpToString(CondExprOp op) {
+  switch (op) {
+    case CondExprOp::And:
+      return "&&";
+    case CondExprOp::Or:
+      return "||";
+    case CondExprOp::Not:
+      return "!";
+  }
+
+  throw std::invalid_argument("CondExprOpToString: unrecognized op");
+}
+
+inline std::string LocToString(int line_no, int col_no) {
+  return "{" + std::to_string(line_no) + ", " + std::to_string(col_no) + "}";
+}
 
 bool IsIdentifierEqual(IdentifierNode *i1, IdentifierNode *i2);
 bool IsConstantEqual(ConstantNode *c1, ConstantNode *c2);
@@ -384,7 +439,8 @@ inline std::vector<Node *> NextNodes(Node *node) {
   return next_nodes;
 }
 
-inline void Visit(Node *node, std::map<NodeType, std::vector<std::function<void(Node *)>>> functions) {
+inline void Visit(Node *node,
+                  std::map<NodeType, std::vector<std::function<void(Node *)>>> functions) {
   // TODO: throw an error
   if (node == nullptr) return;
 
@@ -398,10 +454,8 @@ inline void Visit(Node *node, std::map<NodeType, std::vector<std::function<void(
 }
 
 inline void VisitWithAncestors(
-  Node *node, 
-  std::vector<Node *>& ancestor_list, 
-  std::map<NodeType, 
-  std::vector<std::function<void(Node *, std::vector<Node *>)>>>&functions) {
+    Node *node, std::vector<Node *> &ancestor_list,
+    std::map<NodeType, std::vector<std::function<void(Node *, std::vector<Node *>)>>> &functions) {
   if (node) {
     for (auto func : functions[node->get_kind()]) {
       func(node, ancestor_list);
@@ -416,4 +470,3 @@ inline void VisitWithAncestors(
   }
   ancestor_list.pop_back();
 }
-

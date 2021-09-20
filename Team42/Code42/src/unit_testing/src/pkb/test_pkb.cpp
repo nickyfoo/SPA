@@ -1,46 +1,48 @@
-#include "parse.h"
 #include <vector>
-#include "pkb.h"
+
 #include "catch.hpp"
 #include "entities/statement.h"
+#include "parse.h"
+#include "pkb.h"
 
-std::string source = "procedure main {\n"
-                     "\tflag = 0;\n"
-                     "\tcall computeCentroid;\n"
-                     "\tcall printResults;\n"
-                     "}\n"
-                     "procedure readPoint {\n"
-                     "\tread x;\n"
-                     "\tread y;\n"
-                     "}\n"
-                     "procedure printResults {\n"
-                     "\tprint flag;\n"
-                     "\tprint cenX;\n"
-                     "\tprint cenY;\n"
-                     "\tprint normSq;\n"
-                     "}\n"
-                     "procedure computeCentroid {\n"
-                     "\tcount = 0;\n"
-                     "\tcenX = 0;\n"
-                     "\tcenY = 0;\n"
-                     "\tcall readPoint;\n"
-                     "\twhile((x != 0) && (y != 0)) {\n"
-                     "\t\tcount = count+1;\n"
-                     "\t\tcenX = cenX + x;\n"
-                     "\t\tcenY = cenY + y;\n"
-                     "\t\tcall readPoint;\n"
-                     "\t}\n"
-                     "\tif (count == 0) then {\n"
-                     "\t\tflag = 1;\n"
-                     "\t} else {\n"
-                     "\t\tcenX = cenX / count;\n"
-                     "\t\tcenY = cenY / count;\n"
-                     "\t}\n"
-                     "\tnormSq = cenX * cenX + cenY * cenY;\n"
-                     "}";
+std::string source =
+    "procedure main {\n"
+    "\tflag = 0;\n"
+    "\tcall computeCentroid;\n"
+    "\tcall printResults;\n"
+    "}\n"
+    "procedure readPoint {\n"
+    "\tread x;\n"
+    "\tread y;\n"
+    "}\n"
+    "procedure printResults {\n"
+    "\tprint flag;\n"
+    "\tprint cenX;\n"
+    "\tprint cenY;\n"
+    "\tprint normSq;\n"
+    "}\n"
+    "procedure computeCentroid {\n"
+    "\tcount = 0;\n"
+    "\tcenX = 0;\n"
+    "\tcenY = 0;\n"
+    "\tcall readPoint;\n"
+    "\twhile((x != 0) && (y != 0)) {\n"
+    "\t\tcount = count+1;\n"
+    "\t\tcenX = cenX + x;\n"
+    "\t\tcenY = cenY + y;\n"
+    "\t\tcall readPoint;\n"
+    "\t}\n"
+    "\tif (count == 0) then {\n"
+    "\t\tflag = 1;\n"
+    "\t} else {\n"
+    "\t\tcenX = cenX / count;\n"
+    "\t\tcenY = cenY / count;\n"
+    "\t}\n"
+    "\tnormSq = cenX * cenX + cenY * cenY;\n"
+    "}";
 
 TEST_CASE("PKBExtractEntities_SampleProgram_Correct") {
-  BufferedLexer lexer(source.c_str());
+  BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -84,7 +86,7 @@ TEST_CASE("PKBExtractEntities_SampleProgram_Correct") {
 }
 
 TEST_CASE("PKB_FollowsSampleProgram_Correct") {
-  BufferedLexer lexer(source.c_str());
+  BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -225,7 +227,7 @@ TEST_CASE("PKB_FollowsNested_Correct") {
       "  }"
       "}";
 
-  BufferedLexer lexer(source.c_str());
+  BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -237,7 +239,7 @@ TEST_CASE("PKB_FollowsNested_Correct") {
   follows_ans[4] = {10};
   follows_ans[5] = {6};
   follows_ans[11] = {12};
-  for (auto stmt: pkb.get_all_statements()) {
+  for (auto stmt : pkb.get_all_statements()) {
     std::set<int> *stmt_followers = stmt->get_followers();
     std::vector<int> followers = follows_ans[stmt->get_stmt_no()];
     REQUIRE(stmt_followers->size() == followers.size());
@@ -297,7 +299,7 @@ TEST_CASE("PKB_FollowsNested_Correct") {
 }
 
 TEST_CASE("PKB_ParentSampleProgram_Correct") {
-  BufferedLexer lexer(source.c_str());
+  BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -389,7 +391,7 @@ TEST_CASE("PKB_ParentNested_Correct") {
       "  }"
       "}";
 
-  BufferedLexer lexer(source.c_str());
+  BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -468,7 +470,7 @@ TEST_CASE("PKB_ParentNested_Correct") {
 }
 
 TEST_CASE("PKB_CallsSampleProgram_Correct") {
-  BufferedLexer lexer(source.c_str());
+  BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -529,7 +531,7 @@ TEST_CASE("PKB_CallsSampleProgram_Correct") {
 }
 
 TEST_CASE("PKB_UsesModifiesSampleProgram_Correct") {
-  BufferedLexer lexer(source.c_str());
+  BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -591,7 +593,7 @@ TEST_CASE("PKB_UsesModifiesSampleProgram_Correct") {
   proc_uses_ans["main"] = {"x", "y", "count", "cenX", "cenY", "flag", "normSq"};
   proc_uses_ans["printResults"] = {"flag", "cenX", "cenY", "normSq"};
   proc_uses_ans["computeCentroid"] = {"x", "y", "count", "cenX", "cenY"};
-  for (auto proc: pkb.get_all_procedures()) {
+  for (auto proc : pkb.get_all_procedures()) {
     std::set<std::string> *proc_uses = proc->get_uses();
     std::vector<std::string> uses = proc_uses_ans[proc->get_name()];
     REQUIRE(proc_uses->size() == uses.size());
@@ -695,7 +697,7 @@ TEST_CASE("PKB_UsesModifiesContainerStmt_Correct") {
       "d = e + f;}"
       "}";
 
-  BufferedLexer lexer(source.c_str());
+  BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
@@ -816,7 +818,7 @@ TEST_CASE("PKB_UndefinedProcCalled_ThrowsException") {
       "call undefinedproc;"
       "}";
 
-  BufferedLexer lexer(source.c_str());
+  BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb;
@@ -835,7 +837,7 @@ TEST_CASE("PKB_CyclicProcCalls_ThrowsException") {
       "call proc1;"
       "}";
 
-  BufferedLexer lexer(source.c_str());
+  BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb;

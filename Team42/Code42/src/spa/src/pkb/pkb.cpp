@@ -3,7 +3,6 @@
 #include <vector>
 #include "ast_utils.hpp"
 #include "pkb_exception.h"
-#include <string_utils.h>
 
 PKB::PKB() = default;
 
@@ -571,7 +570,7 @@ void PKB::CallsProcessCallNode(Node *node, std::vector<Node *> &ancestorList) {
       calling_procedure->AddCalls(call_node->get_proc()->get_name());
       auto *called_procedure = proc_table_.get_procedure(call_node->get_proc()->get_name());
       if (called_procedure == nullptr) {
-        throw PKBException(StringFormat("Called an undefined procedure: \"%s\"", call_node->get_proc()->get_name().c_str()));
+        throw PKBException("Called an undefined procedure: " + call_node->get_proc()->get_name());
       }
       called_procedure->AddCallers(procedure_node->get_name());
     }

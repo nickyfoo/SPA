@@ -1,15 +1,14 @@
 #include <vector>
-#include "stmt_table.h"
+
 #include "catch.hpp"
+#include "stmt_table.h"
 
 class StubNode : public Node {
  private:
   NodeType kind_;
 
  public:
-  StubNode(NodeType kind) : Node({rand(), rand()}) {
-    this->kind_ = kind;
-  }
+  StubNode(NodeType kind) : Node({rand(), rand()}) { this->kind_ = kind; }
   NodeType get_kind() { return this->kind_; }
 };
 
@@ -18,12 +17,10 @@ class StubStatementNode : public StatementNode {
   NodeType kind_;
 
  public:
-  StubStatementNode(NodeType kind)
-  : StatementNode(rand(), {rand(), rand()}) {
-    this->kind_ = kind;
-  }
+  StubStatementNode(NodeType kind) : StatementNode(rand(), {rand(), rand()}) { this->kind_ = kind; }
 
   NodeType get_kind() { return this->kind_; }
+  std::string ToString() { return ""; }
 };
 
 TEST_CASE("GetNumStatements_DifferentSizeTables_ReturnsNumStatements", "[statement][table]") {
@@ -55,8 +52,7 @@ TEST_CASE("AddGetAllStatements_DifferentSizeTables_ReturnsVectorStatements", "[s
     std::vector<Statement *> stmts_vec = stmt_table.get_all_statements();
 
     REQUIRE(stmts_vec.size() == 1);
-    REQUIRE(std::any_of(stmts_vec.begin(),
-                        stmts_vec.end(),
+    REQUIRE(std::any_of(stmts_vec.begin(), stmts_vec.end(),
                         [&](Statement *elem) { return elem->get_kind() == NodeType::Assign; }));
   }
 
@@ -71,9 +67,8 @@ TEST_CASE("AddGetAllStatements_DifferentSizeTables_ReturnsVectorStatements", "[s
     std::vector<Statement *> stmts_vec = stmt_table.get_all_statements();
 
     REQUIRE(stmts_vec.size() == stmt_kinds.size());
-    for (auto &stmt_kind: stmt_kinds) {
-      REQUIRE(std::any_of(stmts_vec.begin(),
-                          stmts_vec.end(),
+    for (auto &stmt_kind : stmt_kinds) {
+      REQUIRE(std::any_of(stmts_vec.begin(), stmts_vec.end(),
                           [&](Statement *elem) { return elem->get_kind() == stmt_kind; }));
     }
   }
@@ -87,13 +82,12 @@ TEST_CASE("GetStatements_DifferentSizeTables_ReturnsVectorStatements", "[stateme
     std::vector<Statement *> assign_stmts_vec = stmt_table.get_statements(NodeType::Assign);
 
     REQUIRE(assign_stmts_vec.size() == 1);
-    REQUIRE(std::any_of(assign_stmts_vec.begin(),
-                        assign_stmts_vec.end(),
+    REQUIRE(std::any_of(assign_stmts_vec.begin(), assign_stmts_vec.end(),
                         [&](Statement *elem) { return elem->get_kind() == NodeType::Assign; }));
 
-    std::vector<NodeType> incorrect_stmt_kinds = {NodeType::If, NodeType::While,
-                                        NodeType::Read, NodeType::Print};
-    for (auto &stmt_kind: incorrect_stmt_kinds) {
+    std::vector<NodeType> incorrect_stmt_kinds = {NodeType::If, NodeType::While, NodeType::Read,
+                                                  NodeType::Print};
+    for (auto &stmt_kind : incorrect_stmt_kinds) {
       std::vector<Statement *> incorrect_stmts_vec = stmt_table.get_statements(stmt_kind);
       REQUIRE(incorrect_stmts_vec.empty());
     }
@@ -112,8 +106,7 @@ TEST_CASE("GetStatements_DifferentSizeTables_ReturnsVectorStatements", "[stateme
     for (auto &stmt_kind : stmt_kinds) {
       std::vector<Statement *> stmts_vec = stmt_table.get_statements(stmt_kind);
       REQUIRE(stmts_vec.size() == 1);
-      REQUIRE(std::any_of(stmts_vec.begin(),
-                          stmts_vec.end(),
+      REQUIRE(std::any_of(stmts_vec.begin(), stmts_vec.end(),
                           [&](Statement *elem) { return elem->get_kind() == stmt_kind; }));
     }
   }

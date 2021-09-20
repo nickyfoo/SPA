@@ -8,9 +8,15 @@
 | Toolchain    | cmake   |
 | C++ Standard | C++17   |
 
-### Additional Build Instructions
+### Build Instructions
 
-No additional instructions required.
+#### Mac/Linux
+1. Create a new build folder at `./Team42/Code42/build`. Run `mkdir ./Team42/Code/build` (from project root).
+2. Navigate to the build folder. Run `cd ./Team42/Code42/build`.
+3. Run CMAKE with `cmake ../` (this will build in release mode).
+4. Build all project files with `make -j4`.
+5. The autotester binary will be at `./src/autotester/autotester` (relative to the build folder).
+6. To run the autotester with our acceptance tests, use the command `./src/autotester/autotester ../../Tests42/test1_source.txt ../../Tests42/test1_queries.txt ../tests/out.xml` (you can supply your own arguments to the autotester binary as well).
 
 ## Team Members
 

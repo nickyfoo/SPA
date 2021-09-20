@@ -91,35 +91,35 @@ std::set<std::string> *Statement::get_modifies() {
   return &modifies_;
 }
 
-std::set<int>* Statement::get_next() {
+std::set<int> *Statement::get_next() {
   return &next_;
 }
 
-std::set<int>* Statement::get_next_star() {
+std::set<int> *Statement::get_next_star() {
   return &next_star_;
 }
 
-std::set<int>* Statement::get_prev() {
+std::set<int> *Statement::get_prev() {
   return &prev_;
 }
 // Gets the prev star statements.
-std::set<int>* Statement::get_prev_star() {
+std::set<int> *Statement::get_prev_star() {
   return &prev_star_;
 }
 
-std::set<int>* Statement::get_affects() {
+std::set<int> *Statement::get_affects() {
   return &affects_;
 }
 
-std::set<int>* Statement::get_affects_star() {
+std::set<int> *Statement::get_affects_star() {
   return &affects_star_;
 }
 
-std::set<int>* Statement::get_affected_by() {
+std::set<int> *Statement::get_affected_by() {
   return &affected_by_;
 }
 
-std::set<int>* Statement::get_affected_by_star() {
+std::set<int> *Statement::get_affected_by_star() {
   return &affected_by_star_;
 }
 

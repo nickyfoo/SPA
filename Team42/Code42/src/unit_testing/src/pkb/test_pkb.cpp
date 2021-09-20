@@ -4,7 +4,7 @@
 #include "entities/statement.h"
 #include "parse.h"
 #include "pkb.h"
-/*
+
 std::string source =
     "procedure main {\n"
     "\tflag = 0;\n"
@@ -873,7 +873,7 @@ TEST_CASE("PKB_CFGSample_Correct") {
 
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode* p = ParseProgram(&lexer, &s);
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   std::map<int, std::vector<int>> ans;
   ans[1] = { 2 };
@@ -893,10 +893,10 @@ TEST_CASE("PKB_CFGSample_Correct") {
   ans[17] = { 18 };
   std::map<int, std::set<int>> cfgal = *pkb.get_cfgal();
   REQUIRE(cfgal.size() == ans.size());
-  for (auto& [k, vals] : ans) {
+  for (auto &[k, vals] : ans) {
     REQUIRE(cfgal.find(k) != cfgal.end());
     REQUIRE(cfgal[k].size() == vals.size());
-    for (auto& val : vals) {
+    for (auto &val : vals) {
       REQUIRE(cfgal[k].find(val) != cfgal[k].end());
     }
   }
@@ -925,7 +925,7 @@ TEST_CASE("PKB_CFGNestedIf_Correct") {
 
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode* p = ParseProgram(&lexer, &s);
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   std::map<int, std::vector<int>> ans;
   ans[1] = { 2 };
@@ -938,10 +938,10 @@ TEST_CASE("PKB_CFGNestedIf_Correct") {
   ans[8] = { 9 };
   std::map<int, std::set<int>> cfgal = *pkb.get_cfgal();
   REQUIRE(cfgal.size() == ans.size());
-  for (auto& [k, vals] : ans) {
+  for (auto &[k, vals] : ans) {
     REQUIRE(cfgal.find(k) != cfgal.end());
     REQUIRE(cfgal[k].size() == vals.size());
-    for (auto& val : vals) {
+    for (auto &val : vals) {
       REQUIRE(cfgal[k].find(val) != cfgal[k].end());
     }
   }
@@ -977,7 +977,7 @@ TEST_CASE("PKB_NextSample_Correct") {
 
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode* p = ParseProgram(&lexer, &s);
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   std::map<int, std::vector<int>> next_ans;
   next_ans[1] = { 2 };
@@ -996,10 +996,10 @@ TEST_CASE("PKB_NextSample_Correct") {
   next_ans[16] = { 17 };
   next_ans[17] = { 18 };
   for (auto stmt : pkb.get_all_statements()) {
-    std::set<int>* stmt_next = stmt->get_next();
+    std::set<int> *stmt_next = stmt->get_next();
     std::vector<int> nexts = next_ans[stmt->get_stmt_no()];
     REQUIRE(stmt_next->size() == nexts.size());
-    for (auto& next : nexts) {
+    for (auto &next : nexts) {
       REQUIRE(stmt_next->find(next) != stmt_next->end());
     }
   }
@@ -1021,10 +1021,10 @@ TEST_CASE("PKB_NextSample_Correct") {
   next_star_ans[16] = { 17,18 };
   next_star_ans[17] = { 18 };
   for (auto stmt : pkb.get_all_statements()) {
-    std::set<int>* stmt_next_star = stmt->get_next_star();
+    std::set<int> *stmt_next_star = stmt->get_next_star();
     std::vector<int> nexts_star = next_star_ans[stmt->get_stmt_no()];
     REQUIRE(stmt_next_star->size() == nexts_star.size());
-    for (auto& next_star : nexts_star) {
+    for (auto &next_star : nexts_star) {
       REQUIRE(stmt_next_star->find(next_star) != stmt_next_star->end());
     }
   }
@@ -1046,10 +1046,10 @@ TEST_CASE("PKB_NextSample_Correct") {
   prev_ans[17] = { 16 };
   prev_ans[18] = { 17 };
   for (auto stmt : pkb.get_all_statements()) {
-    std::set<int>* stmt_prev = stmt->get_prev();
+    std::set<int> *stmt_prev = stmt->get_prev();
     std::vector<int> prevs = prev_ans[stmt->get_stmt_no()];
     REQUIRE(stmt_prev->size() == prevs.size());
-    for (auto& prev : prevs) {
+    for (auto &prev : prevs) {
       REQUIRE(stmt_prev->find(prev) != stmt_prev->end());
     }
   }
@@ -1072,10 +1072,10 @@ TEST_CASE("PKB_NextSample_Correct") {
   prev_star_ans[18] = { 16,17 };
 
   for (auto stmt : pkb.get_all_statements()) {
-    std::set<int>* stmt_prev_star = stmt->get_prev_star();
+    std::set<int> *stmt_prev_star = stmt->get_prev_star();
     std::vector<int> prevs_star = prev_star_ans[stmt->get_stmt_no()];
     REQUIRE(stmt_prev_star->size() == prevs_star.size());
-    for (auto& prev_star : prevs_star) {
+    for (auto &prev_star : prevs_star) {
       REQUIRE(stmt_prev_star->find(prev_star) != stmt_prev_star->end());
     }
   }
@@ -1103,7 +1103,7 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
 
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode* p = ParseProgram(&lexer, &s);
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   std::map<int, std::vector<int>> next_ans;
   next_ans[1] = { 2 };
@@ -1115,10 +1115,10 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
   next_ans[7] = { 9 };
   next_ans[8] = { 9 };
   for (auto stmt : pkb.get_all_statements()) {
-    std::set<int>* stmt_next = stmt->get_next();
+    std::set<int> *stmt_next = stmt->get_next();
     std::vector<int> nexts = next_ans[stmt->get_stmt_no()];
     REQUIRE(stmt_next->size() == nexts.size());
-    for (auto& next : nexts) {
+    for (auto &next : nexts) {
       REQUIRE(stmt_next->find(next) != stmt_next->end());
     }
   }
@@ -1133,10 +1133,10 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
   next_star_ans[7] = { 9 };
   next_star_ans[8] = { 9 };
   for (auto stmt : pkb.get_all_statements()) {
-    std::set<int>* stmt_next_star = stmt->get_next_star();
+    std::set<int> *stmt_next_star = stmt->get_next_star();
     std::vector<int> nexts_star = next_star_ans[stmt->get_stmt_no()];
     REQUIRE(stmt_next_star->size() == nexts_star.size());
-    for (auto& next_star : nexts_star) {
+    for (auto &next_star : nexts_star) {
       REQUIRE(stmt_next_star->find(next_star) != stmt_next_star->end());
     }
   }
@@ -1151,10 +1151,10 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
   prev_ans[8] = { 6 };
   prev_ans[9] = { 4,5,7,8 };
   for (auto stmt : pkb.get_all_statements()) {
-    std::set<int>* stmt_prev = stmt->get_prev();
+    std::set<int> *stmt_prev = stmt->get_prev();
     std::vector<int> prevs = prev_ans[stmt->get_stmt_no()];
     REQUIRE(stmt_prev->size() == prevs.size());
-    for (auto& prev : prevs) {
+    for (auto &prev : prevs) {
       REQUIRE(stmt_prev->find(prev) != stmt_prev->end());
     }
   }
@@ -1170,15 +1170,14 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
   prev_star_ans[9] = { 1,2,3,4,5,6,7,8 };
 
   for (auto stmt : pkb.get_all_statements()) {
-    std::set<int>* stmt_prev_star = stmt->get_prev_star();
+    std::set<int> *stmt_prev_star = stmt->get_prev_star();
     std::vector<int> prevs_star = prev_star_ans[stmt->get_stmt_no()];
     REQUIRE(stmt_prev_star->size() == prevs_star.size());
-    for (auto& prev_star : prevs_star) {
+    for (auto &prev_star : prevs_star) {
       REQUIRE(stmt_prev_star->find(prev_star) != stmt_prev_star->end());
     }
   }
 }
-*/
 
 TEST_CASE("PKB_AffectsSample_Correct") {
   std::string source =
@@ -1209,7 +1208,7 @@ TEST_CASE("PKB_AffectsSample_Correct") {
 
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode* p = ParseProgram(&lexer, &s);
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   std::map<int, std::vector<int>> affects_ans;
   affects_ans[4] = { 7,11,13,15 };
@@ -1222,10 +1221,10 @@ TEST_CASE("PKB_AffectsSample_Correct") {
   affects_ans[14] = { 15 };
   affects_ans[16] = { 17 };
   for (auto stmt : pkb.get_all_statements()) {
-    std::set<int>* stmt_affects = stmt->get_affects();
+    std::set<int> *stmt_affects = stmt->get_affects();
     std::vector<int> affects = affects_ans[stmt->get_stmt_no()];
     REQUIRE(stmt_affects->size() == affects.size());
-    for (auto& affect : affects) {
+    for (auto &affect : affects) {
       REQUIRE(stmt_affects->find(affect) != stmt_affects->end());
     }
   }
@@ -1241,10 +1240,10 @@ TEST_CASE("PKB_AffectsSample_Correct") {
   affects_star_ans[14] = { 15 };
   affects_star_ans[16] = { 17 };
   for (auto stmt : pkb.get_all_statements()) {
-    std::set<int>* stmt_affects_star = stmt->get_affects_star();
+    std::set<int> *stmt_affects_star = stmt->get_affects_star();
     std::vector<int> affects_star = affects_star_ans[stmt->get_stmt_no()];
     REQUIRE(stmt_affects_star->size() == affects_star.size());
-    for (auto& affect_star : affects_star) {
+    for (auto &affect_star : affects_star) {
       REQUIRE(stmt_affects_star->find(affect_star) != stmt_affects_star->end());
     }
   }
@@ -1258,10 +1257,10 @@ TEST_CASE("PKB_AffectsSample_Correct") {
   affected_by_ans[15] = { 4,7,11,13,14 };
   affected_by_ans[17] = { 16 };
   for (auto stmt : pkb.get_all_statements()) {
-    std::set<int>* stmt_affected_by = stmt->get_affected_by();
+    std::set<int> *stmt_affected_by = stmt->get_affected_by();
     std::vector<int> affected_bys = affected_by_ans[stmt->get_stmt_no()];
     REQUIRE(stmt_affected_by->size() == affected_bys.size());
-    for (auto& affected_by : affected_bys) {
+    for (auto &affected_by : affected_bys) {
       REQUIRE(stmt_affected_by->find(affected_by) != stmt_affected_by->end());
     }
   }
@@ -1275,10 +1274,10 @@ TEST_CASE("PKB_AffectsSample_Correct") {
   affected_by_star_ans[15] = { 4,5,7,9,11,12,13,14 };
   affected_by_star_ans[17] = { 16 };
   for (auto stmt : pkb.get_all_statements()) {
-    std::set<int>* stmt_affected_by_star = stmt->get_affected_by_star();
+    std::set<int> *stmt_affected_by_star = stmt->get_affected_by_star();
     std::vector<int> affected_bys_star = affected_by_star_ans[stmt->get_stmt_no()];
     REQUIRE(stmt_affected_by_star->size() == affected_bys_star.size());
-    for (auto& affected_by_star : affected_bys_star) {
+    for (auto &affected_by_star : affected_bys_star) {
       REQUIRE(stmt_affected_by_star->find(affected_by_star) != stmt_affected_by_star->end());
     }
   }

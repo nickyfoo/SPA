@@ -118,13 +118,13 @@ class PKB {
   void CallsProcessCallNode(Node *node, std::vector<Node *> &ancestorList);
 
   // Recursively gets the last stmts of a statement.
-  std::set<int> PKB::LastStmts(StatementNode* node);
+  std::set<int> PKB::LastStmts(StatementNode *node);
   // Process and store the AST procedure node into the CFG.
-  void CFGProcessProcedureNode(Node* node);
+  void CFGProcessProcedureNode(Node *node);
   // Process and store the AST if node into the CFG.
-  void CFGProcessIfNode(Node* node);
+  void CFGProcessIfNode(Node *node);
   // Process and store the AST while node into the CFG.
-  void CFGProcessWhileNode(Node* node);
+  void CFGProcessWhileNode(Node *node);
   
   // Process and store Affects relationships for the stmt_no.
   void ProcessAffectsForStatement(int stmt_no);
@@ -141,7 +141,7 @@ class PKB {
   ConstTable const_table_;
   // Adjacency List of CFG for Next and Affects.
   std::map<int, std::set<int>> CFGAL_;
-
+  
   // Infinite value.
   inline static const int kInf = 1e9;
 };

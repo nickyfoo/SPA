@@ -44,21 +44,21 @@ class Statement : public Entity {
   // Gets the variables which this statement modifies.
   std::set<std::string> *get_modifies();
   // Gets the next statements.
-  std::set<int>* get_next();
+  std::set<int> *get_next();
   // Gets the next star statements.
-  std::set<int>* get_next_star();
+  std::set<int> *get_next_star();
   // Gets the prev statements.
-  std::set<int>* get_prev();
+  std::set<int> *get_prev();
   // Gets the prev star statements.
-  std::set<int>* get_prev_star();
+  std::set<int> *get_prev_star();
   // Gets the statements this affects.
-  std::set<int>* get_affects();
+  std::set<int> *get_affects();
   // Gets the statements this affects star.
-  std::set<int>* get_affects_star();
+  std::set<int> *get_affects_star();
   // Gets the statements affected by this.
-  std::set<int>* get_affected_by();
+  std::set<int> *get_affected_by();
   // Gets the statements affected star by this.
-  std::set<int>* get_affected_by_star();
+  std::set<int> *get_affected_by_star();
 
   // Sets the postfix expression string of this statement.
   void set_expr_string(std::string expr_string);

@@ -141,6 +141,14 @@ void Statement::AddModifies(std::string var_name) {
   modifies_.insert(var_name);
 }
 
+void Statement::AddNext(int line_no) {
+  next_.insert(line_no);
+}
+
+void Statement::AddPrev(int line_no) {
+  prev_.insert(line_no);
+}
+
 void Statement::FollowsInfo() {
   std::cout << "Statement " << stmt_no_ << " is followed by:\n";
   std::cout << "Followers: ";

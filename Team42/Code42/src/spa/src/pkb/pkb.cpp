@@ -145,6 +145,11 @@ std::vector<Constant *> PKB::get_all_constants() {
   return const_table_.get_all_constants();
 }
 
+
+std::map<int, std::set<int>> *PKB::get_cfgal() {
+  return &CFGAL_;
+}
+
 bool PKB::TestAssignmentPattern(Statement *statement, std::string pattern, bool is_partial_match) {
   return PatternManager::TestAssignmentPattern(statement, pattern, is_partial_match);
 }
@@ -161,12 +166,23 @@ void PKB::PrintVariables() {
   var_table_.PrintVariableDetails();
 }
 
+void PKB::PrintCFGAL() {
+  for (auto& [u, al] : CFGAL_) {
+    std::cout << u << "->";
+    for (auto& v : al) {
+      std::cout << v << ' ';
+    }
+    std::cout << '\n';
+  }
+}
+
 void PKB::Initialise() {
   ExtractEntities();
   ExtractFollows();
   ExtractParent();
   ExtractCalls();
   ExtractUsesModifies();
+  ExtractCFG();
 }
 
 void PKB::ExtractEntities() {
@@ -320,6 +336,28 @@ void PKB::ExtractCalls() {
 
   proc_table_.ProcessCalls();
   proc_table_.ProcessCallsStar();
+}
+
+void PKB::ExtractCFG() {
+  auto extract_cfg_for_if_node = [this](Node* node) {
+    PKB::CFGProcessIfNode(node);
+  };
+  auto extract_cfg_for_while_node = [this](Node* node) {
+    PKB::CFGProcessWhileNode(node);
+  };
+  auto extract_cfg_for_procedure_node = [this](Node* node) {
+    PKB::CFGProcessProcedureNode(node);
+  };
+
+
+  std::map<NodeType, std::vector<std::function<void(Node*)>>> functions = {
+      {NodeType::If, {extract_cfg_for_if_node}},
+      {NodeType::While, {extract_cfg_for_while_node}},
+      {NodeType::Procedure, {extract_cfg_for_procedure_node}},
+  };
+
+  Visit(root_, functions);
+
 }
 
 void PKB::UpdateVarTableWithProcs() {
@@ -575,4 +613,89 @@ void PKB::CallsProcessCallNode(Node *node, std::vector<Node *> &ancestorList) {
       called_procedure->AddCallers(procedure_node->get_name());
     }
   }
+}
+
+std::set<int> PKB::LastStmts(StatementNode* node) {
+  std::set<int> ans;
+  if(node->get_kind() == NodeType::If) {
+    auto* if_node = dynamic_cast<IfNode*>(node);
+    // Sort stmt list in ascending order,
+    std::vector<StatementNode*> then_stmt_lst = if_node->get_then_stmt_lst();
+    std::sort(then_stmt_lst.begin(), then_stmt_lst.end(),
+      [](StatementNode* a, StatementNode* b) {
+        return a->get_stmt_no() > b->get_stmt_no();
+      });
+    for (auto &stmt : (LastStmts(*(then_stmt_lst.begin())))) {
+      ans.insert(stmt);
+    }
+
+    std::vector<StatementNode*> else_stmt_lst = if_node->get_else_stmt_lst();
+    std::sort(else_stmt_lst.begin(), else_stmt_lst.end(),
+      [](StatementNode* a, StatementNode* b) {
+        return a->get_stmt_no() > b->get_stmt_no();
+      });
+    for (auto& stmt : (LastStmts(*(else_stmt_lst.begin())))) {
+      ans.insert(stmt);
+    }
+  } else {
+    ans.insert(node->get_stmt_no());
+  }
+  return ans;
+}
+
+void PKB::CFGProcessProcedureNode(Node* node) {
+  auto* procedure_node = dynamic_cast<ProcedureNode*>(node);
+  std::vector<StatementNode*> stmt_lst = procedure_node->get_stmt_lst();
+  std::sort(stmt_lst.begin(), stmt_lst.end(),
+    [](StatementNode* a, StatementNode* b) {
+      return a->get_stmt_no() < b->get_stmt_no();
+    });
+  for (int i = 1; i < stmt_lst.size(); i++) {
+    for (auto& last_stmt : LastStmts(stmt_lst[i - 1])) {
+      CFGAL_[last_stmt].insert(stmt_lst[i]->get_stmt_no());
+    }
+  }
+}
+
+void PKB::CFGProcessIfNode(Node* node) {
+  auto* if_node = dynamic_cast<IfNode*>(node);
+  std::vector<StatementNode*> then_stmt_lst = if_node->get_then_stmt_lst();
+  std::sort(then_stmt_lst.begin(), then_stmt_lst.end(),
+    [](StatementNode* a, StatementNode* b) {
+      return a->get_stmt_no() < b->get_stmt_no();
+    });
+  if(then_stmt_lst.size())  CFGAL_[if_node->get_stmt_no()].insert(then_stmt_lst[0]->get_stmt_no());
+  for (int i = 1; i < then_stmt_lst.size(); i++) {
+    for (auto& last_stmt : LastStmts(then_stmt_lst[i - 1])) {
+      CFGAL_[last_stmt].insert(then_stmt_lst[i]->get_stmt_no());
+    }
+  }
+
+  std::vector<StatementNode*> else_stmt_lst = if_node->get_else_stmt_lst();
+  std::sort(else_stmt_lst.begin(), else_stmt_lst.end(),
+    [](StatementNode* a, StatementNode* b) {
+      return a->get_stmt_no() < b->get_stmt_no();
+    });
+  if(else_stmt_lst.size())  CFGAL_[if_node->get_stmt_no()].insert(else_stmt_lst[0]->get_stmt_no());
+  for (int i = 1; i < else_stmt_lst.size(); i++) {
+    for (auto& last_stmt : LastStmts(else_stmt_lst[i - 1])) {
+      CFGAL_[last_stmt].insert(else_stmt_lst[i]->get_stmt_no());
+    }
+  }
+}
+
+void PKB::CFGProcessWhileNode(Node* node) {
+  auto* while_node = dynamic_cast<WhileNode*>(node);
+  std::vector<StatementNode*> stmt_lst = while_node->get_stmt_list();
+  std::sort(stmt_lst.begin(), stmt_lst.end(),
+    [](StatementNode* a, StatementNode* b) {
+      return a->get_stmt_no() < b->get_stmt_no();
+    });
+  if(stmt_lst.size())  CFGAL_[while_node->get_stmt_no()].insert(stmt_lst[0]->get_stmt_no());
+  for (int i = 1; i < stmt_lst.size(); i++) {
+    for (auto& last_stmt : LastStmts(stmt_lst[i - 1])) {
+      CFGAL_[last_stmt].insert(stmt_lst[i]->get_stmt_no());
+    }
+  }
+  CFGAL_[stmt_lst[stmt_lst.size() - 1]->get_stmt_no()].insert(while_node->get_stmt_no());
 }

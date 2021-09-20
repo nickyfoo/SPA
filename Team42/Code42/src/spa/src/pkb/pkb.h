@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 #include "tables/proc_table.h"
 #include "tables/stmt_table.h"
 #include "tables/var_table.h"
@@ -52,6 +53,8 @@ class PKB {
   // Gets all constants in the program.
   std::vector<Constant *> get_all_constants();
 
+  std::map<int, std::set<int>> *get_cfgal();
+
   // Tests the RHS of assignment statement against the given pattern.
   // Returns true if pattern matches.
   static bool TestAssignmentPattern(Statement *statement, std::string pattern, bool is_partial_match);
@@ -62,6 +65,8 @@ class PKB {
   void PrintProcedures();
   // Prints information of variables in the variable table.
   void PrintVariables();
+  // Prints CFGAL.
+  void PrintCFGAL();
 
  private:
   // Populates the tables with entities and relationships from AST.
@@ -105,6 +110,17 @@ class PKB {
   // Process and store Calls relationships for the AST call node.
   void CallsProcessCallNode(Node *node, std::vector<Node *> &ancestorList);
 
+  // Recursively gets the last stmts of a statement.
+  std::set<int> PKB::LastStmts(StatementNode* node);
+  // Stores adjacency list into CFGAL_
+  void ExtractCFG();
+  // Process and store the AST procedure node into the CFG.
+  void CFGProcessProcedureNode(Node* node);
+  // Process and store the AST if node into the CFG.
+  void CFGProcessIfNode(Node* node);
+  // Process and store the AST while node into the CFG.
+  void CFGProcessWhileNode(Node* node);
+
   // Root AST node of the program.
   Node *root_;
   // Table of procedures in the program.
@@ -115,4 +131,6 @@ class PKB {
   VarTable var_table_;
   // Table of constants in the program.
   ConstTable const_table_;
+  // Adjacency List of CFG for Next and Affects.
+  std::map<int, std::set<int>> CFGAL_;
 };

@@ -69,6 +69,10 @@ class Statement : public Entity {
   void AddUses(std::string var_name);
   // Adds a variable that this statement modifies.
   void AddModifies(std::string var_name);
+  // Adds a statement that is next.
+  void AddNext(int line_no);
+  // Adds a statment that is prev.
+  void AddPrev(int line_no);
 
   // Prints the follows information for this statement.
   void FollowsInfo();
@@ -102,4 +106,9 @@ class Statement : public Entity {
   std::set<std::string> uses_;
   // for var in modifies_, Modifies(this, var) is true.
   std::set<std::string> modifies_;
+
+  // for stmt in next_, Next(this, stmt) is true.
+  std::set<int> next_;
+  // for stmt in prev_, Next(stmt, this) is true.
+  std::set<int> prev_;
 };

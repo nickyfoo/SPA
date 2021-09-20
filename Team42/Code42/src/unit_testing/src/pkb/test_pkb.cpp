@@ -843,3 +843,106 @@ TEST_CASE("PKB_CyclicProcCalls_ThrowsException") {
   PKB pkb;
   REQUIRE_THROWS_AS(pkb = PKB(p), PKBException);
 }
+
+TEST_CASE("PKB_CFGSample_Correct") {
+  std::string source =
+    "procedure First {"
+    "read x;"
+    "read y;"
+    "call Second; }"
+    "procedure Second {"
+    "x = 0;"
+    "i = 5;"
+    "while (i != 0) {"
+    "x = x + 2 * y;"
+    "call Third;"
+    "i = i - 1; "
+    "}"
+    "if (x == 1) then {"
+    "x = x + 1; }"
+    "else {"
+    "z = 1;"
+    "}"
+    "z = z + x + i;"
+    "y = z + 2;"
+    "x = x * y + z; }"
+    "procedure Third {"
+    "z = 5;"
+    "v = z;"
+    "print v; }";
+
+  BufferedLexer lexer(source);
+  ParseState s{};
+  ProgramNode* p = ParseProgram(&lexer, &s);
+  PKB pkb(p);
+  std::map<int, std::vector<int>> ans;
+  ans[1] = { 2 };
+  ans[2] = { 3 };
+  ans[4] = { 5 };
+  ans[5] = { 6 };
+  ans[6] = { 7,10 };
+  ans[7] = { 8 };
+  ans[8] = { 9 };
+  ans[9] = { 6 };
+  ans[10] = { 11,12 };
+  ans[11] = { 13 };
+  ans[12] = { 13 };
+  ans[13] = { 14 };
+  ans[14] = { 15 };
+  ans[16] = { 17 };
+  ans[17] = { 18 };
+  std::map<int, std::set<int>> cfgal = *pkb.get_cfgal();
+  REQUIRE(cfgal.size() == ans.size());
+  for (auto& [k, vals] : ans) {
+    REQUIRE(cfgal.find(k) != cfgal.end());
+    REQUIRE(cfgal[k].size() == vals.size());
+    for (auto& val : vals) {
+      REQUIRE(cfgal[k].find(val) != cfgal[k].end());
+    }
+  }
+}
+
+
+TEST_CASE("PKB_CFGNestedIf_Correct") {
+  std::string source =
+    "procedure main {"
+    "zero = 1;"
+    "if(a==1) then {"
+    "if(b==1) then {"
+    "first = 1;"
+    "}else{"
+    "second = 1;"
+    "}"
+    "} else {"
+    "if(c==1) then {"
+    "third = 1;"
+    "} else {"
+    "fourth = 1;"
+    "}"
+    "}"
+    "fifth = 1;"
+    "}";
+
+  BufferedLexer lexer(source);
+  ParseState s{};
+  ProgramNode* p = ParseProgram(&lexer, &s);
+  PKB pkb(p);
+  std::map<int, std::vector<int>> ans;
+  ans[1] = { 2 };
+  ans[2] = { 3,6 };
+  ans[3] = { 4,5 };
+  ans[4] = { 9 };
+  ans[5] = { 9 };
+  ans[6] = { 7,8 };
+  ans[7] = { 9 };
+  ans[8] = { 9 };
+  std::map<int, std::set<int>> cfgal = *pkb.get_cfgal();
+  REQUIRE(cfgal.size() == ans.size());
+  for (auto& [k, vals] : ans) {
+    REQUIRE(cfgal.find(k) != cfgal.end());
+    REQUIRE(cfgal[k].size() == vals.size());
+    for (auto& val : vals) {
+      REQUIRE(cfgal[k].find(val) != cfgal[k].end());
+    }
+  }
+}

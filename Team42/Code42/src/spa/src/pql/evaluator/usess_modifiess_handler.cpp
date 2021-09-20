@@ -46,7 +46,6 @@ void UsesSModifiesSHandler::set_function_pointers(
 void UsesSModifiesSHandler::Evaluate() {
   StmtRef left_ent = relationship_->get_left_ref()->get_stmt_ref();
   EntRef right_ent = relationship_->get_right_ref()->get_ent_ref();
-
   // Going through 6 different cases for UsesS
   if (left_ent.get_type() == StmtRefType::Synonym &&
       right_ent.get_type() == EntRefType::Synonym) {  // Uses(s, v)
@@ -57,7 +56,6 @@ void UsesSModifiesSHandler::Evaluate() {
     std::vector<Entity *> *right_entity_vec;
     right_entity_vec = &synonym_to_entity_result_->at(right_synonym);
     stmt_var_pair_vector_ = new std::vector<std::pair<int, std::string>>();
-
     left_entity_vec->erase(std::remove_if(left_entity_vec->begin(),
                                           left_entity_vec->end(),
                                           [this, &right_entity_vec](Entity *entity) {
@@ -90,7 +88,6 @@ void UsesSModifiesSHandler::Evaluate() {
                                                 !has_matching_follower;
                                           }),
                            left_entity_vec->end());
-
     right_entity_vec->erase(std::remove_if(right_entity_vec->begin(),
                                            right_entity_vec->end(),
                                            [this, &left_entity_vec](Entity *entity) {
@@ -149,9 +146,6 @@ void UsesSModifiesSHandler::Evaluate() {
     std::string right_synonym = right_ent.get_synonym();
     std::vector<Entity *> *right_entity_vec;
     right_entity_vec = &synonym_to_entity_result_->at(right_synonym);
-
-    Statement *stmt = pkb_->get_statement(left_arg);
-    stmt->ModifiesInfo();
 
     for (int i = 0; i < right_entity_vec->size(); i++) {
       auto *variable = dynamic_cast<Variable *>(right_entity_vec->at(i));

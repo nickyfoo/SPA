@@ -270,3 +270,123 @@ TEST_CASE("Pattern_AssignStmtAndPartialPattern_ReturnsEmpty") {
     REQUIRE(ret->at(i) == expected.at(i));
   }
 }
+
+TEST_CASE("Pattern_AssignVariableNameAndWildCard_ReturnsExpected") {
+
+  std::string ss = "assign a;\n"
+                   "Select a pattern a('cenX', _)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(s);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"11", "16", "21"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < expected.size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("Pattern_AssignVariableNameAndExactMatch_ReturnsExpected") {
+
+  std::string ss = "assign a;\n"
+                   "Select a pattern a('cenX', '0')";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(s);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"11"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < expected.size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("Pattern_AssignVariableNameAndPartialMatch_ReturnsExpected") {
+
+  std::string ss = "assign a;\n"
+                   "Select a pattern a('cenX', _'cenX'_)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(s);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"16", "21"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < expected.size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("Pattern_AssignVariableNameAndPartialMatchBad_ReturnsExpected") {
+
+  std::string ss = "assign a;\n"
+                   "Select a pattern a(_, _'cenX cenY'_)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(s);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < expected.size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("Pattern_AssignVariableNameAndExactMatchBad_ReturnsExpected") {
+
+  std::string ss = "assign a;\n"
+                   "Select a pattern a(_, _'count 1 +'_)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(s);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < expected.size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}

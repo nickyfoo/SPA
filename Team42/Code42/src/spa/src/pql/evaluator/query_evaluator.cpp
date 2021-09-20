@@ -32,13 +32,14 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
   if (synonym_to_entity_dec_ == nullptr) {
     return new std::vector<std::string>{};
   }
+
   // Initialising an unordered map mapping synonym_ to Entity objects.
   auto *synonym_to_entity_result =
       new std::unordered_map<std::string, std::vector<Entity *>>();
   for (auto &pair : *synonym_to_entity_dec_) {
     EntityType type = pair.second->get_type();
     std::vector<Entity *> entities;
-    switch (type) {  // TODO: Combine EntityType enum with AST's enum
+    switch (type) {
       case EntityType::Stmt: {
         std::vector<Statement *> entities_stmt;
         entities_stmt = pkb_->get_all_statements();
@@ -134,7 +135,6 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
     }
     synonym_to_entity_result->insert({pair.first, entities});
   }
-
   RelationshipQueryManager *relationship_query_manager;
   PatternQueryManager *pattern_query_manager;
   if (!relationships_->empty() &&
@@ -144,6 +144,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
                                                               entities_to_return_,
                                                               pkb_,
                                                               has_two_repeated_synonyms_);
+
     relationship_query_manager->EvaluateRelationships();
   }
   // Check if any entity vector is empty
@@ -159,6 +160,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
                                                     entities_to_return_,
                                                     pkb_,
                                                     has_two_repeated_synonyms_);
+
     pattern_query_manager->EvaluatePatterns();
   }
   // Check if any entity vector is empty
@@ -218,6 +220,7 @@ bool QueryEvaluator::IsEmpty(std::unordered_map<std::string,
       return true;
     }
   }
+  if (synonym_to_entity_result->empty()) return true;
   return false;
 }
 

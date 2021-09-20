@@ -114,8 +114,6 @@ TEST_CASE("PQL_PatternAndFollowsWithExtraWords_ReturnsEmpty") {
   }
 }
 
-// HERE ONWARDS
-
 TEST_CASE("PQL_FollowsAndPatternUnrelated_ReturnsExpected") {
 
   std::string ss = "assign a; variable v; while w;\n"
@@ -353,7 +351,26 @@ TEST_CASE("PQL_UsesPAndPatternOneCommonSynonym_ReturnsExpected") {
 
   REQUIRE(ret->size() == expected.size());
   for (int i = 0; i < expected.size(); i++) {
-    std::cout << ret->at(i);
     REQUIRE(std::find(expected.begin(), expected.end(), ret->at(i)) != expected.end());
+  }
+}
+
+TEST_CASE("PQL_InvalidUsesAndPattern_ReturnsExpected") {
+  std::string ss = "read r,r1; print pn; while w; if ifs; assign a; variable v; procedure p; stmt s; constant c;\n"
+                   "Select a such that Uses(c,v) pattern a(v, _)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  // Parse source
+  BufferedLexer lexer(s);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+  std::vector<std::string> expected = {};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < expected.size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
   }
 }

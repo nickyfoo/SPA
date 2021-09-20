@@ -61,11 +61,17 @@ void PatternQueryManager::ManagePatterns(PatternClause *pattern) {
           }
         } else {
           // for each variable object
+          bool found_variable = false;
           for (int j = 0; j < variable_vec->size(); j++) {
             auto *variable = dynamic_cast<Variable *>(variable_vec->at(j));
             if (assign->get_modifies()->count(variable->get_name())) {
+              found_variable = true;
               var_set.insert(variable_vec->at(j));
             }
+          }
+          if (!found_variable) {
+            entity_vec->erase(entity_vec->begin() + i);
+            i--;
           }
         }
       } else if (left_ent->get_type() == EntRefType::Argument) {
@@ -85,6 +91,9 @@ void PatternQueryManager::ManagePatterns(PatternClause *pattern) {
         k--;
       }
     }
+  } else if (var_set.empty() && left_ent->get_type() == EntRefType::Synonym
+  && !has_two_repeated_synonyms_) {
+    synonym_to_entity_result_->clear();
   }
 }
 

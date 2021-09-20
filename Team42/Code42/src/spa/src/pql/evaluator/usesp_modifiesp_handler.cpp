@@ -103,7 +103,7 @@ void UsesPModifiesPHandler::Evaluate() {
                                              // remove that variable if it doesn't
                                              for (std::string followee : *followee_set) {
                                                for (Entity *ent : *left_entity_vec) {
-                                                 std::string left_name= dynamic_cast<Procedure *>(ent)->get_name();
+                                                 std::string left_name = dynamic_cast<Procedure *>(ent)->get_name();
                                                  if (left_name == followee) {
                                                    has_matching_followee = true;
                                                    break;

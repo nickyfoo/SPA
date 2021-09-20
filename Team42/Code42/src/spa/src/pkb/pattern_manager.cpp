@@ -51,7 +51,8 @@ std::string PatternManager::GetPostfixExpr(std::string infix_expr) {
         case '+':
         case '-':
         case '*':
-        case '/': {
+        case '/':
+        case '%': {
           if (ops.empty() || ops.top() == '(') {
             ops.push(*it);
             break;

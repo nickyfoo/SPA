@@ -13,6 +13,7 @@
 class QueryPreprocessor {
  public:
   explicit QueryPreprocessor(std::string input);
+  ~QueryPreprocessor();
   PQLQuery *get_pql_query();
  private:
   std::unordered_map<std::string, EntityDeclaration> syn_to_entity_;

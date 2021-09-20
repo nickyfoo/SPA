@@ -101,9 +101,9 @@ std::string SuchThatClause::get_type_str() {
 }
 
 SuchThatRef *SuchThatClause::get_left_ref() {
-    return this->left_ref_;
+  return this->left_ref_;
 }
 
 SuchThatRef *SuchThatClause::get_right_ref() {
-    return this->right_ref_;
+  return this->right_ref_;
 }

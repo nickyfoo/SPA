@@ -53,22 +53,58 @@ void UsesPModifiesPHandler::Evaluate() {
     left_entity_vec = &synonym_to_entity_result_->at(left_synonym);
     std::vector<Entity *> *right_entity_vec;
     right_entity_vec = &synonym_to_entity_result_->at(right_synonym);
-    for (int i = 0; i < left_entity_vec->size(); i++) {
-      auto *proc = dynamic_cast<Procedure *>(left_entity_vec->at(i));
-      if (ProcedureForwarder(get_normal_, proc)->empty()) {
-        // Remove procedures that do not have something it uses.
-        left_entity_vec->erase(left_entity_vec->begin() + i);
-        i--;
-      }
-    }
-    for (int j = 0; j < right_entity_vec->size(); j++) {
-      auto *variable = dynamic_cast<Variable *>(right_entity_vec->at(j));
-      if (VariableForwarder(get_reverse_, variable)->empty()) {
-        // Remove variables that are not used
-        right_entity_vec->erase(right_entity_vec->begin() + j);
-        j--;
-      }
-    }
+
+    left_entity_vec->erase(std::remove_if(left_entity_vec->begin(),
+                                          left_entity_vec->end(),
+                                          [this, &right_entity_vec](Entity *entity) {
+                                            auto *proc = dynamic_cast<Procedure *>(entity);
+                                            bool has_matching_follower = false;
+                                            std::set<std::string> *follower_set =
+                                                ProcedureForwarder(get_normal_, proc);
+                                            // Check if followers contain something
+                                            // from right arg vector
+                                            // remove that procedure if it doesn't
+                                            for (std::string follower : *follower_set) {
+                                              for (Entity *ent : *right_entity_vec) {
+                                                std::string right_name =
+                                                    dynamic_cast<Variable *>(ent)->get_name();
+                                                if (right_name == follower) {
+                                                  has_matching_follower = true;
+                                                  break;
+                                                }
+                                              }
+                                            }
+                                            return proc == nullptr ||
+                                                follower_set->empty() ||
+                                                !has_matching_follower;
+                                          }),
+                           left_entity_vec->end());
+
+    right_entity_vec->erase(std::remove_if(right_entity_vec->begin(),
+                                           right_entity_vec->end(),
+                                           [this, &left_entity_vec](Entity *entity) {
+                                             auto *variable = dynamic_cast<Variable *>(entity);
+                                             bool has_matching_followee = false;
+                                             std::set<std::string> *followee_set =
+                                                 VariableForwarder(get_reverse_, variable);
+                                             // Check if followees contain something
+                                             // from left arg vector
+                                             // remove that variable if it doesn't
+                                             for (std::string followee : *followee_set) {
+                                               for (Entity *ent : *left_entity_vec) {
+                                                 std::string left_name =
+                                                     dynamic_cast<Procedure *>(ent)->get_name();
+                                                 if (left_name == followee) {
+                                                   has_matching_followee = true;
+                                                   break;
+                                                 }
+                                               }
+                                             }
+                                             return variable == nullptr ||
+                                                 followee_set->empty() ||
+                                                 !has_matching_followee;
+                                           }),
+                            right_entity_vec->end());
   } else if (left_ent.get_type() == EntRefType::Synonym &&
       right_ent.get_type() == EntRefType::WildCard) {  // UsesP(p, _)
     std::string left_synonym = left_ent.get_synonym();
@@ -77,7 +113,7 @@ void UsesPModifiesPHandler::Evaluate() {
     for (int i = 0; i < left_entity_vec->size(); i++) {
       auto *proc = dynamic_cast<Procedure *>(left_entity_vec->at(i));
       // Remove each procedure that doesnt use anything.
-      if (ProcedureForwarder(get_normal_, proc)->empty()) {
+      if (proc == nullptr || ProcedureForwarder(get_normal_, proc)->empty()) {
         left_entity_vec->erase(left_entity_vec->begin() + i);
         i--;
       }
@@ -89,9 +125,9 @@ void UsesPModifiesPHandler::Evaluate() {
     std::vector<Entity *> *left_entity_vec;
     left_entity_vec = &synonym_to_entity_result_->at(left_synonym);
     for (int i = 0; i < left_entity_vec->size(); i++) {
-      auto *stmt = dynamic_cast<Procedure *>(left_entity_vec->at(i));
+      auto *proc = dynamic_cast<Procedure *>(left_entity_vec->at(i));
       // Remove each procedure that doesnt have right arg in its uses
-      if (!ProcedureForwarder(get_normal_, stmt)->count(right_arg)) {
+      if (proc == nullptr || !ProcedureForwarder(get_normal_, proc)->count(right_arg)) {
         left_entity_vec->erase(left_entity_vec->begin() + i);
         i--;
       }
@@ -105,7 +141,7 @@ void UsesPModifiesPHandler::Evaluate() {
     for (int i = 0; i < right_entity_vec->size(); i++) {
       auto *variable = dynamic_cast<Variable *>(right_entity_vec->at(i));
       // Remove each variable that doesnt have left arg in its users.
-      if (!VariableForwarder(get_reverse_, variable)->count(left_arg)) {
+      if (variable == nullptr || !VariableForwarder(get_reverse_, variable)->count(left_arg)) {
         right_entity_vec->erase(right_entity_vec->begin() + i);
         i--;
       }
@@ -114,7 +150,7 @@ void UsesPModifiesPHandler::Evaluate() {
       right_ent.get_type() == EntRefType::WildCard) {  // UsesP("sth", _)
     std::string left_arg = left_ent.get_argument();
     Procedure *proc = pkb_->get_procedure(left_arg);
-    if (ProcedureForwarder(get_normal_, proc)->empty()) {
+    if (proc == nullptr || ProcedureForwarder(get_normal_, proc)->empty()) {
       // If procedure with left arg as name
       // does not use anything then clear results vector
       synonym_to_entity_result_->at(entities_to_return_->at(0)).clear();

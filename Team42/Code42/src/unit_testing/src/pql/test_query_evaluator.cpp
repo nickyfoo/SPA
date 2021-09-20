@@ -572,6 +572,47 @@ TEST_CASE("Test 21: Modifies Synonym, Argument") {
   }
 }
 
+TEST_CASE("Invalid Modifies print stmt, Argument") {
+  std::string ss = "stmt s1; variable v;\n"
+                   "Select s1 such that Modifies(6, v)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(sourcePQL);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < ret->size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("Invalid Modifies read stmt, Argument") {
+  std::string ss = "variable v;\n"
+                   "Select v such that Modifies(19, v)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(sourcePQL);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"flag", "cenX", "cenY"};
+
+  REQUIRE(ret->size() == expected.size());
+}
+
 TEST_CASE("Test 22: Sample source query 4") {
   std::string ss = "stmt s;"
                    "Select s such that Modifies(s, 'i')";

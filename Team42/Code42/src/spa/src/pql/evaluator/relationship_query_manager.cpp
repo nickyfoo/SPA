@@ -12,12 +12,17 @@ RelationshipQueryManager::RelationshipQueryManager(
     *synonym_to_entity_result,
     std::vector<SuchThatClause *> *relationships,
     std::vector<std::string> *entities_to_return,
-    PKB *pkb) {
+    PKB *pkb,
+    bool has_two_repeated_synonyms) {
   this->synonym_to_entity_result_ = synonym_to_entity_result;
   this->relationships_ = relationships;
   this->entities_to_return_ = entities_to_return;
   this->pkb_ = pkb;
+  this->stmt_var_pair_vector_ = nullptr;
+  this->has_two_repeated_synonyms_ = has_two_repeated_synonyms;
 }
+
+RelationshipQueryManager::~RelationshipQueryManager() = default;
 
 void RelationshipQueryManager::EvaluateRelationships() {
   // Iterating through relationships_ and evaluating one by one.
@@ -81,8 +86,10 @@ void RelationshipQueryManager::EvaluateRelationships() {
         uses_modifies_handler->set_args(pkb_,
                                         synonym_to_entity_result_,
                                         relationship,
-                                        entities_to_return_);
+                                        entities_to_return_,
+                                        has_two_repeated_synonyms_);
         uses_modifies_handler->Evaluate();
+        this->stmt_var_pair_vector_ = uses_modifies_handler->get_stmt_var_pair_vector();
         break;
       }
       case RelRef::ModifiesS: {
@@ -93,8 +100,10 @@ void RelationshipQueryManager::EvaluateRelationships() {
         uses_modifies_handler->set_args(pkb_,
                                         synonym_to_entity_result_,
                                         relationship,
-                                        entities_to_return_);
+                                        entities_to_return_,
+                                        has_two_repeated_synonyms_);
         uses_modifies_handler->Evaluate();
+        this->stmt_var_pair_vector_ = uses_modifies_handler->get_stmt_var_pair_vector();
         break;
       }
       case RelRef::UsesP: {
@@ -121,6 +130,12 @@ void RelationshipQueryManager::EvaluateRelationships() {
         usesp_modifiesp_handler->Evaluate();
         break;
       }
+      default:
+        break;
     }
   }
+}
+
+std::vector<std::pair<int, std::string>> *RelationshipQueryManager::get_stmt_var_pair_vector() {
+  return this->stmt_var_pair_vector_;
 }

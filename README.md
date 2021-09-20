@@ -11,7 +11,7 @@
 ### Build Instructions
 
 #### Mac/Linux
-1. Create a new build folder at `./Team42/Code42/build`. Run `mkdir ./Team42/Code/build` (from project root).
+1. Create a new build folder at `./Team42/Code42/build`. Run `mkdir ./Team42/Code42/build` (from project root).
 2. Navigate to the build folder. Run `cd ./Team42/Code42/build`.
 3. Run CMAKE with `cmake ../` (this will build in release mode).
 4. Build all project files with `make -j4`.

@@ -147,8 +147,8 @@ void UsesSModifiesSHandler::Evaluate() {
     std::vector<Entity *> *right_entity_vec;
     right_entity_vec = &synonym_to_entity_result_->at(right_synonym);
 
-    Statement *stmt = pkb_->get_statement(left_arg);
-    stmt->ModifiesInfo();
+//    Statement *stmt = pkb_->get_statement(left_arg);
+//    stmt->ModifiesInfo();
 
     for (int i = 0; i < right_entity_vec->size(); i++) {
       auto *variable = dynamic_cast<Variable *>(right_entity_vec->at(i));

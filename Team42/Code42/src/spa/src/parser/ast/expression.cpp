@@ -1,53 +1,59 @@
 #include <cassert>
 #include <stdexcept>
+#include <sstream>
 
 #include "ast.h"
+#include "ast_utils.hpp"
 
-ExpressionNode::ExpressionNode(ExprOp op, Node *left, Node *right, std::string expr_string,
+ExpressionNode::ExpressionNode(ExprOp op, ExpressionNodeChild *left, ExpressionNodeChild *right,
                                LocInfo loc)
     : Node(loc) {
-  if (left == nullptr || left->get_kind() != NodeType::Expression &&
-                             left->get_kind() != NodeType::Constant &&
-                             left->get_kind() != NodeType::Identifier) {
-    throw std::invalid_argument(
-        "ExpressionNode: expected left to be Expression, Constant or "
-        "Identifier");
-  }
-
-  if (right == nullptr || right->get_kind() != NodeType::Expression &&
-                              right->get_kind() != NodeType::Constant &&
-                              right->get_kind() != NodeType::Identifier) {
-    throw std::invalid_argument(
-        "ExpressionNode: expected right to be Expression, Constant or "
-        "Identifier");
-  }
-
   this->op_ = op;
   this->left_ = left;
   this->right_ = right;
-  this->expr_string_ = expr_string;
 }
 
 NodeType ExpressionNode::get_kind() { return NodeType::Expression; }
 
 ExprOp ExpressionNode::get_op() { return this->op_; }
 
-Node *ExpressionNode::get_left() {
-  assert(this->left_ != nullptr);
-  assert(this->left_->get_kind() == NodeType::Expression || this->left_->get_kind() == NodeType::Constant ||
-         this->left_->get_kind() == NodeType::Identifier);
+Node *ExpressionNode::get_left() { return this->left_; }
 
-  return this->left_;
+Node *ExpressionNode::get_right() { return this->right_; }
+
+std::string ExpressionNode::get_expr_string() {
+  std::string expr_string = ExprOpToString(this->op_);
+  if (this->right_) {
+    expr_string = this->right_->get_expr_string() + " " + expr_string;
+  }
+
+  if (this->left_) {
+    expr_string = this->left_->get_expr_string() + " " + expr_string;
+  }
+
+  return expr_string;
 }
 
-Node *ExpressionNode::get_right() {
-  assert(this->right_ != nullptr);
-  assert(this->right_->get_kind() == NodeType::Expression ||
-         this->right_->get_kind() == NodeType::Constant ||
-         this->right_->get_kind() == NodeType::Identifier);
+std::string ExpressionNode::ToString() {
+  std::string op, left, right;
 
-  return this->right_;
+  op = ExprOpToString(this->op_);
+  if (this->left_) {
+    left = this->left_->ToString();
+  }
+  if (this->right_) {
+    right = this->right_->ToString();
+  }
+
+  std::stringstream res;
+  res << "ExpressionNode: {\n"
+      << "Op: " + op + "\n"
+      << "Left:\n" 
+      << left + "\n"
+      << "Right:\n"
+      << right + "\n"
+      << "Loc: " + LocToString(this->get_line_no(), this->get_col_no()) + "\n"
+      << "}\n";
+
+  return res.str();
 }
-
-std::string ExpressionNode::get_expr_string() { return this->expr_string_; }
-

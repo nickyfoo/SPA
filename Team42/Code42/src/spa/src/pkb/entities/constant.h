@@ -5,14 +5,14 @@ class Constant : public Entity {
  public:
   Constant();
 
-  explicit Constant(int value);
+  explicit Constant(std::string value);
 
   ~Constant();
 
   // Gets the value of constant.
-  int get_value();
+  std::string get_value();
 
  private:
   // Value of constant.
-  int value_;
+  std::string value_;
 };

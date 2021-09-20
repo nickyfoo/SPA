@@ -3,7 +3,6 @@
 #include <vector>
 #include "ast_utils.hpp"
 #include "pkb_exception.h"
-#include <string_utils.h>
 
 PKB::PKB() = default;
 
@@ -107,7 +106,7 @@ void PKB::AddVariable(Node *node, std::vector<Node *> ancestor_list) {
 
 void PKB::AddConstant(Node *node, std::vector<Node *> ancestor_list) {
   auto *constant_node = dynamic_cast<ConstantNode *>(node);
-  const_table_.AddConstant(std::stoi(constant_node->get_value()));
+  const_table_.AddConstant(constant_node->get_value());
 }
 
 int PKB::get_num_procedures() {
@@ -571,7 +570,7 @@ void PKB::CallsProcessCallNode(Node *node, std::vector<Node *> &ancestorList) {
       calling_procedure->AddCalls(call_node->get_proc()->get_name());
       auto *called_procedure = proc_table_.get_procedure(call_node->get_proc()->get_name());
       if (called_procedure == nullptr) {
-        throw PKBException(StringFormat("Called an undefined procedure: \"%s\"", call_node->get_proc()->get_name().c_str()));
+        throw PKBException("Called an undefined procedure: " + call_node->get_proc()->get_name());
       }
       called_procedure->AddCallers(procedure_node->get_name());
     }

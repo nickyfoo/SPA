@@ -249,7 +249,7 @@ std::vector<std::string>
   } else if (entity_type == EntityType::Constant) {
     for (auto &cons : entities) {
       auto *entity = dynamic_cast<Constant *>(cons);
-      output->push_back(std::to_string(entity->get_value()));
+      output->push_back(entity->get_value());
     }
   }
   return output;

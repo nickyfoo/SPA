@@ -1,7 +1,6 @@
 #include "stmt_table.h"
 #include <iostream>
 #include <algorithm>
-#include <string_utils.h>
 
 StmtTable::StmtTable() {
   num_statements_ = 0;
@@ -20,7 +19,7 @@ void StmtTable::AddStatement(Node *node) {
     s.set_called_proc_name(call_node->get_proc()->get_name());
   }
   table_[stmt_no] = s;
-  num_statements_ = std::max(num_statements_, stmt_no);
+  num_statements_ += 1;
 }
 
 int StmtTable::get_num_statements() {

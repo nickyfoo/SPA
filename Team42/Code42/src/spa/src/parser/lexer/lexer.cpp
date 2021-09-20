@@ -1,208 +1,211 @@
-#include "lexer.h"
-#include "iostream"
+#include <cassert>
+#include <cctype>
+#include <iostream>
 
-Lexer::Lexer(const char *source) {
-  this->source_ = source;
+#include "lexer.h"
+
+Lexer::Lexer(const std::string &source) : source_(source) {
+  this->ptr_ = 0;
   this->cur_line_ = 1;
   this->cur_col_ = 0;
-  this->cur_char_pointer_ = source;
 }
 
-void Lexer::AdvanceCharPointer() {
-  if (cur_char_pointer_[0] == '\n') {
+void Lexer::AdvancePointer() {
+  if (this->PointerAtEnd()) {
+    return;
+  }
+
+  if (this->GetCurChar() == '\n') {
     cur_col_ = 0;
     cur_line_++;
   } else {
     cur_col_++;
   }
 
-  cur_char_pointer_++;
+  this->ptr_++;
+}
+
+bool Lexer::PointerAtEnd() { return this->ptr_ >= this->source_.size(); }
+
+char Lexer::GetCurChar() {
+  if (this->PointerAtEnd()) {
+    return '\0';
+  }
+
+  return this->source_.at(this->ptr_);
 }
 
 const Token *Lexer::GetNextToken() {
-  // idea behind this implementation is to peek at the next character,
-  // and greedily evaluate the longest matching token type
-  while (isspace(cur_char_pointer_[0])) {
-    AdvanceCharPointer();
+  while (!this->PointerAtEnd() && isspace(this->GetCurChar())) {
+    AdvancePointer();
   }
 
-  if (isdigit(cur_char_pointer_[0])) {
-    return ConstantOrUnknown();
+  if (this->PointerAtEnd()) {
+    return new Token(TokenType::End, "", cur_line_, cur_col_);
   }
 
-  if (isalpha(cur_char_pointer_[0])) {
-    return IdentifierOrKeyword();
+  if (isdigit(this->GetCurChar())) {
+    return NumberOrUnknown();
   }
 
-  switch (cur_char_pointer_[0]) {
-    case '>':return GtOrGte();
-    case '<':return LtOrLte();
-    case '=':return EqualOrEq();
-    case '!':return NotOrNeq();
-    case '&':return AndOrUnknown();
-    case '|':return OrOrUnknown();
+  if (isalpha(this->GetCurChar())) {
+    return Name();
   }
 
-  const Token *res = nullptr;
-  switch (cur_char_pointer_[0]) {
-    case '\0':res = new Token(TokenType::End, "", cur_line_, cur_col_);
-      break;
-    case ';':res = new Token(TokenType::Semicolon, "", cur_line_, cur_col_);
-      break;
-    case '(':res = new Token(TokenType::LParen, "", cur_line_, cur_col_);
-      break;
-    case ')':res = new Token(TokenType::RParen, "", cur_line_, cur_col_);
-      break;
-    case '{':res = new Token(TokenType::LBrace, "", cur_line_, cur_col_);
-      break;
-    case '}':res = new Token(TokenType::RBrace, "", cur_line_, cur_col_);
-      break;
-    case '+':res = new Token(TokenType::Plus, "", cur_line_, cur_col_);
-      break;
-    case '-':res = new Token(TokenType::Minus, "", cur_line_, cur_col_);
-      break;
-    case '/':res = new Token(TokenType::Divide, "", cur_line_, cur_col_);
-      break;
-    case '*':res = new Token(TokenType::Multiply, "", cur_line_, cur_col_);
-      break;
-    case '%':res = new Token(TokenType::Modulo, "", cur_line_, cur_col_);
-      break;
+  switch (this->GetCurChar()) {
+    case '>':
+      return GtOrGte();
+    case '<':
+      return LtOrLte();
+    case '=':
+      return EqualOrEq();
+    case '!':
+      return NotOrNeq();
+    case '&':
+      return AndOrUnknown();
+    case '|':
+      return OrOrUnknown();
+  }
+
+  switch (this->GetCurChar()) {
+    case ';':
+      this->AdvancePointer();
+      return new Token(TokenType::Semicolon, ";", cur_line_, cur_col_);
+    case '(':
+      this->AdvancePointer();
+      return new Token(TokenType::LParen, "(", cur_line_, cur_col_);
+    case ')':
+      this->AdvancePointer();
+      return new Token(TokenType::RParen, ")", cur_line_, cur_col_);
+    case '{':
+      this->AdvancePointer();
+      return new Token(TokenType::LBrace, "{", cur_line_, cur_col_);
+    case '}':
+      this->AdvancePointer();
+      return new Token(TokenType::RBrace, "}", cur_line_, cur_col_);
+    case '+':
+      this->AdvancePointer();
+      return new Token(TokenType::Plus, "+", cur_line_, cur_col_);
+    case '-':
+      this->AdvancePointer();
+      return new Token(TokenType::Minus, "-", cur_line_, cur_col_);
+    case '/':
+      this->AdvancePointer();
+      return new Token(TokenType::Divide, "/", cur_line_, cur_col_);
+    case '*':
+      this->AdvancePointer();
+      return new Token(TokenType::Multiply, "*", cur_line_, cur_col_);
+    case '%':
+      this->AdvancePointer();
+      return new Token(TokenType::Modulo, "%", cur_line_, cur_col_);
     default:
-      res =
-          new Token(TokenType::Unknown, std::string(1, cur_char_pointer_[0]), cur_line_, cur_col_);
+      std::string value = std::string(1, this->GetCurChar());
+      this->AdvancePointer();
+      return new Token(TokenType::Unknown, value, cur_line_, cur_col_);
   }
-  AdvanceCharPointer();
-  return res;
 }
 
-const Token *Lexer::ConstantOrUnknown() {
+const Token *Lexer::NumberOrUnknown() {
+  assert(std::isdigit(this->GetCurChar()));
+
   std::string value = "";
   int startCol = cur_col_;
 
-  while (isdigit(cur_char_pointer_[0])) {
-    value += cur_char_pointer_[0];
-    AdvanceCharPointer();
+  while (!this->PointerAtEnd() && isdigit(this->GetCurChar())) {
+    value += this->GetCurChar();
+    this->AdvancePointer();
   }
 
-  if (value.length() > 1 && value[0] == '0') {
+  if (value.length() > 1 && value.at(0) == '0') {
     return new Token(TokenType::Unknown, value, cur_line_, startCol);
   }
 
-  return new Token(TokenType::Constant, value, cur_line_, startCol);
+  return new Token(TokenType::Number, value, cur_line_, startCol);
 }
 
-const Token *Lexer::IdentifierOrKeyword() {
+const Token *Lexer::Name() {
+  assert(std::isalpha(this->GetCurChar()));
+
   std::string value = "";
   int startCol = cur_col_;
 
-  while (isalpha(cur_char_pointer_[0]) || isdigit(cur_char_pointer_[0])) {
-    value += cur_char_pointer_[0];
-    AdvanceCharPointer();
+  while (!this->PointerAtEnd() &&
+         (std::isalpha(this->GetCurChar()) || std::isdigit(this->GetCurChar()))) {
+    value += this->GetCurChar();
+    this->AdvancePointer();
   }
 
-  if (value == "if") {
-    return new Token(TokenType::If, "", cur_line_, startCol);
-  }
-  if (value == "then") {
-    return new Token(TokenType::Then, "", cur_line_, startCol);
-  }
-  if (value == "else") {
-    return new Token(TokenType::Else, "", cur_line_, startCol);
-  }
-  if (value == "while") {
-    return new Token(TokenType::While, "", cur_line_, startCol);
-  }
-  if (value == "read") {
-    return new Token(TokenType::Read, "", cur_line_, startCol);
-  }
-  if (value == "print") {
-    return new Token(TokenType::Print, "", cur_line_, startCol);
-  }
-  if (value == "call") {
-    return new Token(TokenType::Call, "", cur_line_, startCol);
-  }
-  if (value == "procedure") {
-    return new Token(TokenType::Procedure, "", cur_line_, startCol);
-  }
-
-  return new Token(TokenType::Identifier, value, cur_line_, startCol);
+  return new Token(TokenType::Name, value, cur_line_, startCol);
 }
 
 const Token *Lexer::GtOrGte() {
-  // should not be called if the current char is not '>'
-  // current implementation does not check for this
-  AdvanceCharPointer();
+  assert(this->GetCurChar() == '>');
 
-  if (cur_char_pointer_[0] == '=') {
-    AdvanceCharPointer();
-    return new Token(TokenType::Gte, "", cur_line_, cur_col_ - 2);
+  this->AdvancePointer();
+  if (this->PointerAtEnd() || this->GetCurChar() != '=') {
+    return new Token(TokenType::Gt, ">", cur_line_, cur_col_ - 1);
   }
 
-  return new Token(TokenType::Gt, "", cur_line_, cur_col_ - 1);
+  this->AdvancePointer();
+  return new Token(TokenType::Gte, ">=", cur_line_, cur_col_ - 2);
 }
 
 const Token *Lexer::LtOrLte() {
-  // should not be called if the current char is not '<'
-  // current implementation does not check for this
-  AdvanceCharPointer();
+  assert(this->GetCurChar() == '<');
 
-  if (cur_char_pointer_[0] == '=') {
-    AdvanceCharPointer();
-    return new Token(TokenType::Lte, "", cur_line_, cur_col_ - 2);
+  this->AdvancePointer();
+  if (this->PointerAtEnd() || this->GetCurChar() != '=') {
+    return new Token(TokenType::Lt, "<", cur_line_, cur_col_ - 1);
   }
 
-  return new Token(TokenType::Lt, "", cur_line_, cur_col_ - 1);
+  this->AdvancePointer();
+  return new Token(TokenType::Lte, "<=", cur_line_, cur_col_ - 2);
 }
 
 const Token *Lexer::EqualOrEq() {
-  // should not be called if the current char is not '='
-  // current implementation does not check for this
-  AdvanceCharPointer();
+  assert(this->GetCurChar() == '=');
 
-  if (cur_char_pointer_[0] == '=') {
-    AdvanceCharPointer();
-    return new Token(TokenType::Eq, "", cur_line_, cur_col_ - 2);
+  this->AdvancePointer();
+  if (this->PointerAtEnd() || this->GetCurChar() != '=') {
+    return new Token(TokenType::Equal, "=", cur_line_, cur_col_ - 1);
   }
 
-  return new Token(TokenType::Equal, "", cur_line_, cur_col_ - 1);
+  this->AdvancePointer();
+  return new Token(TokenType::Eq, "==", cur_line_, cur_col_ - 2);
 }
 
 const Token *Lexer::NotOrNeq() {
-  // should not be called if the current char is not '!'
-  // current implementation does not check for this
-  AdvanceCharPointer();
+  assert(this->GetCurChar() == '!');
 
-  if (cur_char_pointer_[0] == '=') {
-    AdvanceCharPointer();
-    return new Token(TokenType::Neq, "", cur_line_, cur_col_ - 2);
+  this->AdvancePointer();
+  if (this->PointerAtEnd() || this->GetCurChar() != '=') {
+    return new Token(TokenType::Not, "!", cur_line_, cur_col_ - 1);
   }
 
-  return new Token(TokenType::Not, "", cur_line_, cur_col_ - 1);
+  this->AdvancePointer();
+  return new Token(TokenType::Neq, "!=", cur_line_, cur_col_ - 2);
 }
 
 const Token *Lexer::AndOrUnknown() {
-  // should not be called if the current char is not '&'
-  // current implementation does not check for this
-  AdvanceCharPointer();
+  assert(this->GetCurChar() == '&');
 
-  if (cur_char_pointer_[0] == '&') {
-    AdvanceCharPointer();
-    return new Token(TokenType::And, "", cur_line_, cur_col_ - 2);
+  this->AdvancePointer();
+  if (this->PointerAtEnd() || this->GetCurChar() != '&') {
+    return new Token(TokenType::Unknown, "&", cur_line_, cur_col_ - 1);
   }
 
-  return new Token(TokenType::Unknown, "&", cur_line_, cur_col_ - 1);
+  this->AdvancePointer();
+  return new Token(TokenType::And, "&&", cur_line_, cur_col_ - 2);
 }
 
 const Token *Lexer::OrOrUnknown() {
-  // should not be called if the current char is not '|'
-  // current implementation does not check for this
-  AdvanceCharPointer();
+  assert(this->GetCurChar() == '|');
 
-  if (cur_char_pointer_[0] == '|') {
-    AdvanceCharPointer();
-    return new Token(TokenType::Or, "", cur_line_, cur_col_ - 2);
+  this->AdvancePointer();
+  if (this->PointerAtEnd() || this->GetCurChar() != '|') {
+    return new Token(TokenType::Unknown, "|", cur_line_, cur_col_ - 1);
   }
 
-  return new Token(TokenType::Unknown, "|", cur_line_, cur_col_ - 1);
+  this->AdvancePointer();
+  return new Token(TokenType::Or, "||", cur_line_, cur_col_ - 2);
 }
-

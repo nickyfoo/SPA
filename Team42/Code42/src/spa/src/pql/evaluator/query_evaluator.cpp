@@ -8,7 +8,6 @@
 #include "pql_query.h"
 #include "pkb.h"
 
-// TODO(Sheryl): Refactor everything after iteration 1.
 QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
   if (pql_query != nullptr) {
     QueryEvaluator::entities_to_return_ = pql_query->get_query_entities();
@@ -40,7 +39,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
   for (auto &pair : *synonym_to_entity_dec_) {
     EntityType type = pair.second->get_type();
     std::vector<Entity *> entities;
-    switch (type) {  // TODO: Combine EntityType enum with AST's enum
+    switch (type) {
       case EntityType::Stmt: {
         std::vector<Statement *> entities_stmt;
         entities_stmt = pkb_->get_all_statements();

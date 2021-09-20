@@ -41,9 +41,7 @@ void TestWrapper::parse(std::string filename) {
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
 
-  std::cout << "Program parsed!\n";
   this->pkb_ = new PKB(p);
-  std::cout << "PKB initialized\n";
 }
 
 // method to evaluating a query

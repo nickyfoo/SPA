@@ -51,7 +51,7 @@ class ProcTable : public Table {
 
   // for <p1, p2> in calls_, Calls(v1, v2) is true. Stored as ints for
   // transitive closure.
-  std::set<std::pair<int, int>> calls_int_, calls_star_int_;
+  std::map<int, std::vector<int>> calls_int_, calls_star_int_;
   // for <p1, p2> in calls_, Calls(v1, v2) is true. Stored as strings.
   std::set<std::pair<std::string, std::string>> calls_, calls_star_;
 

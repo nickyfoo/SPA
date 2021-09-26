@@ -1272,12 +1272,26 @@ TEST_CASE("PKB_AffectsSample_Correct") {
   affects_ans[13] = { 14,15 };
   affects_ans[14] = { 15 };
   affects_ans[16] = { 17 };
-  for (auto stmt : pkb.get_all_statements()) {
-    std::set<int> *stmt_affects = stmt->get_affects();
-    std::vector<int> affects = affects_ans[stmt->get_stmt_no()];
-    REQUIRE(stmt_affects->size() == affects.size());
-    for (auto &affect : affects) {
-      REQUIRE(stmt_affects->find(affect) != stmt_affects->end());
+
+  std::set<std::pair<int, int>> affects_wild_wild = pkb.get_affects(0, 0);
+  for (auto& [a, affects] : affects_ans) {
+    // Check Affects(a,_)
+    std::set<std::pair<int, int>> affects_a_wild = pkb.get_affects(a, 0);
+    REQUIRE(affects_ans[a].size() == affects_a_wild.size());
+    for (auto& b : affects) {
+      REQUIRE(affects_a_wild.find({ a,b }) != affects_a_wild.end());
+    }
+
+    // Check Affects(a,b)
+    for (auto& b : affects) {
+      std::set<std::pair<int, int>> affects_a_b = pkb.get_affects(a, b);
+      REQUIRE(affects_a_b.size() == 1);
+      REQUIRE(affects_a_b.find({ a,b }) != affects_a_b.end());
+    }
+
+    // Check Affects(_,_)
+    for (auto& b : affects) {
+      REQUIRE(affects_wild_wild.find({ a,b }) != affects_wild_wild.end());
     }
   }
 
@@ -1291,12 +1305,25 @@ TEST_CASE("PKB_AffectsSample_Correct") {
   affects_star_ans[13] = { 14,15 };
   affects_star_ans[14] = { 15 };
   affects_star_ans[16] = { 17 };
-  for (auto stmt : pkb.get_all_statements()) {
-    std::set<int> *stmt_affects_star = stmt->get_affects_star();
-    std::vector<int> affects_star = affects_star_ans[stmt->get_stmt_no()];
-    REQUIRE(stmt_affects_star->size() == affects_star.size());
-    for (auto &affect_star : affects_star) {
-      REQUIRE(stmt_affects_star->find(affect_star) != stmt_affects_star->end());
+  std::set<std::pair<int, int>> affects_star_wild_wild = pkb.get_affects_star(0, 0);
+  for (auto& [a, affects_star] : affects_star_ans) {
+    // Check Affects*(a,_)
+    std::set<std::pair<int, int>> affects_star_a_wild = pkb.get_affects_star(a, 0);
+    REQUIRE(affects_star_ans[a].size() == affects_star_a_wild.size());
+    for (auto& b : affects_star) {
+      REQUIRE(affects_star_a_wild.find({ a,b }) != affects_star_a_wild.end());
+    }
+
+    // Check Affects*(a,b)
+    for (auto& b : affects_star) {
+      std::set<std::pair<int, int>> affects_star_a_b = pkb.get_affects_star(a, b);
+      REQUIRE(affects_star_a_b.size() == 1);
+      REQUIRE(affects_star_a_b.find({ a,b }) != affects_star_a_b.end());
+    }
+
+    // Check Affects*(_,_)
+    for (auto& b : affects_star) {
+      REQUIRE(affects_star_wild_wild.find({ a,b }) != affects_star_wild_wild.end());
     }
   }
 
@@ -1308,12 +1335,12 @@ TEST_CASE("PKB_AffectsSample_Correct") {
   affected_by_ans[14] = { 13 };
   affected_by_ans[15] = { 4,7,11,13,14 };
   affected_by_ans[17] = { 16 };
-  for (auto stmt : pkb.get_all_statements()) {
-    std::set<int> *stmt_affected_by = stmt->get_affected_by();
-    std::vector<int> affected_bys = affected_by_ans[stmt->get_stmt_no()];
-    REQUIRE(stmt_affected_by->size() == affected_bys.size());
-    for (auto &affected_by : affected_bys) {
-      REQUIRE(stmt_affected_by->find(affected_by) != stmt_affected_by->end());
+  for (auto& [b, affected_bys] : affected_by_ans) {
+    // Check Affects(_,b)
+    std::set<std::pair<int, int>> affects_wild_b = pkb.get_affects(0, b);
+    REQUIRE(affected_by_ans[b].size() == affects_wild_b.size());
+    for (auto& a : affected_bys) {
+      REQUIRE(affects_wild_b.find({ a,b }) != affects_wild_b.end());
     }
   }
 
@@ -1325,12 +1352,12 @@ TEST_CASE("PKB_AffectsSample_Correct") {
   affected_by_star_ans[14] = { 4,5,7,9,11,12,13 };
   affected_by_star_ans[15] = { 4,5,7,9,11,12,13,14 };
   affected_by_star_ans[17] = { 16 };
-  for (auto stmt : pkb.get_all_statements()) {
-    std::set<int> *stmt_affected_by_star = stmt->get_affected_by_star();
-    std::vector<int> affected_bys_star = affected_by_star_ans[stmt->get_stmt_no()];
-    REQUIRE(stmt_affected_by_star->size() == affected_bys_star.size());
-    for (auto &affected_by_star : affected_bys_star) {
-      REQUIRE(stmt_affected_by_star->find(affected_by_star) != stmt_affected_by_star->end());
+  for (auto& [b, affected_bys_star] : affected_by_star_ans) {
+    // Check Affects(_,b)
+    std::set<std::pair<int, int>> affects_star_wild_b = pkb.get_affects_star(0, b);
+    REQUIRE(affected_by_star_ans[b].size() == affects_star_wild_b.size());
+    for (auto& a : affected_bys_star) {
+      REQUIRE(affects_star_wild_b.find({ a,b }) != affects_star_wild_b.end());
     }
   }
 }

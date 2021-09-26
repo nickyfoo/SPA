@@ -1,6 +1,7 @@
 #include "pkb.h"
 #include <algorithm>
 #include <vector>
+#include <queue>
 #include "ast_utils.hpp"
 #include "pkb_exception.h"
 
@@ -187,8 +188,6 @@ void PKB::Initialise() {
   ExtractCalls();
   ExtractUsesModifies();
   ExtractCFG();
-  ExtractNext();
-  ExtractAffects();
 }
 
 void PKB::ExtractEntities() {
@@ -366,16 +365,20 @@ void PKB::ExtractCFG() {
 
 }
 
-void PKB::NextDFS(int start, int u, std::vector<std::vector<int>>&d, std::map<int, std::set<int>>& al) {
+void PKB::ReachabilityDFS(int start, int u, std::vector<std::vector<int>>&d, std::map<int, std::set<int>>& al) {
   for (auto& v : al[u]) {
     if (d[start][v] == 0) {
       d[start][v] = 1;
-      NextDFS(start, v, d, al);
+      ReachabilityDFS(start, v, d, al);
     }
   }
 }
+
 std::set<std::pair<int, int>> PKB::get_next(int a, int b) {
+  int n = stmt_table_.get_num_statements() + 1;
   std::set<std::pair<int, int>> ans;
+  // Invalid line nums
+  if (a < 0 || a >= n || b < 0 || b >= n) return ans;
   if (a == 0 && b == 0) {
     for (auto& [u, al_u] : CFGAL_) {
       for (auto& v : al_u) {
@@ -403,11 +406,13 @@ std::set<std::pair<int, int>> PKB::get_next(int a, int b) {
 
 std::set<std::pair<int, int>> PKB::get_next_star(int a, int b) {
   int n = stmt_table_.get_num_statements() + 1;
-  std::vector<std::vector<int>> d(n, std::vector<int>(n, 0));
   std::set<std::pair<int, int>> ans;
+  // Invalid line nums
+  if (a < 0 || a >= n || b < 0 || b >= n) return ans;
+  std::vector<std::vector<int>> d(n, std::vector<int>(n, 0));
   if (a == 0 && b == 0) {
     for (int i = 0; i < n; i++) {
-      NextDFS(i, i, d, CFGAL_);
+      ReachabilityDFS(i, i, d, CFGAL_);
     }
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
@@ -416,108 +421,40 @@ std::set<std::pair<int, int>> PKB::get_next_star(int a, int b) {
     }
   }
   else if (a == 0 && b != 0) {
-    NextDFS(b, b, d, ReverseCFGAL_);
+    ReachabilityDFS(b, b, d, ReverseCFGAL_);
     for (int i = 0; i < n; i++) {
       // Be careful about the check, d[i][j] means that i can reach j!
       if (d[b][i] != 0) ans.insert({ i,b });
     }
   }
   else if (a != 0 && b == 0) {
-    NextDFS(a, a, d, CFGAL_);
+    ReachabilityDFS(a, a, d, CFGAL_);
     for (int j = 0; j < n; j++) {
       if (d[a][j] != 0) ans.insert({ a,j });
     }
   }
   else {
-    NextDFS(a, a, d, CFGAL_);
+    ReachabilityDFS(a, a, d, CFGAL_);
     if (d[a][b] != 0) ans.insert({ a,b });
   }
   return ans;
 }
 
 
-void PKB::ExtractNext() {
-  for (auto &[u, al_u] : CFGAL_) {
-    for (auto &v : al_u) {
-      stmt_table_.get_statement(u)->AddNext(v);
-      stmt_table_.get_statement(v)->AddPrev(u);
-    }
-  }
-
-  stmt_table_.ProcessNext();
-  stmt_table_.ProcessNextStar();
-}
-
-
-
-void PKB::ExtractAffects() {
-  for (auto &stmt : stmt_table_.get_statements(NodeType::Assign)) {
-    std::vector<bool> visited(stmt_table_.get_num_statements() + 1, false);
-    ProcessAffectsForStatementDFS(stmt->get_stmt_no(), stmt->get_stmt_no(), *(stmt->get_modifies()->begin()), visited);
-    //ProcessAffectsForStatement(stmt->get_stmt_no());
-  }
-  stmt_table_.ProcessAffects();
-  stmt_table_.ProcessAffectsStar();
-}
-
-void PKB::ProcessAffectsForStatement(int stmt_no) {
-  Statement *stmt = stmt_table_.get_statement(stmt_no);
-  if (stmt->get_kind() != NodeType::Assign) return;
-  if (stmt->get_modifies()->size() != 1) return;
-  std::string var_name = *(stmt->get_modifies()->begin());
-  // Setup for Dijkstra
-  std::vector<int> d(stmt_table_.get_num_statements() + 1, kInf);
-  std::set<std::pair<int, int>> pq;
-  d[stmt_no] = 0;
-  pq.insert({ d[stmt_no],stmt_no });
-  bool processed_self = false;
-
-  // Dijkstra's algorithm
-  while (pq.size()) {
-    auto [du, u] = *pq.begin();
-    pq.erase(pq.begin());
-    if (CFGAL_.find(u) == CFGAL_.end()) continue;
-    for (auto &v : CFGAL_[u]) {
-      Statement *stmt_v = stmt_table_.get_statement(v);
-      if (v == stmt_no && !processed_self) {
-        processed_self = true;
-        std::set<std::string> *uses = stmt_v->get_uses();
-        if (stmt_v->get_kind() == NodeType::Assign && uses->find(var_name) != uses->end()) {
-          stmt->AddAffects(v);
-          stmt_v->AddAffectedBy(stmt_no);
-        }
-      }
-      if (d[u] + 1 < d[v]) {
-        d[v] = d[u] + 1;
-        std::set<std::string> *uses = stmt_v->get_uses();
-        if (stmt_v->get_kind() == NodeType::Assign && uses->find(var_name) != uses->end()) {
-          stmt->AddAffects(v);
-          stmt_v->AddAffectedBy(stmt_no);
-        }
-        std::set<std::string> *modifies = stmt_v->get_modifies();
-        if (stmt_v->get_kind() == NodeType::Assign || stmt_v->get_kind() == NodeType::Read || stmt_v->get_kind() == NodeType::Call) {
-          if (modifies->find(var_name) != modifies->end()) {
-            continue;
-          }
-        }
-        pq.insert({ d[v],v });
-      }
-    }
-  }
-}
-
-
-void PKB::ProcessAffectsForStatementDFS(int u, int stmt_no, std::string var_name, std::vector<bool>&visited) {
-  Statement *stmt = stmt_table_.get_statement(stmt_no);
-  if (CFGAL_.find(u) == CFGAL_.end()) return;
+void PKB::AffectsDFS(int start, int target, int u, std::string var_name, std::vector<bool>&visited, std::vector<std::vector<int>>&d, bool&found) {
+  if (found) return;
+  Statement *stmt = stmt_table_.get_statement(start);
   for (auto &v : CFGAL_[u]) {
     Statement *stmt_v = stmt_table_.get_statement(v);
     if (!visited[v]) {
       visited[v] = true;
       std::set<std::string> *uses = stmt_v->get_uses();
       if (stmt_v->get_kind() == NodeType::Assign && uses->find(var_name) != uses->end()) {
-        stmt->AddAffects(v);
-        stmt_v->AddAffectedBy(stmt_no);
+        d[start][v] = 1;
+        if (v==target){
+          found = true;
+          return;
+        }
       }
       std::set<std::string> *modifies = stmt_v->get_modifies();
       if (stmt_v->get_kind() == NodeType::Assign || stmt_v->get_kind() == NodeType::Read || stmt_v->get_kind() == NodeType::Call) {
@@ -525,9 +462,170 @@ void PKB::ProcessAffectsForStatementDFS(int u, int stmt_no, std::string var_name
           continue;
         }
       }
-      ProcessAffectsForStatementDFS(v, stmt_no, var_name, visited);
+      AffectsDFS(start, target, v, var_name, visited, d, found);
     }
   }
+}
+
+void PKB::AffectsStarBFS(int start, int target, std::vector<bool>& visited, std::set<std::pair<int, int>>& ans, bool forward_relation) {
+  std::queue<int> q;
+  visited[start] = true;
+  q.push(start);
+  while (q.size()) {
+    int u = q.front(); q.pop();
+    if (forward_relation) {
+      for (auto& [a, b] : get_affects(u, 0)) {
+        if(target==0) ans.insert({ start, b });
+        else {
+          if (b == target) {
+            ans.insert({ start,target });
+            return;
+          }
+        }
+        if (!visited[b]) {
+          visited[b] = true;
+          q.push(b);
+        }
+      }
+    }
+    else {
+      for (auto& [a, b] : get_affects(0, u)) {
+        if (target == 0) ans.insert({ a,start });
+        else {
+          if (a == target) {
+            ans.insert({ start,target });
+            return;
+          }
+        }
+        if (!visited[a]) {
+          visited[a] = true;
+          q.push(a);
+        }
+      }
+    }
+  }
+}
+
+std::set<std::pair<int, int>> PKB::get_affects(int a, int b) {
+  int n = stmt_table_.get_num_statements() + 1;
+  std::set<std::pair<int, int>> ans;
+  // Invalid line nums
+  if (a < 0 || a >= n || b < 0 || b >= n) return ans;
+  std::vector<std::vector<int>> d(n, std::vector<int>(n, 0));
+  if (a == 0 && b == 0) {
+    for (auto& stmt : stmt_table_.get_statements(NodeType::Assign)) {
+      if (stmt->get_modifies()->size() != 1) continue;
+      std::vector<bool> visited(n, false);
+      std::string var_name = *(stmt->get_modifies()->begin());
+      bool found = false;
+      AffectsDFS(stmt->get_stmt_no(), 0, stmt->get_stmt_no(), var_name, visited, d, found);
+    }
+
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < n; j++) {
+        if (d[i][j] != 0) ans.insert({ i,j });
+      }
+    }
+  }
+  else if (a == 0 && b != 0) {
+    Statement* stmt = stmt_table_.get_statement(b);
+    // Invalid, not an assign stmt
+    if (stmt == nullptr || stmt->get_kind()!=NodeType::Assign) return ans;
+    
+    std::vector<bool> stmt_checked(n, false);
+    for (auto& var_used : *(stmt->get_uses())) {
+      for (auto& stmt_using : *(var_table_.get_variable(var_used)->get_stmts_modifying())) {
+        if (!stmt_checked[stmt_using]) {
+          stmt_checked[stmt_using] = true;
+          if (stmt_table_.get_statement(stmt_using)->get_kind() != NodeType::Assign) continue;
+          std::vector<bool> visited(n, false);
+          bool found = false;
+          AffectsDFS(stmt_using, b, stmt_using, var_used, visited, d, found);
+        }
+      }
+    }
+
+    for (int i = 0; i < n; i++) {
+      // Be careful about the check, d[i][j] means that i can reach j!
+      if (d[i][b] != 0) ans.insert({ i,b });
+    }
+  }
+  else if (a != 0 && b == 0) {
+    Statement* stmt = stmt_table_.get_statement(a);
+    // Invalid, not an assign stmt
+    if (stmt == nullptr || stmt->get_kind() != NodeType::Assign) return ans;
+    if (stmt->get_modifies()->size() != 1) return ans;
+    std::vector<bool> visited(n, false);
+    bool found = false;
+    std::string var_name = *(stmt->get_modifies()->begin());
+    AffectsDFS(stmt->get_stmt_no(), 0, stmt->get_stmt_no(), var_name, visited, d, found);
+
+    for (int j = 0; j < n; j++) {
+      if (d[a][j] != 0) ans.insert({ a,j });
+    }
+  }
+  else {
+    Statement* stmt = stmt_table_.get_statement(a);
+    Statement* stmt2 = stmt_table_.get_statement(b);
+    // Invalid, not an assign stmt
+    if (stmt == nullptr || stmt->get_kind() != NodeType::Assign) return ans;
+    if (stmt2 == nullptr || stmt2->get_kind() != NodeType::Assign) return ans;
+    if (stmt->get_modifies()->size() != 1) return ans;
+    std::vector<bool> visited(n, false);
+    bool found = false;
+    std::string var_name = *(stmt->get_modifies()->begin());
+    AffectsDFS(stmt->get_stmt_no(), b, stmt->get_stmt_no(), var_name, visited, d, found);
+
+    if (d[a][b] != 0) ans.insert({ a,b });
+  }
+  return ans;
+}
+
+std::set<std::pair<int, int>> PKB::get_affects_star(int a, int b) {
+  int n = stmt_table_.get_num_statements() + 1;
+  std::set<std::pair<int, int>> ans;
+  // Invalid line nums
+  if (a < 0 || a >= n || b < 0 || b >= n) return ans;
+  std::vector<std::vector<int>> d(n, std::vector<int>(n, 0));
+  if (a == 0 && b == 0) {
+    std::map<int, std::set<int>> affects_al;
+    for (auto& [a, b] : get_affects(0, 0)) {
+      affects_al[a].insert(b);
+    }
+    for (auto&[u,al_u] : affects_al) {
+      ReachabilityDFS(u, u, d, affects_al);
+    }
+
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < n; j++) {
+        if (d[i][j] != 0) ans.insert({ i,j });
+      }
+    }
+  }
+  else if (a == 0 && b != 0) {
+    Statement* stmt = stmt_table_.get_statement(b);
+    // Invalid, not an assign stmt
+    if (stmt == nullptr || stmt->get_kind() != NodeType::Assign) return ans;
+    std::vector<bool> visited(n, false);
+    AffectsStarBFS(b, 0, visited, ans, false);
+  }
+  else if (a != 0 && b == 0) {
+    Statement* stmt = stmt_table_.get_statement(a);
+    // Invalid, not an assign stmt
+    if (stmt == nullptr || stmt->get_kind() != NodeType::Assign) return ans;
+    std::vector<bool> visited(n, false);
+    AffectsStarBFS(a, 0, visited, ans, true);
+  }
+  else {
+    Statement* stmt = stmt_table_.get_statement(a);
+    Statement* stmt2 = stmt_table_.get_statement(b);
+    // Invalid, not an assign stmt
+    if (stmt == nullptr || stmt->get_kind() != NodeType::Assign) return ans;
+    if (stmt2 == nullptr || stmt2->get_kind() != NodeType::Assign) return ans;
+    std::vector<bool> visited(n, false);
+    AffectsStarBFS(a, b, visited, ans, true);
+  }
+  return ans;
 }
 
 

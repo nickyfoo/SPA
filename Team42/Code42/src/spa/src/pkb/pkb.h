@@ -61,6 +61,12 @@ class PKB {
   // Gets Next*(a,b) relation. if a==0 or b==0, it is treated as a wildcard.
   std::set<std::pair<int, int>> get_next_star(int a, int b);
 
+
+  // Gets Affects(a,b) relation. if a==0 or b==0, it is treated as a wildcard.
+  std::set<std::pair<int, int>> get_affects(int a, int b);
+  // Gets Affects*(a,b) relation. if a==0 or b==0, it is treated as a wildcard.
+  std::set<std::pair<int, int>> get_affects_star(int a, int b);
+
   // Tests the RHS of assignment statement against the given pattern.
   // Returns true if pattern matches.
   static bool TestAssignmentPattern(Statement *statement, std::string pattern, bool is_partial_match);
@@ -89,8 +95,6 @@ class PKB {
   void ExtractCalls();
   // Stores adjacency list into CFGAL_
   void ExtractCFG();
-  // Extracts Next/Next* relationships in the CFG.
-  void ExtractNext();
   // Extracts Affects/Affects* relationships in the CFG.
   void ExtractAffects();
 
@@ -132,11 +136,13 @@ class PKB {
   // Process and store the AST while node into the CFG.
   void CFGProcessWhileNode(Node *node);
   
-  void NextDFS(int start, int u, std::vector<std::vector<int>>& d, std::map<int, std::set<int>>& al);
+  // DFS to check reachability for Next and Affects* relationship
+  void ReachabilityDFS(int start, int u, std::vector<std::vector<int>>& d, std::map<int, std::set<int>>& al);
 
-  // Process and store Affects relationships for the stmt_no.
-  void ProcessAffectsForStatement(int stmt_no);
-  void ProcessAffectsForStatementDFS(int u, int stmt_no, std::string var_name, std::vector<bool>& visited);
+  // DFS to check reachability for Affects relationship
+  void AffectsDFS(int start, int target, int u, std::string var_name, std::vector<bool>& visited, std::vector<std::vector<int>>& d, bool& found);
+
+  void AffectsStarBFS(int start, int target, std::vector<bool>& visited, std::set<std::pair<int, int>>& ans, bool forward_relation);
 
   // Root AST node of the program.
   Node *root_;

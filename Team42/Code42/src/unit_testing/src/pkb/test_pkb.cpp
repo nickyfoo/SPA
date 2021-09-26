@@ -977,7 +977,7 @@ TEST_CASE("PKB_NextSample_Correct") {
 
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode* p = ParseProgram(&lexer, &s);
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   std::map<int, std::vector<int>> next_ans;
   next_ans[1] = { 2 };
@@ -995,10 +995,10 @@ TEST_CASE("PKB_NextSample_Correct") {
   next_ans[14] = { 15 };
   next_ans[16] = { 17 };
   next_ans[17] = { 18 };
-  std::set<std::pair<int, int>> next_wild_wild = pkb.get_next(0, 0);
+  std::set<std::pair<int, int>> next_wild_wild = pkb.get_next(PKB::PKB::kWild, PKB::kWild);
   for (auto& [a, nexts] : next_ans) {
     // Check Next(a,_)
-    std::set<std::pair<int, int>> next_a_wild = pkb.get_next(a, 0);
+    std::set<std::pair<int, int>> next_a_wild = pkb.get_next(a, PKB::kWild);
     REQUIRE(next_ans[a].size() == next_a_wild.size());
     for (auto& b : nexts) {
       REQUIRE(next_a_wild.find({ a,b }) != next_a_wild.end());
@@ -1033,10 +1033,10 @@ TEST_CASE("PKB_NextSample_Correct") {
   next_star_ans[14] = { 15 };
   next_star_ans[16] = { 17,18 };
   next_star_ans[17] = { 18 };
-  std::set<std::pair<int, int>> next_star_wild_wild = pkb.get_next_star(0, 0);
+  std::set<std::pair<int, int>> next_star_wild_wild = pkb.get_next_star(PKB::kWild, PKB::kWild);
   for (auto& [a, nexts_star] : next_star_ans) {
     // Check Next*(a,_)
-    std::set<std::pair<int, int>> next_star_a_wild = pkb.get_next_star(a, 0);
+    std::set<std::pair<int, int>> next_star_a_wild = pkb.get_next_star(a, PKB::kWild);
     REQUIRE(next_star_ans[a].size() == next_star_a_wild.size());
     for (auto& b : nexts_star) {
       REQUIRE(next_star_a_wild.find({ a,b }) != next_star_a_wild.end());
@@ -1073,7 +1073,7 @@ TEST_CASE("PKB_NextSample_Correct") {
   prev_ans[18] = { 17 };
   for (auto& [b, prevs] : prev_ans) {
     // Check Next(_,b)
-    std::set<std::pair<int, int>> next_wild_b = pkb.get_next(0, b);
+    std::set<std::pair<int, int>> next_wild_b = pkb.get_next(PKB::kWild, b);
     REQUIRE(prev_ans[b].size() == next_wild_b.size());
     for (auto& a : prevs) {
       REQUIRE(next_wild_b.find({ a,b }) != next_wild_b.end());
@@ -1098,7 +1098,7 @@ TEST_CASE("PKB_NextSample_Correct") {
   prev_star_ans[18] = { 16,17 };
   for (auto& [b, prevs_star] : prev_star_ans) {
     // Check Next*(_,b)
-    std::set<std::pair<int, int>> next_star_wild_b = pkb.get_next_star(0, b);
+    std::set<std::pair<int, int>> next_star_wild_b = pkb.get_next_star(PKB::kWild, b);
     REQUIRE(prev_star_ans[b].size() == next_star_wild_b.size());
     for (auto& a : prevs_star) {
       REQUIRE(next_star_wild_b.find({ a,b }) != next_star_wild_b.end());
@@ -1139,10 +1139,10 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
   next_ans[6] = { 7,8 };
   next_ans[7] = { 9 };
   next_ans[8] = { 9 };
-  std::set<std::pair<int, int>> next_wild_wild = pkb.get_next(0, 0);
+  std::set<std::pair<int, int>> next_wild_wild = pkb.get_next(PKB::kWild, PKB::kWild);
   for (auto& [a, nexts] : next_ans) {
     // Check Next(a,_)
-    std::set<std::pair<int, int>> next_a_wild = pkb.get_next(a, 0);
+    std::set<std::pair<int, int>> next_a_wild = pkb.get_next(a, PKB::kWild);
     REQUIRE(next_ans[a].size() == next_a_wild.size());
     for (auto& b : nexts) {
       REQUIRE(next_a_wild.find({ a,b }) != next_a_wild.end());
@@ -1171,10 +1171,10 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
   next_star_ans[6] = { 7,8,9 };
   next_star_ans[7] = { 9 };
   next_star_ans[8] = { 9 };
-  std::set<std::pair<int, int>> next_star_wild_wild = pkb.get_next_star(0, 0);
+  std::set<std::pair<int, int>> next_star_wild_wild = pkb.get_next_star(PKB::kWild, PKB::kWild);
   for (auto& [a, nexts_star] : next_star_ans) {
     // Check Next*(a,_)
-    std::set<std::pair<int, int>> next_star_a_wild = pkb.get_next_star(a, 0);
+    std::set<std::pair<int, int>> next_star_a_wild = pkb.get_next_star(a, PKB::kWild);
     REQUIRE(next_star_ans[a].size() == next_star_a_wild.size());
     for (auto& b : nexts_star) {
       REQUIRE(next_star_a_wild.find({ a,b }) != next_star_a_wild.end());
@@ -1205,7 +1205,7 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
   prev_ans[9] = { 4,5,7,8 };
   for (auto& [b, prevs] : prev_ans) {
     // Check Next(_,b)
-    std::set<std::pair<int, int>> next_wild_b = pkb.get_next(0, b);
+    std::set<std::pair<int, int>> next_wild_b = pkb.get_next(PKB::kWild, b);
     REQUIRE(prev_ans[b].size() == next_wild_b.size());
     for (auto& a : prevs) {
       REQUIRE(next_wild_b.find({ a,b }) != next_wild_b.end());
@@ -1223,7 +1223,7 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
   prev_star_ans[9] = { 1,2,3,4,5,6,7,8 };
   for (auto& [b, prevs_star] : prev_star_ans) {
     // Check Next*(_,b)
-    std::set<std::pair<int, int>> next_star_wild_b = pkb.get_next_star(0, b);
+    std::set<std::pair<int, int>> next_star_wild_b = pkb.get_next_star(PKB::kWild, b);
     REQUIRE(prev_star_ans[b].size() == next_star_wild_b.size());
     for (auto& a : prevs_star) {
       REQUIRE(next_star_wild_b.find({ a,b }) != next_star_wild_b.end());
@@ -1273,10 +1273,10 @@ TEST_CASE("PKB_AffectsSample_Correct") {
   affects_ans[14] = { 15 };
   affects_ans[16] = { 17 };
 
-  std::set<std::pair<int, int>> affects_wild_wild = pkb.get_affects(0, 0);
+  std::set<std::pair<int, int>> affects_wild_wild = pkb.get_affects(PKB::kWild, PKB::kWild);
   for (auto& [a, affects] : affects_ans) {
     // Check Affects(a,_)
-    std::set<std::pair<int, int>> affects_a_wild = pkb.get_affects(a, 0);
+    std::set<std::pair<int, int>> affects_a_wild = pkb.get_affects(a, PKB::kWild);
     REQUIRE(affects_ans[a].size() == affects_a_wild.size());
     for (auto& b : affects) {
       REQUIRE(affects_a_wild.find({ a,b }) != affects_a_wild.end());
@@ -1305,10 +1305,10 @@ TEST_CASE("PKB_AffectsSample_Correct") {
   affects_star_ans[13] = { 14,15 };
   affects_star_ans[14] = { 15 };
   affects_star_ans[16] = { 17 };
-  std::set<std::pair<int, int>> affects_star_wild_wild = pkb.get_affects_star(0, 0);
+  std::set<std::pair<int, int>> affects_star_wild_wild = pkb.get_affects_star(PKB::kWild, PKB::kWild);
   for (auto& [a, affects_star] : affects_star_ans) {
     // Check Affects*(a,_)
-    std::set<std::pair<int, int>> affects_star_a_wild = pkb.get_affects_star(a, 0);
+    std::set<std::pair<int, int>> affects_star_a_wild = pkb.get_affects_star(a, PKB::kWild);
     REQUIRE(affects_star_ans[a].size() == affects_star_a_wild.size());
     for (auto& b : affects_star) {
       REQUIRE(affects_star_a_wild.find({ a,b }) != affects_star_a_wild.end());
@@ -1337,7 +1337,7 @@ TEST_CASE("PKB_AffectsSample_Correct") {
   affected_by_ans[17] = { 16 };
   for (auto& [b, affected_bys] : affected_by_ans) {
     // Check Affects(_,b)
-    std::set<std::pair<int, int>> affects_wild_b = pkb.get_affects(0, b);
+    std::set<std::pair<int, int>> affects_wild_b = pkb.get_affects(PKB::kWild, b);
     REQUIRE(affected_by_ans[b].size() == affects_wild_b.size());
     for (auto& a : affected_bys) {
       REQUIRE(affects_wild_b.find({ a,b }) != affects_wild_b.end());
@@ -1354,7 +1354,7 @@ TEST_CASE("PKB_AffectsSample_Correct") {
   affected_by_star_ans[17] = { 16 };
   for (auto& [b, affected_bys_star] : affected_by_star_ans) {
     // Check Affects(_,b)
-    std::set<std::pair<int, int>> affects_star_wild_b = pkb.get_affects_star(0, b);
+    std::set<std::pair<int, int>> affects_star_wild_b = pkb.get_affects_star(PKB::kWild, b);
     REQUIRE(affected_by_star_ans[b].size() == affects_star_wild_b.size());
     for (auto& a : affected_bys_star) {
       REQUIRE(affects_star_wild_b.find({ a,b }) != affects_star_wild_b.end());

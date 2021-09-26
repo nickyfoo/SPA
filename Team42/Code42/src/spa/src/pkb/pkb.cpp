@@ -151,7 +151,7 @@ std::map<int, std::set<int>> *PKB::get_cfgal() {
   return &CFGAL_;
 }
 
-std::map<int, std::set<int>>* PKB::get_reverse_cfgal() {
+std::map<int, std::set<int>> *PKB::get_reverse_cfgal() {
   return &ReverseCFGAL_;
 }
 
@@ -379,19 +379,19 @@ std::set<std::pair<int, int>> PKB::get_next(int a, int b) {
   std::set<std::pair<int, int>> ans;
   // Invalid line nums
   if (a < 0 || a >= n || b < 0 || b >= n) return ans;
-  if (a == 0 && b == 0) {
+  if (a == kWild && b == kWild) {
     for (auto& [u, al_u] : CFGAL_) {
       for (auto& v : al_u) {
         ans.insert({ u,v });
       }
     }
   }
-  else if (a == 0 && b != 0) {
+  else if (a == kWild && b != kWild) {
     for (auto& v : ReverseCFGAL_[b]) {
       ans.insert({ v,b });
     }
   }
-  else if (a != 0 && b == 0) {
+  else if (a != kWild && b == kWild) {
     for (auto& v : CFGAL_[a]) {
       ans.insert({ a,v });
     }
@@ -410,7 +410,7 @@ std::set<std::pair<int, int>> PKB::get_next_star(int a, int b) {
   // Invalid line nums
   if (a < 0 || a >= n || b < 0 || b >= n) return ans;
   std::vector<std::vector<int>> d(n, std::vector<int>(n, 0));
-  if (a == 0 && b == 0) {
+  if (a == kWild && b == kWild) {
     for (int i = 0; i < n; i++) {
       ReachabilityDFS(i, i, d, CFGAL_);
     }
@@ -420,14 +420,14 @@ std::set<std::pair<int, int>> PKB::get_next_star(int a, int b) {
       }
     }
   }
-  else if (a == 0 && b != 0) {
+  else if (a == kWild && b != kWild) {
     ReachabilityDFS(b, b, d, ReverseCFGAL_);
     for (int i = 0; i < n; i++) {
       // Be careful about the check, d[i][j] means that i can reach j!
       if (d[b][i] != 0) ans.insert({ i,b });
     }
   }
-  else if (a != 0 && b == 0) {
+  else if (a != kWild && b == kWild) {
     ReachabilityDFS(a, a, d, CFGAL_);
     for (int j = 0; j < n; j++) {
       if (d[a][j] != 0) ans.insert({ a,j });
@@ -474,8 +474,8 @@ void PKB::AffectsStarBFS(int start, int target, std::vector<bool>& visited, std:
   while (q.size()) {
     int u = q.front(); q.pop();
     if (forward_relation) {
-      for (auto& [a, b] : get_affects(u, 0)) {
-        if(target==0) ans.insert({ start, b });
+      for (auto& [a, b] : get_affects(u, kWild)) {
+        if(target==kWild) ans.insert({ start, b });
         else {
           if (b == target) {
             ans.insert({ start,target });
@@ -489,8 +489,8 @@ void PKB::AffectsStarBFS(int start, int target, std::vector<bool>& visited, std:
       }
     }
     else {
-      for (auto& [a, b] : get_affects(0, u)) {
-        if (target == 0) ans.insert({ a,start });
+      for (auto& [a, b] : get_affects(kWild, u)) {
+        if (target == kWild) ans.insert({ a,start });
         else {
           if (a == target) {
             ans.insert({ start,target });
@@ -512,13 +512,13 @@ std::set<std::pair<int, int>> PKB::get_affects(int a, int b) {
   // Invalid line nums
   if (a < 0 || a >= n || b < 0 || b >= n) return ans;
   std::vector<std::vector<int>> d(n, std::vector<int>(n, 0));
-  if (a == 0 && b == 0) {
+  if (a == kWild && b == kWild) {
     for (auto& stmt : stmt_table_.get_statements(NodeType::Assign)) {
       if (stmt->get_modifies()->size() != 1) continue;
       std::vector<bool> visited(n, false);
       std::string var_name = *(stmt->get_modifies()->begin());
       bool found = false;
-      AffectsDFS(stmt->get_stmt_no(), 0, stmt->get_stmt_no(), var_name, visited, d, found);
+      AffectsDFS(stmt->get_stmt_no(), kWild, stmt->get_stmt_no(), var_name, visited, d, found);
     }
 
     for (int i = 0; i < n; i++) {
@@ -527,8 +527,8 @@ std::set<std::pair<int, int>> PKB::get_affects(int a, int b) {
       }
     }
   }
-  else if (a == 0 && b != 0) {
-    Statement* stmt = stmt_table_.get_statement(b);
+  else if (a == kWild && b != kWild) {
+    Statement *stmt = stmt_table_.get_statement(b);
     // Invalid, not an assign stmt
     if (stmt == nullptr || stmt->get_kind()!=NodeType::Assign) return ans;
     
@@ -550,23 +550,23 @@ std::set<std::pair<int, int>> PKB::get_affects(int a, int b) {
       if (d[i][b] != 0) ans.insert({ i,b });
     }
   }
-  else if (a != 0 && b == 0) {
-    Statement* stmt = stmt_table_.get_statement(a);
+  else if (a != kWild && b == kWild) {
+    Statement *stmt = stmt_table_.get_statement(a);
     // Invalid, not an assign stmt
     if (stmt == nullptr || stmt->get_kind() != NodeType::Assign) return ans;
     if (stmt->get_modifies()->size() != 1) return ans;
     std::vector<bool> visited(n, false);
     bool found = false;
     std::string var_name = *(stmt->get_modifies()->begin());
-    AffectsDFS(stmt->get_stmt_no(), 0, stmt->get_stmt_no(), var_name, visited, d, found);
+    AffectsDFS(stmt->get_stmt_no(), kWild, stmt->get_stmt_no(), var_name, visited, d, found);
 
     for (int j = 0; j < n; j++) {
       if (d[a][j] != 0) ans.insert({ a,j });
     }
   }
   else {
-    Statement* stmt = stmt_table_.get_statement(a);
-    Statement* stmt2 = stmt_table_.get_statement(b);
+    Statement *stmt = stmt_table_.get_statement(a);
+    Statement *stmt2 = stmt_table_.get_statement(b);
     // Invalid, not an assign stmt
     if (stmt == nullptr || stmt->get_kind() != NodeType::Assign) return ans;
     if (stmt2 == nullptr || stmt2->get_kind() != NodeType::Assign) return ans;
@@ -587,9 +587,9 @@ std::set<std::pair<int, int>> PKB::get_affects_star(int a, int b) {
   // Invalid line nums
   if (a < 0 || a >= n || b < 0 || b >= n) return ans;
   std::vector<std::vector<int>> d(n, std::vector<int>(n, 0));
-  if (a == 0 && b == 0) {
+  if (a == kWild && b == kWild) {
     std::map<int, std::set<int>> affects_al;
-    for (auto& [a, b] : get_affects(0, 0)) {
+    for (auto& [a, b] : get_affects(kWild, kWild)) {
       affects_al[a].insert(b);
     }
     for (auto&[u,al_u] : affects_al) {
@@ -602,23 +602,23 @@ std::set<std::pair<int, int>> PKB::get_affects_star(int a, int b) {
       }
     }
   }
-  else if (a == 0 && b != 0) {
-    Statement* stmt = stmt_table_.get_statement(b);
+  else if (a == kWild && b != kWild) {
+    Statement *stmt = stmt_table_.get_statement(b);
     // Invalid, not an assign stmt
     if (stmt == nullptr || stmt->get_kind() != NodeType::Assign) return ans;
     std::vector<bool> visited(n, false);
-    AffectsStarBFS(b, 0, visited, ans, false);
+    AffectsStarBFS(b, kWild, visited, ans, false);
   }
-  else if (a != 0 && b == 0) {
-    Statement* stmt = stmt_table_.get_statement(a);
+  else if (a != kWild && b == kWild) {
+    Statement *stmt = stmt_table_.get_statement(a);
     // Invalid, not an assign stmt
     if (stmt == nullptr || stmt->get_kind() != NodeType::Assign) return ans;
     std::vector<bool> visited(n, false);
-    AffectsStarBFS(a, 0, visited, ans, true);
+    AffectsStarBFS(a, kWild, visited, ans, true);
   }
   else {
-    Statement* stmt = stmt_table_.get_statement(a);
-    Statement* stmt2 = stmt_table_.get_statement(b);
+    Statement *stmt = stmt_table_.get_statement(a);
+    Statement *stmt2 = stmt_table_.get_statement(b);
     // Invalid, not an assign stmt
     if (stmt == nullptr || stmt->get_kind() != NodeType::Assign) return ans;
     if (stmt2 == nullptr || stmt2->get_kind() != NodeType::Assign) return ans;

@@ -20,6 +20,9 @@ class PKB {
 
   ~PKB();
 
+  // Value representing wild card.
+  inline static const int kWild = 0;
+
   // Adds a procedure to the procedures table.
   void AddProcedure(Node *node, std::vector<Node *> ancestor_list);
   // Adds a statement to the statements table.
@@ -54,7 +57,7 @@ class PKB {
   std::vector<Constant *> get_all_constants();
 
   std::map<int, std::set<int>> *get_cfgal();
-  std::map<int, std::set<int>>* get_reverse_cfgal();
+  std::map<int, std::set<int>> *get_reverse_cfgal();
 
   // Gets Next(a,b) relation. if a==0 or b==0, it is treated as a wildcard.
   std::set<std::pair<int, int>> get_next(int a, int b);
@@ -138,10 +141,9 @@ class PKB {
   
   // DFS to check reachability for Next and Affects* relationship
   void ReachabilityDFS(int start, int u, std::vector<std::vector<int>>& d, std::map<int, std::set<int>>& al);
-
-  // DFS to check reachability for Affects relationship
+  // DFS to check reachability for Affects relationship.
   void AffectsDFS(int start, int target, int u, std::string var_name, std::vector<bool>& visited, std::vector<std::vector<int>>& d, bool& found);
-
+  // DFS to check reachability for Affects* relationship
   void AffectsStarBFS(int start, int target, std::vector<bool>& visited, std::set<std::pair<int, int>>& ans, bool forward_relation);
 
   // Root AST node of the program.
@@ -159,6 +161,4 @@ class PKB {
   // Reverse Adjacency List of CFG for Next and Affects.
   std::map<int, std::set<int>> ReverseCFGAL_;
   
-  // Infinite value.
-  inline static const int kInf = 1e9;
 };

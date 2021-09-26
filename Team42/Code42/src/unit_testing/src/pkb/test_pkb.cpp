@@ -977,7 +977,7 @@ TEST_CASE("PKB_NextSample_Correct") {
 
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
+  ProgramNode* p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   std::map<int, std::vector<int>> next_ans;
   next_ans[1] = { 2 };
@@ -995,12 +995,25 @@ TEST_CASE("PKB_NextSample_Correct") {
   next_ans[14] = { 15 };
   next_ans[16] = { 17 };
   next_ans[17] = { 18 };
-  for (auto stmt : pkb.get_all_statements()) {
-    std::set<int> *stmt_next = stmt->get_next();
-    std::vector<int> nexts = next_ans[stmt->get_stmt_no()];
-    REQUIRE(stmt_next->size() == nexts.size());
-    for (auto &next : nexts) {
-      REQUIRE(stmt_next->find(next) != stmt_next->end());
+  std::set<std::pair<int, int>> next_wild_wild = pkb.get_next(0, 0);
+  for (auto& [a, nexts] : next_ans) {
+    // Check Next(a,_)
+    std::set<std::pair<int, int>> next_a_wild = pkb.get_next(a, 0);
+    REQUIRE(next_ans[a].size() == next_a_wild.size());
+    for (auto& b : nexts) {
+      REQUIRE(next_a_wild.find({ a,b }) != next_a_wild.end());
+    }
+
+    // Check Next(a,b)
+    for (auto& b : nexts) {
+      std::set<std::pair<int, int>> next_a_b = pkb.get_next(a, b);
+      REQUIRE(next_a_b.size() == 1);
+      REQUIRE(next_a_b.find({ a,b }) != next_a_b.end());
+    }
+
+    // Check Next(_,_)
+    for (auto& b : nexts) {
+      REQUIRE(next_wild_wild.find({ a,b }) != next_wild_wild.end());
     }
   }
 
@@ -1020,12 +1033,25 @@ TEST_CASE("PKB_NextSample_Correct") {
   next_star_ans[14] = { 15 };
   next_star_ans[16] = { 17,18 };
   next_star_ans[17] = { 18 };
-  for (auto stmt : pkb.get_all_statements()) {
-    std::set<int> *stmt_next_star = stmt->get_next_star();
-    std::vector<int> nexts_star = next_star_ans[stmt->get_stmt_no()];
-    REQUIRE(stmt_next_star->size() == nexts_star.size());
-    for (auto &next_star : nexts_star) {
-      REQUIRE(stmt_next_star->find(next_star) != stmt_next_star->end());
+  std::set<std::pair<int, int>> next_star_wild_wild = pkb.get_next_star(0, 0);
+  for (auto& [a, nexts_star] : next_star_ans) {
+    // Check Next*(a,_)
+    std::set<std::pair<int, int>> next_star_a_wild = pkb.get_next_star(a, 0);
+    REQUIRE(next_star_ans[a].size() == next_star_a_wild.size());
+    for (auto& b : nexts_star) {
+      REQUIRE(next_star_a_wild.find({ a,b }) != next_star_a_wild.end());
+    }
+
+    // Check Next*(a,b)
+    for (auto& b : nexts_star) {
+      std::set<std::pair<int, int>> next_star_a_b = pkb.get_next_star(a, b);
+      REQUIRE(next_star_a_b.size() == 1);
+      REQUIRE(next_star_a_b.find({ a,b }) != next_star_a_b.end());
+    }
+
+    // Check Next*(_,_)
+    for (auto& b : nexts_star) {
+      REQUIRE(next_star_wild_wild.find({ a,b }) != next_star_wild_wild.end());
     }
   }
 
@@ -1045,12 +1071,12 @@ TEST_CASE("PKB_NextSample_Correct") {
   prev_ans[15] = { 14 };
   prev_ans[17] = { 16 };
   prev_ans[18] = { 17 };
-  for (auto stmt : pkb.get_all_statements()) {
-    std::set<int> *stmt_prev = stmt->get_prev();
-    std::vector<int> prevs = prev_ans[stmt->get_stmt_no()];
-    REQUIRE(stmt_prev->size() == prevs.size());
-    for (auto &prev : prevs) {
-      REQUIRE(stmt_prev->find(prev) != stmt_prev->end());
+  for (auto& [b, prevs] : prev_ans) {
+    // Check Next(_,b)
+    std::set<std::pair<int, int>> next_wild_b = pkb.get_next(0, b);
+    REQUIRE(prev_ans[b].size() == next_wild_b.size());
+    for (auto& a : prevs) {
+      REQUIRE(next_wild_b.find({ a,b }) != next_wild_b.end());
     }
   }
 
@@ -1070,13 +1096,12 @@ TEST_CASE("PKB_NextSample_Correct") {
   prev_star_ans[15] = { 4,5,6,7,8,9,10,11,12,13,14 };
   prev_star_ans[17] = { 16 };
   prev_star_ans[18] = { 16,17 };
-
-  for (auto stmt : pkb.get_all_statements()) {
-    std::set<int> *stmt_prev_star = stmt->get_prev_star();
-    std::vector<int> prevs_star = prev_star_ans[stmt->get_stmt_no()];
-    REQUIRE(stmt_prev_star->size() == prevs_star.size());
-    for (auto &prev_star : prevs_star) {
-      REQUIRE(stmt_prev_star->find(prev_star) != stmt_prev_star->end());
+  for (auto& [b, prevs_star] : prev_star_ans) {
+    // Check Next*(_,b)
+    std::set<std::pair<int, int>> next_star_wild_b = pkb.get_next_star(0, b);
+    REQUIRE(prev_star_ans[b].size() == next_star_wild_b.size());
+    for (auto& a : prevs_star) {
+      REQUIRE(next_star_wild_b.find({ a,b }) != next_star_wild_b.end());
     }
   }
 }
@@ -1114,14 +1139,28 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
   next_ans[6] = { 7,8 };
   next_ans[7] = { 9 };
   next_ans[8] = { 9 };
-  for (auto stmt : pkb.get_all_statements()) {
-    std::set<int> *stmt_next = stmt->get_next();
-    std::vector<int> nexts = next_ans[stmt->get_stmt_no()];
-    REQUIRE(stmt_next->size() == nexts.size());
-    for (auto &next : nexts) {
-      REQUIRE(stmt_next->find(next) != stmt_next->end());
+  std::set<std::pair<int, int>> next_wild_wild = pkb.get_next(0, 0);
+  for (auto& [a, nexts] : next_ans) {
+    // Check Next(a,_)
+    std::set<std::pair<int, int>> next_a_wild = pkb.get_next(a, 0);
+    REQUIRE(next_ans[a].size() == next_a_wild.size());
+    for (auto& b : nexts) {
+      REQUIRE(next_a_wild.find({ a,b }) != next_a_wild.end());
+    }
+
+    // Check Next(a,b)
+    for (auto& b : nexts) {
+      std::set<std::pair<int, int>> next_a_b = pkb.get_next(a, b);
+      REQUIRE(next_a_b.size() == 1);
+      REQUIRE(next_a_b.find({ a,b }) != next_a_b.end());
+    }
+
+    // Check Next(_,_)
+    for (auto& b : nexts) {
+      REQUIRE(next_wild_wild.find({ a,b }) != next_wild_wild.end());
     }
   }
+
 
   std::map<int, std::vector<int>> next_star_ans;
   next_star_ans[1] = { 2,3,4,5,6,7,8,9 };
@@ -1132,14 +1171,28 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
   next_star_ans[6] = { 7,8,9 };
   next_star_ans[7] = { 9 };
   next_star_ans[8] = { 9 };
-  for (auto stmt : pkb.get_all_statements()) {
-    std::set<int> *stmt_next_star = stmt->get_next_star();
-    std::vector<int> nexts_star = next_star_ans[stmt->get_stmt_no()];
-    REQUIRE(stmt_next_star->size() == nexts_star.size());
-    for (auto &next_star : nexts_star) {
-      REQUIRE(stmt_next_star->find(next_star) != stmt_next_star->end());
+  std::set<std::pair<int, int>> next_star_wild_wild = pkb.get_next_star(0, 0);
+  for (auto& [a, nexts_star] : next_star_ans) {
+    // Check Next*(a,_)
+    std::set<std::pair<int, int>> next_star_a_wild = pkb.get_next_star(a, 0);
+    REQUIRE(next_star_ans[a].size() == next_star_a_wild.size());
+    for (auto& b : nexts_star) {
+      REQUIRE(next_star_a_wild.find({ a,b }) != next_star_a_wild.end());
+    }
+
+    // Check Next*(a,b)
+    for (auto& b : nexts_star) {
+      std::set<std::pair<int, int>> next_star_a_b = pkb.get_next_star(a, b);
+      REQUIRE(next_star_a_b.size() == 1);
+      REQUIRE(next_star_a_b.find({ a,b }) != next_star_a_b.end());
+    }
+
+    // Check Next*(_,_)
+    for (auto& b : nexts_star) {
+      REQUIRE(next_star_wild_wild.find({ a,b }) != next_star_wild_wild.end());
     }
   }
+
 
   std::map<int, std::vector<int>> prev_ans;
   prev_ans[2] = { 1 };
@@ -1150,12 +1203,12 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
   prev_ans[7] = { 6 };
   prev_ans[8] = { 6 };
   prev_ans[9] = { 4,5,7,8 };
-  for (auto stmt : pkb.get_all_statements()) {
-    std::set<int> *stmt_prev = stmt->get_prev();
-    std::vector<int> prevs = prev_ans[stmt->get_stmt_no()];
-    REQUIRE(stmt_prev->size() == prevs.size());
-    for (auto &prev : prevs) {
-      REQUIRE(stmt_prev->find(prev) != stmt_prev->end());
+  for (auto& [b, prevs] : prev_ans) {
+    // Check Next(_,b)
+    std::set<std::pair<int, int>> next_wild_b = pkb.get_next(0, b);
+    REQUIRE(prev_ans[b].size() == next_wild_b.size());
+    for (auto& a : prevs) {
+      REQUIRE(next_wild_b.find({ a,b }) != next_wild_b.end());
     }
   }
 
@@ -1168,13 +1221,12 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
   prev_star_ans[7] = { 1,2,6 };
   prev_star_ans[8] = { 1,2,6 };
   prev_star_ans[9] = { 1,2,3,4,5,6,7,8 };
-
-  for (auto stmt : pkb.get_all_statements()) {
-    std::set<int> *stmt_prev_star = stmt->get_prev_star();
-    std::vector<int> prevs_star = prev_star_ans[stmt->get_stmt_no()];
-    REQUIRE(stmt_prev_star->size() == prevs_star.size());
-    for (auto &prev_star : prevs_star) {
-      REQUIRE(stmt_prev_star->find(prev_star) != stmt_prev_star->end());
+  for (auto& [b, prevs_star] : prev_star_ans) {
+    // Check Next*(_,b)
+    std::set<std::pair<int, int>> next_star_wild_b = pkb.get_next_star(0, b);
+    REQUIRE(prev_star_ans[b].size() == next_star_wild_b.size());
+    for (auto& a : prevs_star) {
+      REQUIRE(next_star_wild_b.find({ a,b }) != next_star_wild_b.end());
     }
   }
 }

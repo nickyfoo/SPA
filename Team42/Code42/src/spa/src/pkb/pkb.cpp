@@ -150,6 +150,10 @@ std::map<int, std::set<int>> *PKB::get_cfgal() {
   return &CFGAL_;
 }
 
+std::map<int, std::set<int>>* PKB::get_reverse_cfgal() {
+  return &ReverseCFGAL_;
+}
+
 bool PKB::TestAssignmentPattern(Statement *statement, std::string pattern, bool is_partial_match) {
   return PatternManager::TestAssignmentPattern(statement, pattern, is_partial_match);
 }
@@ -362,6 +366,75 @@ void PKB::ExtractCFG() {
 
 }
 
+void PKB::NextDFS(int start, int u, std::vector<std::vector<int>>&d, std::map<int, std::set<int>>& al) {
+  for (auto& v : al[u]) {
+    if (d[start][v] == 0) {
+      d[start][v] = 1;
+      NextDFS(start, v, d, al);
+    }
+  }
+}
+std::set<std::pair<int, int>> PKB::get_next(int a, int b) {
+  std::set<std::pair<int, int>> ans;
+  if (a == 0 && b == 0) {
+    for (auto& [u, al_u] : CFGAL_) {
+      for (auto& v : al_u) {
+        ans.insert({ u,v });
+      }
+    }
+  }
+  else if (a == 0 && b != 0) {
+    for (auto& v : ReverseCFGAL_[b]) {
+      ans.insert({ v,b });
+    }
+  }
+  else if (a != 0 && b == 0) {
+    for (auto& v : CFGAL_[a]) {
+      ans.insert({ a,v });
+    }
+  }
+  else {
+    if (CFGAL_[a].find(b) != CFGAL_[a].end()) {
+      ans.insert({ a,b });
+    }
+  }
+  return ans;
+}
+
+std::set<std::pair<int, int>> PKB::get_next_star(int a, int b) {
+  int n = stmt_table_.get_num_statements() + 1;
+  std::vector<std::vector<int>> d(n, std::vector<int>(n, 0));
+  std::set<std::pair<int, int>> ans;
+  if (a == 0 && b == 0) {
+    for (int i = 0; i < n; i++) {
+      NextDFS(i, i, d, CFGAL_);
+    }
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < n; j++) {
+        if (d[i][j] != 0) ans.insert({ i,j });
+      }
+    }
+  }
+  else if (a == 0 && b != 0) {
+    NextDFS(b, b, d, ReverseCFGAL_);
+    for (int i = 0; i < n; i++) {
+      // Be careful about the check, d[i][j] means that i can reach j!
+      if (d[b][i] != 0) ans.insert({ i,b });
+    }
+  }
+  else if (a != 0 && b == 0) {
+    NextDFS(a, a, d, CFGAL_);
+    for (int j = 0; j < n; j++) {
+      if (d[a][j] != 0) ans.insert({ a,j });
+    }
+  }
+  else {
+    NextDFS(a, a, d, CFGAL_);
+    if (d[a][b] != 0) ans.insert({ a,b });
+  }
+  return ans;
+}
+
 
 void PKB::ExtractNext() {
   for (auto &[u, al_u] : CFGAL_) {
@@ -374,6 +447,8 @@ void PKB::ExtractNext() {
   stmt_table_.ProcessNext();
   stmt_table_.ProcessNextStar();
 }
+
+
 
 void PKB::ExtractAffects() {
   for (auto &stmt : stmt_table_.get_statements(NodeType::Assign)) {
@@ -749,6 +824,7 @@ void PKB::CFGProcessProcedureNode(Node *node) {
   for (int i = 1; i < stmt_lst.size(); i++) {
     for (auto &last_stmt : LastStmts(stmt_lst[i - 1])) {
       CFGAL_[last_stmt].insert(stmt_lst[i]->get_stmt_no());
+      ReverseCFGAL_[stmt_lst[i]->get_stmt_no()].insert(last_stmt);
     }
   }
 }
@@ -760,10 +836,14 @@ void PKB::CFGProcessIfNode(Node *node) {
     [](StatementNode *a, StatementNode *b) {
       return a->get_stmt_no() < b->get_stmt_no();
     });
-  if(then_stmt_lst.size())  CFGAL_[if_node->get_stmt_no()].insert(then_stmt_lst[0]->get_stmt_no());
+  if (then_stmt_lst.size()) {
+    CFGAL_[if_node->get_stmt_no()].insert(then_stmt_lst[0]->get_stmt_no());
+    ReverseCFGAL_[then_stmt_lst[0]->get_stmt_no()].insert(if_node->get_stmt_no());
+  }
   for (int i = 1; i < then_stmt_lst.size(); i++) {
     for (auto &last_stmt : LastStmts(then_stmt_lst[i - 1])) {
       CFGAL_[last_stmt].insert(then_stmt_lst[i]->get_stmt_no());
+      ReverseCFGAL_[then_stmt_lst[i]->get_stmt_no()].insert(last_stmt);
     }
   }
 
@@ -772,10 +852,14 @@ void PKB::CFGProcessIfNode(Node *node) {
     [](StatementNode *a, StatementNode *b) {
       return a->get_stmt_no() < b->get_stmt_no();
     });
-  if(else_stmt_lst.size())  CFGAL_[if_node->get_stmt_no()].insert(else_stmt_lst[0]->get_stmt_no());
+  if (else_stmt_lst.size()) {
+    CFGAL_[if_node->get_stmt_no()].insert(else_stmt_lst[0]->get_stmt_no());
+    ReverseCFGAL_[else_stmt_lst[0]->get_stmt_no()].insert(if_node->get_stmt_no());
+  }
   for (int i = 1; i < else_stmt_lst.size(); i++) {
     for (auto &last_stmt : LastStmts(else_stmt_lst[i - 1])) {
       CFGAL_[last_stmt].insert(else_stmt_lst[i]->get_stmt_no());
+      ReverseCFGAL_[else_stmt_lst[i]->get_stmt_no()].insert(last_stmt);
     }
   }
 }
@@ -787,11 +871,18 @@ void PKB::CFGProcessWhileNode(Node *node) {
     [](StatementNode *a, StatementNode *b) {
       return a->get_stmt_no() < b->get_stmt_no();
     });
-  if(stmt_lst.size())  CFGAL_[while_node->get_stmt_no()].insert(stmt_lst[0]->get_stmt_no());
+  if (stmt_lst.size()) {
+    CFGAL_[while_node->get_stmt_no()].insert(stmt_lst[0]->get_stmt_no());
+    ReverseCFGAL_[stmt_lst[0]->get_stmt_no()].insert(while_node->get_stmt_no());
+  }
   for (int i = 1; i < stmt_lst.size(); i++) {
     for (auto &last_stmt : LastStmts(stmt_lst[i - 1])) {
       CFGAL_[last_stmt].insert(stmt_lst[i]->get_stmt_no());
+      ReverseCFGAL_[stmt_lst[i]->get_stmt_no()].insert(last_stmt);
     }
   }
-  if (stmt_lst.size()) CFGAL_[stmt_lst[stmt_lst.size() - 1]->get_stmt_no()].insert(while_node->get_stmt_no());
+  if (stmt_lst.size()) {
+    CFGAL_[stmt_lst[stmt_lst.size() - 1]->get_stmt_no()].insert(while_node->get_stmt_no());
+    ReverseCFGAL_[while_node->get_stmt_no()].insert(stmt_lst[stmt_lst.size() - 1]->get_stmt_no());
+  }
 }

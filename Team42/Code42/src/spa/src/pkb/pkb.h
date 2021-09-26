@@ -54,6 +54,7 @@ class PKB {
   std::vector<Constant *> get_all_constants();
 
   std::map<int, std::set<int>> *get_cfgal();
+  std::map<int, std::set<int>>* get_reverse_cfgal();
 
   // Gets Next(a,b) relation. if a==0 or b==0, it is treated as a wildcard.
   std::set<std::pair<int, int>> get_next(int a, int b);
@@ -131,6 +132,8 @@ class PKB {
   // Process and store the AST while node into the CFG.
   void CFGProcessWhileNode(Node *node);
   
+  void NextDFS(int start, int u, std::vector<std::vector<int>>& d, std::map<int, std::set<int>>& al);
+
   // Process and store Affects relationships for the stmt_no.
   void ProcessAffectsForStatement(int stmt_no);
   void ProcessAffectsForStatementDFS(int u, int stmt_no, std::string var_name, std::vector<bool>& visited);

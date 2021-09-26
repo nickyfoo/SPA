@@ -38,19 +38,6 @@ class StmtTable : public Table {
   void ProcessParent();
   // Gets Parents_Star relationship using transitive closure.
   void ProcessParentStar();
-  
-
-  // Gets Next relationship from Statements in preparation to get
-  // transitive closure.
-  void ProcessNext();
-  // Gets Next_Star relationship using transitive closure.
-  void ProcessNextStar();
-
-  // Gets Affects relationship from Statements in preparation to get transitive closure.
-  void ProcessAffects();
-  // Gets Affects_Star relationship from Statements in preparation to get transitive closure.
-  void ProcessAffectsStar();
-
 
   // Prints entity information of all statements.
   void PrintStatements();
@@ -69,11 +56,4 @@ class StmtTable : public Table {
   std::map<int, std::set<int>> follows_, follows_star_;
   // for <v1, v2> in parent_, Parent(v1, v2) is true.
   std::map<int, std::set<int>> parent_, parent_star_;
-
-  // for <v1, v2> in next_, Next(v1, v2) is true.
-  std::map<int, std::set<int>> next_, next_star_;
-
-  // for <v1, v2> in affects_[var_name], Affects(v1, v2) is true, where var_name is the variable being modified by v1.
-  std::map<int, std::set<int>> affects_, affects_star_;
-
 };

@@ -91,39 +91,6 @@ std::set<std::string> *Statement::get_modifies() {
   return &modifies_;
 }
 
-std::set<int> *Statement::get_next() {
-  return &next_;
-}
-
-std::set<int> *Statement::get_next_star() {
-  return &next_star_;
-}
-
-std::set<int> *Statement::get_prev() {
-  return &prev_;
-}
-// Gets the prev star statements.
-std::set<int> *Statement::get_prev_star() {
-  return &prev_star_;
-}
-
-std::set<int> *Statement::get_affects() {
-  return &affects_;
-}
-
-std::set<int> *Statement::get_affects_star() {
-  return &affects_star_;
-}
-
-std::set<int> *Statement::get_affected_by() {
-  return &affected_by_;
-}
-
-std::set<int> *Statement::get_affected_by_star() {
-  return &affected_by_star_;
-}
-
-
 void Statement::set_expr_string(std::string expr_string) {
   this->expr_string_ = expr_string;
 }
@@ -172,38 +139,6 @@ void Statement::AddUses(std::string var_name) {
 
 void Statement::AddModifies(std::string var_name) {
   modifies_.insert(var_name);
-}
-
-void Statement::AddNext(int line_no) {
-  next_.insert(line_no);
-}
-
-void Statement::AddNextStar(int line_no) {
-  next_star_.insert(line_no);
-}
-
-void Statement::AddPrev(int line_no) {
-  prev_.insert(line_no);
-}
-
-void Statement::AddPrevStar(int line_no) {
-  prev_star_.insert(line_no);
-}
-
-void Statement::AddAffects(int line_no) {
-  affects_.insert(line_no);
-}
-
-void Statement::AddAffectsStar(int line_no) {
-  affects_star_.insert(line_no);
-}
-
-void Statement::AddAffectedBy(int line_no) {
-  affected_by_.insert(line_no);
-}
-
-void Statement::AddAffectedByStar(int line_no) {
-  affected_by_star_.insert(line_no);
 }
 
 void Statement::FollowsInfo() {
@@ -269,57 +204,6 @@ void Statement::ModifiesInfo() {
   std::cout << "Statement " << stmt_no_ << " modifies:\n";
   std::cout << "Modifies: ";
   for (auto &x : modifies_) {
-    std::cout << x << ' ';
-  }
-  std::cout << '\n' << '\n';
-}
-
-
-void Statement::NextInfo() {
-  std::cout << "Statement " << stmt_no_ << " has next:\n";
-  std::cout << "Next: ";
-  for (auto& x : next_) {
-    std::cout << x << ' ';
-  }
-  std::cout << '\n';
-  std::cout << "NextStar: ";
-  for (auto& x : next_star_) {
-    std::cout << x << ' ';
-  }
-  std::cout << '\n';
-  std::cout << "Statement " << stmt_no_ << " has prev:\n";
-  std::cout << "Prev: ";
-  for (auto& x : prev_) {
-    std::cout << x << ' ';
-  }
-  std::cout << '\n';
-  std::cout << "PrevStar: ";
-  for (auto& x : prev_star_) {
-    std::cout << x << ' ';
-  }
-  std::cout << '\n' << '\n';
-}
-
-void Statement::AffectsInfo() {
-  std::cout << "Statement " << stmt_no_ << " has affects:\n";
-  std::cout << "Affects: ";
-  for (auto& x : affects_) {
-    std::cout << x << ' ';
-  }
-  std::cout << '\n';
-  std::cout << "AffectsStar: ";
-  for (auto& x : affects_star_) {
-    std::cout << x << ' ';
-  }
-  std::cout << '\n';
-  std::cout << "Statement " << stmt_no_ << " is affected by:\n";
-  std::cout << "AffectedBy: ";
-  for (auto& x : affected_by_) {
-    std::cout << x << ' ';
-  }
-  std::cout << '\n';
-  std::cout << "AffectedByStar: ";
-  for (auto& x : affected_by_star_) {
     std::cout << x << ' ';
   }
   std::cout << '\n' << '\n';

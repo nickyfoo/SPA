@@ -85,22 +85,6 @@ class Statement : public Entity {
   void AddUses(std::string var_name);
   // Adds a variable that this statement modifies.
   void AddModifies(std::string var_name);
-  // Adds a statement that is next.
-  void AddNext(int line_no);
-  // Adds a statement that is next star.
-  void AddNextStar(int line_no);
-  // Adds a statment that is prev.
-  void AddPrev(int line_no);
-  // Adds a statment that is prev star.
-  void AddPrevStar(int line_no);
-  // Adds a statement that this affects.
-  void AddAffects(int line_no);
-  // Adds a statement that this affectsstar.
-  void AddAffectsStar(int line_no);
-  // Adds a statment that this is affected by.
-  void AddAffectedBy(int line_no);
-  // Adds a statment that this is affected by.
-  void AddAffectedByStar(int line_no);
 
   // Prints the follows information for this statement.
   void FollowsInfo();
@@ -110,10 +94,6 @@ class Statement : public Entity {
   void UsesInfo();
   // Prints the variables modified by this statement.
   void ModifiesInfo();
-  // Prints the next information for this statement.
-  void NextInfo();
-  // Prints the affects information for this statement.
-  void AffectsInfo();
 
  private:
   // Statement number in program.
@@ -138,14 +118,4 @@ class Statement : public Entity {
   std::set<std::string> uses_;
   // for var in modifies_, Modifies(this, var) is true.
   std::set<std::string> modifies_;
-
-  // for stmt in next_, Next(this, stmt) is true.
-  std::set<int> next_, next_star_;
-  // for stmt in prev_, Next(stmt, this) is true.
-  std::set<int> prev_, prev_star_;
-
-  // for stmt in affects_, Affects(this, stmt) is true.
-  std::set<int> affects_, affects_star_;
-  // for stmt in affected_by_, Affects(stmt, this) is true.
-  std::set<int> affected_by_, affected_by_star_;
 };

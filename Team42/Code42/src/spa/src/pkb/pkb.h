@@ -55,6 +55,11 @@ class PKB {
 
   std::map<int, std::set<int>> *get_cfgal();
 
+  // Gets Next(a,b) relation. if a==0 or b==0, it is treated as a wildcard.
+  std::set<std::pair<int, int>> get_next(int a, int b);
+  // Gets Next*(a,b) relation. if a==0 or b==0, it is treated as a wildcard.
+  std::set<std::pair<int, int>> get_next_star(int a, int b);
+
   // Tests the RHS of assignment statement against the given pattern.
   // Returns true if pattern matches.
   static bool TestAssignmentPattern(Statement *statement, std::string pattern, bool is_partial_match);
@@ -142,6 +147,8 @@ class PKB {
   ConstTable const_table_;
   // Adjacency List of CFG for Next and Affects.
   std::map<int, std::set<int>> CFGAL_;
+  // Reverse Adjacency List of CFG for Next and Affects.
+  std::map<int, std::set<int>> ReverseCFGAL_;
   
   // Infinite value.
   inline static const int kInf = 1e9;

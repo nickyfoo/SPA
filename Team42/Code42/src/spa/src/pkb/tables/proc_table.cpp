@@ -40,7 +40,7 @@ Procedure *ProcTable::get_procedure(std::string name) {
 void ProcTable::ProcessCalls() {
   for (Procedure &p : table_) {
     for (auto &proc_name : *p.get_calls()) {
-      calls_int_[name_to_index_[p.get_name()]].push_back(name_to_index_[proc_name]);
+      calls_int_[name_to_index_[p.get_name()]].insert(name_to_index_[proc_name]);
     }
   }
 }

@@ -53,7 +53,7 @@ void StmtTable::CategorizeStatements() {
 void StmtTable::ProcessFollows() {
   for (auto&[line_no, stmt] : table_) {
     for (auto &followerLineNo : *(stmt.get_followers())) {
-      follows_[line_no].push_back(followerLineNo);
+      follows_[line_no].insert(followerLineNo);
     }
   }
 }
@@ -77,7 +77,7 @@ void StmtTable::ProcessFollowsStar() {
 void StmtTable::ProcessParent() {
   for (auto&[line_no, stmt] : table_) {
     for (auto &child_line_no : *(stmt.get_children())) {
-      parent_[line_no].push_back(child_line_no);
+      parent_[line_no].insert(child_line_no);
     }
   }
 }
@@ -101,7 +101,7 @@ void StmtTable::ProcessParentStar() {
 void StmtTable::ProcessNext() {
   for (auto &[line_no, stmt] : table_) {
     for (auto &next_line_no : *(stmt.get_next())) {
-      next_[line_no].push_back(next_line_no);
+      next_[line_no].insert(next_line_no);
     }
   }
 }
@@ -125,7 +125,7 @@ void StmtTable::ProcessNextStar() {
 void StmtTable::ProcessAffects() {
   for (auto &[line_no, stmt] : table_) {
     for (auto &affects_line_no : *(stmt.get_affects())) {
-      affects_[line_no].push_back(affects_line_no);
+      affects_[line_no].insert(affects_line_no);
     }
   }
 }

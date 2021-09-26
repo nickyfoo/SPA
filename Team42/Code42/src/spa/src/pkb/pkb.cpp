@@ -614,7 +614,7 @@ std::set<std::pair<int, int>> PKB::get_affects_star(int a, int b) {
     // Invalid, not an assign stmt
     if (stmt == nullptr || stmt->get_kind() != NodeType::Assign) return ans;
     std::vector<bool> visited(n, false);
-    AffectsStarBFS(a, kWild, visited, ans, true);
+    AffectsStarBFS(a, 0, visited, ans, true);
   }
   else {
     Statement *stmt = stmt_table_.get_statement(a);

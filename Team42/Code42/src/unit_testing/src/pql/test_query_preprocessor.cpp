@@ -917,3 +917,39 @@ TEST_CASE("SuchThat_FollowsAndParent_ReturnsCorrect") {
   REQUIRE(clause->get_query_patterns()->size() == 0);
 
 }
+
+TEST_CASE("SuchThat_FollowsAndParentAndUses_ReturnsCorrect") {
+  std::string ss = "stmt s1; stmt s2; while w;\n"
+                   "Select s1 such that Follows(s1,s2) and Parent(s2, w) and Uses(w, 'x')";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "s1");
+  REQUIRE(clause->get_query_relationships()->size() == 3);
+
+  SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+  REQUIRE(relationship->get_type() == RelRef::Follows);
+  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
+  REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_synonym() == "s2");
+
+  SuchThatClause *relationship2 = clause->get_query_relationships()->at(1);
+  REQUIRE(relationship2->get_type() == RelRef::Parent);
+  REQUIRE(relationship2->get_left_ref()->get_stmt_ref().get_synonym() == "s2");
+  REQUIRE(relationship2->get_right_ref()->get_stmt_ref().get_synonym() == "w");
+
+  SuchThatClause *relationship3 = clause->get_query_relationships()->at(2);
+  REQUIRE(relationship3->get_type() == RelRef::UsesS);
+  REQUIRE(relationship3->get_left_ref()->get_stmt_ref().get_synonym() == "w");
+  REQUIRE(relationship3->get_right_ref()->get_ent_ref().get_argument() == "x");
+
+  REQUIRE(clause->get_query_patterns()->size() == 0);
+
+}
+
+TEST_CASE("SuchThat_FollowsAndParentAndPattern_ReturnsCorrect") {
+  std::string ss = "stmt s1; stmt s2; while w; assign a; \n"
+                   "Select s1 such that Follows(s1,s2) and Parent(s2, w) and pattern a(_, _)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}

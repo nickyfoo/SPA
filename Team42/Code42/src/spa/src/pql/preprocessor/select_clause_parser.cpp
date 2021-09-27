@@ -56,6 +56,7 @@ PQLQuery *SelectClauseParser::get_clauses() {
   }
 
   for (const std::string &such_that_clause : such_that_clauses) {
+    printf("actually came here\n");
     std::vector<SuchThatClause *> *relationship = MakeSuchThatClause(such_that_clause);
     if (relationship == nullptr) {
       return nullptr;
@@ -117,10 +118,11 @@ PQLQuery *SelectClauseParser::get_clauses() {
 
 std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
     std::string relationship_statement) {
-  std::vector<SuchThatClause *> *ret;
+  auto *ret = new std::vector<SuchThatClause *>();
   if (relationship_statement.empty()) {
     return nullptr;
   }
+  printf("went inside\n");
 //  relationship_statement.erase(remove(relationship_statement.begin(),
 //                                      relationship_statement.end(), ' '),
 //                               relationship_statement.end());
@@ -128,16 +130,26 @@ std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
   std::vector<std::vector<std::string>> relationship_clauses;
   relationship_clauses = SplitTokensByBrackets(
       relationship_statement);
+  printf("went inside2\n");
 
   for (std::vector<std::string> relationship_clause : relationship_clauses) {
+    printf("contents:\n");
+    for (std::string r: relationship_clause) {
+      printf("%s\n", r.c_str());
+    }
     // should only contain RelRef, left_ref_ and right_ref_
-    if (relationship_clause.size() > 3) {
+    if (relationship_clause.size() != 3) {
       return nullptr;
     }
+    printf("went inside3\n");
+
     auto *relationship = new SuchThatClause(relationship_clause.at(0));
+    printf("somethinghere\n");
     if (relationship->get_type() == RelRef::None) {  // invalid relation
+      printf("came to hereeee\n");
       return nullptr;
     }
+    printf("went inside4\n");
 
     std::string left_ref = relationship_clause.at(1);
     std::string right_ref = relationship_clause.at(2);
@@ -146,20 +158,25 @@ std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
     if (left_such_that_ref == nullptr || right_such_that_ref == nullptr) {
       return nullptr;
     }
+    printf("went inside5\n");
 
     if (relationship->set_ref(left_such_that_ref, right_such_that_ref)) {
+      printf("went inside7\n");
       ret->push_back(relationship);
     } else {
       return nullptr;
     }
+    printf("finishedhere\n");
   }
+  printf("went inside6\n");
 
-  return nullptr;
+  return ret;
 }
 
 std::vector<PatternClause *> *SelectClauseParser::MakePatternClause(
     std::string pattern_statement) {
-  std::vector<PatternClause *> *ret;
+  auto *ret = new std::vector<PatternClause *>();
+  printf("MIHERE1\n");
   if (pattern_statement.empty()) {
     return nullptr;
   }
@@ -168,14 +185,21 @@ std::vector<PatternClause *> *SelectClauseParser::MakePatternClause(
 //                                 ' '), pattern_statement.end());
   std::vector<std::vector<std::string>> pattern_clauses = SplitTokensByBrackets(
       pattern_statement);
+  printf("MIHERE2\n");
   for (std::vector<std::string> pattern_clause : pattern_clauses) {
-    if (pattern_clause.size() > 3) {
+    printf("MIHERE3\n");
+    if (pattern_clause.size() != 3) {
+      for (std::string p : pattern_clause) {
+        printf("%s\n", p.c_str());
+      }
       return nullptr;
     }
     std::string synonym = pattern_clause.at(0);
     std::string left_ref = pattern_clause.at(1);
     std::string right_ref = pattern_clause.at(2);
+    printf("MIHERE4\n");
     auto *pattern = MakePatternRef(synonym, left_ref, right_ref);
+    printf("MIHERE5\n");
     if (pattern == nullptr) {
       return nullptr;
     } else {
@@ -573,6 +597,7 @@ std::vector<std::vector<std::string>> SelectClauseParser::SplitTokensByBrackets(
   std::vector<std::vector<std::string>> ret;
   std::vector<std::string> clauses = SplitTokensByDelimiter(input, AND_DELIM);
   for (std::string clause : clauses) {
+    printf("clause here is: %s\n", clause.c_str());
     std::stringstream input_stream;
     input_stream << clause;
     std::vector<std::string> tokens;
@@ -587,9 +612,16 @@ std::vector<std::vector<std::string>> SelectClauseParser::SplitTokensByBrackets(
         prev = pos + 1;
       }
       if (prev < line.length())
-        tokens.push_back(line.substr(prev, std::string::npos));
+        printf("actually came to here\n");
+        printf("%s\n", line.substr(prev, std::string::npos).c_str());
+        printf("%d\n", line.substr(prev, std::string::npos) == " ");
+        if (line.substr(prev, std::string::npos) != "" && line.substr(prev, std::string::npos) != " ")
+          tokens.push_back(line.substr(prev, std::string::npos));
     }
     ret.push_back(tokens);
+    for (std::string token : tokens) {
+      printf("token is: %s\n", token.c_str());
+    }
   }
 
   return ret;

@@ -27,15 +27,18 @@ void SelectClauseParser::set_select_clause(std::unordered_map<std::string,
 PQLQuery *SelectClauseParser::get_clauses() {
   std::tuple<std::string,
              std::vector<std::string>,
+             std::vector<std::string>,
              std::vector<std::string>> clauses;
   clauses = SplitTokensByClauses(select_statement_);
   std::string select_clause = std::get<0>(clauses);
   std::vector<std::string> such_that_clauses = std::get<1>(clauses);
   std::vector<std::string> pattern_clauses = std::get<2>(clauses);
+  std::vector<std::string> with_clauses = std::get<3>(clauses);
 
   auto *select_ret = new std::vector<std::string>();
   auto *such_that_ret = new std::vector<SuchThatClause *>();
   auto *pattern_ret = new std::vector<PatternClause *>();
+//  auto *with_ret = new std::vector<WithClause *>();
 
   std::vector<std::string> select_clauses = SplitSelect(select_clause);
   if (select_clauses.empty()) {  // invalid select syntax
@@ -43,8 +46,9 @@ PQLQuery *SelectClauseParser::get_clauses() {
   }
 
   for (const std::string &select : select_clauses) {
-    // not found in hashmap
-    if (synonym_to_entity_->find(select) == synonym_to_entity_->end()) {
+    if (select == "BOOLEAN" && select_clauses.size() == 1) {
+      select_ret ->push_back(select);
+    } else if (synonym_to_entity_->find(select) == synonym_to_entity_->end()) {
       return nullptr;
     } else {
       select_ret->push_back(select);
@@ -52,19 +56,23 @@ PQLQuery *SelectClauseParser::get_clauses() {
   }
 
   for (const std::string &such_that_clause : such_that_clauses) {
-    SuchThatClause *relationship = MakeSuchThatClause(such_that_clause);
+    std::vector<SuchThatClause *> *relationship = MakeSuchThatClause(such_that_clause);
     if (relationship == nullptr) {
       return nullptr;
     }
-    such_that_ret->push_back(relationship);
+    for (SuchThatClause *clause : *relationship) {
+      such_that_ret->push_back(clause);
+    }
   }
 
   for (const std::string &pattern_clause : pattern_clauses) {
-    PatternClause *pattern = MakePatternClause(pattern_clause);
+    std::vector<PatternClause *> *pattern = MakePatternClause(pattern_clause);
     if (pattern == nullptr) {
       return nullptr;
     }
-    pattern_ret->push_back(pattern);
+    for (PatternClause *clause : *pattern) {
+      pattern_ret->push_back(clause);
+    }
   }
 
   // check for whether there are repeated synonyms
@@ -107,63 +115,75 @@ PQLQuery *SelectClauseParser::get_clauses() {
   return ret;
 }
 
-SuchThatClause *SelectClauseParser::MakeSuchThatClause(
+std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
     std::string relationship_statement) {
+  std::vector<SuchThatClause *> *ret;
   if (relationship_statement.empty()) {
     return nullptr;
   }
-  relationship_statement.erase(remove(relationship_statement.begin(),
-                                      relationship_statement.end(), ' '),
-                               relationship_statement.end());
+//  relationship_statement.erase(remove(relationship_statement.begin(),
+//                                      relationship_statement.end(), ' '),
+//                               relationship_statement.end());
 
-  std::vector<std::string> relationship_clauses;
-  relationship_clauses = SplitTokensByMultipleDelimiters(
-      relationship_statement, "(,)");
-  // should only contain RelRef, left_ref_ and right_ref_
-  if (relationship_clauses.size() > 3) {
-    return nullptr;
-  }
-  auto *relationship = new SuchThatClause(relationship_clauses.at(0));
-  if (relationship->get_type() == RelRef::None) {  // invalid relation
-    return nullptr;
+  std::vector<std::vector<std::string>> relationship_clauses;
+  relationship_clauses = SplitTokensByBrackets(
+      relationship_statement);
+
+  for (std::vector<std::string> relationship_clause : relationship_clauses) {
+    // should only contain RelRef, left_ref_ and right_ref_
+    if (relationship_clause.size() > 3) {
+      return nullptr;
+    }
+    auto *relationship = new SuchThatClause(relationship_clause.at(0));
+    if (relationship->get_type() == RelRef::None) {  // invalid relation
+      return nullptr;
+    }
+
+    std::string left_ref = relationship_clause.at(1);
+    std::string right_ref = relationship_clause.at(2);
+    SuchThatRef *left_such_that_ref = MakeSuchThatRefLeft(relationship, left_ref);
+    SuchThatRef *right_such_that_ref = MakeSuchThatRefRight(relationship, right_ref);
+    if (left_such_that_ref == nullptr || right_such_that_ref == nullptr) {
+      return nullptr;
+    }
+
+    if (relationship->set_ref(left_such_that_ref, right_such_that_ref)) {
+      ret->push_back(relationship);
+    } else {
+      return nullptr;
+    }
   }
 
-  std::string left_ref = relationship_clauses.at(1);
-  std::string right_ref = relationship_clauses.at(2);
-  SuchThatRef *left_such_that_ref = MakeSuchThatRefLeft(relationship, left_ref);
-  SuchThatRef *right_such_that_ref = MakeSuchThatRefRight(relationship, right_ref);
-  if (left_such_that_ref == nullptr || right_such_that_ref == nullptr) {
-    return nullptr;
-  }
-
-  if (relationship->set_ref(left_such_that_ref, right_such_that_ref)) {
-    return relationship;
-  }
   return nullptr;
 }
 
-PatternClause *SelectClauseParser::MakePatternClause(
+std::vector<PatternClause *> *SelectClauseParser::MakePatternClause(
     std::string pattern_statement) {
+  std::vector<PatternClause *> *ret;
   if (pattern_statement.empty()) {
     return nullptr;
   }
-  pattern_statement.erase(remove(pattern_statement.begin(),
-                                 pattern_statement.end(),
-                                 ' '), pattern_statement.end());
-  std::vector<std::string> pattern_clauses = SplitTokensByMultipleDelimiters(
-      pattern_statement, "(,)");
-  if (pattern_clauses.size() > 3) {
-    return nullptr;
-  }
-  std::string synonym = pattern_clauses.at(0);
-  std::string left_ref = pattern_clauses.at(1);
-  std::string right_ref = pattern_clauses.at(2);
-  auto *pattern = MakePatternRef(synonym, left_ref, right_ref);
-  if (pattern == nullptr) {
-    return nullptr;
+//  pattern_statement.erase(remove(pattern_statement.begin(),
+//                                 pattern_statement.end(),
+//                                 ' '), pattern_statement.end());
+  std::vector<std::vector<std::string>> pattern_clauses = SplitTokensByBrackets(
+      pattern_statement);
+  for (std::vector<std::string> pattern_clause : pattern_clauses) {
+    if (pattern_clause.size() > 3) {
+      return nullptr;
+    }
+    std::string synonym = pattern_clause.at(0);
+    std::string left_ref = pattern_clause.at(1);
+    std::string right_ref = pattern_clause.at(2);
+    auto *pattern = MakePatternRef(synonym, left_ref, right_ref);
+    if (pattern == nullptr) {
+      return nullptr;
+    } else {
+      ret->push_back(pattern);
+    }
   }
 
-  return pattern;
+  return ret;
 }
 
 PatternClause *SelectClauseParser::MakePatternRef(const std::string &synonym,
@@ -411,19 +431,22 @@ std::vector<std::string> SelectClauseParser::SplitTokensByDelimiter(
 }
 
 // splits by such that, pattern and with
-std::tuple<std::string, std::vector<std::string>, std::vector<std::string>>
+std::tuple<std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>>
 SelectClauseParser::SplitTokensByClauses(const std::string &input) {
   std::string SUCH_THAT_DELIM = "such that ";
   std::string PATTERN_DELIM = "pattern ";
-  std::vector<std::string> delimiters{SUCH_THAT_DELIM, PATTERN_DELIM};
+  std::string WITH_DELIM = "with ";
+  std::vector<std::string> delimiters{SUCH_THAT_DELIM, PATTERN_DELIM, WITH_DELIM};
   std::string select_clause;
   std::vector<std::string> such_that_clauses;
   std::vector<std::string> pattern_clauses;
+  std::vector<std::string> with_clauses;
 
   size_t pos;
   std::string token;
   bool last_found_such_that = false;
   bool last_found_pattern = false;
+  bool last_found_with = false;
   std::stringstream ss;
   // first pass to remove all whitespaces within brackets and before brackets
   bool whitespace_found = true;
@@ -453,14 +476,14 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
       }
       ss << c;
       if (open_bracket_found) {  // additional open brackets found
-        return make_tuple(select_clause, such_that_clauses, pattern_clauses);
+        return make_tuple(select_clause, such_that_clauses, pattern_clauses, with_clauses);
       }
       open_bracket_found = true;
       whitespace_found = true;
     } else if (c == ')' || c == '>') {
       ss << c;
       if (!open_bracket_found) {  // additional close brackets found
-        return make_tuple(select_clause, such_that_clauses, pattern_clauses);
+        return make_tuple(select_clause, such_that_clauses, pattern_clauses, with_clauses);
       }
       open_bracket_found = false;
       whitespace_found = false;
@@ -471,7 +494,7 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
         prev_word_stream << c;
         std::string check_for_such_that = prev_word_stream.str();
         if (check_for_such_that == "such  that") {  // extra spaces between such that clause
-          return make_tuple(select_clause, such_that_clauses, pattern_clauses);
+          return make_tuple(select_clause, such_that_clauses, pattern_clauses, with_clauses);
         }
       }
     }
@@ -480,28 +503,32 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
   std::string clean_input = ss.str();
   pos = clean_input.find(' ');
   if (pos == std::string::npos) {  // find first whitespace
-    return make_tuple(select_clause, such_that_clauses, pattern_clauses);
+    return make_tuple(select_clause, such_that_clauses, pattern_clauses, with_clauses);
   }
 
   pos = clean_input.find(' ', pos + 1);
   if (pos == std::string::npos) {  // find second white space
     select_clause = clean_input;
-    return make_tuple(select_clause, such_that_clauses, pattern_clauses);
+    return make_tuple(select_clause, such_that_clauses, pattern_clauses, with_clauses);
   }
 
   select_clause = clean_input.substr(0, pos);  // adds the select clause
   clean_input.erase(0, pos);
 
   while (clean_input.find(SUCH_THAT_DELIM) != std::string::npos
-      || clean_input.find(PATTERN_DELIM) != std::string::npos) {
+      || clean_input.find(PATTERN_DELIM) != std::string::npos
+      || clean_input.find(WITH_DELIM) != std::string::npos) {
     // find the earliest clause
-    pos = std::min(clean_input.find(SUCH_THAT_DELIM),
-                   clean_input.find(PATTERN_DELIM));
+    pos = std::min(std::min(clean_input.find(SUCH_THAT_DELIM),
+                   clean_input.find(PATTERN_DELIM)),
+                   clean_input.find(WITH_DELIM));
     token = clean_input.substr(0, pos);
     if (last_found_such_that) {
       such_that_clauses.push_back(token);
     } else if (last_found_pattern) {
       pattern_clauses.push_back(token);
+    } else if (last_found_with) {
+      with_clauses.push_back(token);
     }
 
     if (clean_input.substr(pos, SUCH_THAT_DELIM.length())
@@ -509,42 +536,61 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
       clean_input.erase(0, pos + SUCH_THAT_DELIM.length());
       last_found_such_that = true;
       last_found_pattern = false;
+      last_found_with = false;
     } else if (clean_input.substr(pos, PATTERN_DELIM.length())
         == PATTERN_DELIM) {
       clean_input.erase(0, pos + PATTERN_DELIM.length());
       last_found_pattern = true;
       last_found_such_that = false;
+      last_found_with = false;
+    } else if (clean_input.substr(pos, WITH_DELIM.length())
+      == WITH_DELIM) {
+      clean_input.erase(0, pos + WITH_DELIM.length());
+      last_found_with = true;
+      last_found_such_that = false;
+      last_found_pattern = false;
+
     }
   }
-  if (!last_found_such_that && !last_found_pattern) {
+  if (!last_found_such_that && !last_found_pattern && !last_found_with) {
     select_clause.append(clean_input);  // error
   }
   if (last_found_such_that) {
     such_that_clauses.push_back(clean_input);
   } else if (last_found_pattern) {
     pattern_clauses.push_back(clean_input);
+  } else if (last_found_with) {
+    with_clauses.push_back(clean_input);
   }
 
-  return make_tuple(select_clause, such_that_clauses, pattern_clauses);
+  return make_tuple(select_clause, such_that_clauses, pattern_clauses, with_clauses);
 }
 
-std::vector<std::string> SelectClauseParser::SplitTokensByMultipleDelimiters(
-    const std::string &input, const std::string &delimiters) {
-  std::stringstream input_stream;
-  input_stream << input;
-  std::vector<std::string> tokens;
+std::vector<std::vector<std::string>> SelectClauseParser::SplitTokensByBrackets(
+    const std::string &input) {
+  const std::string brackets = "(,)";
+  const std::string AND_DELIM = " and ";
+  std::vector<std::vector<std::string>> ret;
+  std::vector<std::string> clauses = SplitTokensByDelimiter(input, AND_DELIM);
+  for (std::string clause : clauses) {
+    std::stringstream input_stream;
+    input_stream << clause;
+    std::vector<std::string> tokens;
 
-  std::string line;
-  while (getline(input_stream, line)) {
-    size_t prev = 0, pos;
-    while ((pos = line.find_first_of(delimiters, prev))
-        != std::string::npos) {
-      if (pos >= prev)
-        tokens.push_back(line.substr(prev, pos - prev));
-      prev = pos + 1;
+    std::string line;
+    while (getline(input_stream, line)) {
+      size_t prev = 0, pos;
+      while ((pos = line.find_first_of(brackets, prev))
+      != std::string::npos) {
+        if (pos >= prev)
+          tokens.push_back(line.substr(prev, pos - prev));
+        prev = pos + 1;
+      }
+      if (prev < line.length())
+        tokens.push_back(line.substr(prev, std::string::npos));
     }
-    if (prev < line.length())
-      tokens.push_back(line.substr(prev, std::string::npos));
+    ret.push_back(tokens);
   }
-  return tokens;
+
+  return ret;
 }

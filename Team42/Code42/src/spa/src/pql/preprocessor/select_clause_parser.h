@@ -29,15 +29,15 @@ class SelectClauseParser {
   PatternClause *MakePatternRef(const std::string &synonym,
                                 std::string left_ref,
                                 std::string right_ref);
-  SuchThatClause *MakeSuchThatClause(std::string relationship_statement);
-  PatternClause *MakePatternClause(std::string pattern_statement);
+  std::vector<SuchThatClause *> *MakeSuchThatClause(std::string relationship_statement);
+  std::vector<PatternClause *> *MakePatternClause(std::string pattern_statement);
   static std::vector<std::string> SplitSelect(std::string select_clause);
   static std::vector<std::string> SplitTokensByDelimiter(
       std::string input, const std::string &delimiter);
-  static std::vector<std::string> SplitTokensByMultipleDelimiters(
-      const std::string &input, const std::string &delimiters);
+  static std::vector<std::vector<std::string>> SplitTokensByBrackets(
+      const std::string &input);
   static std::tuple<std::string, std::vector<std::string>,
-                    std::vector<std::string>> SplitTokensByClauses(
+                    std::vector<std::string>, std::vector<std::string>> SplitTokensByClauses(
       const std::string &input);
   static bool IsValidIdentifier(const std::string &str);
   static bool IsInteger(const std::string &str);

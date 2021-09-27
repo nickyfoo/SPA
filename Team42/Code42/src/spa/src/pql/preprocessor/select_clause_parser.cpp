@@ -97,13 +97,13 @@ PQLQuery *SelectClauseParser::get_clauses() {
     for (PatternClause *pattern : *pattern_ret) {
       if (left_relationship_str != "_" &&
       (pattern->get_synonym()->get_synonym() == left_relationship_str
-      || pattern->get_left_ref()->get_value() == left_relationship_str)) {
+      || pattern->get_variable()->get_value() == left_relationship_str)) {
         has_one_repeated_synonym = true;
       }
 
       if (right_relationship_str != "_" &&
       (pattern->get_synonym()->get_synonym() == right_relationship_str
-      || pattern->get_left_ref()->get_value() == right_relationship_str)) {
+      || pattern->get_variable()->get_value() == right_relationship_str)) {
         has_one_repeated_synonym ? has_two_repeated_synonyms = true
             : has_one_repeated_synonym = true;
       }
@@ -138,7 +138,7 @@ std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
     for (std::string r: relationship_clause) {
       printf("%s\n", r.c_str());
     }
-    // should only contain RelRef, left_ref_ and right_ref_
+    // should only contain RelRef, variable_ and exp_spec_
     if (relationship_clause.size() != 3) {
       return nullptr;
     }
@@ -189,23 +189,34 @@ std::vector<PatternClause *> *SelectClauseParser::MakePatternClause(
   printf("MIHERE2\n");
   for (std::vector<std::string> pattern_clause : pattern_clauses) {
     printf("MIHERE3\n");
-    if (pattern_clause.size() != 3) {
-      for (std::string p : pattern_clause) {
-        printf("%s\n", p.c_str());
-      }
+    if (pattern_clause.size() < 3 || pattern_clause.size() > 4) {
       return nullptr;
     }
     std::string synonym = pattern_clause.at(0);
     std::string left_ref = pattern_clause.at(1);
     std::string right_ref = pattern_clause.at(2);
     printf("MIHERE4\n");
-    auto *pattern = MakePatternRef(synonym, left_ref, right_ref);
-    printf("MIHERE5\n");
-    if (pattern == nullptr) {
-      return nullptr;
-    } else {
-      ret->push_back(pattern);
+    if (pattern_clause.size() == 3) {  // assign and while
+      auto *pattern = MakePatternRef(synonym, left_ref, right_ref);
+      printf("MIHERE5\n");
+      if (pattern == nullptr ||
+      !(pattern->get_type() == EntityType::Assign || pattern->get_type() == EntityType::While)) {
+        return nullptr;
+      } else {
+        ret->push_back(pattern);
+      }
+    } else {  // if
+      std::string last_ref = pattern_clause.at(3);
+      auto *pattern = MakePatternRef(synonym, left_ref, right_ref);
+      printf("MIHERE55\n");
+      if (last_ref != "_" || pattern == nullptr || pattern->get_type() != EntityType::If) {
+        return nullptr;
+      } else {
+        ret->push_back(pattern);
+      }
     }
+
+
   }
 
   return ret;
@@ -217,11 +228,14 @@ PatternClause *SelectClauseParser::MakePatternRef(const std::string &synonym,
   PatternClause *ret;
   auto *ent_ref = new EntRef();
   if ((synonym_to_entity_->find(synonym) != synonym_to_entity_->end())
-      && (synonym_to_entity_->at(synonym)->get_type() == EntityType::Assign)) {
+      && (synonym_to_entity_->at(synonym)->get_type() == EntityType::Assign
+      || synonym_to_entity_->at(synonym)->get_type() == EntityType::If
+      || synonym_to_entity_->at(synonym)->get_type() == EntityType::While)) {
     ret = new PatternClause(synonym_to_entity_->find(synonym)->second);
   } else {
     return nullptr;
   }
+
   if ((synonym_to_entity_->find(left_ref) != synonym_to_entity_->end()) &&
       (synonym_to_entity_->at(left_ref)->get_type() == EntityType::Variable)) {
     ent_ref->set_synonym(left_ref);
@@ -232,6 +246,7 @@ PatternClause *SelectClauseParser::MakePatternRef(const std::string &synonym,
   } else {
     return nullptr;
   }
+
   if (ret->set_ref(ent_ref, right_ref)) {
     return ret;
   } else {

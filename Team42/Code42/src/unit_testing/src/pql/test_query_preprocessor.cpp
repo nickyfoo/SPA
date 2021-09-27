@@ -607,9 +607,9 @@ TEST_CASE("Pattern_AssignWildCardAndPattern_ReturnsCorrect") {
   REQUIRE(clause->get_query_patterns()->size() == 1);
   PatternClause *pattern = clause->get_query_patterns()->at(0);
   REQUIRE(pattern->get_synonym()->get_synonym() == "a");
-  REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::WildCard);
-  REQUIRE(pattern->get_right_ref()->get_expression() == "count+1");
-  REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::WildCard);
+  REQUIRE(pattern->get_exp_spec()->get_expression() == "count+1");
+  REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == false);
   REQUIRE(clause->has_one_repeated_synonym() == false);
   REQUIRE(clause->has_two_repeated_synonyms() == false);
 }
@@ -625,9 +625,9 @@ TEST_CASE("Pattern_AssignWildCardAndPartialPattern_ReturnsCorrect") {
   REQUIRE(clause->get_query_patterns()->size() == 1);
   PatternClause *pattern = clause->get_query_patterns()->at(0);
   REQUIRE(pattern->get_synonym()->get_synonym() == "a");
-  REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::WildCard);
-  REQUIRE(pattern->get_right_ref()->get_expression() == "count+1");
-  REQUIRE(pattern->get_right_ref()->IsPartialPattern() == true);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::WildCard);
+  REQUIRE(pattern->get_exp_spec()->get_expression() == "count+1");
+  REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == true);
   REQUIRE(clause->has_one_repeated_synonym() == false);
   REQUIRE(clause->has_two_repeated_synonyms() == false);
 }
@@ -643,8 +643,8 @@ TEST_CASE("Pattern_AssignWildCardAndWildCard_ReturnsCorrect") {
   REQUIRE(clause->get_query_patterns()->size() == 1);
   PatternClause *pattern = clause->get_query_patterns()->at(0);
   REQUIRE(pattern->get_synonym()->get_synonym() == "a");
-  REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::WildCard);
-  REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::WildCard);
+  REQUIRE(pattern->get_exp_spec()->IsWildCard() == true);
   REQUIRE(clause->has_one_repeated_synonym() == false);
   REQUIRE(clause->has_two_repeated_synonyms() == false);
 }
@@ -660,10 +660,10 @@ TEST_CASE("Pattern_AssignVarAndPartialPattern_ReturnsCorrect") {
   REQUIRE(clause->get_query_patterns()->size() == 1);
   PatternClause *pattern = clause->get_query_patterns()->at(0);
   REQUIRE(pattern->get_synonym()->get_synonym() == "a");
-  REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Argument);
-  REQUIRE(pattern->get_left_ref()->get_argument() == "normSq");
-  REQUIRE(pattern->get_right_ref()->get_expression() == "cenX*cenX");
-  REQUIRE(pattern->get_right_ref()->IsPartialPattern() == true);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::Argument);
+  REQUIRE(pattern->get_variable()->get_argument() == "normSq");
+  REQUIRE(pattern->get_exp_spec()->get_expression() == "cenX*cenX");
+  REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == true);
   REQUIRE(clause->has_one_repeated_synonym() == false);
   REQUIRE(clause->has_two_repeated_synonyms() == false);
 }
@@ -684,10 +684,10 @@ TEST_CASE("Select_OneSuchThatAndPattern_ReturnsCorrect") {
   REQUIRE(clause->get_query_patterns()->size() == 1);
   PatternClause *pattern = clause->get_query_patterns()->at(0);
   REQUIRE(pattern->get_synonym()->get_synonym() == "a");
-  REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Argument);
-  REQUIRE(pattern->get_left_ref()->get_argument() == "count");
-  REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
-  REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::Argument);
+  REQUIRE(pattern->get_variable()->get_argument() == "count");
+  REQUIRE(pattern->get_exp_spec()->IsWildCard() == true);
+  REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == false);
 
   REQUIRE(clause->has_one_repeated_synonym() == true);
   REQUIRE(clause->has_two_repeated_synonyms() == false);
@@ -709,10 +709,10 @@ TEST_CASE("Select_OnePatternAndSuchThat_ReturnsCorrect") {
   REQUIRE(clause->get_query_patterns()->size() == 1);
   PatternClause *pattern = clause->get_query_patterns()->at(0);
   REQUIRE(pattern->get_synonym()->get_synonym() == "a");
-  REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Synonym);
-  REQUIRE(pattern->get_left_ref()->get_synonym() == "v");
-  REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
-  REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern->get_variable()->get_synonym() == "v");
+  REQUIRE(pattern->get_exp_spec()->IsWildCard() == true);
+  REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == false);
 
   REQUIRE(clause->has_one_repeated_synonym() == true);
   REQUIRE(clause->has_two_repeated_synonyms() == true);
@@ -734,9 +734,9 @@ TEST_CASE("Select_UsesRepeatEntity_ReturnsCorrect") {
   REQUIRE(clause->get_query_patterns()->size() == 1);
   PatternClause *pattern = clause->get_query_patterns()->at(0);
   REQUIRE(pattern->get_synonym()->get_synonym() == "a");
-  REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Argument);
-  REQUIRE(pattern->get_left_ref()->get_argument() == "x");
-  REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::Argument);
+  REQUIRE(pattern->get_variable()->get_argument() == "x");
+  REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == false);
 
   REQUIRE(clause->has_one_repeated_synonym() == true);
   REQUIRE(clause->has_two_repeated_synonyms() == true);
@@ -759,10 +759,10 @@ TEST_CASE("Select_ComplexQueryWithSimilarPatternNaming_ReturnsCorrect") {
   REQUIRE(clause->get_query_patterns()->size() == 1);
   PatternClause *pattern = clause->get_query_patterns()->at(0);
   REQUIRE(pattern->get_synonym()->get_synonym() == "pattern");
-  REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Argument);
-  REQUIRE(pattern->get_left_ref()->get_argument() == "x");
-  REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
-  REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::Argument);
+  REQUIRE(pattern->get_variable()->get_argument() == "x");
+  REQUIRE(pattern->get_exp_spec()->IsWildCard() == true);
+  REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == false);
 
   REQUIRE(clause->has_one_repeated_synonym() == true);
   REQUIRE(clause->has_two_repeated_synonyms() == true);
@@ -785,10 +785,10 @@ TEST_CASE("Select_ComplexQueryWithSimilarNaming_ReturnsCorrect") {
   REQUIRE(clause->get_query_patterns()->size() == 1);
   PatternClause *pattern = clause->get_query_patterns()->at(0);
   REQUIRE(pattern->get_synonym()->get_synonym() == "pattern");
-  REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Synonym);
-  REQUIRE(pattern->get_left_ref()->get_synonym() == "select");
-  REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
-  REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern->get_variable()->get_synonym() == "select");
+  REQUIRE(pattern->get_exp_spec()->IsWildCard() == true);
+  REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == false);
 
   REQUIRE(clause->has_one_repeated_synonym() == true);
   REQUIRE(clause->has_two_repeated_synonyms() == true);
@@ -841,9 +841,9 @@ TEST_CASE("Pattern_KeywordPatternInPattern_ReturnsCorrect") {
   REQUIRE(clause->get_query_patterns()->size() == 1);
   PatternClause *pattern = clause->get_query_patterns()->at(0);
   REQUIRE(pattern->get_synonym()->get_synonym() == "a");
-  REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::WildCard);
-  REQUIRE(pattern->get_right_ref()->get_expression() == "pattern");
-  REQUIRE(pattern->get_right_ref()->IsPartialPattern() == false);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::WildCard);
+  REQUIRE(pattern->get_exp_spec()->get_expression() == "pattern");
+  REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == false);
 
   REQUIRE(clause->has_one_repeated_synonym() == false);
   REQUIRE(clause->has_two_repeated_synonyms() == false);
@@ -873,9 +873,9 @@ TEST_CASE("Select_FollowsPattern_ReturnsCorrect") {
   REQUIRE(clause->get_query_patterns()->size() == 1);
   PatternClause *pattern = clause->get_query_patterns()->at(0);
   REQUIRE(pattern->get_synonym()->get_synonym() == "a");
-  REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Synonym);
-  REQUIRE(pattern->get_left_ref()->get_synonym() == "v");
-  REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern->get_variable()->get_synonym() == "v");
+  REQUIRE(pattern->get_exp_spec()->IsWildCard() == true);
 
   REQUIRE(clause->has_one_repeated_synonym() == true);
   REQUIRE(clause->has_two_repeated_synonyms() == false);
@@ -994,17 +994,17 @@ TEST_CASE("Pattern_PatternAndPattern_ReturnsCorrect") {
 
   PatternClause *pattern = clause->get_query_patterns()->at(0);
   REQUIRE(pattern->get_synonym()->get_synonym() == "a");
-  REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Synonym);
-  REQUIRE(pattern->get_left_ref()->get_synonym() == "v");
-  REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern->get_variable()->get_synonym() == "v");
+  REQUIRE(pattern->get_exp_spec()->IsWildCard() == true);
 
   PatternClause *pattern2 = clause->get_query_patterns()->at(1);
   REQUIRE(pattern2->get_synonym()->get_synonym() == "a1");
-  REQUIRE(pattern2->get_left_ref()->get_type() == EntRefType::Synonym);
-  REQUIRE(pattern2->get_left_ref()->get_synonym() == "v");
-  REQUIRE(pattern2->get_right_ref()->IsWildCard() == false);
-  REQUIRE(pattern2->get_right_ref()->IsPartialPattern() == false);
-  REQUIRE(pattern2->get_right_ref()->get_expression() == "x");
+  REQUIRE(pattern2->get_variable()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern2->get_variable()->get_synonym() == "v");
+  REQUIRE(pattern2->get_exp_spec()->IsWildCard() == false);
+  REQUIRE(pattern2->get_exp_spec()->IsPartialPattern() == false);
+  REQUIRE(pattern2->get_exp_spec()->get_expression() == "x");
 }
 
 TEST_CASE("Pattern_PatternAndPatternAndPattern_ReturnsCorrect") {
@@ -1019,25 +1019,25 @@ TEST_CASE("Pattern_PatternAndPatternAndPattern_ReturnsCorrect") {
 
   PatternClause *pattern = clause->get_query_patterns()->at(0);
   REQUIRE(pattern->get_synonym()->get_synonym() == "a");
-  REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Synonym);
-  REQUIRE(pattern->get_left_ref()->get_synonym() == "v");
-  REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern->get_variable()->get_synonym() == "v");
+  REQUIRE(pattern->get_exp_spec()->IsWildCard() == true);
 
   PatternClause *pattern2 = clause->get_query_patterns()->at(1);
   REQUIRE(pattern2->get_synonym()->get_synonym() == "a1");
-  REQUIRE(pattern2->get_left_ref()->get_type() == EntRefType::Synonym);
-  REQUIRE(pattern2->get_left_ref()->get_synonym() == "v");
-  REQUIRE(pattern2->get_right_ref()->IsWildCard() == false);
-  REQUIRE(pattern2->get_right_ref()->IsPartialPattern() == false);
-  REQUIRE(pattern2->get_right_ref()->get_expression() == "x");
+  REQUIRE(pattern2->get_variable()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern2->get_variable()->get_synonym() == "v");
+  REQUIRE(pattern2->get_exp_spec()->IsWildCard() == false);
+  REQUIRE(pattern2->get_exp_spec()->IsPartialPattern() == false);
+  REQUIRE(pattern2->get_exp_spec()->get_expression() == "x");
 
   PatternClause *pattern3 = clause->get_query_patterns()->at(2);
   REQUIRE(pattern3->get_synonym()->get_synonym() == "a2");
-  REQUIRE(pattern3->get_left_ref()->get_type() == EntRefType::Synonym);
-  REQUIRE(pattern3->get_left_ref()->get_synonym() == "v2");
-  REQUIRE(pattern3->get_right_ref()->IsWildCard() == false);
-  REQUIRE(pattern3->get_right_ref()->IsPartialPattern() == true);
-  REQUIRE(pattern3->get_right_ref()->get_expression() == "x2");
+  REQUIRE(pattern3->get_variable()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern3->get_variable()->get_synonym() == "v2");
+  REQUIRE(pattern3->get_exp_spec()->IsWildCard() == false);
+  REQUIRE(pattern3->get_exp_spec()->IsPartialPattern() == true);
+  REQUIRE(pattern3->get_exp_spec()->get_expression() == "x2");
 }
 
 TEST_CASE("Pattern_PatternPatternPattern_ReturnsCorrect") {
@@ -1052,25 +1052,25 @@ TEST_CASE("Pattern_PatternPatternPattern_ReturnsCorrect") {
 
   PatternClause *pattern = clause->get_query_patterns()->at(0);
   REQUIRE(pattern->get_synonym()->get_synonym() == "a");
-  REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Synonym);
-  REQUIRE(pattern->get_left_ref()->get_synonym() == "v");
-  REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern->get_variable()->get_synonym() == "v");
+  REQUIRE(pattern->get_exp_spec()->IsWildCard() == true);
 
   PatternClause *pattern2 = clause->get_query_patterns()->at(1);
   REQUIRE(pattern2->get_synonym()->get_synonym() == "a1");
-  REQUIRE(pattern2->get_left_ref()->get_type() == EntRefType::Synonym);
-  REQUIRE(pattern2->get_left_ref()->get_synonym() == "v");
-  REQUIRE(pattern2->get_right_ref()->IsWildCard() == false);
-  REQUIRE(pattern2->get_right_ref()->IsPartialPattern() == false);
-  REQUIRE(pattern2->get_right_ref()->get_expression() == "x");
+  REQUIRE(pattern2->get_variable()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern2->get_variable()->get_synonym() == "v");
+  REQUIRE(pattern2->get_exp_spec()->IsWildCard() == false);
+  REQUIRE(pattern2->get_exp_spec()->IsPartialPattern() == false);
+  REQUIRE(pattern2->get_exp_spec()->get_expression() == "x");
 
   PatternClause *pattern3 = clause->get_query_patterns()->at(2);
   REQUIRE(pattern3->get_synonym()->get_synonym() == "a2");
-  REQUIRE(pattern3->get_left_ref()->get_type() == EntRefType::Synonym);
-  REQUIRE(pattern3->get_left_ref()->get_synonym() == "v2");
-  REQUIRE(pattern3->get_right_ref()->IsWildCard() == false);
-  REQUIRE(pattern3->get_right_ref()->IsPartialPattern() == true);
-  REQUIRE(pattern3->get_right_ref()->get_expression() == "x2");
+  REQUIRE(pattern3->get_variable()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern3->get_variable()->get_synonym() == "v2");
+  REQUIRE(pattern3->get_exp_spec()->IsWildCard() == false);
+  REQUIRE(pattern3->get_exp_spec()->IsPartialPattern() == true);
+  REQUIRE(pattern3->get_exp_spec()->get_expression() == "x2");
 }
 
 TEST_CASE("Complex_MultiplePatternAndSuchThat_ReturnsCorrect") {
@@ -1102,13 +1102,147 @@ TEST_CASE("Complex_MultiplePatternAndSuchThat_ReturnsCorrect") {
 
   PatternClause *pattern = clause->get_query_patterns()->at(0);
   REQUIRE(pattern->get_synonym()->get_synonym() == "a");
-  REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Synonym);
-  REQUIRE(pattern->get_left_ref()->get_synonym() == "v");
-  REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern->get_variable()->get_synonym() == "v");
+  REQUIRE(pattern->get_exp_spec()->IsWildCard() == true);
 
   PatternClause *pattern2 = clause->get_query_patterns()->at(1);
   REQUIRE(pattern2->get_synonym()->get_synonym() == "a1");
-  REQUIRE(pattern2->get_left_ref()->get_type() == EntRefType::Synonym);
-  REQUIRE(pattern2->get_left_ref()->get_synonym() == "v");
-  REQUIRE(pattern2->get_right_ref()->IsWildCard() == true);
+  REQUIRE(pattern2->get_variable()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern2->get_variable()->get_synonym() == "v");
+  REQUIRE(pattern2->get_exp_spec()->IsWildCard() == true);
+}
+
+TEST_CASE("Pattern_WhileVariableWildCard_ReturnsCorrect") {
+  std::string ss = "while w; variable v;\n"
+                   "Select w pattern w (v , _)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "w");
+  REQUIRE(clause->get_query_relationships()->size() == 0);
+  REQUIRE(clause->get_query_patterns()->size() == 1);
+  PatternClause *pattern = clause->get_query_patterns()->at(0);
+  REQUIRE(pattern->get_synonym()->get_synonym() == "w");
+  REQUIRE(pattern->get_type() == EntityType::While);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern->get_variable()->get_synonym() == "v");
+}
+
+TEST_CASE("Pattern_WhileArgumentWildCard_ReturnsCorrect") {
+  std::string ss = "while w;\n"
+                   "Select w pattern w ('x', _)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "w");
+  REQUIRE(clause->get_query_relationships()->size() == 0);
+  REQUIRE(clause->get_query_patterns()->size() == 1);
+  PatternClause *pattern = clause->get_query_patterns()->at(0);
+  REQUIRE(pattern->get_synonym()->get_synonym() == "w");
+  REQUIRE(pattern->get_type() == EntityType::While);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::Argument);
+  REQUIRE(pattern->get_variable()->get_argument() == "x");
+}
+
+TEST_CASE("Pattern_WhileWildCardWildCard_ReturnsCorrect") {
+  std::string ss = "while w;\n"
+                   "Select w pattern w (_, _)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "w");
+  REQUIRE(clause->get_query_relationships()->size() == 0);
+  REQUIRE(clause->get_query_patterns()->size() == 1);
+  PatternClause *pattern = clause->get_query_patterns()->at(0);
+  REQUIRE(pattern->get_synonym()->get_synonym() == "w");
+  REQUIRE(pattern->get_type() == EntityType::While);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::WildCard);
+}
+
+TEST_CASE("Pattern_WhileVariableAndNonWildCard_ReturnsWrong") {
+  std::string ss = "assign w; variable v, v1;\n"
+                   "Select w pattern w (v, v1)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("Pattern_IfVariableWildCard_ReturnsCorrect") {
+  std::string ss = "if ifs; variable v;\n"
+                   "Select ifs pattern ifs (v , _, _)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "ifs");
+  REQUIRE(clause->get_query_relationships()->size() == 0);
+  REQUIRE(clause->get_query_patterns()->size() == 1);
+  PatternClause *pattern = clause->get_query_patterns()->at(0);
+  REQUIRE(pattern->get_synonym()->get_synonym() == "ifs");
+  REQUIRE(pattern->get_type() == EntityType::If);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern->get_variable()->get_synonym() == "v");
+}
+
+TEST_CASE("Pattern_IfArgumentWildCard_ReturnsCorrect") {
+  std::string ss = "if ifs;\n"
+                   "Select ifs pattern ifs ('x', _, _)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "ifs");
+  REQUIRE(clause->get_query_relationships()->size() == 0);
+  REQUIRE(clause->get_query_patterns()->size() == 1);
+  PatternClause *pattern = clause->get_query_patterns()->at(0);
+  REQUIRE(pattern->get_synonym()->get_synonym() == "ifs");
+  REQUIRE(pattern->get_type() == EntityType::If);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::Argument);
+  REQUIRE(pattern->get_variable()->get_argument() == "x");
+}
+
+TEST_CASE("Pattern_IfWildCardWildCard_ReturnsCorrect") {
+  std::string ss = "if ifs;\n"
+                   "Select ifs pattern ifs (_, _, _)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "ifs");
+  REQUIRE(clause->get_query_relationships()->size() == 0);
+  REQUIRE(clause->get_query_patterns()->size() == 1);
+  PatternClause *pattern = clause->get_query_patterns()->at(0);
+  REQUIRE(pattern->get_synonym()->get_synonym() == "ifs");
+  REQUIRE(pattern->get_type() == EntityType::If);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::WildCard);
+}
+
+TEST_CASE("Pattern_IfVariableAndNonLeftWildCard_ReturnsWrong") {
+  std::string ss = "if ifs; variable v, v1;\n"
+                   "Select ifs pattern ifs (v, v1, _)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("Pattern_IfVariableAndNonRightWildCard_ReturnsWrong") {
+  std::string ss = "if ifs; variable v, v1;\n"
+                   "Select ifs pattern ifs (v, _, v1)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("Pattern_IfVariableAndNonLeftAndRightWildCard_ReturnsWrong") {
+  std::string ss = "if ifs; variable v, v1; while w;\n"
+                   "Select ifs pattern ifs (v, v1, w)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("Pattern_IfVariableWithMissingArgument_ReturnsWrong") {
+  std::string ss = "if ifs; variable v;\n"
+                   "Select ifs pattern ifs (v,_)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
 }

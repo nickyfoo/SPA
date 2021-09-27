@@ -7,16 +7,18 @@
 class PatternClause {
  public:
   explicit PatternClause(EntityDeclaration *synonym);
-  bool set_ref(EntRef *left, const std::string &right);
+  bool set_ref(EntRef *variable, const std::string &right_ref);
   EntityDeclaration *get_synonym();
-  EntRef *get_left_ref();
-  ExpressionSpec *get_right_ref();
+  EntityType get_type();
+  EntRef *get_variable();
+  ExpressionSpec *get_exp_spec();
 
  private:
   EntityDeclaration *synonym_;
-  EntRef *left_ref_;
-  ExpressionSpec *right_ref_;
-  bool IsValidRightRef(std::string ref);
+  EntityType type_;
+  EntRef *variable_;
+  ExpressionSpec *exp_spec_;
+  bool IsValidExpSpec(std::string ref);
   static bool IsChar(char c);
   static bool IsExp(char c);
 };

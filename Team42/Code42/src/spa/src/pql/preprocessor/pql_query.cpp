@@ -6,6 +6,7 @@
 PQLQuery::PQLQuery(std::vector<std::string> *return_entities,
                    std::vector<SuchThatClause *> *relationships,
                    std::vector<PatternClause *> *patterns,
+                   std::vector<WithClause *> *withs,
                    std::unordered_map<std::string, EntityDeclaration *>
                    *synonym_to_entities,
                    bool has_one_repeated_synonym, bool has_two_repeated_synonyms) {

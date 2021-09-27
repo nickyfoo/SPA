@@ -38,7 +38,7 @@ PQLQuery *SelectClauseParser::get_clauses() {
   auto *select_ret = new std::vector<std::string>();
   auto *such_that_ret = new std::vector<SuchThatClause *>();
   auto *pattern_ret = new std::vector<PatternClause *>();
-//  auto *with_ret = new std::vector<WithClause *>();
+  auto *with_ret = new std::vector<WithClause *>();
   printf("HEREBOI1\n");
   std::vector<std::string> select_clauses = SplitSelect(select_clause);
   if (select_clauses.empty()) {  // invalid select syntax
@@ -77,6 +77,16 @@ PQLQuery *SelectClauseParser::get_clauses() {
     }
   }
 
+  for (const std::string &with_clause : with_clauses) {
+    std::vector<WithClause *> *with = MakeWithClause(with_clause);
+    if (with == nullptr) {
+      return nullptr;
+    }
+    for (WithClause *clause : *with) {
+      with_ret->push_back(clause);
+    }
+  }
+
   // check for whether there are repeated synonyms
   bool has_one_repeated_synonym = false;
   bool has_two_repeated_synonyms = false;
@@ -111,7 +121,7 @@ PQLQuery *SelectClauseParser::get_clauses() {
   }
 
   auto *ret = new PQLQuery(select_ret, such_that_ret,
-                           pattern_ret, synonym_to_entity_,
+                           pattern_ret, with_ret, synonym_to_entity_,
                            has_one_repeated_synonym, has_two_repeated_synonyms);
 
   return ret;
@@ -215,8 +225,31 @@ std::vector<PatternClause *> *SelectClauseParser::MakePatternClause(
         ret->push_back(pattern);
       }
     }
+  }
 
+  return ret;
+}
 
+std::vector<WithClause *> *SelectClauseParser::MakeWithClause(
+    std::string with_statement) {
+  auto *ret = new std::vector<WithClause *>();
+  printf("MIHERE1\n");
+  if (with_statement.empty()) {
+    return nullptr;
+  }
+
+  std::vector<std::pair<std::string, std::string>> with_clauses = SplitTokensByEqual(with_statement);
+  printf("MIHERE2\n");
+  for (std::pair<std::string, std::string> with_clause : with_clauses) {
+    printf("MIHERE3\n");
+    std::string left_ref = with_clause.first;
+    std::string right_ref = with_clause.second;
+    auto *with = MakeWithRef(left_ref, right_ref);
+    if (with == nullptr) {
+      return nullptr;
+    } else {
+      ret->push_back(with);
+    }
   }
 
   return ret;
@@ -254,7 +287,51 @@ PatternClause *SelectClauseParser::MakePatternRef(const std::string &synonym,
   }
 }
 
+WithClause *SelectClauseParser::MakeWithRef(std::string left_ref,
+                                            std::string right_ref) {
+  WithClause *ret;
+  if (IsValidWithRef(left_ref) && IsValidWithRef(right_ref)) {
+    return new WithClause(left_ref, right_ref);
+  } else {
+    return nullptr;
+  }
+}
 
+bool SelectClauseParser::IsValidWithRef(std::string ref) {
+  EntityType left_type;
+  EntityType right_type;
+  if (IsInteger(ref)) {
+    left_type = EntityType::None;
+  } else {
+    std::vector<std::string> left = SplitTokensByDelimiter(ref, ".");
+    if (left.size() == 1) {  // prog line
+
+    } else if (left.size() == 2) {
+      std::string synonym = left.at(0);
+      std::string attribute = left.at(1);
+      left_type = synonym_to_entity_->find(ref)->second->get_type();
+      switch (left_type) {
+        case EntityType::Procedure:
+          return attribute == "procName";
+        case EntityType::Variable:
+          return attribute == "varName";
+        case EntityType::Constant:
+          return attribute == "value";
+        case EntityType::Call:
+          return attribute == "procName" || attribute == "stmt#";
+        case EntityType::Print:
+        case EntityType::Read:
+          return attribute == "varName" || attribute == "stmt#";
+        case EntityType::Stmt:
+        case EntityType::While:
+        case EntityType::Assign:
+          return attribute == "stmt#";
+        default:
+          return false;
+      }
+    }
+  }
+}
 SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(
     SuchThatClause *relationship, std::string left_ref) {
   SuchThatRef *left_such_that_ref;
@@ -639,6 +716,30 @@ std::vector<std::vector<std::string>> SelectClauseParser::SplitTokensByBrackets(
     for (std::string token : tokens) {
       printf("token is: %s\n", token.c_str());
     }
+  }
+
+  return ret;
+}
+
+
+std::vector<std::pair<std::string, std::string>> SelectClauseParser::SplitTokensByEqual(
+    const std::string &input) {
+  const std::string equal = "=";
+  const std::string AND_DELIM = " and ";
+  std::vector<std::pair<std::string, std::string>> ret;
+  std::vector<std::string> clauses = SplitTokensByDelimiter(input, AND_DELIM);
+  for (std::string clause : clauses) {
+    printf("clause here is: %s\n", clause.c_str());
+    clause.erase(remove(clause.begin(),
+                        clause.end(),
+                        ' '), clause.end());
+    std::vector<std::string> with_clause = SplitTokensByDelimiter(clause, equal);
+    if (with_clause.size() != 2) {
+      return {};
+    }
+    std::string left_ref = with_clause.at(0);
+    std::string right_ref = with_clause.at(1);
+    ret.push_back(std::make_pair(left_ref, right_ref));
   }
 
   return ret;

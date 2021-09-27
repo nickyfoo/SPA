@@ -946,10 +946,169 @@ TEST_CASE("SuchThat_FollowsAndParentAndUses_ReturnsCorrect") {
 
 }
 
+TEST_CASE("SuchThat_FollowsSTParentSTUses_ReturnsCorrect") {
+  std::string ss = "stmt s1; stmt s2; while w;\n"
+                   "Select s1 such that Follows(s1,s2) such that Parent(s2, w) such that Uses(w, 'x')";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "s1");
+  REQUIRE(clause->get_query_relationships()->size() == 3);
+
+  SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+  REQUIRE(relationship->get_type() == RelRef::Follows);
+  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
+  REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_synonym() == "s2");
+
+  SuchThatClause *relationship2 = clause->get_query_relationships()->at(1);
+  REQUIRE(relationship2->get_type() == RelRef::Parent);
+  REQUIRE(relationship2->get_left_ref()->get_stmt_ref().get_synonym() == "s2");
+  REQUIRE(relationship2->get_right_ref()->get_stmt_ref().get_synonym() == "w");
+
+  SuchThatClause *relationship3 = clause->get_query_relationships()->at(2);
+  REQUIRE(relationship3->get_type() == RelRef::UsesS);
+  REQUIRE(relationship3->get_left_ref()->get_stmt_ref().get_synonym() == "w");
+  REQUIRE(relationship3->get_right_ref()->get_ent_ref().get_argument() == "x");
+
+  REQUIRE(clause->get_query_patterns()->size() == 0);
+
+}
+
 TEST_CASE("SuchThat_FollowsAndParentAndPattern_ReturnsCorrect") {
   std::string ss = "stmt s1; stmt s2; while w; assign a; \n"
                    "Select s1 such that Follows(s1,s2) and Parent(s2, w) and pattern a(_, _)";
   auto *query = new QueryPreprocessor(ss);
   PQLQuery *clause = query->get_pql_query();
   REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("Pattern_PatternAndPattern_ReturnsCorrect") {
+  std::string ss = "assign a, a1; variable v;\n"
+                   "Select v pattern a(v, _) and a1(v, 'x')";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "v");
+  REQUIRE(clause->get_query_relationships()->size() == 0);
+  REQUIRE(clause->get_query_patterns()->size() == 2);
+
+  PatternClause *pattern = clause->get_query_patterns()->at(0);
+  REQUIRE(pattern->get_synonym()->get_synonym() == "a");
+  REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern->get_left_ref()->get_synonym() == "v");
+  REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
+
+  PatternClause *pattern2 = clause->get_query_patterns()->at(1);
+  REQUIRE(pattern2->get_synonym()->get_synonym() == "a1");
+  REQUIRE(pattern2->get_left_ref()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern2->get_left_ref()->get_synonym() == "v");
+  REQUIRE(pattern2->get_right_ref()->IsWildCard() == false);
+  REQUIRE(pattern2->get_right_ref()->IsPartialPattern() == false);
+  REQUIRE(pattern2->get_right_ref()->get_expression() == "x");
+}
+
+TEST_CASE("Pattern_PatternAndPatternAndPattern_ReturnsCorrect") {
+  std::string ss = "assign a, a1, a2; variable v, v2;\n"
+                   "Select v pattern a(v, _) and a1(v, 'x') and a2(v2, _'x2'_)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "v");
+  REQUIRE(clause->get_query_relationships()->size() == 0);
+  REQUIRE(clause->get_query_patterns()->size() == 3);
+
+  PatternClause *pattern = clause->get_query_patterns()->at(0);
+  REQUIRE(pattern->get_synonym()->get_synonym() == "a");
+  REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern->get_left_ref()->get_synonym() == "v");
+  REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
+
+  PatternClause *pattern2 = clause->get_query_patterns()->at(1);
+  REQUIRE(pattern2->get_synonym()->get_synonym() == "a1");
+  REQUIRE(pattern2->get_left_ref()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern2->get_left_ref()->get_synonym() == "v");
+  REQUIRE(pattern2->get_right_ref()->IsWildCard() == false);
+  REQUIRE(pattern2->get_right_ref()->IsPartialPattern() == false);
+  REQUIRE(pattern2->get_right_ref()->get_expression() == "x");
+
+  PatternClause *pattern3 = clause->get_query_patterns()->at(2);
+  REQUIRE(pattern3->get_synonym()->get_synonym() == "a2");
+  REQUIRE(pattern3->get_left_ref()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern3->get_left_ref()->get_synonym() == "v2");
+  REQUIRE(pattern3->get_right_ref()->IsWildCard() == false);
+  REQUIRE(pattern3->get_right_ref()->IsPartialPattern() == true);
+  REQUIRE(pattern3->get_right_ref()->get_expression() == "x2");
+}
+
+TEST_CASE("Pattern_PatternPatternPattern_ReturnsCorrect") {
+  std::string ss = "assign a, a1, a2; variable v, v2;\n"
+                   "Select v pattern a(v, _) pattern a1(v, 'x') pattern a2(v2, _'x2'_)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "v");
+  REQUIRE(clause->get_query_relationships()->size() == 0);
+  REQUIRE(clause->get_query_patterns()->size() == 3);
+
+  PatternClause *pattern = clause->get_query_patterns()->at(0);
+  REQUIRE(pattern->get_synonym()->get_synonym() == "a");
+  REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern->get_left_ref()->get_synonym() == "v");
+  REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
+
+  PatternClause *pattern2 = clause->get_query_patterns()->at(1);
+  REQUIRE(pattern2->get_synonym()->get_synonym() == "a1");
+  REQUIRE(pattern2->get_left_ref()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern2->get_left_ref()->get_synonym() == "v");
+  REQUIRE(pattern2->get_right_ref()->IsWildCard() == false);
+  REQUIRE(pattern2->get_right_ref()->IsPartialPattern() == false);
+  REQUIRE(pattern2->get_right_ref()->get_expression() == "x");
+
+  PatternClause *pattern3 = clause->get_query_patterns()->at(2);
+  REQUIRE(pattern3->get_synonym()->get_synonym() == "a2");
+  REQUIRE(pattern3->get_left_ref()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern3->get_left_ref()->get_synonym() == "v2");
+  REQUIRE(pattern3->get_right_ref()->IsWildCard() == false);
+  REQUIRE(pattern3->get_right_ref()->IsPartialPattern() == true);
+  REQUIRE(pattern3->get_right_ref()->get_expression() == "x2");
+}
+
+TEST_CASE("Complex_MultiplePatternAndSuchThat_ReturnsCorrect") {
+  std::string ss = "stmt s; assign a, a1; variable v;"
+                   "Select <s, a1, a, v> pattern a (v, _) and a1 (v, _) "
+                   "such that Modifies(a, v) and Parent*(_, s)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->size() == 4);
+  REQUIRE(clause->get_query_entities()->at(0) == "s");
+  REQUIRE(clause->get_query_entities()->at(1) == "a1");
+  REQUIRE(clause->get_query_entities()->at(2) == "a");
+  REQUIRE(clause->get_query_entities()->at(3) == "v");
+
+  REQUIRE(clause->get_query_relationships()->size() == 2);
+
+  SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+  REQUIRE(relationship->get_type() == RelRef::ModifiesS);
+  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "a");
+  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
+
+  SuchThatClause *relationship2 = clause->get_query_relationships()->at(1);
+  REQUIRE(relationship2->get_type() == RelRef::ParentT);
+  REQUIRE(relationship2->get_left_ref()->get_stmt_ref().get_type() == StmtRefType::WildCard);
+  REQUIRE(relationship2->get_right_ref()->get_stmt_ref().get_synonym() == "s");
+
+  REQUIRE(clause->get_query_patterns()->size() == 2);
+
+  PatternClause *pattern = clause->get_query_patterns()->at(0);
+  REQUIRE(pattern->get_synonym()->get_synonym() == "a");
+  REQUIRE(pattern->get_left_ref()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern->get_left_ref()->get_synonym() == "v");
+  REQUIRE(pattern->get_right_ref()->IsWildCard() == true);
+
+  PatternClause *pattern2 = clause->get_query_patterns()->at(1);
+  REQUIRE(pattern2->get_synonym()->get_synonym() == "a1");
+  REQUIRE(pattern2->get_left_ref()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern2->get_left_ref()->get_synonym() == "v");
+  REQUIRE(pattern2->get_right_ref()->IsWildCard() == true);
 }

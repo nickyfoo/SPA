@@ -39,13 +39,14 @@ PQLQuery *SelectClauseParser::get_clauses() {
   auto *such_that_ret = new std::vector<SuchThatClause *>();
   auto *pattern_ret = new std::vector<PatternClause *>();
 //  auto *with_ret = new std::vector<WithClause *>();
-
+  printf("HEREBOI1\n");
   std::vector<std::string> select_clauses = SplitSelect(select_clause);
   if (select_clauses.empty()) {  // invalid select syntax
     return nullptr;
   }
-
+  printf("HEREBOI2\n");
   for (const std::string &select : select_clauses) {
+    printf("select: %s\n", select.c_str());
     if (select == "BOOLEAN" && select_clauses.size() == 1) {
       select_ret ->push_back(select);
     } else if (synonym_to_entity_->find(select) == synonym_to_entity_->end()) {
@@ -54,7 +55,7 @@ PQLQuery *SelectClauseParser::get_clauses() {
       select_ret->push_back(select);
     }
   }
-
+  printf("HEREBOI3\n");
   for (const std::string &such_that_clause : such_that_clauses) {
     printf("actually came here\n");
     std::vector<SuchThatClause *> *relationship = MakeSuchThatClause(such_that_clause);
@@ -65,7 +66,7 @@ PQLQuery *SelectClauseParser::get_clauses() {
       such_that_ret->push_back(clause);
     }
   }
-
+  printf("HEREBOI4\n");
   for (const std::string &pattern_clause : pattern_clauses) {
     std::vector<PatternClause *> *pattern = MakePatternClause(pattern_clause);
     if (pattern == nullptr) {
@@ -494,7 +495,7 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
       }
     } else if (c == '(' || c == '<') {
       std::string curr_ss = ss.str();
-      if (curr_ss.at(curr_ss.length() - 1) == ' ') {
+      if (c == '(' && curr_ss.at(curr_ss.length() - 1) == ' ') {
         ss.str("");
         ss << curr_ss.substr(0, curr_ss.length() - 1);
       }
@@ -525,6 +526,7 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
   }
 
   std::string clean_input = ss.str();
+  printf("clean input: %s\n", clean_input.c_str());
   pos = clean_input.find(' ');
   if (pos == std::string::npos) {  // find first whitespace
     return make_tuple(select_clause, such_that_clauses, pattern_clauses, with_clauses);

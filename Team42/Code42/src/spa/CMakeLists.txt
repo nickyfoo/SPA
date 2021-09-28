@@ -6,7 +6,7 @@ file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.hpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*/*.h")
-add_library(spa ${srcs} ${headers} src/pql/preprocessor/with_clause.cpp src/pql/preprocessor/with_clause.h)
+add_library(spa ${srcs} ${headers} src/pql/preprocessor/with_clause.cpp src/pql/preprocessor/with_clause.h src/pql/preprocessor/line_ref.cpp src/pql/preprocessor/line_ref.h)
 # this makes the headers accessible for other projects which uses spa lib
 target_include_directories(
         spa

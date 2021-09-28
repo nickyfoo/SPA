@@ -2,6 +2,7 @@
 #include <tuple>
 #include "select_clause_parser.h"
 #include "such_that_clause.h"
+#include "line_ref.h"
 
 SelectClauseParser::SelectClauseParser() {
   this->synonym_to_entity_ = nullptr;
@@ -148,7 +149,7 @@ std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
     for (std::string r: relationship_clause) {
       printf("%s\n", r.c_str());
     }
-    // should only contain RelRef, variable_ and exp_spec_
+
     if (relationship_clause.size() != 3) {
       return nullptr;
     }
@@ -400,6 +401,7 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(
   SuchThatRef *left_such_that_ref;
   StmtRef left_stmt_ref;
   EntRef left_ent_ref;
+  LineRef left_line_ref;
   RelRef type = relationship->get_type();
 
   // existing synonym_
@@ -407,6 +409,12 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(
     EntityType entity_type = synonym_to_entity_->at(left_ref)->get_type();
     switch (entity_type) {
       case EntityType::Assign:
+        if (type == RelRef::Affects || type == RelRef::AffectsT) {
+          left_stmt_ref.set_synonym(left_ref);
+          left_stmt_ref.set_entity_type(entity_type);
+          left_such_that_ref = new SuchThatRef(left_stmt_ref);
+          break;
+        }
       case EntityType::Call:
       case EntityType::If:
       case EntityType::Print:
@@ -418,14 +426,21 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(
           return nullptr;
         }
       case EntityType::Stmt:
-        case EntityType::While: {
-          left_stmt_ref.set_synonym(left_ref);
-          left_stmt_ref.set_entity_type(entity_type);
-          left_such_that_ref = new SuchThatRef(left_stmt_ref);
+      case EntityType::While: {
+        if (type == RelRef::Next || type == RelRef::NextT) {
+          left_line_ref.set_synonym(left_ref);
+          left_line_ref.set_entity_type(entity_type);
+          left_such_that_ref = new SuchThatRef(left_line_ref);
           break;
         }
+        left_stmt_ref.set_synonym(left_ref);
+        left_stmt_ref.set_entity_type(entity_type);
+        left_such_that_ref = new SuchThatRef(left_stmt_ref);
+        break;
+      }
       case EntityType::Procedure:
-        if (type == RelRef::Uses || type == RelRef::Modifies) {
+        if (type == RelRef::Uses || type == RelRef::Modifies
+        || type == RelRef::Calls || type == RelRef::CallsT) {
           left_ent_ref.set_synonym(left_ref);
           left_such_that_ref = new SuchThatRef(left_ent_ref);
           break;
@@ -438,16 +453,25 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(
         }
       }
       case EntityType::Constant:
-        default:
-          return nullptr;;
+      default:
+        return nullptr;;
     }
   } else if (IsInteger(left_ref)) {  // statement number
-    left_stmt_ref.set_stmt_num(std::stoi(left_ref));
-    left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    if (type == RelRef::Next || type == RelRef::NextT) {
+      left_line_ref.set_line_num(std::stoi(left_ref));
+      left_such_that_ref = new SuchThatRef(left_line_ref);
+    } else {
+      left_stmt_ref.set_stmt_num(std::stoi(left_ref));
+      left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    }
   } else if (left_ref == "_") {  // wild card
-    if (type == RelRef::Uses || type == RelRef::Modifies) {
+    if (type == RelRef::Uses || type == RelRef::Modifies
+    || type == RelRef::Calls || type == RelRef::CallsT) {
       left_ent_ref.set_wild_card();
       left_such_that_ref = new SuchThatRef(left_ent_ref);
+    } else if (type == RelRef::Next || type == RelRef::NextT) {
+      left_line_ref.set_wild_card();
+      left_such_that_ref = new SuchThatRef(left_line_ref);
     } else {
       left_stmt_ref.set_wild_card();
       left_such_that_ref = new SuchThatRef(left_stmt_ref);
@@ -470,6 +494,7 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefRight(
   SuchThatRef *right_such_that_ref;
   StmtRef right_stmt_ref;
   EntRef right_ent_ref;
+  LineRef right_line_ref;
   RelRef type = relationship->get_type();
 
   // existing synonym_
@@ -486,28 +511,56 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefRight(
         }
       }
       case EntityType::Assign:
+        if (type == RelRef::Affects || type == RelRef::AffectsT) {
+          right_stmt_ref.set_synonym(right_ref);
+          right_stmt_ref.set_entity_type(entity_type);
+          right_such_that_ref = new SuchThatRef(right_stmt_ref);
+          break;
+        }
       case EntityType::Call:
       case EntityType::If:
       case EntityType::Print:
       case EntityType::Read:
       case EntityType::Stmt:
       case EntityType::While: {
-        right_stmt_ref.set_synonym(right_ref);
-        right_stmt_ref.set_entity_type(entity_type);
-        right_such_that_ref = new SuchThatRef(right_stmt_ref);
-        break;
+        if (type == RelRef::Next || type == RelRef::NextT) {
+          right_line_ref.set_synonym(right_ref);
+          right_line_ref.set_entity_type(entity_type);
+          right_such_that_ref = new SuchThatRef(right_line_ref);
+          break;
+        } else if (type != RelRef::Affects && type != RelRef::AffectsT){
+          right_stmt_ref.set_synonym(right_ref);
+          right_stmt_ref.set_entity_type(entity_type);
+          right_such_that_ref = new SuchThatRef(right_stmt_ref);
+          break;
+        }
+
       }
       case EntityType::Procedure:
+        if (type == RelRef::Calls || type == RelRef::CallsT) {
+          right_ent_ref.set_synonym(right_ref);
+          right_such_that_ref = new SuchThatRef(right_ent_ref);
+          break;
+        }
       case EntityType::Constant:
       default:return nullptr;;
     }
   } else if (IsInteger(right_ref)) {  // statement number
-    right_stmt_ref.set_stmt_num(std::stoi(right_ref));
-    right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    if (type == RelRef::Next || type == RelRef::NextT) {
+      right_line_ref.set_line_num(std::stoi(right_ref));
+      right_such_that_ref = new SuchThatRef(right_line_ref);
+    } else {
+      right_stmt_ref.set_stmt_num(std::stoi(right_ref));
+      right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    }
   } else if (right_ref == "_") {  // wild card
-    if (type == RelRef::Uses || type == RelRef::Modifies) {
+    if (type == RelRef::Uses || type == RelRef::Modifies
+    || type == RelRef::Calls || type == RelRef::CallsT) {
       right_ent_ref.set_wild_card();
       right_such_that_ref = new SuchThatRef(right_ent_ref);
+    } else if (type == RelRef::Next || type == RelRef::NextT) {
+      right_line_ref.set_wild_card();
+      right_such_that_ref = new SuchThatRef(right_line_ref);
     } else {
       right_stmt_ref.set_wild_card();
       right_such_that_ref = new SuchThatRef(right_stmt_ref);

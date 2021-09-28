@@ -1582,3 +1582,311 @@ TEST_CASE("With_TwoWiths_ReturnsCorrect") {
   REQUIRE(with2->get_right_type() == EntityType::None);
   REQUIRE(with2->get_right_attr_value_type() == AttrValueType::Name);
 }
+
+TEST_CASE("Next_ArgAndStmt_ReturnsNullPtr") {
+  std::string ss = "stmt s1; stmt s2;\n"
+                   "Select s1 such that Next('test', s2)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("Next_StmtAndStmt_ReturnsCorrect") {
+  std::string ss = "stmt s1; stmt s2;\n"
+                   "Select s1 such that Next(s1, s2)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "s1");
+  REQUIRE(clause->get_query_relationships()->size() == 1);
+  REQUIRE(clause->get_query_relationships()->at(0)->get_type() == RelRef::Next);
+  REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_line_ref().get_synonym() == "s1");
+  REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_line_ref().get_synonym() == "s2");
+  REQUIRE(clause->get_query_patterns()->size() == 0);
+  REQUIRE(clause->has_one_repeated_synonym() == false);
+  REQUIRE(clause->has_two_repeated_synonyms() == false);
+}
+
+TEST_CASE("Next_StmtAndStmtNum_ReturnsCorrect") {
+  std::string ss = "stmt s1; stmt s2;\n"
+                   "Select s1 such that Next(s1, 2)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "s1");
+  REQUIRE(clause->get_query_relationships()->size() == 1);
+  REQUIRE(clause->get_query_relationships()->at(0)->get_type() == RelRef::Next);
+  REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_line_ref().get_synonym() == "s1");
+  REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_line_ref().get_line_num() == 2);
+  REQUIRE(clause->get_query_patterns()->size() == 0);
+  REQUIRE(clause->has_one_repeated_synonym() == false);
+  REQUIRE(clause->has_two_repeated_synonyms() == false);
+}
+
+TEST_CASE("Next_StmtNumAndStmt_ReturnsCorrect") {
+  std::string ss = "stmt s1; stmt s2;\n"
+                   "Select s1 such that Next(1, s2)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "s1");
+  REQUIRE(clause->get_query_relationships()->size() == 1);
+  REQUIRE(clause->get_query_relationships()->at(0)->get_type() == RelRef::Next);
+  REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_line_ref().get_line_num() == 1);
+  REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_line_ref().get_synonym() == "s2");
+  REQUIRE(clause->get_query_patterns()->size() == 0);
+  REQUIRE(clause->has_one_repeated_synonym() == false);
+  REQUIRE(clause->has_two_repeated_synonyms() == false);
+}
+
+TEST_CASE("Next_StmtAndVar_ReturnsNullPtr") {
+  std::string ss = "stmt s1; stmt s2; var v;\n"
+                   "Select s1 such that Next(s1, v)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("Next_StmtAndProcedure_ReturnsNullPtr") {
+  std::string ss = "stmt s1; stmt s2; procedure p;\n"
+                   "Select s1 such that Next(s1, p)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("NextT_StmtAndStmt_ReturnsCorrect") {
+  std::string ss = "stmt s1; stmt s2;\n"
+                   "Select s1 such that Next*(s1,s2)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "s1");
+  REQUIRE(clause->get_query_relationships()->size() == 1);
+  SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+  REQUIRE(relationship->get_type() == RelRef::NextT);
+  REQUIRE(relationship->get_left_ref()->get_line_ref().get_synonym() == "s1");
+  REQUIRE(relationship->get_right_ref()->get_line_ref().get_synonym() == "s2");
+  REQUIRE(clause->get_query_patterns()->size() == 0);
+  REQUIRE(clause->has_one_repeated_synonym() == false);
+  REQUIRE(clause->has_two_repeated_synonyms() == false);
+}
+
+TEST_CASE("NextT_StmtAndStmtNum_ReturnsCorrect") {
+  std::string ss = "stmt s1; stmt s2;\n"
+                   "Select s1 such that Next*(s1,2)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "s1");
+  REQUIRE(clause->get_query_relationships()->size() == 1);
+  SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+  REQUIRE(relationship->get_type() == RelRef::NextT);
+  REQUIRE(relationship->get_left_ref()->get_line_ref().get_synonym() == "s1");
+  REQUIRE(relationship->get_right_ref()->get_line_ref().get_line_num() == 2);
+  REQUIRE(clause->get_query_patterns()->size() == 0);
+  REQUIRE(clause->has_one_repeated_synonym() == false);
+  REQUIRE(clause->has_two_repeated_synonyms() == false);
+}
+
+TEST_CASE("Affects_ArgAndAssign_ReturnsNullPtr") {
+  std::string ss = "assign a;\n"
+                   "Select a such that Affects('test', a)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("Affects_AssignAndAssign_ReturnsCorrect") {
+  std::string ss = "assign a1; assign a2;\n"
+                   "Select a1 such that Affects(a1, a2)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "a1");
+  REQUIRE(clause->get_query_relationships()->size() == 1);
+  REQUIRE(clause->get_query_relationships()->at(0)->get_type() == RelRef::Affects);
+  REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_stmt_ref().get_synonym() == "a1");
+  REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_stmt_ref().get_synonym() == "a2");
+  REQUIRE(clause->get_query_patterns()->size() == 0);
+  REQUIRE(clause->has_one_repeated_synonym() == false);
+  REQUIRE(clause->has_two_repeated_synonyms() == false);
+}
+
+TEST_CASE("Affects_AssignAndStmtNum_ReturnsCorrect") {
+  std::string ss = "assign a;\n"
+                   "Select a such that Affects(a, 2)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "a");
+  REQUIRE(clause->get_query_relationships()->size() == 1);
+  REQUIRE(clause->get_query_relationships()->at(0)->get_type() == RelRef::Affects);
+  REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_stmt_ref().get_synonym() == "a");
+  REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_stmt_ref().get_stmt_num() == 2);
+  REQUIRE(clause->get_query_patterns()->size() == 0);
+  REQUIRE(clause->has_one_repeated_synonym() == false);
+  REQUIRE(clause->has_two_repeated_synonyms() == false);
+}
+
+TEST_CASE("Affects_StmtNumAndAssign_ReturnsCorrect") {
+  std::string ss = "assign a;\n"
+                   "Select a such that Affects(1, a)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "a");
+  REQUIRE(clause->get_query_relationships()->size() == 1);
+  REQUIRE(clause->get_query_relationships()->at(0)->get_type() == RelRef::Affects);
+  REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_stmt_ref().get_stmt_num() == 1);
+  REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_stmt_ref().get_synonym() == "a");
+  REQUIRE(clause->get_query_patterns()->size() == 0);
+  REQUIRE(clause->has_one_repeated_synonym() == false);
+  REQUIRE(clause->has_two_repeated_synonyms() == false);
+}
+
+TEST_CASE("Affects_AssignAndStmt_ReturnsNullPtr") {
+  std::string ss = "assign a; stmt s;\n"
+                   "Select s such that Affects(a, s)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("Affects_AssignAndProcedure_ReturnsNullPtr") {
+  std::string ss = "assign a; procedure p;\n"
+                   "Select a such that Affects(a, p)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("AffectsT_AssigAndAssign_ReturnsCorrect") {
+  std::string ss = "assign a1, a2;\n"
+                   "Select a1 such that Affects*(a1,a2)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "a1");
+  REQUIRE(clause->get_query_relationships()->size() == 1);
+  SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+  REQUIRE(relationship->get_type() == RelRef::AffectsT);
+  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "a1");
+  REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_synonym() == "a2");
+  REQUIRE(clause->get_query_patterns()->size() == 0);
+  REQUIRE(clause->has_one_repeated_synonym() == false);
+  REQUIRE(clause->has_two_repeated_synonyms() == false);
+}
+
+TEST_CASE("AffectsT_AssignAndStmtNum_ReturnsCorrect") {
+  std::string ss = "stmt a1;\n"
+                   "Select a1 such that Affects*(a1,2)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "a1");
+  REQUIRE(clause->get_query_relationships()->size() == 1);
+  SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+  REQUIRE(relationship->get_type() == RelRef::AffectsT);
+  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "a1");
+  REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_stmt_num() == 2);
+  REQUIRE(clause->get_query_patterns()->size() == 0);
+  REQUIRE(clause->has_one_repeated_synonym() == false);
+  REQUIRE(clause->has_two_repeated_synonyms() == false);
+}
+
+TEST_CASE("Calls_ProcedureAndProcedure_ReturnsCorrect") {
+  std::string ss = "procedure proc, proc2;\n"
+                   "Select proc such that Calls(proc, proc2)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "proc");
+  REQUIRE(clause->get_query_relationships()->size() == 1);
+  SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+  REQUIRE(relationship->get_type() == RelRef::Calls);
+  REQUIRE(relationship->get_left_ref()->get_ent_ref().get_synonym() == "proc");
+  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "proc2");
+  REQUIRE(clause->get_query_patterns()->size() == 0);
+  REQUIRE(clause->has_one_repeated_synonym() == false);
+  REQUIRE(clause->has_two_repeated_synonyms() == false);
+}
+
+TEST_CASE("Calls_ProcedureAndAssign_ReturnsNullPtr") {
+  std::string ss = "procedure proc; assign a;\n"
+                   "Select proc such that Calls(proc, a)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("Calls_ProcedureAndArgument_ReturnsCorrect") {
+  std::string ss = "procedure proc;\n"
+                   "Select proc such that Calls(proc, 'computeCentroid')";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "proc");
+  REQUIRE(clause->get_query_relationships()->size() == 1);
+  SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+  REQUIRE(relationship->get_type() == RelRef::Calls);
+  REQUIRE(relationship->get_left_ref()->get_ent_ref().get_synonym() == "proc");
+  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_argument() == "computeCentroid");
+  REQUIRE(clause->get_query_patterns()->size() == 0);
+}
+
+TEST_CASE("CallsT_ProcedureAndProcedure_ReturnsCorrect") {
+  std::string ss = "procedure proc, proc2;\n"
+                   "Select proc such that Calls*(proc, proc2)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "proc");
+  REQUIRE(clause->get_query_relationships()->size() == 1);
+  SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+  REQUIRE(relationship->get_type() == RelRef::CallsT);
+  REQUIRE(relationship->get_left_ref()->get_ent_ref().get_synonym() == "proc");
+  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "proc2");
+  REQUIRE(clause->get_query_patterns()->size() == 0);
+  REQUIRE(clause->has_one_repeated_synonym() == false);
+  REQUIRE(clause->has_two_repeated_synonyms() == false);
+}
+
+TEST_CASE("CallsT_ProcedureAndAssign_ReturnsNullPtr") {
+  std::string ss = "procedure proc; assign a;\n"
+                   "Select proc such that Calls*(proc, a)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("CallsT_ProcedureAndArgument_ReturnsCorrect") {
+  std::string ss = "procedure proc;\n"
+                   "Select proc such that Calls*(proc, 'computeCentroid')";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "proc");
+  REQUIRE(clause->get_query_relationships()->size() == 1);
+  SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+  REQUIRE(relationship->get_type() == RelRef::CallsT);
+  REQUIRE(relationship->get_left_ref()->get_ent_ref().get_synonym() == "proc");
+  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_argument() == "computeCentroid");
+  REQUIRE(clause->get_query_patterns()->size() == 0);
+}
+
+TEST_CASE("CallsT_ProcedureAndWhile_ReturnsNullPtr") {
+  std::string ss = "procedure proc; while w;\n"
+                   "Select proc such that Calls(proc, w)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("CallsT_IntegerAndProcedure_ReturnsNullPtr") {
+  std::string ss = "procedure proc; while w;\n"
+                   "Select proc such that Calls(5, proc)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}

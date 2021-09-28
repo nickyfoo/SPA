@@ -13,6 +13,12 @@ enum class RelRef {
   Modifies,
   ModifiesS,
   ModifiesP,
+  Calls,
+  CallsT,
+  Next,
+  NextT,
+  Affects,
+  AffectsT,
   None
 };
 

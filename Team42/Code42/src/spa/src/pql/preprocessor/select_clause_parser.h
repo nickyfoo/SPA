@@ -48,4 +48,5 @@ class SelectClauseParser {
   static bool IsValidIdentifier(const std::string &str);
   std::tuple<std::string, EntityType, AttrValueType> GetWithRefTypeAndAttrValueType(std::string ref);
   static bool IsInteger(const std::string &str);
+  bool IsValidAttr(const std::string &select);
 };

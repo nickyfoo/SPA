@@ -35,7 +35,6 @@ PQLQuery *SelectClauseParser::get_clauses() {
   std::vector<std::string> such_that_clauses = std::get<1>(clauses);
   std::vector<std::string> pattern_clauses = std::get<2>(clauses);
   std::vector<std::string> with_clauses = std::get<3>(clauses);
-
   auto *select_ret = new std::vector<std::string>();
   auto *such_that_ret = new std::vector<SuchThatClause *>();
   auto *pattern_ret = new std::vector<PatternClause *>();
@@ -47,10 +46,14 @@ PQLQuery *SelectClauseParser::get_clauses() {
   for (const std::string &select : select_clauses) {
     if (select == "BOOLEAN" && select_clauses.size() == 1) {
       select_ret ->push_back(select);
-    } else if (synonym_to_entity_->find(select) == synonym_to_entity_->end()) {
-      return nullptr;
-    } else {
+    } else if (synonym_to_entity_->find(select) != synonym_to_entity_->end()) {
       select_ret->push_back(select);
+    } else {
+      if (IsValidAttr(select)) {
+        select_ret->push_back(select);
+      } else {
+        return nullptr;
+      }
     }
   }
   for (const std::string &such_that_clause : such_that_clauses) {
@@ -842,4 +845,56 @@ std::vector<std::pair<std::string, std::string>> SelectClauseParser::SplitTokens
   }
 
   return ret;
+}
+bool SelectClauseParser::IsValidAttr(const std::string &select) {
+  std::vector<std::string> synonym_attribute = SplitTokensByDelimiter(select, ".");
+  if (synonym_attribute.size() != 2) {
+    return false;
+  }
+  std::string synonym = synonym_attribute.at(0);
+  std::string attribute = synonym_attribute.at(1);
+
+  EntityType type = synonym_to_entity_->find(synonym)->second->get_type();
+  AttrValueType attr_value_type = AttrValueType::None;
+  switch (type) {
+    case EntityType::Procedure:
+      if (attribute == "procName")
+        attr_value_type = AttrValueType::Name;
+      break;
+    case EntityType::Variable:
+      if (attribute == "varName")
+        attr_value_type = AttrValueType::Name;
+      break;
+    case EntityType::Constant:
+      if (attribute == "value")
+        attr_value_type = AttrValueType::Integer;
+      break;
+    case EntityType::Call:
+      if (attribute == "procName") {
+        attr_value_type = AttrValueType::Name;
+        break;
+      } else if (attribute == "stmt#") {
+        attr_value_type = AttrValueType::Integer;
+        break;
+      }
+    case EntityType::Print:
+    case EntityType::Read:
+      if (attribute == "varName") attr_value_type = AttrValueType::Name;
+      else if (attribute == "stmt#") attr_value_type = AttrValueType::Integer;
+      break;
+    case EntityType::Stmt:
+    case EntityType::While:
+    case EntityType::If:
+    case EntityType::Assign:
+      if (attribute == "stmt#") attr_value_type = AttrValueType::Integer;
+      break;
+    default:
+      break;
+  }
+
+  if (attr_value_type != AttrValueType::None) {
+    return true;
+  } else {
+    return false;
+  }
 }

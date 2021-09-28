@@ -828,7 +828,6 @@ TEST_CASE("Pattern_HavingTwoContinuousSymbols_ReturnsNullPtr") {
   REQUIRE(clause == nullptr);
 }
 
-
 TEST_CASE("Pattern_KeywordPatternInPattern_ReturnsCorrect") {
   std::string ss = "assign a;"
                    "Select a pattern a ( _ , ' pattern ')";
@@ -1938,4 +1937,28 @@ TEST_CASE("Select_ComplexQueries_ReturnsCorrect") {
   REQUIRE(with->get_right_ref() == "n");
   REQUIRE(with->get_right_type() == EntityType::ProgLine);
   REQUIRE(with->get_right_attr_value_type() == AttrValueType::Integer);
+}
+
+TEST_CASE("Select_ValidAttr_ReturnsCorrect") {
+  std::string ss = "stmt s1; stmt s2;\n"
+                   "Select s1.stmt# such that Follows(s1, 2)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "s1.stmt#");
+  REQUIRE(clause->get_query_relationships()->size() == 1);
+  REQUIRE(clause->get_query_relationships()->at(0)->get_type() == RelRef::Follows);
+  REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
+  REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_stmt_ref().get_stmt_num() == 2);
+  REQUIRE(clause->get_query_patterns()->size() == 0);
+  REQUIRE(clause->has_one_repeated_synonym() == false);
+  REQUIRE(clause->has_two_repeated_synonyms() == false);
+}
+
+TEST_CASE("Select_InvalidAttr_ReturnsCorrect") {
+  std::string ss = "stmt s1; stmt s2;\n"
+                   "Select s1.varName such that Follows(s1, 2)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
 }

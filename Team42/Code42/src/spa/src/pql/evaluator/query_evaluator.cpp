@@ -130,6 +130,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         }
         break;
       }
+      case EntityType::ProgLine:
       case EntityType::None:
         return new std::vector<std::string>{};
     }

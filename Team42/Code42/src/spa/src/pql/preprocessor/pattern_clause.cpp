@@ -10,7 +10,6 @@ PatternClause::PatternClause(EntityDeclaration *synonym) {
 bool PatternClause::set_ref(EntRef *variable, const std::string &right_ref) {
   this->variable_ = variable;
   if (this->type_ == EntityType::Assign) {
-    printf("GOT COME HERE LA \n");
     return IsValidExpSpec(right_ref);
   } else {
     return right_ref == "_";

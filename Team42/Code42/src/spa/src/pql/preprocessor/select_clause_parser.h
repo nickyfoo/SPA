@@ -41,6 +41,7 @@ class SelectClauseParser {
       const std::string &input);
   static std::vector<std::pair<std::string, std::string>> SplitTokensByEqual(
       const std::string &input);
+  static std::vector<std::string> SplitTokensByEqualDelim(std::string input);
   static std::tuple<std::string, std::vector<std::string>,
                     std::vector<std::string>, std::vector<std::string>> SplitTokensByClauses(
       const std::string &input);

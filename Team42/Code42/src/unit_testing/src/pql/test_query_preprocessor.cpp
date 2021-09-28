@@ -1890,3 +1890,52 @@ TEST_CASE("CallsT_IntegerAndProcedure_ReturnsNullPtr") {
   PQLQuery *clause = query->get_pql_query();
   REQUIRE(clause == nullptr);
 }
+
+TEST_CASE("Select_ProgLine_ReturnsCorrect") {
+  std::string ss = "prog_line n;"
+                   "Select n such that Next* (5, n) and Next* (n, 12)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "n");
+  REQUIRE(clause->get_query_relationships()->size() == 2);
+
+  SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+  REQUIRE(relationship->get_type() == RelRef::NextT);
+  REQUIRE(relationship->get_left_ref()->get_line_ref().get_line_num() == 5);
+  REQUIRE(relationship->get_right_ref()->get_line_ref().get_synonym() == "n");
+
+  SuchThatClause *relationship2 = clause->get_query_relationships()->at(1);
+  REQUIRE(relationship2->get_type() == RelRef::NextT);
+  REQUIRE(relationship2->get_left_ref()->get_line_ref().get_synonym() == "n");
+  REQUIRE(relationship2->get_right_ref()->get_line_ref().get_line_num() == 12);
+
+  REQUIRE(clause->get_query_patterns()->size() == 0);
+}
+
+
+TEST_CASE("Select_ComplexQueries_ReturnsCorrect") {
+  std::string ss = "prog_line n; stmt s, s1;"
+                   "Select s such that Follows* (s, s1) with s1.stmt#=n and n=10";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "s");
+  REQUIRE(clause->get_query_relationships()->size() == 1);
+
+  SuchThatClause *relationship = clause->get_query_relationships()->at(0);
+  REQUIRE(relationship->get_type() == RelRef::FollowsT);
+  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s");
+  REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_synonym() == "s1");
+
+  REQUIRE(clause->get_query_patterns()->size() == 0);
+  REQUIRE(clause->get_query_withs()->size() == 2);
+
+  WithClause *with = clause->get_query_withs()->at(0);
+  REQUIRE(with->get_left_ref() == "s1");
+  REQUIRE(with->get_left_type() == EntityType::Stmt);
+  REQUIRE(with->get_left_attr_value_type() == AttrValueType::Integer);
+  REQUIRE(with->get_right_ref() == "n");
+  REQUIRE(with->get_right_type() == EntityType::ProgLine);
+  REQUIRE(with->get_right_attr_value_type() == AttrValueType::Integer);
+}

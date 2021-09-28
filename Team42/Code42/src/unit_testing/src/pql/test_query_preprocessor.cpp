@@ -1246,3 +1246,339 @@ TEST_CASE("Pattern_IfVariableWithMissingArgument_ReturnsWrong") {
   PQLQuery *clause = query->get_pql_query();
   REQUIRE(clause == nullptr);
 }
+
+TEST_CASE("With_ProcedureAndProcedure_ReturnsCorrect") {
+  std::string ss = "procedure p1, p2;\n"
+                   "Select p1 with p1.procName = p2.procName";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "p1");
+  REQUIRE(clause->get_query_withs()->size() == 1);
+  WithClause *with = clause->get_query_withs()->at(0);
+  REQUIRE(with->get_left_ref() == "p1");
+  REQUIRE(with->get_left_type() == EntityType::Procedure);
+  REQUIRE(with->get_left_attr_value_type() == AttrValueType::Name);
+  REQUIRE(with->get_right_ref() == "p2");
+  REQUIRE(with->get_right_type() == EntityType::Procedure);
+  REQUIRE(with->get_right_attr_value_type() == AttrValueType::Name);
+}
+
+TEST_CASE("With_ProcedureAndCall_ReturnsCorrect") {
+  std::string ss = "procedure p; call c;\n"
+                   "Select p with p.procName = c.procName";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "p");
+  REQUIRE(clause->get_query_withs()->size() == 1);
+  WithClause *with = clause->get_query_withs()->at(0);
+  REQUIRE(with->get_left_ref() == "p");
+  REQUIRE(with->get_left_type() == EntityType::Procedure);
+  REQUIRE(with->get_left_attr_value_type() == AttrValueType::Name);
+  REQUIRE(with->get_right_ref() == "c");
+  REQUIRE(with->get_right_type() == EntityType::Call);
+  REQUIRE(with->get_right_attr_value_type() == AttrValueType::Name);
+}
+
+TEST_CASE("With_ProcedureAndVariable_ReturnsCorrect") {
+  std::string ss = "procedure p; variable v;\n"
+                   "Select v with p.procName = v.varName";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "v");
+  REQUIRE(clause->get_query_withs()->size() == 1);
+  WithClause *with = clause->get_query_withs()->at(0);
+  REQUIRE(with->get_left_ref() == "p");
+  REQUIRE(with->get_left_type() == EntityType::Procedure);
+  REQUIRE(with->get_left_attr_value_type() == AttrValueType::Name);
+  REQUIRE(with->get_right_ref() == "v");
+  REQUIRE(with->get_right_type() == EntityType::Variable);
+  REQUIRE(with->get_right_attr_value_type() == AttrValueType::Name);
+}
+
+TEST_CASE("With_CallAndRead_ReturnsCorrect") {
+  std::string ss = "call c; read r;\n"
+                   "Select c with c.procName = r.varName";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "c");
+  REQUIRE(clause->get_query_withs()->size() == 1);
+  WithClause *with = clause->get_query_withs()->at(0);
+  REQUIRE(with->get_left_ref() == "c");
+  REQUIRE(with->get_left_type() == EntityType::Call);
+  REQUIRE(with->get_left_attr_value_type() == AttrValueType::Name);
+  REQUIRE(with->get_right_ref() == "r");
+  REQUIRE(with->get_right_type() == EntityType::Read);
+  REQUIRE(with->get_right_attr_value_type() == AttrValueType::Name);
+}
+
+TEST_CASE("With_PrintAndPrint_ReturnsCorrect") {
+  std::string ss = "print pn1, pn2;\n"
+                   "Select pn1 with pn1.varName = pn2.varName";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "pn1");
+  REQUIRE(clause->get_query_withs()->size() == 1);
+  WithClause *with = clause->get_query_withs()->at(0);
+  REQUIRE(with->get_left_ref() == "pn1");
+  REQUIRE(with->get_left_type() == EntityType::Print);
+  REQUIRE(with->get_left_attr_value_type() == AttrValueType::Name);
+  REQUIRE(with->get_right_ref() == "pn2");
+  REQUIRE(with->get_right_type() == EntityType::Print);
+  REQUIRE(with->get_right_attr_value_type() == AttrValueType::Name);
+}
+
+TEST_CASE("With_ConstantAndConstant_ReturnsCorrect") {
+  std::string ss = "constant c1, c2;\n"
+                   "Select c1 with c1.value = c2.value";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "c1");
+  REQUIRE(clause->get_query_withs()->size() == 1);
+  WithClause *with = clause->get_query_withs()->at(0);
+  REQUIRE(with->get_left_ref() == "c1");
+  REQUIRE(with->get_left_type() == EntityType::Constant);
+  REQUIRE(with->get_left_attr_value_type() == AttrValueType::Integer);
+  REQUIRE(with->get_right_ref() == "c2");
+  REQUIRE(with->get_right_type() == EntityType::Constant);
+  REQUIRE(with->get_right_attr_value_type() == AttrValueType::Integer);
+}
+
+TEST_CASE("With_ConstantAndStmt_ReturnsCorrect") {
+  std::string ss = "constant c1; stmt s;\n"
+                   "Select c1 with c1.value = s.stmt#";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "c1");
+  REQUIRE(clause->get_query_withs()->size() == 1);
+  WithClause *with = clause->get_query_withs()->at(0);
+  REQUIRE(with->get_left_ref() == "c1");
+  REQUIRE(with->get_left_type() == EntityType::Constant);
+  REQUIRE(with->get_left_attr_value_type() == AttrValueType::Integer);
+  REQUIRE(with->get_right_ref() == "s");
+  REQUIRE(with->get_right_type() == EntityType::Stmt);
+  REQUIRE(with->get_right_attr_value_type() == AttrValueType::Integer);
+}
+
+TEST_CASE("With_StmtAndRead_ReturnsCorrect") {
+  std::string ss = "stmt s; read r;\n"
+                   "Select r with s.stmt# = r.stmt#";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "r");
+  REQUIRE(clause->get_query_withs()->size() == 1);
+  WithClause *with = clause->get_query_withs()->at(0);
+  REQUIRE(with->get_left_ref() == "s");
+  REQUIRE(with->get_left_type() == EntityType::Stmt);
+  REQUIRE(with->get_left_attr_value_type() == AttrValueType::Integer);
+  REQUIRE(with->get_right_ref() == "r");
+  REQUIRE(with->get_right_type() == EntityType::Read);
+  REQUIRE(with->get_right_attr_value_type() == AttrValueType::Integer);
+}
+
+TEST_CASE("With_PrintAndCall_ReturnsCorrect") {
+  std::string ss = "print pn; call c;\n"
+                   "Select pn with pn.stmt# = c.stmt#";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "pn");
+  REQUIRE(clause->get_query_withs()->size() == 1);
+  WithClause *with = clause->get_query_withs()->at(0);
+  REQUIRE(with->get_left_ref() == "pn");
+  REQUIRE(with->get_left_type() == EntityType::Print);
+  REQUIRE(with->get_left_attr_value_type() == AttrValueType::Integer);
+  REQUIRE(with->get_right_ref() == "c");
+  REQUIRE(with->get_right_type() == EntityType::Call);
+  REQUIRE(with->get_right_attr_value_type() == AttrValueType::Integer);
+}
+
+TEST_CASE("With_WhileAndAssign_ReturnsCorrect") {
+  std::string ss = "while w; assign a;\n"
+                   "Select a with w.stmt# = a.stmt#";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "a");
+  REQUIRE(clause->get_query_withs()->size() == 1);
+  WithClause *with = clause->get_query_withs()->at(0);
+  REQUIRE(with->get_left_ref() == "w");
+  REQUIRE(with->get_left_type() == EntityType::While);
+  REQUIRE(with->get_left_attr_value_type() == AttrValueType::Integer);
+  REQUIRE(with->get_right_ref() == "a");
+  REQUIRE(with->get_right_type() == EntityType::Assign);
+  REQUIRE(with->get_right_attr_value_type() == AttrValueType::Integer);
+}
+
+TEST_CASE("With_ProcedureAndStmt_ReturnsNullPtr") {
+  std::string ss = "procedure p; stmt s;\n"
+                   "Select p with p.procName = s.stmt#";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("With_ProcedureAndProcedureWrongKeyword_ReturnsNullPtr") {
+  std::string ss = "procedure p1, p2;\n"
+                   "Select p1 with p1.procName = p2.varName";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("With_PrintAndPrintWithDiffType_ReturnsNullPtr") {
+  std::string ss = "print pn1, pn2;\n"
+                   "Select pn1 with pn1.varName = pn2.stmt#";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("With_DoubleEqualSign_ReturnsNullPtr") {
+  std::string ss = "print pn1, pn2;\n"
+                   "Select pn1 with pn1.varName == pn2.varName";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("With_StmtAndStmtWrongKeyword_ReturnsNullPtr") {
+  std::string ss = "stmt s1, s2;\n"
+                   "Select s1 with s1.stmt# = s2.stmtNum";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("With_IntegerAndProcedure_ReturnsNullPtr") {
+  std::string ss = "procedure p;\n"
+                   "Select p with 2 = p.procName";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("With_PrintAndInteger_ReturnsNullPtr") {
+  std::string ss = "print pn;\n"
+                   "Select pn with pn.varName = 4";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("With_IntegerAndConstant_ReturnsCorrect") {
+  std::string ss = "constant c;\n"
+                   "Select c with 2 = c.value";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "c");
+  REQUIRE(clause->get_query_withs()->size() == 1);
+  WithClause *with = clause->get_query_withs()->at(0);
+  REQUIRE(with->get_left_ref() == "2");
+  REQUIRE(with->get_left_type() == EntityType::None);
+  REQUIRE(with->get_left_attr_value_type() == AttrValueType::Integer);
+  REQUIRE(with->get_right_ref() == "c");
+  REQUIRE(with->get_right_type() == EntityType::Constant);
+  REQUIRE(with->get_right_attr_value_type() == AttrValueType::Integer);
+}
+
+TEST_CASE("With_IfAndInteger_ReturnsCorrect") {
+  std::string ss = "if ifs;\n"
+                   "Select ifs with ifs.stmt# = 25461";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "ifs");
+  REQUIRE(clause->get_query_withs()->size() == 1);
+  WithClause *with = clause->get_query_withs()->at(0);
+  REQUIRE(with->get_left_ref() == "ifs");
+  REQUIRE(with->get_left_type() == EntityType::If);
+  REQUIRE(with->get_left_attr_value_type() == AttrValueType::Integer);
+  REQUIRE(with->get_right_ref() == "25461");
+  REQUIRE(with->get_right_type() == EntityType::None);
+  REQUIRE(with->get_right_attr_value_type() == AttrValueType::Integer);
+}
+
+TEST_CASE("With_VariableAndIdent_ReturnsCorrect") {
+  std::string ss = "variable v;\n"
+                   "Select v with v.varName = 'x'";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "v");
+  REQUIRE(clause->get_query_withs()->size() == 1);
+  WithClause *with = clause->get_query_withs()->at(0);
+  REQUIRE(with->get_left_ref() == "v");
+  REQUIRE(with->get_left_type() == EntityType::Variable);
+  REQUIRE(with->get_left_attr_value_type() == AttrValueType::Name);
+  REQUIRE(with->get_right_ref() == "x");
+  REQUIRE(with->get_right_type() == EntityType::None);
+  REQUIRE(with->get_right_attr_value_type() == AttrValueType::Name);
+}
+
+TEST_CASE("With_IfAndIntegerExtraSpace_ReturnsCorrect") {
+  std::string ss = "if ifs;\n"
+                   "Select ifs with ifs.stmt#     =  25461";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "ifs");
+  REQUIRE(clause->get_query_withs()->size() == 1);
+  WithClause *with = clause->get_query_withs()->at(0);
+  REQUIRE(with->get_left_ref() == "ifs");
+  REQUIRE(with->get_left_type() == EntityType::If);
+  REQUIRE(with->get_left_attr_value_type() == AttrValueType::Integer);
+  REQUIRE(with->get_right_ref() == "25461");
+  REQUIRE(with->get_right_type() == EntityType::None);
+  REQUIRE(with->get_right_attr_value_type() == AttrValueType::Integer);
+}
+
+TEST_CASE("With_IfAndIntegerSpaceBeforeAttrValueType_ReturnsNullPtr") {
+  std::string ss = "if ifs;\n"
+                   "Select ifs with ifs. stmt# = 25461";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("With_IfAndIntegerSpaceAfterAttr_ReturnsNullPtr") {
+  std::string ss = "if ifs;\n"
+                   "Select ifs with ifs .stmt# = 25461";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause == nullptr);
+}
+
+TEST_CASE("With_TwoWiths_ReturnsCorrect") {
+  std::string ss = "if ifs; procedure p;\n"
+                   "Select ifs with ifs.stmt# = 25461 and p.procName = 'computeCentroid'";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+  REQUIRE(clause != nullptr);
+  REQUIRE(clause->get_query_entities()->at(0) == "ifs");
+  REQUIRE(clause->get_query_withs()->size() == 2);
+
+  WithClause *with1 = clause->get_query_withs()->at(0);
+  REQUIRE(with1->get_left_ref() == "ifs");
+  REQUIRE(with1->get_left_type() == EntityType::If);
+  REQUIRE(with1->get_left_attr_value_type() == AttrValueType::Integer);
+  REQUIRE(with1->get_right_ref() == "25461");
+  REQUIRE(with1->get_right_type() == EntityType::None);
+  REQUIRE(with1->get_right_attr_value_type() == AttrValueType::Integer);
+
+  WithClause *with2 = clause->get_query_withs()->at(1);
+  REQUIRE(with2->get_left_ref() == "p");
+  REQUIRE(with2->get_left_type() == EntityType::Procedure);
+  REQUIRE(with2->get_left_attr_value_type() == AttrValueType::Name);
+  REQUIRE(with2->get_right_ref() == "computeCentroid");
+  REQUIRE(with2->get_right_type() == EntityType::None);
+  REQUIRE(with2->get_right_attr_value_type() == AttrValueType::Name);
+}

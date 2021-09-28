@@ -45,6 +45,6 @@ class SelectClauseParser {
                     std::vector<std::string>, std::vector<std::string>> SplitTokensByClauses(
       const std::string &input);
   static bool IsValidIdentifier(const std::string &str);
-  bool IsValidWithRef(std::string ref);
+  std::tuple<std::string, EntityType, AttrValueType> GetWithRefTypeAndAttrValueType(std::string ref);
   static bool IsInteger(const std::string &str);
 };

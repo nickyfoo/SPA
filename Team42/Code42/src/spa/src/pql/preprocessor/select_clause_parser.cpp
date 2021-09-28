@@ -239,11 +239,16 @@ std::vector<WithClause *> *SelectClauseParser::MakeWithClause(
   }
 
   std::vector<std::pair<std::string, std::string>> with_clauses = SplitTokensByEqual(with_statement);
+  if (with_clauses.empty()) {
+    return nullptr;
+  }
   printf("MIHERE2\n");
   for (std::pair<std::string, std::string> with_clause : with_clauses) {
     printf("MIHERE3\n");
     std::string left_ref = with_clause.first;
     std::string right_ref = with_clause.second;
+    printf("left ref: %s\n", left_ref.c_str());
+    printf("right ref: %s\n", right_ref.c_str());
     auto *with = MakeWithRef(left_ref, right_ref);
     if (with == nullptr) {
       return nullptr;
@@ -289,49 +294,107 @@ PatternClause *SelectClauseParser::MakePatternRef(const std::string &synonym,
 
 WithClause *SelectClauseParser::MakeWithRef(std::string left_ref,
                                             std::string right_ref) {
-  WithClause *ret;
-  if (IsValidWithRef(left_ref) && IsValidWithRef(right_ref)) {
-    return new WithClause(left_ref, right_ref);
-  } else {
-    return nullptr;
-  }
-}
-
-bool SelectClauseParser::IsValidWithRef(std::string ref) {
+  std::string left_str;
+  std::string right_str;
   EntityType left_type;
   EntityType right_type;
-  if (IsInteger(ref)) {
-    left_type = EntityType::None;
-  } else {
-    std::vector<std::string> left = SplitTokensByDelimiter(ref, ".");
-    if (left.size() == 1) {  // prog line
+  AttrValueType left_attr_value_type;
+  AttrValueType right_attr_value_type;
 
-    } else if (left.size() == 2) {
-      std::string synonym = left.at(0);
-      std::string attribute = left.at(1);
-      left_type = synonym_to_entity_->find(ref)->second->get_type();
-      switch (left_type) {
+  if (IsInteger(left_ref)) {  // set as EntityType::None if it is an integer
+    left_str = left_ref;
+    left_type = EntityType::None;
+    left_attr_value_type = AttrValueType::Integer;
+  } else if (IsValidIdentifier(left_ref)) {  // set as EntityType::None if it is an ident
+    left_str = left_ref.substr(1, left_ref.length()-2);
+    left_type = EntityType::None;
+    left_attr_value_type = AttrValueType::Name;
+  } else {
+    printf("CAME HERE 123\n");
+    std::tie(left_str, left_type, left_attr_value_type) = GetWithRefTypeAndAttrValueType(left_ref);
+    if (left_type == EntityType::None) {  // not valid ref
+      printf("dafk herE?\n");
+      return nullptr;
+    }
+  }
+  printf("RIGTHTT: %s\n", right_ref.c_str());
+  if (IsInteger(right_ref)) {  // set as EntityType::None if it is an integer
+    right_str = right_ref;
+    right_type = EntityType::None;
+    right_attr_value_type = AttrValueType::Integer;
+    printf("CAME HERE 234\n");
+  } else if (IsValidIdentifier(right_ref)) {  // set as EntityType::None if it is an ident
+    right_str = right_ref.substr(1, right_ref.length()-2);
+    right_type = EntityType::None;
+    right_attr_value_type = AttrValueType::Name;
+  } else {
+    std::tie(right_str, right_type, right_attr_value_type) = GetWithRefTypeAndAttrValueType(right_ref);
+    if (right_type == EntityType::None) {  // not valid ref
+      return nullptr;
+    }
+  }
+
+  if (left_attr_value_type != right_attr_value_type) {  // must be same attribute value types
+    return nullptr;
+  }
+
+  WithClause *ret = new WithClause(left_str, left_type, left_attr_value_type,
+                                   right_str, right_type, right_attr_value_type);
+  return ret;
+}
+
+std::tuple<std::string, EntityType, AttrValueType> SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
+  std::vector<std::string> synonym_attribute = SplitTokensByDelimiter(ref, ".");
+  if (synonym_attribute.size() == 1) {  // prog line
+    std::string synonym = synonym_attribute.at(0);
+    if (synonym_to_entity_->find(synonym) != synonym_to_entity_->end()) {
+      //      if (synonym_to_entity_->at(synonym)->get_type() == EntityType::Prog) {
+      //        return std::make_tuple(synonym, EntityType::ProgLine, AttrValueType::Integer);
+      //      }
+    }
+  } else if (synonym_attribute.size() == 2) {
+    std::string synonym = synonym_attribute.at(0);
+    std::string attribute = synonym_attribute.at(1);
+    if (synonym_to_entity_->find(synonym) != synonym_to_entity_->end()) {
+      EntityType type = synonym_to_entity_->find(synonym)->second->get_type();
+      AttrValueType attr_value_type = AttrValueType::None;
+      switch (type) {
         case EntityType::Procedure:
-          return attribute == "procName";
+          if (attribute == "procName") attr_value_type = AttrValueType::Name;
+          break;
         case EntityType::Variable:
-          return attribute == "varName";
+          if (attribute == "varName") attr_value_type = AttrValueType::Name;
+          break;
         case EntityType::Constant:
-          return attribute == "value";
+          if (attribute == "value") attr_value_type = AttrValueType::Integer;
+          break;
         case EntityType::Call:
-          return attribute == "procName" || attribute == "stmt#";
+          if (attribute == "procName") attr_value_type = AttrValueType::Name;
+          else if (attribute == "stmt#") attr_value_type = AttrValueType::Integer;
+          break;
         case EntityType::Print:
         case EntityType::Read:
-          return attribute == "varName" || attribute == "stmt#";
+          if (attribute == "varName") attr_value_type = AttrValueType::Name;
+          else if (attribute == "stmt#") attr_value_type = AttrValueType::Integer;
+          break;
         case EntityType::Stmt:
         case EntityType::While:
+        case EntityType::If:
         case EntityType::Assign:
-          return attribute == "stmt#";
+          if (attribute == "stmt#") attr_value_type = AttrValueType::Integer;
+          break;
         default:
-          return false;
+          break;
+      }
+
+      if (attr_value_type != AttrValueType::None) {
+        return std::make_tuple(synonym, type, attr_value_type);
       }
     }
   }
+  return std::make_tuple("", EntityType::None, AttrValueType::None);  // not a valid with clause
 }
+
 SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(
     SuchThatClause *relationship, std::string left_ref) {
   SuchThatRef *left_such_that_ref;
@@ -724,19 +787,23 @@ std::vector<std::vector<std::string>> SelectClauseParser::SplitTokensByBrackets(
 
 std::vector<std::pair<std::string, std::string>> SelectClauseParser::SplitTokensByEqual(
     const std::string &input) {
-  const std::string equal = "=";
+  const std::string equal = " = ";
   const std::string AND_DELIM = " and ";
   std::vector<std::pair<std::string, std::string>> ret;
   std::vector<std::string> clauses = SplitTokensByDelimiter(input, AND_DELIM);
   for (std::string clause : clauses) {
     printf("clause here is: %s\n", clause.c_str());
-    clause.erase(remove(clause.begin(),
-                        clause.end(),
-                        ' '), clause.end());
+//    clause.erase(remove(clause.begin(),
+//                        clause.end(),
+//                        ' '), clause.end());
     std::vector<std::string> with_clause = SplitTokensByDelimiter(clause, equal);
+    printf("with size: %d\n", with_clause.size());
+    printf("with_clause: %s\n", with_clause.at(0).c_str());
     if (with_clause.size() != 2) {
       return {};
     }
+    printf("part 1: %s\n", with_clause.at(0).c_str());
+    printf("part 2: %s\n", with_clause.at(1).c_str());
     std::string left_ref = with_clause.at(0);
     std::string right_ref = with_clause.at(1);
     ret.push_back(std::make_pair(left_ref, right_ref));

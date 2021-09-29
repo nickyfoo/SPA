@@ -7,6 +7,8 @@ PatternClause::PatternClause(EntityDeclaration *synonym) {
   this->exp_spec_ = nullptr;
 }
 
+PatternClause::~PatternClause() = default;
+
 bool PatternClause::set_ref(EntRef *variable, const std::string &right_ref) {
   this->variable_ = variable;
   if (this->type_ == EntityType::Assign) {

@@ -34,6 +34,8 @@ SuchThatClause::SuchThatClause(const std::string &type) {
   this->right_ref_ = nullptr;
 }
 
+SuchThatClause::~SuchThatClause() = default;
+
 bool SuchThatClause::set_ref(SuchThatRef *left, SuchThatRef *right) {
   switch (this->type_) {
     case RelRef::Follows:

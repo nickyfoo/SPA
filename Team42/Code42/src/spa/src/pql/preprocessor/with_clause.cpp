@@ -10,6 +10,8 @@ WithClause::WithClause(std::string left_ref, EntityType left_type, AttrValueType
   this->right_attr_value_type_ = right_attr_value_type;
 }
 
+WithClause::~WithClause() = default;
+
 std::string WithClause::get_left_ref() {
   return this->left_ref_;
 }

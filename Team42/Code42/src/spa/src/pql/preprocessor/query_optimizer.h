@@ -14,7 +14,7 @@ class QueryOptimizer {
                  std::vector<PatternClause *> *patterns,
                  std::vector<WithClause *> *withs,
                  std::vector<std::string> *return_entities);
-  std::vector<ClauseGroup> CreateGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> CreateGroupings();
 
  private:
   std::vector<SuchThatClause *> *relationships_;

@@ -18,7 +18,12 @@ class SelectClauseParser {
   void set_select_clause(std::unordered_map<std::string,
                                             EntityDeclaration *> *syn_to_ent,
                          std::string select_clause);
-  PQLQuery *get_clauses();
+  std::tuple<std::vector<std::string> *,
+  std::vector<SuchThatClause *> *,
+  std::vector<PatternClause *> *,
+  std::vector<WithClause *> *,
+  std::unordered_map<std::string, EntityDeclaration *> *,
+  bool, bool> *get_clauses();
 
  private:
   static SelectClauseParser *instance;

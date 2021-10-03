@@ -6,6 +6,7 @@
 #include "pkb.h"
 #include "pql_query.h"
 #include "entity_declaration.h"
+#include "clause_group.h"
 
 class QueryEvaluator {
  public:
@@ -13,6 +14,7 @@ class QueryEvaluator {
   std::vector<std::string> *Evaluate();
  private:
   std::vector<std::string> *entities_to_return_;
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups_;
   std::vector<SuchThatClause *> *relationships_;
   std::vector<PatternClause *> *patterns_;
   PKB *pkb_;

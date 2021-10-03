@@ -10,8 +10,8 @@ QueryOptimizer::QueryOptimizer(std::vector<SuchThatClause *> *relationships,
   this->return_entities_ = return_entities;
 }
 
-std::vector<ClauseGroup> QueryOptimizer::CreateGroupings() {
-  std::vector<ClauseGroup> clause_groupings;
+std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateGroupings() {
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groupings;
   std::vector<ClauseVertex> no_syn_used;
   std::vector<ClauseVertex> no_return_syn_used;
   std::vector<ClauseVertex> has_return_syn_used;
@@ -72,15 +72,18 @@ std::vector<ClauseGroup> QueryOptimizer::CreateGroupings() {
   //TODO: change clause group pointer to a shared pointer
   auto no_syn_group = ClauseGroup();
   no_syn_group.set_clauses(no_syn_used);
-  clause_groupings.push_back(no_syn_group);
+  std::shared_ptr<ClauseGroup> no_syn_group_ptr = std::make_shared<ClauseGroup>(no_syn_group);
+  clause_groupings.push_back(no_syn_group_ptr);
   // Group with no return synonym will be evaluated next
   auto no_return_syn_group = ClauseGroup();
   no_return_syn_group.set_clauses(no_return_syn_used);
-  clause_groupings.push_back(no_return_syn_group);
+  std::shared_ptr<ClauseGroup> no_return_syn_group_ptr = std::make_shared<ClauseGroup>(no_return_syn_group);
+  clause_groupings.push_back(no_return_syn_group_ptr);
   // If there are no clauses with return synonym, add an empty group to the vector.
   if (has_return_syn_used.empty()) {
     auto has_return_syn_group = ClauseGroup();
-    clause_groupings.push_back(has_return_syn_group);
+    std::shared_ptr<ClauseGroup> return_syn_group_ptr = std::make_shared<ClauseGroup>(has_return_syn_group);
+    clause_groupings.push_back(return_syn_group_ptr);
   }
 
   // Group rest of vertices based on connected synonyms
@@ -111,7 +114,8 @@ std::vector<ClauseGroup> QueryOptimizer::CreateGroupings() {
                           has_visited_syn,
                           has_visited_clause,
                           pair.first);
-      clause_groupings.push_back(*has_return_syn_group);
+      std::shared_ptr<ClauseGroup> connected_syn_group_ptr = std::make_shared<ClauseGroup>(*has_return_syn_group);
+      clause_groupings.push_back(connected_syn_group_ptr);
     }
   }
   return clause_groupings;

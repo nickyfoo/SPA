@@ -147,12 +147,12 @@ std::vector<Constant *> PKB::get_all_constants() {
 }
 
 
-std::map<int, std::set<int>> *PKB::get_cfgal() {
-  return &CFGAL_;
+std::map<int, std::set<int>> *PKB::get_cfg_al() {
+  return &cfg_al_;
 }
 
-std::map<int, std::set<int>> *PKB::get_reverse_cfgal() {
-  return &ReverseCFGAL_;
+std::map<int, std::set<int>> *PKB::get_reverse_cfg_al() {
+  return &reverse_cfg_al_;
 }
 
 bool PKB::TestAssignmentPattern(Statement *statement, std::string pattern, bool is_partial_match) {
@@ -172,7 +172,7 @@ void PKB::PrintVariables() {
 }
 
 void PKB::PrintCFGAL() {
-  for (auto &[u, al] : CFGAL_) {
+  for (auto &[u, al] : cfg_al_) {
     std::cout << u << "->";
     for (auto &v : al) {
       std::cout << v << ' ';
@@ -380,24 +380,24 @@ std::set<std::pair<int, int>> PKB::get_next(int a, int b) {
   // Invalid line nums
   if (a < 0 || a >= n || b < 0 || b >= n) return ans;
   if (a == kWild && b == kWild) {
-    for (auto& [u, al_u] : CFGAL_) {
+    for (auto& [u, al_u] : cfg_al_) {
       for (auto& v : al_u) {
         ans.insert({ u,v });
       }
     }
   }
   else if (a == kWild && b != kWild) {
-    for (auto& v : ReverseCFGAL_[b]) {
+    for (auto& v : reverse_cfg_al_[b]) {
       ans.insert({ v,b });
     }
   }
   else if (a != kWild && b == kWild) {
-    for (auto& v : CFGAL_[a]) {
+    for (auto& v : cfg_al_[a]) {
       ans.insert({ a,v });
     }
   }
   else {
-    if (CFGAL_[a].find(b) != CFGAL_[a].end()) {
+    if (cfg_al_[a].find(b) != cfg_al_[a].end()) {
       ans.insert({ a,b });
     }
   }
@@ -412,7 +412,7 @@ std::set<std::pair<int, int>> PKB::get_next_star(int a, int b) {
   std::vector<std::vector<int>> d(n, std::vector<int>(n, 0));
   if (a == kWild && b == kWild) {
     for (int i = 0; i < n; i++) {
-      ReachabilityDFS(i, i, d, CFGAL_);
+      ReachabilityDFS(i, i, d, cfg_al_);
     }
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
@@ -421,20 +421,20 @@ std::set<std::pair<int, int>> PKB::get_next_star(int a, int b) {
     }
   }
   else if (a == kWild && b != kWild) {
-    ReachabilityDFS(b, b, d, ReverseCFGAL_);
+    ReachabilityDFS(b, b, d, reverse_cfg_al_);
     for (int i = 0; i < n; i++) {
       // Be careful about the check, d[i][j] means that i can reach j!
       if (d[b][i] != 0) ans.insert({ i,b });
     }
   }
   else if (a != kWild && b == kWild) {
-    ReachabilityDFS(a, a, d, CFGAL_);
+    ReachabilityDFS(a, a, d, cfg_al_);
     for (int j = 0; j < n; j++) {
       if (d[a][j] != 0) ans.insert({ a,j });
     }
   }
   else {
-    ReachabilityDFS(a, a, d, CFGAL_);
+    ReachabilityDFS(a, a, d, cfg_al_);
     if (d[a][b] != 0) ans.insert({ a,b });
   }
   return ans;
@@ -444,7 +444,7 @@ std::set<std::pair<int, int>> PKB::get_next_star(int a, int b) {
 void PKB::AffectsDFS(int start, int target, int u, std::string var_name, std::vector<bool>&visited, std::vector<std::vector<int>>&d, bool&found) {
   if (found) return;
   Statement *stmt = stmt_table_.get_statement(start);
-  for (auto &v : CFGAL_[u]) {
+  for (auto &v : cfg_al_[u]) { 
     Statement *stmt_v = stmt_table_.get_statement(v);
     if (!visited[v]) {
       visited[v] = true;
@@ -921,8 +921,8 @@ void PKB::CFGProcessProcedureNode(Node *node) {
     });
   for (int i = 1; i < stmt_lst.size(); i++) {
     for (auto &last_stmt : LastStmts(stmt_lst[i - 1])) {
-      CFGAL_[last_stmt].insert(stmt_lst[i]->get_stmt_no());
-      ReverseCFGAL_[stmt_lst[i]->get_stmt_no()].insert(last_stmt);
+      cfg_al_[last_stmt].insert(stmt_lst[i]->get_stmt_no());
+      reverse_cfg_al_[stmt_lst[i]->get_stmt_no()].insert(last_stmt);
     }
   }
 }
@@ -934,14 +934,18 @@ void PKB::CFGProcessIfNode(Node *node) {
     [](StatementNode *a, StatementNode *b) {
       return a->get_stmt_no() < b->get_stmt_no();
     });
+
+  // Connect if node to first node of then_stmt_lst
   if (then_stmt_lst.size()) {
-    CFGAL_[if_node->get_stmt_no()].insert(then_stmt_lst[0]->get_stmt_no());
-    ReverseCFGAL_[then_stmt_lst[0]->get_stmt_no()].insert(if_node->get_stmt_no());
+    cfg_al_[if_node->get_stmt_no()].insert(then_stmt_lst[0]->get_stmt_no());
+    reverse_cfg_al_[then_stmt_lst[0]->get_stmt_no()].insert(if_node->get_stmt_no());
   }
+
+  // Connect LastStmts of stmt_lst to next in then_stmt_lst
   for (int i = 1; i < then_stmt_lst.size(); i++) {
     for (auto &last_stmt : LastStmts(then_stmt_lst[i - 1])) {
-      CFGAL_[last_stmt].insert(then_stmt_lst[i]->get_stmt_no());
-      ReverseCFGAL_[then_stmt_lst[i]->get_stmt_no()].insert(last_stmt);
+      cfg_al_[last_stmt].insert(then_stmt_lst[i]->get_stmt_no());
+      reverse_cfg_al_[then_stmt_lst[i]->get_stmt_no()].insert(last_stmt);
     }
   }
 
@@ -950,14 +954,18 @@ void PKB::CFGProcessIfNode(Node *node) {
     [](StatementNode *a, StatementNode *b) {
       return a->get_stmt_no() < b->get_stmt_no();
     });
+
+  // Connect if node to first node of else_stmt_lst
   if (else_stmt_lst.size()) {
-    CFGAL_[if_node->get_stmt_no()].insert(else_stmt_lst[0]->get_stmt_no());
-    ReverseCFGAL_[else_stmt_lst[0]->get_stmt_no()].insert(if_node->get_stmt_no());
+    cfg_al_[if_node->get_stmt_no()].insert(else_stmt_lst[0]->get_stmt_no());
+    reverse_cfg_al_[else_stmt_lst[0]->get_stmt_no()].insert(if_node->get_stmt_no());
   }
+
+  // Connect LastStmts of stmt_lst to next in else_stmt_lst
   for (int i = 1; i < else_stmt_lst.size(); i++) {
     for (auto &last_stmt : LastStmts(else_stmt_lst[i - 1])) {
-      CFGAL_[last_stmt].insert(else_stmt_lst[i]->get_stmt_no());
-      ReverseCFGAL_[else_stmt_lst[i]->get_stmt_no()].insert(last_stmt);
+      cfg_al_[last_stmt].insert(else_stmt_lst[i]->get_stmt_no());
+      reverse_cfg_al_[else_stmt_lst[i]->get_stmt_no()].insert(last_stmt);
     }
   }
 }
@@ -969,18 +977,26 @@ void PKB::CFGProcessWhileNode(Node *node) {
     [](StatementNode *a, StatementNode *b) {
       return a->get_stmt_no() < b->get_stmt_no();
     });
+
+  // Connect while node to first node of stmt_lst
   if (stmt_lst.size()) {
-    CFGAL_[while_node->get_stmt_no()].insert(stmt_lst[0]->get_stmt_no());
-    ReverseCFGAL_[stmt_lst[0]->get_stmt_no()].insert(while_node->get_stmt_no());
+    cfg_al_[while_node->get_stmt_no()].insert(stmt_lst[0]->get_stmt_no());
+    reverse_cfg_al_[stmt_lst[0]->get_stmt_no()].insert(while_node->get_stmt_no());
   }
+
+  // Connect LastStmts of stmt_lst to next in stmt_lst
   for (int i = 1; i < stmt_lst.size(); i++) {
     for (auto &last_stmt : LastStmts(stmt_lst[i - 1])) {
-      CFGAL_[last_stmt].insert(stmt_lst[i]->get_stmt_no());
-      ReverseCFGAL_[stmt_lst[i]->get_stmt_no()].insert(last_stmt);
+      cfg_al_[last_stmt].insert(stmt_lst[i]->get_stmt_no());
+      reverse_cfg_al_[stmt_lst[i]->get_stmt_no()].insert(last_stmt);
     }
   }
+  
+  // Connect LastStmts of stmt_lst to while node
   if (stmt_lst.size()) {
-    CFGAL_[stmt_lst[stmt_lst.size() - 1]->get_stmt_no()].insert(while_node->get_stmt_no());
-    ReverseCFGAL_[while_node->get_stmt_no()].insert(stmt_lst[stmt_lst.size() - 1]->get_stmt_no());
+    for (auto& last_stmt : LastStmts(stmt_lst[stmt_lst.size() - 1])) {
+      cfg_al_[last_stmt].insert(while_node->get_stmt_no());
+      reverse_cfg_al_[while_node->get_stmt_no()].insert(last_stmt);
+    }
   }
 }

@@ -56,8 +56,8 @@ class PKB {
   // Gets all constants in the program.
   std::vector<Constant *> get_all_constants();
 
-  std::map<int, std::set<int>> *get_cfgal();
-  std::map<int, std::set<int>> *get_reverse_cfgal();
+  std::map<int, std::set<int>> *get_cfg_al();
+  std::map<int, std::set<int>> *get_reverse_cfg_al();
 
   // Gets Next(a,b) relation. if a==kWild or b==kWild, it is treated as a wildcard.
   // Does a check for valid stmt line input, or kWild, and returns empty set if invalid.
@@ -100,7 +100,7 @@ class PKB {
   void ExtractUsesModifies();
   // Extracts Calls/Calls* relationships in the AST.
   void ExtractCalls();
-  // Stores adjacency list into CFGAL_
+  // Stores adjacency list into cfg_al_
   void ExtractCFG();
   // Extracts Affects/Affects* relationships in the CFG.
   void ExtractAffects();
@@ -135,7 +135,7 @@ class PKB {
   void CallsProcessCallNode(Node *node, std::vector<Node *> &ancestorList);
 
   // Recursively gets the last stmts of a statement.
-  std::set<int> PKB::LastStmts(StatementNode *node);
+  std::set<int> LastStmts(StatementNode *node);
   // Process and store the AST procedure node into the CFG.
   void CFGProcessProcedureNode(Node *node);
   // Process and store the AST if node into the CFG.
@@ -164,8 +164,8 @@ class PKB {
   // Table of constants in the program.
   ConstTable const_table_;
   // Adjacency List of CFG for Next and Affects.
-  std::map<int, std::set<int>> CFGAL_;
+  std::map<int, std::set<int>> cfg_al_;
   // Reverse Adjacency List of CFG for Next and Affects.
-  std::map<int, std::set<int>> ReverseCFGAL_;
+  std::map<int, std::set<int>> reverse_cfg_al_;
   
 };

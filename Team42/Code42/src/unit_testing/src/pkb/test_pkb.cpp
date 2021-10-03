@@ -41,6 +41,7 @@ std::string source =
     "\tnormSq = cenX * cenX + cenY * cenY;\n"
     "}";
 
+
 TEST_CASE("PKBExtractEntities_SampleProgram_Correct") {
   BufferedLexer lexer(source);
   ParseState s{};
@@ -223,6 +224,7 @@ TEST_CASE("PKB_FollowsNested_Correct") {
       "        e = e + 1;"
       "      }"
       "    } else {"
+      "      f = f + 1;"
       "    }"
       "  }"
       "}";
@@ -387,6 +389,7 @@ TEST_CASE("PKB_ParentNested_Correct") {
       "        e = e + 1;"
       "      }"
       "    } else {"
+      "      f = f + 1;"
       "    }"
       "  }"
       "}";
@@ -401,7 +404,7 @@ TEST_CASE("PKB_ParentNested_Correct") {
   children_ans[6] = {7};
   children_ans[7] = {8, 9};
   children_ans[10] = {11, 12};
-  children_ans[12] = {13};
+  children_ans[12] = {13, 16};
   children_ans[13] = {14, 15};
   for (auto stmt : pkb.get_all_statements()) {
     std::set<int> *stmt_children = stmt->get_children();
@@ -416,8 +419,8 @@ TEST_CASE("PKB_ParentNested_Correct") {
   children_star_ans[4] = {5, 6, 7, 8, 9};
   children_star_ans[6] = {7, 8, 9};
   children_star_ans[7] = {8, 9};
-  children_star_ans[10] = {11, 12, 13, 14, 15};
-  children_star_ans[12] = {13, 14, 15};
+  children_star_ans[10] = {11, 12, 13, 14, 15, 16};
+  children_star_ans[12] = {13, 14, 15, 16};
   children_star_ans[13] = {14, 15};
   for (auto stmt : pkb.get_all_statements()) {
     std::set<int> *stmt_children_star = stmt->get_children_star();
@@ -439,6 +442,7 @@ TEST_CASE("PKB_ParentNested_Correct") {
   parents_ans[13] = {12};
   parents_ans[14] = {13};
   parents_ans[15] = {13};
+  parents_ans[16] = {12};
   for (auto stmt : pkb.get_all_statements()) {
     std::set<int> *stmt_parents = stmt->get_parents();
     std::vector<int> parents = parents_ans[stmt->get_stmt_no()];
@@ -459,6 +463,7 @@ TEST_CASE("PKB_ParentNested_Correct") {
   parents_star_ans[13] = {12, 10};
   parents_star_ans[14] = {13, 12, 10};
   parents_star_ans[15] = {13, 12, 10};
+  parents_star_ans[16] = {12, 10};
   for (auto stmt : pkb.get_all_statements()) {
     std::set<int> *stmt_parents_star = stmt->get_parents_star();
     std::vector<int> parents_star = parents_star_ans[stmt->get_stmt_no()];
@@ -891,7 +896,7 @@ TEST_CASE("PKB_CFGSample_Correct") {
   ans[14] = { 15 };
   ans[16] = { 17 };
   ans[17] = { 18 };
-  std::map<int, std::set<int>> cfgal = *pkb.get_cfgal();
+  std::map<int, std::set<int>> cfgal = *pkb.get_cfg_al();
   REQUIRE(cfgal.size() == ans.size());
   for (auto &[k, vals] : ans) {
     REQUIRE(cfgal.find(k) != cfgal.end());
@@ -936,7 +941,7 @@ TEST_CASE("PKB_CFGNestedIf_Correct") {
   ans[6] = { 7,8 };
   ans[7] = { 9 };
   ans[8] = { 9 };
-  std::map<int, std::set<int>> cfgal = *pkb.get_cfgal();
+  std::map<int, std::set<int>> cfgal = *pkb.get_cfg_al();
   REQUIRE(cfgal.size() == ans.size());
   for (auto &[k, vals] : ans) {
     REQUIRE(cfgal.find(k) != cfgal.end());

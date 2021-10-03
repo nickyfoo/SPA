@@ -15,7 +15,7 @@ class UsesPModifiesPHandler {
   void set_args(PKB *pkb,
                 std::unordered_map<std::string, std::vector<Entity *>>
                 *synonym_to_entity_result,
-                SuchThatClause *relationship,
+                SuchThatClause relationship,
                 std::vector<std::string> *entities_to_return);
   void set_function_pointers(
       std::set<std::string> *(Procedure::*get_normal)(),
@@ -29,7 +29,7 @@ class UsesPModifiesPHandler {
   std::set<std::string> *(Variable::*get_reverse_)();
   PKB *pkb_;
   std::unordered_map<std::string, std::vector<Entity *>> *synonym_to_entity_result_;
-  SuchThatClause *relationship_;
+  SuchThatClause relationship_;
   std::vector<std::string> *entities_to_return_;
   static std::set<std::string> *ProcedureForwarder(
       std::set<std::string> *(Procedure::*function)(),

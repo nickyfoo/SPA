@@ -15,9 +15,8 @@ class UsesSModifiesSHandler {
   void set_args(PKB *pkb,
                 std::unordered_map<std::string, std::vector<Entity *>>
                 *synonym_to_entity_result,
-                SuchThatClause *relationship,
-                std::vector<std::string> *entities_to_return,
-                bool has_two_repeated_synonyms);
+                SuchThatClause relationship,
+                std::vector<std::string> *entities_to_return);
   void set_function_pointers(
       std::set<std::string> *(Statement::*get_normal)(),
       std::set<int> *(Variable::*get_reverse)());
@@ -31,7 +30,7 @@ class UsesSModifiesSHandler {
   std::set<int> *(Variable::*get_reverse_)();
   PKB *pkb_;
   std::unordered_map<std::string, std::vector<Entity *>> *synonym_to_entity_result_;
-  SuchThatClause *relationship_;
+  SuchThatClause relationship_;
   std::vector<std::string> *entities_to_return_;
   static std::set<std::string> *StatementForwarder(
       std::set<std::string> *(Statement::*function)(),

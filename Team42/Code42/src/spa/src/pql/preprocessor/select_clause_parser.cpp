@@ -45,7 +45,7 @@ PQLQuery *SelectClauseParser::get_clauses() {
   }
   for (const std::string &select : select_clauses) {
     if (select == "BOOLEAN" && select_clauses.size() == 1) {
-      select_ret ->push_back(select);
+      // do nothing, flag to evaluator that it requires a boolean output
     } else if (synonym_to_entity_->find(select) != synonym_to_entity_->end()) {
       select_ret->push_back(select);
     } else {

@@ -19,10 +19,10 @@ void FollowsParentsHandler::set_function_pointers(
 }
 
 void FollowsParentsHandler::set_args(PKB *pkb,
-                                     std::unordered_map<std::string, std::vector<Entity *>>
-                                     *synonym_to_entity_result,
-                                     SuchThatClause *relationship,
-                                     std::vector<std::string> *entities_to_return) {
+                                     std::unordered_map<std::string, std::vector<Entity *>> *synonym_to_entity_result,
+                                     SuchThatClause relationship,
+                                     std::vector<std::string> *entities_to_return,
+                                     std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec) {
   this->pkb_ = pkb;
   this->synonym_to_entity_result_ = synonym_to_entity_result;
   this->relationship_ = relationship;
@@ -35,9 +35,10 @@ std::set<int> *FollowsParentsHandler::Forwarder(std::set<int> *(Statement::*func
 }
 
 // TODO(Sheryl): Refactor this whole part
-void FollowsParentsHandler::Evaluate() {
-  StmtRef left_ent = relationship_->get_left_ref()->get_stmt_ref();
-  StmtRef right_ent = relationship_->get_right_ref()->get_stmt_ref();
+ResultTable* FollowsParentsHandler::Evaluate() {
+  ResultTable* ret = new ResultTable();
+  StmtRef left_ent = relationship_.get_left_ref()->get_stmt_ref();
+  StmtRef right_ent = relationship_.get_right_ref()->get_stmt_ref();
   // Going through 9 different cases for Follows/Parents
   if (left_ent.get_type() == StmtRefType::StmtNum &&
       right_ent.get_type() == StmtRefType::StmtNum) {  // Follows/Parents(4, 5)
@@ -47,7 +48,8 @@ void FollowsParentsHandler::Evaluate() {
     if (stmt == nullptr || !Forwarder(get_normal_, stmt)->count(right_arg)) {
       // Clear results vector if this relationship_ is false
       // or if stmt is a nullptr
-      synonym_to_entity_result_->at(entities_to_return_->at(0)).clear();
+//      synonym_to_entity_result_->at(entities_to_return_->at(0)).clear();
+      return nullptr;
     }
   } else if (left_ent.get_type() == StmtRefType::Synonym &&
       right_ent.get_type() == StmtRefType::StmtNum) {  // eg. Follows(s, 4)

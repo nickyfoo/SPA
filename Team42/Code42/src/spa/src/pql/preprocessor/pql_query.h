@@ -12,16 +12,13 @@ class PQLQuery {
   PQLQuery(std::vector<std::string> *return_entities, std::vector<SuchThatClause *> *relationships,
            std::vector<PatternClause *> *patterns,
            std::vector<WithClause *> *withs,
-           std::unordered_map<std::string, EntityDeclaration *> *synonym_to_entities,
-           bool has_one_repeated_synonym, bool has_two_repeated_synonyms);
+           std::unordered_map<std::string, EntityDeclaration *> *synonym_to_entities);
   ~PQLQuery();
   std::vector<std::string> *get_query_entities();
   std::vector<SuchThatClause *> *get_query_relationships();
   std::vector<PatternClause *> *get_query_patterns();
   std::vector<WithClause *> *get_query_withs();
   std::unordered_map<std::string, EntityDeclaration *> *get_synonym_to_entities();
-  bool has_one_repeated_synonym();
-  bool has_two_repeated_synonyms();
 
  private:
   std::vector<std::string> *entities_;
@@ -29,6 +26,4 @@ class PQLQuery {
   std::vector<PatternClause *> *patterns_;
   std::vector<WithClause *> *withs_;
   std::unordered_map<std::string, EntityDeclaration *> *synonym_to_entities_;
-  bool has_one_repeated_synonym_;
-  bool has_two_repeated_synonyms_;
 };

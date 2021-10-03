@@ -10,25 +10,23 @@
 RelationshipQueryManager::RelationshipQueryManager(
     std::unordered_map<std::string, std::vector<Entity *>>
     *synonym_to_entity_result,
-    std::vector<SuchThatClause *> *relationships,
     std::vector<std::string> *entities_to_return,
-    PKB *pkb,
-    bool has_two_repeated_synonyms) {
+    PKB *pkb) {
   this->synonym_to_entity_result_ = synonym_to_entity_result;
-  this->relationships_ = relationships;
   this->entities_to_return_ = entities_to_return;
   this->pkb_ = pkb;
   this->stmt_var_pair_vector_ = nullptr;
-  this->has_two_repeated_synonyms_ = has_two_repeated_synonyms;
 }
 
 RelationshipQueryManager::~RelationshipQueryManager() = default;
 
-void RelationshipQueryManager::EvaluateRelationships() {
+ResultTable * RelationshipQueryManager::EvaluateRelationship(SuchThatClause relationship,
+                                                             std::unordered_map<std::string,
+                                                                                std::vector<Entity *>> synonym_to_entities_vec) {
   // Iterating through relationships_ and evaluating one by one.
   // For basic requirements, there will be only 1 relationship_.
-  for (SuchThatClause *relationship : *relationships_) {
-    RelRef relationship_type = relationship->get_type();
+//  for (SuchThatClause *relationship : *relationships_) {
+    RelRef relationship_type = relationship.get_type();
     switch (relationship_type) {
       case RelRef::Follows: {
         FollowsParentsHandler *follows_parents_handler =
@@ -38,8 +36,9 @@ void RelationshipQueryManager::EvaluateRelationships() {
         follows_parents_handler->set_args(pkb_,
                                           synonym_to_entity_result_,
                                           relationship,
-                                          entities_to_return_);
-        follows_parents_handler->Evaluate();
+                                          entities_to_return_,
+                                          synonym_to_entities_vec);
+        return follows_parents_handler->Evaluate();
         break;
       }
       case RelRef::FollowsT: {
@@ -50,7 +49,8 @@ void RelationshipQueryManager::EvaluateRelationships() {
         follows_parents_handler->set_args(pkb_,
                                           synonym_to_entity_result_,
                                           relationship,
-                                          entities_to_return_);
+                                          entities_to_return_,
+                                          std::unordered_map<std::string, std::vector<Entity *>>());
         follows_parents_handler->Evaluate();
         break;
       }
@@ -62,7 +62,8 @@ void RelationshipQueryManager::EvaluateRelationships() {
         follows_parents_handler->set_args(pkb_,
                                           synonym_to_entity_result_,
                                           relationship,
-                                          entities_to_return_);
+                                          entities_to_return_,
+                                          std::unordered_map<std::string, std::vector<Entity *>>());
         follows_parents_handler->Evaluate();
         break;
       }
@@ -74,7 +75,8 @@ void RelationshipQueryManager::EvaluateRelationships() {
         follows_parents_handler->set_args(pkb_,
                                           synonym_to_entity_result_,
                                           relationship,
-                                          entities_to_return_);
+                                          entities_to_return_,
+                                          std::unordered_map<std::string, std::vector<Entity *>>());
         follows_parents_handler->Evaluate();
         break;
       }
@@ -86,8 +88,7 @@ void RelationshipQueryManager::EvaluateRelationships() {
         uses_modifies_handler->set_args(pkb_,
                                         synonym_to_entity_result_,
                                         relationship,
-                                        entities_to_return_,
-                                        has_two_repeated_synonyms_);
+                                        entities_to_return_);
         uses_modifies_handler->Evaluate();
         this->stmt_var_pair_vector_ = uses_modifies_handler->get_stmt_var_pair_vector();
         break;
@@ -100,8 +101,7 @@ void RelationshipQueryManager::EvaluateRelationships() {
         uses_modifies_handler->set_args(pkb_,
                                         synonym_to_entity_result_,
                                         relationship,
-                                        entities_to_return_,
-                                        has_two_repeated_synonyms_);
+                                        entities_to_return_);
         uses_modifies_handler->Evaluate();
         this->stmt_var_pair_vector_ = uses_modifies_handler->get_stmt_var_pair_vector();
         break;
@@ -133,7 +133,8 @@ void RelationshipQueryManager::EvaluateRelationships() {
       default:
         break;
     }
-  }
+    return nullptr;
+//  }
 }
 
 std::vector<std::pair<int, std::string>> *RelationshipQueryManager::get_stmt_var_pair_vector() {

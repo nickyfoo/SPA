@@ -13,7 +13,7 @@ UsesPModifiesPHandler *UsesPModifiesPHandler::get_instance() {
 void UsesPModifiesPHandler::set_args(PKB *pkb,
                                      std::unordered_map<std::string, std::vector<Entity *>>
                                      *synonym_to_entity_result,
-                                     SuchThatClause *relationship,
+                                     SuchThatClause relationship,
                                      std::vector<std::string> *entities_to_return) {
   this->pkb_ = pkb;
   this->synonym_to_entity_result_ = synonym_to_entity_result;
@@ -41,8 +41,8 @@ void UsesPModifiesPHandler::set_function_pointers(
 }
 
 void UsesPModifiesPHandler::Evaluate() {
-  EntRef left_ent = relationship_->get_left_ref()->get_ent_ref();
-  EntRef right_ent = relationship_->get_right_ref()->get_ent_ref();
+  EntRef left_ent = relationship_.get_left_ref()->get_ent_ref();
+  EntRef right_ent = relationship_.get_right_ref()->get_ent_ref();
 
   // Going through 6 different cases for UsesP
   if (left_ent.get_type() == EntRefType::Synonym &&

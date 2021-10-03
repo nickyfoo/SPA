@@ -13,7 +13,7 @@ UsesSModifiesSHandler *UsesSModifiesSHandler::get_instance() {
 void UsesSModifiesSHandler::set_args(PKB *pkb,
                                      std::unordered_map<std::string, std::vector<Entity *>>
                                      *synonym_to_entity_result,
-                                     SuchThatClause *relationship,
+                                     SuchThatClause relationship,
                                      std::vector<std::string> *entities_to_return,
                                      bool has_two_repeated_synonyms) {
   this->pkb_ = pkb;

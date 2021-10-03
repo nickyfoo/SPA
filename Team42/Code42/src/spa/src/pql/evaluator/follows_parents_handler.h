@@ -8,18 +8,19 @@
 #include "such_that_clause.h"
 #include "entity.hpp"
 #include "statement.h"
+#include "result_table.h"
 
 class FollowsParentsHandler {
  public:
   static FollowsParentsHandler *get_instance();
   void set_args(PKB *pkb,
-                std::unordered_map<std::string, std::vector<Entity *>>
-                *synonym_to_entity_result,
-                SuchThatClause *relationship,
-                std::vector<std::string> *entities_to_return);
+                std::unordered_map<std::string, std::vector<Entity *>> *synonym_to_entity_result,
+                SuchThatClause relationship,
+                std::vector<std::string> *entities_to_return,
+                std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec);
   void set_function_pointers(std::set<int> *(Statement::*get_normal)(),
                              std::set<int> *(Statement::*get_reverse)());
-  void Evaluate();
+  ResultTable* Evaluate();
 
  private:
   static FollowsParentsHandler *instance_;
@@ -28,7 +29,7 @@ class FollowsParentsHandler {
   std::set<int> *(Statement::*get_reverse_)();
   PKB *pkb_;
   std::unordered_map<std::string, std::vector<Entity *>> *synonym_to_entity_result_;
-  SuchThatClause *relationship_;
+  SuchThatClause relationship_;
   std::vector<std::string> *entities_to_return_;
   static std::set<int> *Forwarder(std::set<int> *(Statement::*function)(), Statement *stmt);
 };

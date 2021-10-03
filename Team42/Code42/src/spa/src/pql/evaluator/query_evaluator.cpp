@@ -34,9 +34,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
   ResultTable *result_table = new ResultTable();
   relationship_query_manager = new RelationshipQueryManager(pkb_);
   pattern_query_manager = new PatternQueryManager(pkb_);
-  with_query_manager = new WithQueryManager(synonym_to_entity_result,
-                                            entities_to_return_,
-                                            pkb_);
+  with_query_manager = new WithQueryManager();
 
   // guaranteed to have at least 3 clause groups,
   // where first group is without synonyms,
@@ -56,13 +54,12 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
                                                                    synonym_to_entities_vec);
           break;
         case ClauseType::Pattern:
-          table = pattern_query_manager->EvaluatePatterns(dynamic_cast<PatternClause>(clause_vertex),
-                                                              synonym_to_entities_vec);
+          table = pattern_query_manager->EvaluatePattern(dynamic_cast<PatternClause>(clause_vertex),
+                                                         synonym_to_entities_vec);
           break;
         case ClauseType::With:
-          table = with_query_manager->EvaluateRelationship(dynamic_cast<WithClause>(clause_vertex),
-                                                                               std::unordered_map<std::string,
-                                                                                                  std::vector<Entity *>>());
+          table = with_query_manager->EvaluateWith(dynamic_cast<WithClause>(clause_vertex),
+                                                   synonym_to_entities_vec);
           break;
         default:throw std::runtime_error("Unknown ClauseType found");
       }
@@ -84,7 +81,11 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
       result_table->set_table(*intermediate_table);
     } else {
       result_table->CrossJoin(*intermediate_table);
+      if (result_table->get_table()->empty()) {
+        return ConvertToOutput(result_table, false);
+      }
     }
+
   }
 
   return ConvertToOutput(result_table, true);

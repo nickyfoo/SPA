@@ -1,6 +1,5 @@
 #include "pattern_query_manager.h"
 #include "entity_declaration.h"
-#include "stmt_table.h"
 #include "statement.h"
 #include <set>
 
@@ -11,9 +10,9 @@ PatternQueryManager::PatternQueryManager(PKB *pkb) {
 PatternQueryManager::~PatternQueryManager() = default;
 
 
-ResultTable* PatternQueryManager::EvaluatePatterns(PatternClause pattern,
-                                                    std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec) {
-  ResultTable *ret = new ResultTable();
+ResultTable* PatternQueryManager::EvaluatePattern(PatternClause pattern,
+                                                  std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec) {
+  auto *ret = new ResultTable();
   EntityDeclaration *synonym = pattern.get_synonym();
   EntRef *left_ent = pattern.get_variable();
   ExpressionSpec *right_ent = pattern.get_exp_spec();
@@ -29,7 +28,7 @@ ResultTable* PatternQueryManager::EvaluatePatterns(PatternClause pattern,
 
   for (int i = 0; i < entity_vec.size(); i++) {
     auto *assign = dynamic_cast<Statement *>(entity_vec.at(i));  // for each assign object
-    if ((assign->get_modifies()->size() == 0
+    if ((assign->get_modifies()->empty()
         || !pkb_->TestAssignmentPattern(assign, pattern_to_check, is_partial_pattern))
         && !right_ent->IsWildCard()) {
       continue;
@@ -42,7 +41,7 @@ ResultTable* PatternQueryManager::EvaluatePatterns(PatternClause pattern,
             synonym_to_entities_vec.at(left_ent->get_synonym());
 
         std::set<std::string> *modified_set = assign->get_modifies();
-        for (std::string s :*modified_set) {
+        for (const std::string &s :*modified_set) {
           stmt_vec.push_back(std::to_string(assign->get_stmt_no()));
           var_vec.push_back(s);
         }

@@ -45,7 +45,7 @@ PQLQuery *SelectClauseParser::get_clauses() {
   }
   for (const std::string &select : select_clauses) {
     if (select == "BOOLEAN" && select_clauses.size() == 1) {
-      select_ret ->push_back(select);
+      // return empty vector if it is BOOLEAN
     } else if (synonym_to_entity_->find(select) != synonym_to_entity_->end()) {
       select_ret->push_back(select);
     } else {
@@ -235,7 +235,6 @@ std::vector<WithClause *> *SelectClauseParser::MakeWithClause(
       ret->push_back(with);
     }
   }
-
   return ret;
 }
 
@@ -436,7 +435,7 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(
       }
       case EntityType::Constant:
       default:
-        return nullptr;;
+        return nullptr;
     }
   } else if (IsInteger(left_ref)) {  // statement number
     if (type == RelRef::Next || type == RelRef::NextT) {
@@ -526,7 +525,7 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefRight(
           break;
         }
       case EntityType::Constant:
-      default:return nullptr;;
+      default:return nullptr;
     }
   } else if (IsInteger(right_ref)) {  // statement number
     if (type == RelRef::Next || type == RelRef::NextT) {

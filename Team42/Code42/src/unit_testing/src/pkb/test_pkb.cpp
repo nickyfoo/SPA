@@ -1425,7 +1425,19 @@ TEST_CASE("PKB_NextSample_Correct") {
     for (auto &a : prevs) {
       REQUIRE(next_wild_b.find({a, b}) != next_wild_b.end());
     }
+    // Check Next(_,_)
+    for (auto &a : prevs) {
+      REQUIRE(next_wild_wild.find({a, b}) != next_wild_wild.end());
+    }
   }
+
+  // Negative cases
+  REQUIRE(pkb.get_next(1, 3).empty()); // Not directly after
+  REQUIRE(pkb.get_next(3, 4).empty()); // Across procedures
+  REQUIRE(pkb.get_next(9, 7).empty()); // Last line of while loop goes through condition first
+  REQUIRE(pkb.get_next(11, 12).empty()); // Different if branches
+  REQUIRE(pkb.get_next(PKB::kWild, 1).empty()); // First statement of procedure
+  REQUIRE(pkb.get_next(15, PKB::kWild).empty()); // Last statement of procedure
 }
 
 TEST_CASE("PKB_NextStarSample_Correct") {
@@ -1520,6 +1532,13 @@ TEST_CASE("PKB_NextStarSample_Correct") {
       REQUIRE(next_star_wild_b.find({a, b}) != next_star_wild_b.end());
     }
   }
+
+  // Negative cases
+  REQUIRE(pkb.get_next_star(2, 1).empty()); // Reverse direction
+  REQUIRE(pkb.get_next_star(3, 4).empty()); // Across procedures
+  REQUIRE(pkb.get_next_star(11, 12).empty()); // Different if branches
+  REQUIRE(pkb.get_next_star(PKB::kWild, 1).empty()); // First statement of procedure
+  REQUIRE(pkb.get_next_star(15, PKB::kWild).empty()); // Last statement of procedure
 }
 
 TEST_CASE("PKB_NextNestedIf_Correct") {
@@ -1593,6 +1612,13 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
       REQUIRE(next_wild_b.find({a, b}) != next_wild_b.end());
     }
   }
+
+  // Negative cases
+  REQUIRE(pkb.get_next(1, 9).empty()); // Not directly after
+  REQUIRE(pkb.get_next(1, 3).empty()); // Not directly after
+  REQUIRE(pkb.get_next(4, 5).empty()); // Different if branches
+  REQUIRE(pkb.get_next(PKB::kWild, 1).empty()); // First statement of procedure
+  REQUIRE(pkb.get_next(9, PKB::kWild).empty()); // Last statement of procedure
 }
 
 TEST_CASE("PKB_NextStarNestedIf_Correct") {
@@ -1666,6 +1692,12 @@ TEST_CASE("PKB_NextStarNestedIf_Correct") {
       REQUIRE(next_star_wild_b.find({a, b}) != next_star_wild_b.end());
     }
   }
+
+  // Negative cases
+  REQUIRE(pkb.get_next_star(2, 1).empty()); // Reverse direction
+  REQUIRE(pkb.get_next_star(7, 8).empty()); // Different if branches
+  REQUIRE(pkb.get_next_star(PKB::kWild, 1).empty()); // First statement of procedure
+  REQUIRE(pkb.get_next_star(9, PKB::kWild).empty()); // Last statement of procedure
 }
 
 TEST_CASE("PKB_AffectsSample_Correct") {
@@ -1746,6 +1778,13 @@ TEST_CASE("PKB_AffectsSample_Correct") {
       REQUIRE(affects_wild_b.find({a, b}) != affects_wild_b.end());
     }
   }
+
+  // Negative cases
+  REQUIRE(pkb.get_affects(16, 7).empty()); // Different procedures
+  REQUIRE(pkb.get_affects(5, 7).empty()); // 5 is not modifying x or y
+  REQUIRE(pkb.get_affects(5, 8).empty()); // 8 is not an assignment statement
+  REQUIRE(pkb.get_affects(8, 12).empty()); // 8 is not an assignment statement
+  REQUIRE(pkb.get_affects(8, PKB::kWild).empty()); // 8 is not an assignment statement
 }
 
 TEST_CASE("PKB_AffectsStarSample_Correct") {
@@ -1824,6 +1863,101 @@ TEST_CASE("PKB_AffectsStarSample_Correct") {
     REQUIRE(affected_by_star_ans[b].size() == affects_star_wild_b.size());
     for (auto &a : affected_bys_star) {
       REQUIRE(affects_star_wild_b.find({a, b}) != affects_star_wild_b.end());
+    }
+  }
+
+  // Negative cases
+  REQUIRE(pkb.get_affects_star(16, 7).empty()); // Different procedures
+  REQUIRE(pkb.get_affects_star(5, 7).empty()); // 5 is not modifying x or y
+  REQUIRE(pkb.get_affects_star(5, 8).empty()); // 8 is not an assignment statement
+  REQUIRE(pkb.get_affects_star(8, 12).empty()); // 8 is not an assignment statement
+  REQUIRE(pkb.get_affects_star(8, PKB::kWild).empty()); // 8 is not an assignment statement
+}
+
+TEST_CASE("PKB_AffectsNestedWhileIf_Correct") {
+  std::string source =
+      "procedure main {"
+      "  x = 0;"
+      "  read y;"
+      "  call Second;"
+      "  x = x + 1; }"
+      "procedure Second {"
+      "  x = 0;"
+      "  i = 5;"
+      "  while (i != 0) {"
+      "    x = x + 2 * y;"
+      "    call Third;"
+      "    i = i - 1;"
+      "    if (z == y) then {"
+      "      j = 8;"
+      "    } else {"
+      "      y = j;"
+      "    }}"
+      "  if (x == 1) then {"
+      "    x = x + 1;"
+      "    z = y + c + v;"
+      "  } else {"
+      "    z = z + i;}"
+      "  z = z + x + i;"
+      "  y = z + 2;"
+      "  x = x * y + z; }"
+      "procedure Third {"
+      "  z = 5;"
+      "  v = z;"
+      "  print v;}";
+
+  BufferedLexer lexer(source);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb(p);
+
+  std::map<int, std::vector<int>> affects_ans;
+  affects_ans[5] = {8, 15, 18, 20};
+  affects_ans[6] = {10, 17, 18};
+  affects_ans[8] = {8, 15, 18, 20};
+  affects_ans[10] = {10, 17, 18};
+//  affects_ans[12] = {13}; // size 0
+//  affects_ans[13] = {8, 16}; // size 0
+  affects_ans[15] = {18, 20};
+  affects_ans[16] = {18};
+  affects_ans[17] = {18};
+  affects_ans[18] = {19, 20};
+  affects_ans[19] = {20};
+  affects_ans[21] = {22};
+  std::set<std::pair<int, int>> affects_wild_wild = pkb.get_affects(PKB::kWild, PKB::kWild);
+  for (auto&[a, affects] : affects_ans) {
+    // Check Affects(a,_)
+    std::set<std::pair<int, int>> affects_a_wild = pkb.get_affects(a, PKB::kWild);
+    std::cout << "Affects(" << a << ",_) ->" << affects_a_wild.size() << "\n";
+    REQUIRE(affects_ans[a].size() == affects_a_wild.size());
+    for (auto &b : affects) {
+      REQUIRE(affects_a_wild.find({a, b}) != affects_a_wild.end());
+    }
+    // Check Affects(a,b)
+    for (auto &b : affects) {
+      std::set<std::pair<int, int>> affects_a_b = pkb.get_affects(a, b);
+      REQUIRE(affects_a_b.size() == 1);
+      REQUIRE(affects_a_b.find({a, b}) != affects_a_b.end());
+    }
+    // Check Affects(_,_)
+    for (auto &b : affects) {
+      REQUIRE(affects_wild_wild.find({a, b}) != affects_wild_wild.end());
+    }
+  }
+
+  std::map<int, std::vector<int>> affected_by_ans = {
+      {1, {}}, {2, {}}, {3, {}}, {4, {}}, {5, {}}, {6, {}}, {7, {}}, {8, {5, 8, 13}},
+      {9, {}}, {10, {6, 10}}, {11, {}}, {12, {}}, {13, {12}}, {14, {}}, {15, {5, 8}},
+      {16, {13}}, {17, {6, 10}}, {18, {5, 6, 8, 10, 16, 17}}, {19, {18}},
+      {20, {5, 8, 15, 18, 19}}, {22, {21}},
+  };
+  for (auto&[b, affected_bys] : affected_by_ans) {
+    // Check Affects(_,b)
+    std::set<std::pair<int, int>> affects_wild_b = pkb.get_affects(PKB::kWild, b);
+    std::cout << "Affects(_," << b << ") -> " << affects_wild_b.size() << "\n";
+    REQUIRE(affected_by_ans[b].size() == affects_wild_b.size());
+    for (auto &a : affected_bys) {
+      REQUIRE(affects_wild_b.find({a, b}) != affects_wild_b.end());
     }
   }
 }

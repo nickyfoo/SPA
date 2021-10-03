@@ -8,19 +8,18 @@
 #include "pkb.h"
 #include "entity.hpp"
 #include "such_that_clause.h"
+#include "result_table.h"
 
 class UsesSModifiesSHandler {
  public:
   static UsesSModifiesSHandler *get_instance();
   void set_args(PKB *pkb,
-                std::unordered_map<std::string, std::vector<Entity *>>
-                *synonym_to_entity_result,
                 SuchThatClause relationship,
-                std::vector<std::string> *entities_to_return);
+                std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec);
   void set_function_pointers(
       std::set<std::string> *(Statement::*get_normal)(),
       std::set<int> *(Variable::*get_reverse)());
-  void Evaluate();
+  ResultTable* Evaluate();
   std::vector<std::pair<int, std::string>> *get_stmt_var_pair_vector();
 
  private:
@@ -38,6 +37,5 @@ class UsesSModifiesSHandler {
   static std::set<int> *VariableForwarder(
       std::set<int> *(Variable::*function)(),
       Variable *var);
-  std::vector<std::pair<int, std::string>> *stmt_var_pair_vector_;
-  bool has_two_repeated_synonyms_;
+  std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec_;
 };

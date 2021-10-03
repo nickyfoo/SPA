@@ -124,6 +124,25 @@ std::vector<std::pair<std::string, int>> *ResultTable::GetCommonSynonyms(ResultT
   return ret;
 }
 
+void ResultTable::AddSingleColumn(std::string synonym, std::vector<std::string> vec) {
+  synonym_to_index_->insert({synonym, synonym_to_index_->size()-1});
+  for (std::string value : vec) {
+    table_->push_back(std::vector<std::string>({value}));
+  }
+}
+
+void ResultTable::AddDoubleColumns(std::string synonym_one, std::vector<std::string> vec_one,
+                                   std::string synonym_two, std::vector<std::string> vec_two) {
+  synonym_to_index_->insert({synonym_one, synonym_to_index_->size()-1});
+  synonym_to_index_->insert({synonym_two, synonym_to_index_->size()-1});
+  for (std::string value_one : vec_one) {
+    for (std::string value_two : vec_two) {
+      table_->push_back(std::vector<std::string>({value_one, value_two}));
+    }
+  }
+}
+
+
 void ResultTable::set_table(ResultTable &result_table) {
   this->table_ = result_table.get_table();
   this->synonym_to_index_ = result_table.get_synonym_to_index();

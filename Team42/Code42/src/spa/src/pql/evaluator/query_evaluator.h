@@ -21,8 +21,6 @@ class QueryEvaluator {
     static bool IsEmpty(
       std::unordered_map<std::string, std::vector<Entity *>>
       *synonym_to_entity_result);
-  std::vector<std::string> *ConvertToOutput(
-      std::unordered_map<std::string,
-                         std::vector<Entity *>> *synonym_to_entity_result);
+  std::vector<std::string> *ConvertToOutput(ResultTable *table_result, bool is_valid_query);
   static bool IsStmt(EntityType entity_type);
 };

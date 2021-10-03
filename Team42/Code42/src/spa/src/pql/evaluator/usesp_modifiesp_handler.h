@@ -8,19 +8,18 @@
 #include "procedure.h"
 #include "variable.h"
 #include "pkb.h"
+#include "result_table.h"
 
 class UsesPModifiesPHandler {
  public:
   static UsesPModifiesPHandler *get_instance();
   void set_args(PKB *pkb,
-                std::unordered_map<std::string, std::vector<Entity *>>
-                *synonym_to_entity_result,
                 SuchThatClause relationship,
-                std::vector<std::string> *entities_to_return);
+                std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec);
   void set_function_pointers(
       std::set<std::string> *(Procedure::*get_normal)(),
       std::set<std::string> *(Variable::*get_reverse)());
-  void Evaluate();
+  ResultTable* Evaluate();
 
  private:
   static UsesPModifiesPHandler *instance_;
@@ -37,4 +36,5 @@ class UsesPModifiesPHandler {
   static std::set<std::string> *VariableForwarder(
       std::set<std::string> *(Variable::*function)(),
       Variable *var);
+  std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec_;
 };

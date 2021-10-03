@@ -11,6 +11,9 @@ class ResultTable {
   ResultTable();
   void NaturalJoin(ResultTable &result_table);
   void CrossJoin(ResultTable &result_table);
+  void AddSingleColumn(std::string synonym, std::vector<std::string> vec);
+  void AddDoubleColumns(std::string synonym_one, std::vector<std::string> vec_one,
+                        std::string synonym_two, std::vector<std::string> vec_two);
   void set_table(ResultTable &result_table);
   table* get_table();
   std::unordered_map<std::string, int> *get_synonym_to_index();

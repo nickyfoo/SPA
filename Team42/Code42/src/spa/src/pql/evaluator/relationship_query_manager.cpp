@@ -7,20 +7,13 @@
 #include "variable.h"
 #include "procedure.h"
 
-RelationshipQueryManager::RelationshipQueryManager(
-    std::unordered_map<std::string, std::vector<Entity *>>
-    *synonym_to_entity_result,
-    std::vector<std::string> *entities_to_return,
-    PKB *pkb) {
-  this->synonym_to_entity_result_ = synonym_to_entity_result;
-  this->entities_to_return_ = entities_to_return;
+RelationshipQueryManager::RelationshipQueryManager(PKB *pkb) {
   this->pkb_ = pkb;
-  this->stmt_var_pair_vector_ = nullptr;
 }
 
 RelationshipQueryManager::~RelationshipQueryManager() = default;
 
-ResultTable * RelationshipQueryManager::EvaluateRelationship(SuchThatClause relationship,
+ResultTable* RelationshipQueryManager::EvaluateRelationship(SuchThatClause relationship,
                                                              std::unordered_map<std::string,
                                                                                 std::vector<Entity *>> synonym_to_entities_vec) {
   // Iterating through relationships_ and evaluating one by one.
@@ -33,65 +26,40 @@ ResultTable * RelationshipQueryManager::EvaluateRelationship(SuchThatClause rela
             FollowsParentsHandler::get_instance();
         follows_parents_handler->set_function_pointers(&Statement::get_followers,
                                                        &Statement::get_followees);
-        follows_parents_handler->set_args(pkb_,
-                                          synonym_to_entity_result_,
-                                          relationship,
-                                          entities_to_return_,
-                                          synonym_to_entities_vec);
+        follows_parents_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
         return follows_parents_handler->Evaluate();
-        break;
       }
       case RelRef::FollowsT: {
         FollowsParentsHandler *follows_parents_handler =
             FollowsParentsHandler::get_instance();
         follows_parents_handler->set_function_pointers(&Statement::get_followers_star,
                                                        &Statement::get_followees_star);
-        follows_parents_handler->set_args(pkb_,
-                                          synonym_to_entity_result_,
-                                          relationship,
-                                          entities_to_return_,
-                                          std::unordered_map<std::string, std::vector<Entity *>>());
-        follows_parents_handler->Evaluate();
-        break;
+        follows_parents_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
+        return follows_parents_handler->Evaluate();
       }
       case RelRef::Parent: {
         FollowsParentsHandler *follows_parents_handler =
             FollowsParentsHandler::get_instance();
         follows_parents_handler->set_function_pointers(&Statement::get_children,
                                                        &Statement::get_parents);
-        follows_parents_handler->set_args(pkb_,
-                                          synonym_to_entity_result_,
-                                          relationship,
-                                          entities_to_return_,
-                                          std::unordered_map<std::string, std::vector<Entity *>>());
-        follows_parents_handler->Evaluate();
-        break;
+        follows_parents_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
+        return follows_parents_handler->Evaluate();
       }
       case RelRef::ParentT: {
         FollowsParentsHandler *follows_parents_handler =
             FollowsParentsHandler::get_instance();
         follows_parents_handler->set_function_pointers(&Statement::get_children_star,
                                                        &Statement::get_parents_star);
-        follows_parents_handler->set_args(pkb_,
-                                          synonym_to_entity_result_,
-                                          relationship,
-                                          entities_to_return_,
-                                          std::unordered_map<std::string, std::vector<Entity *>>());
-        follows_parents_handler->Evaluate();
-        break;
+        follows_parents_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
+        return follows_parents_handler->Evaluate();
       }
       case RelRef::UsesS: {
         UsesSModifiesSHandler *uses_modifies_handler =
             UsesSModifiesSHandler::get_instance();
         uses_modifies_handler->set_function_pointers(&Statement::get_uses,
                                                      &Variable::get_stmts_using);
-        uses_modifies_handler->set_args(pkb_,
-                                        synonym_to_entity_result_,
-                                        relationship,
-                                        entities_to_return_);
-        uses_modifies_handler->Evaluate();
-        this->stmt_var_pair_vector_ = uses_modifies_handler->get_stmt_var_pair_vector();
-        break;
+        uses_modifies_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
+        return uses_modifies_handler->Evaluate();
       }
       case RelRef::ModifiesS: {
         UsesSModifiesSHandler *uses_modifies_handler =
@@ -99,12 +67,9 @@ ResultTable * RelationshipQueryManager::EvaluateRelationship(SuchThatClause rela
         uses_modifies_handler->set_function_pointers(&Statement::get_modifies,
                                                      &Variable::get_stmts_modifying);
         uses_modifies_handler->set_args(pkb_,
-                                        synonym_to_entity_result_,
                                         relationship,
-                                        entities_to_return_);
-        uses_modifies_handler->Evaluate();
-        this->stmt_var_pair_vector_ = uses_modifies_handler->get_stmt_var_pair_vector();
-        break;
+                                        synonym_to_entities_vec);
+        return uses_modifies_handler->Evaluate();
       }
       case RelRef::UsesP: {
         UsesPModifiesPHandler *usesp_modifiesp_handler =
@@ -112,11 +77,9 @@ ResultTable * RelationshipQueryManager::EvaluateRelationship(SuchThatClause rela
         usesp_modifiesp_handler->set_function_pointers(&Procedure::get_uses,
                                                        &Variable::get_procs_using);
         usesp_modifiesp_handler->set_args(pkb_,
-                                          synonym_to_entity_result_,
                                           relationship,
-                                          entities_to_return_);
-        usesp_modifiesp_handler->Evaluate();
-        break;
+                                          synonym_to_entities_vec);
+        return usesp_modifiesp_handler->Evaluate();
       }
       case RelRef::ModifiesP: {
         UsesPModifiesPHandler *usesp_modifiesp_handler =
@@ -124,19 +87,13 @@ ResultTable * RelationshipQueryManager::EvaluateRelationship(SuchThatClause rela
         usesp_modifiesp_handler->set_function_pointers(&Procedure::get_modifies,
                                                        &Variable::get_procs_modifying);
         usesp_modifiesp_handler->set_args(pkb_,
-                                          synonym_to_entity_result_,
                                           relationship,
-                                          entities_to_return_);
-        usesp_modifiesp_handler->Evaluate();
-        break;
+                                          synonym_to_entities_vec);
+        return usesp_modifiesp_handler->Evaluate();
       }
       default:
         break;
     }
     return nullptr;
 //  }
-}
-
-std::vector<std::pair<int, std::string>> *RelationshipQueryManager::get_stmt_var_pair_vector() {
-  return this->stmt_var_pair_vector_;
 }

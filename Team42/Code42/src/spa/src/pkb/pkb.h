@@ -135,7 +135,7 @@ class PKB {
   void CallsProcessCallNode(Node *node, std::vector<Node *> &ancestorList);
 
   // Recursively gets the last stmts of a statement.
-  std::set<int> PKB::LastStmts(StatementNode *node);
+  std::set<int> LastStmts(StatementNode *node);
   // Process and store the AST procedure node into the CFG.
   void CFGProcessProcedureNode(Node *node);
   // Process and store the AST if node into the CFG.

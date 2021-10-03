@@ -1,0 +1,31 @@
+#pragma once
+
+#include "vector"
+#include "unordered_map"
+#include "such_that_clause.h"
+#include "pattern_clause.h"
+#include "with_clause.h"
+#include "clause_group.h"
+#include "clause_vertex.h"
+
+class QueryOptimizer {
+ public:
+  QueryOptimizer(std::vector<SuchThatClause *> *relationships,
+                 std::vector<PatternClause *> *patterns,
+                 std::vector<WithClause *> *withs,
+                 std::vector<std::string> *return_entities);
+  std::vector<ClauseGroup> CreateGroupings();
+
+ private:
+  std::vector<SuchThatClause *> *relationships_;
+  std::vector<PatternClause *> *patterns_;
+  std::vector<WithClause *> *withs_;
+  std::vector<std::string> *return_entities_;
+  ClauseVertex MakeSuchThatVertex(SuchThatClause *such_that_clause);
+  ClauseVertex MakePatternVertex(PatternClause *pattern_clause);
+  ClauseVertex MakeWithVertex(WithClause *with_clause);
+  void FindConnectedGroups(ClauseGroup clause_group,
+                           std::unordered_map<std::string, std::vector<ClauseVertex>> syn_to_clause,
+                           std::unordered_map<std::string, bool> *has_visited,
+                           std::string curr_syn);
+};

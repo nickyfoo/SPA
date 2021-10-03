@@ -15,16 +15,16 @@ class WithQueryManager {
   WithQueryManager();
   ~WithQueryManager();
   ResultTable* EvaluateWith(WithClause with,
-                                std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec);
+                            std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec);
  private:
   std::vector<std::string> GetNames(std::string synonym, EntityType type,
                                     std::string argument,
                                     std::unordered_map<std::string,
-                                    std::vector<Entity *>> synonym_to_entities_vec);
-  std::vector<std::string> GetIntegers(std::string synonym, EntityType type,
-                                    std::string argument,
-                                    std::unordered_map<std::string,
                                                        std::vector<Entity *>> synonym_to_entities_vec);
+  std::vector<std::string> GetIntegers(std::string synonym, EntityType type,
+                                       std::string argument,
+                                       std::unordered_map<std::string,
+                                                          std::vector<Entity *>> synonym_to_entities_vec);
   std::tuple<std::vector<std::string>, std::vector<std::string>> GetSynonymPairs(
       WithClause with, std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec);
 };

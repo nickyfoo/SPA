@@ -51,7 +51,7 @@ std::vector<std::string> WithQueryManager::GetNames(std::string synonym,
                                                     EntityType type,
                                                     std::string argument,
                                                     std::unordered_map<std::string,
-                                                    std::vector<Entity *>> synonym_to_entities_vec) {
+                                                                       std::vector<Entity *>> synonym_to_entities_vec) {
   std::vector<std::string> output;
   for (Entity *entity : synonym_to_entities_vec.at(synonym)) {
     switch(type) {
@@ -86,10 +86,10 @@ std::vector<std::string> WithQueryManager::GetNames(std::string synonym,
 }
 
 std::vector<std::string> WithQueryManager::GetIntegers(std::string synonym,
-                                                    EntityType type,
-                                                    std::string argument,
-                                                    std::unordered_map<std::string,
-                                                                       std::vector<Entity *>> synonym_to_entities_vec) {
+                                                       EntityType type,
+                                                       std::string argument,
+                                                       std::unordered_map<std::string,
+                                                                          std::vector<Entity *>> synonym_to_entities_vec) {
   std::vector<std::string> output;
   for (Entity *entity : synonym_to_entities_vec.at(synonym)) {
     switch(type) {
@@ -169,7 +169,7 @@ std::tuple<std::vector<std::string>, std::vector<std::string>> WithQueryManager:
           auto *procedure = dynamic_cast<Procedure *>(right_entity);
           right_arg = procedure->get_name();
           curr_vec = GetNames(with.get_left_ref(), with.get_left_type(), right_arg,
-                                 synonym_to_entities_vec);
+                              synonym_to_entities_vec);
           break;
         }
         case EntityType::Variable: {

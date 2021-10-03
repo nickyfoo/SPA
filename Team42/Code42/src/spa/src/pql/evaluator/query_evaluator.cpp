@@ -6,6 +6,7 @@
 #include "variable.h"
 #include "pattern_query_manager.h"
 #include "relationship_query_manager.h"
+#include "with_query_manager.h"
 #include "pql_query.h"
 #include "pkb.h"
 

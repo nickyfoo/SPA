@@ -1962,3 +1962,17 @@
 //  PQLQuery *clause = query->get_pql_query();
 //  REQUIRE(clause == nullptr);
 //}
+//
+//TEST_CASE("Select_BOOLEANTrue_ReturnsCorrect") {
+//  std::string ss = "stmt s1; stmt s2;\n"
+//                   "Select BOOLEAN such that Follows(s1, 2)";
+//  auto *query = new QueryPreprocessor(ss);
+//  PQLQuery *clause = query->get_pql_query();
+//  REQUIRE(clause != nullptr);
+//  REQUIRE(clause->get_query_entities()->size() == 0);
+//  REQUIRE(clause->get_query_relationships()->size() == 1);
+//  REQUIRE(clause->get_query_relationships()->at(0)->get_type() == RelRef::Follows);
+//  REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
+//  REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_stmt_ref().get_stmt_num() == 2);
+//  REQUIRE(clause->get_query_patterns()->size() == 0);
+//}

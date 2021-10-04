@@ -25,3 +25,11 @@ void ClauseGroup::AddClause(ClauseVertex clause_vertex) {
 void ClauseGroup::set_clauses(std::vector<ClauseVertex> clauses) {
   this->clauses_ = clauses;
 }
+
+void ClauseGroup::SortWithinGroup() {
+  std::sort(this->clauses_.begin(),
+            this->clauses_.end(),
+            [](ClauseVertex& lhs, ClauseVertex& rhs) {
+    return lhs.get_priority() < rhs.get_priority();
+  });
+}

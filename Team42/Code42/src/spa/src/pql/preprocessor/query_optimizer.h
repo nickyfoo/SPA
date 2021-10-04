@@ -24,6 +24,8 @@ class QueryOptimizer {
   ClauseVertex MakeSuchThatVertex(SuchThatClause *such_that_clause);
   ClauseVertex MakePatternVertex(PatternClause *pattern_clause);
   ClauseVertex MakeWithVertex(WithClause *with_clause);
+  int AssignPriority(std::vector<std::string> synonyms_used,
+                     std::shared_ptr<Clause> clause);
   void FindConnectedGroups(ClauseGroup *clause_group,
                            std::unordered_map<std::string, std::vector<ClauseVertex>> syn_to_clause,
                            std::unordered_map<std::string, bool> *has_visited_syn,

@@ -12,7 +12,7 @@ QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
   if (pql_query != nullptr) {
     this->entities_to_return_ = pql_query->get_query_entities();
     this->clause_groups_ = pql_query->get_clause_groups();
-    //TODO (weikiat): please remove this, I put this here to silence the errors.
+    //TODO (Wei Kiat): please remove this, I put this here to silence the errors.
     this->relationships_ = new std::vector<SuchThatClause *>();
     this->patterns_ = new std::vector<PatternClause *>();
 

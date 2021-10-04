@@ -11,6 +11,7 @@ class ClauseGroup {
   std::vector<ClauseVertex> get_clauses();
   void AddSynUsed(std::string syn);
   std::vector<std::string> get_syn_used();
+  void SortWithinGroup();
   ~ClauseGroup();
 
  private:

@@ -69,21 +69,24 @@ std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateGroupings() {
   }
 
   // Group with no synonyms will be evaluated first
-  //TODO: change clause group pointer to a shared pointer
   auto no_syn_group = ClauseGroup();
   no_syn_group.set_clauses(no_syn_used);
+  no_syn_group.SortWithinGroup();
   std::shared_ptr<ClauseGroup> no_syn_group_ptr = std::make_shared<ClauseGroup>(no_syn_group);
   clause_groupings.push_back(no_syn_group_ptr);
+
   // Group with no return synonym will be evaluated next
   auto no_return_syn_group = ClauseGroup();
   no_return_syn_group.set_clauses(no_return_syn_used);
+  no_return_syn_group.SortWithinGroup();
   std::shared_ptr<ClauseGroup> no_return_syn_group_ptr = std::make_shared<ClauseGroup>(no_return_syn_group);
   clause_groupings.push_back(no_return_syn_group_ptr);
+
   // If there are no clauses with return synonym, add an empty group to the vector.
   if (has_return_syn_used.empty()) {
     auto has_return_syn_group = ClauseGroup();
-    std::shared_ptr<ClauseGroup> return_syn_group_ptr = std::make_shared<ClauseGroup>(has_return_syn_group);
-    clause_groupings.push_back(return_syn_group_ptr);
+    std::shared_ptr<ClauseGroup> has_return_syn_group_ptr = std::make_shared<ClauseGroup>(has_return_syn_group);
+    clause_groupings.push_back(has_return_syn_group_ptr);
   }
 
   // Group rest of vertices based on connected synonyms
@@ -114,6 +117,7 @@ std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateGroupings() {
                           has_visited_syn,
                           has_visited_clause,
                           pair.first);
+      has_return_syn_group->SortWithinGroup();
       std::shared_ptr<ClauseGroup> connected_syn_group_ptr = std::make_shared<ClauseGroup>(*has_return_syn_group);
       clause_groupings.push_back(connected_syn_group_ptr);
     }
@@ -129,7 +133,7 @@ void QueryOptimizer::FindConnectedGroups(ClauseGroup *clause_group,
   has_visited_syn->at(curr_syn) = true;
   std::vector<std::string> group_syn_used = clause_group->get_syn_used();
   if (std::find(group_syn_used.begin(), group_syn_used.end(), curr_syn) ==
-  group_syn_used.end()) {
+      group_syn_used.end()) {
     // Add current synonym to synonyms used vector in clause_group if it doesn't exist.
     clause_group->AddSynUsed(curr_syn);
   }
@@ -157,6 +161,58 @@ void QueryOptimizer::FindConnectedGroups(ClauseGroup *clause_group,
   }
 }
 
+int QueryOptimizer::AssignPriority(std::vector<std::string> synonyms_used, std::shared_ptr<Clause> clause) {
+  if (clause->get_type() == ClauseType::WithClause) {
+    return 0;
+  } else if (clause->get_type() == ClauseType::SuchThatClause) {
+    std::shared_ptr<SuchThatClause> such_that_clause = std::dynamic_pointer_cast<SuchThatClause>(clause);
+    // Assigning priority based on number of synonyms used and such that clause type.
+    if (synonyms_used.size() == 1 &&
+        (such_that_clause->get_type() == RelRef::Follows ||
+            such_that_clause->get_type() == RelRef::Parent ||
+            such_that_clause->get_type() == RelRef::UsesP ||
+            such_that_clause->get_type() == RelRef::UsesS ||
+            such_that_clause->get_type() == RelRef::ModifiesP ||
+            such_that_clause->get_type() == RelRef::ModifiesS ||
+            such_that_clause->get_type() == RelRef::Next ||
+            such_that_clause->get_type() == RelRef::Calls)) {
+      return 1;
+    } else if (synonyms_used.size() == 1 &&
+        (such_that_clause->get_type() == RelRef::FollowsT ||
+            such_that_clause->get_type() == RelRef::ParentT ||
+            such_that_clause->get_type() == RelRef::NextT ||
+            such_that_clause->get_type() == RelRef::CallsT ||
+            such_that_clause->get_type() == RelRef::Affects ||
+            such_that_clause->get_type() == RelRef::AffectsT)) {
+      return 2;
+    } else if (synonyms_used.size() == 2 &&
+        (such_that_clause->get_type() == RelRef::Follows ||
+            such_that_clause->get_type() == RelRef::Parent ||
+            such_that_clause->get_type() == RelRef::UsesP ||
+            such_that_clause->get_type() == RelRef::UsesS ||
+            such_that_clause->get_type() == RelRef::ModifiesP ||
+            such_that_clause->get_type() == RelRef::ModifiesS ||
+            such_that_clause->get_type() == RelRef::Next ||
+            such_that_clause->get_type() == RelRef::Calls)) {
+      return 3;
+    } else if (synonyms_used.size() == 2 &&
+        (such_that_clause->get_type() == RelRef::FollowsT ||
+            such_that_clause->get_type() == RelRef::ParentT ||
+            such_that_clause->get_type() == RelRef::NextT ||
+            such_that_clause->get_type() == RelRef::CallsT ||
+            such_that_clause->get_type() == RelRef::Affects ||
+            such_that_clause->get_type() == RelRef::AffectsT)) {
+      return 4;
+    }
+  } else if (clause->get_type() == ClauseType::PatternClause) {
+    if (synonyms_used.size() == 1) {
+      return 1;
+    } else if (synonyms_used.size() == 2) {
+      return 3;
+    }
+  }
+}
+
 ClauseVertex QueryOptimizer::MakeSuchThatVertex(SuchThatClause *such_that_clause) {
   std::shared_ptr<Clause> clause_ptr(such_that_clause);
   clause_ptr->set_type(ClauseType::SuchThatClause);
@@ -169,13 +225,13 @@ ClauseVertex QueryOptimizer::MakeSuchThatVertex(SuchThatClause *such_that_clause
   std::string left_syn = "";
   // If left arg is a synonym, add to synonyms used
   if (left_ent->get_type() == SuchThatRefType::Statement &&
-  left_ent->get_stmt_ref().get_type() == StmtRefType::Synonym) {
+      left_ent->get_stmt_ref().get_type() == StmtRefType::Synonym) {
     left_syn = left_ent->get_stmt_ref().get_synonym();
   } else if (left_ent->get_type() == SuchThatRefType::Entity &&
-  left_ent->get_ent_ref().get_type() == EntRefType::Synonym) {
+      left_ent->get_ent_ref().get_type() == EntRefType::Synonym) {
     left_syn = left_ent->get_ent_ref().get_synonym();
   } else if (left_ent->get_type() == SuchThatRefType::Line &&
-  left_ent->get_line_ref().get_type() == LineRefType::Synonym) {
+      left_ent->get_line_ref().get_type() == LineRefType::Synonym) {
     left_syn = left_ent->get_line_ref().get_synonym();
   }
   if (left_syn != "") {
@@ -189,13 +245,13 @@ ClauseVertex QueryOptimizer::MakeSuchThatVertex(SuchThatClause *such_that_clause
   std::string right_syn = "";
   // If right arg is a synonym, add to synonyms used.
   if (right_ent->get_type() == SuchThatRefType::Statement &&
-  right_ent->get_stmt_ref().get_type() == StmtRefType::Synonym) {
+      right_ent->get_stmt_ref().get_type() == StmtRefType::Synonym) {
     right_syn = right_ent->get_stmt_ref().get_synonym();
   } else if (right_ent->get_type() == SuchThatRefType::Entity &&
-  right_ent->get_ent_ref().get_type() == EntRefType::Synonym) {
+      right_ent->get_ent_ref().get_type() == EntRefType::Synonym) {
     right_syn = right_ent->get_ent_ref().get_synonym();
   } else if (right_ent->get_type() == SuchThatRefType::Line &&
-  right_ent->get_line_ref().get_type() == LineRefType::Synonym) {
+      right_ent->get_line_ref().get_type() == LineRefType::Synonym) {
     right_syn = right_ent->get_line_ref().get_synonym();
   }
   if (right_syn != "") {
@@ -206,9 +262,9 @@ ClauseVertex QueryOptimizer::MakeSuchThatVertex(SuchThatClause *such_that_clause
     }
   }
 
-  //TODO(sheryl): assign priority to vertex here
-
-  ClauseVertex clause_vertex = ClauseVertex(synonyms_used, 0, has_return_syn, clause_ptr);
+  // Creating clause vertex and assigning priority to it.
+  ClauseVertex clause_vertex = ClauseVertex(synonyms_used, has_return_syn, clause_ptr);
+  clause_vertex.set_priority(AssignPriority(synonyms_used, clause_ptr));
   return clause_vertex;
 }
 
@@ -239,8 +295,9 @@ ClauseVertex QueryOptimizer::MakePatternVertex(PatternClause *pattern_clause) {
     }
   }
 
-  //TODO: assign priority to vertex here
-  ClauseVertex clause_vertex = ClauseVertex(synonyms_used, 0, has_return_syn, clause_ptr);
+  // Creating clause vertex and assigning priority to it.
+  ClauseVertex clause_vertex = ClauseVertex(synonyms_used, has_return_syn, clause_ptr);
+  clause_vertex.set_priority(AssignPriority(synonyms_used, clause_ptr));
   return clause_vertex;
 }
 
@@ -271,6 +328,8 @@ ClauseVertex QueryOptimizer::MakeWithVertex(WithClause *with_clause) {
     }
   }
 
-  ClauseVertex clause_vertex = ClauseVertex(synonyms_used, 0, has_return_syn, clause_ptr);
+  // Creating clause vertex and assigning priority to it.
+  ClauseVertex clause_vertex = ClauseVertex(synonyms_used, has_return_syn, clause_ptr);
+  clause_vertex.set_priority(AssignPriority(synonyms_used, clause_ptr));
   return clause_vertex;
 }

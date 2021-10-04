@@ -7,7 +7,6 @@
 class ClauseVertex {
  public:
   ClauseVertex(std::vector<std::string> synonyms_used,
-               int priority,
                bool has_return_syn,
                std::shared_ptr<Clause> clause);
   std::vector<std::string> get_synonyms_used();
@@ -15,6 +14,8 @@ class ClauseVertex {
   std::shared_ptr<Clause> get_clause();
   void set_id(int id);
   int get_id();
+  void set_priority(int priority);
+  int get_priority();
   ~ClauseVertex();
  private:
   std::vector<std::string> synonyms_used_;

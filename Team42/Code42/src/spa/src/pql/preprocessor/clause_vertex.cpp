@@ -1,11 +1,10 @@
 #include "clause_vertex.h"
 
 ClauseVertex::ClauseVertex(std::vector<std::string> synonyms_used,
-                           int priority,
                            bool has_return_syn,
                            std::shared_ptr<Clause> clause) {
   this->synonyms_used_ = synonyms_used;
-  this->priority_ = priority;
+  this->priority_ = 0;
   this->has_return_syn_ = has_return_syn;
   this->clause_ = clause;
   this->id_ = 0;
@@ -31,4 +30,12 @@ void ClauseVertex::set_id(int id) {
 
 int ClauseVertex::get_id() {
   return this->id_;
+}
+
+void ClauseVertex::set_priority(int priority) {
+  this->priority_ = priority;
+}
+
+int ClauseVertex::get_priority() {
+  return this->priority_;
 }

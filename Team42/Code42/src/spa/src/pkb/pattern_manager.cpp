@@ -82,6 +82,7 @@ std::string PatternManager::GetPostfixExpr(std::string infix_expr) {
           }
           break;
         }
+        case '\t':
         case ' ': break;
         default: throw std::invalid_argument("Expression is not valid");
       }

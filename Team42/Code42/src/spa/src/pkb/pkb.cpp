@@ -149,6 +149,10 @@ bool PKB::TestAssignmentPattern(Statement *statement, std::string pattern, bool 
   return PatternManager::TestAssignmentPattern(statement, pattern, is_partial_match);
 }
 
+bool PKB::TestIfWhilePattern(Statement *stmt, std::string variable) {
+  return PatternManager::TestIfWhilePattern(stmt, variable);
+}
+
 void PKB::PrintStatements() {
   stmt_table_.PrintStatements();
 }

@@ -10,6 +10,9 @@ class PatternManager {
   // Tests the assignment expression against the given pattern.
   // Returns true if pattern matches.
   static bool TestAssignmentPattern(Statement *assignment_stmt, std::string pattern, bool is_partial_match);
+  // Tests for a variable in the expression of the if statement.
+  // Returns true if variable matches.
+  static bool TestIfWhilePattern(Statement *stmt, std::string variable);
 
  private:
   // Map of operands to its order of precedence.

@@ -87,8 +87,29 @@ TEST_CASE("TestAssignmentPattern_MixedPrecedenceOperators_Success", "[pattern_ma
 
     REQUIRE(PKB::TestAssignmentPattern(&s1, "v + 3 / ((y - z) % n * t)", false) == true);
     REQUIRE(PKB::TestAssignmentPattern(&s1, "v + 3", true) == false);
+    REQUIRE(PKB::TestAssignmentPattern(&s1, "y\t - \tz", true) == true);
     REQUIRE(PKB::TestAssignmentPattern(&s1, "((y - z) % n * t)", true) == true);
     REQUIRE(PKB::TestAssignmentPattern(&s1, "(y - z) % n", true) == true);
     REQUIRE(PKB::TestAssignmentPattern(&s1, " 3 / ((y - z)", true) == false);
     REQUIRE(PKB::TestAssignmentPattern(&s1, "3 / ((y - z) % n * t)", true) == true);
+}
+
+TEST_CASE("TestIfWhilePattern_SingleCondition_Success", "[pattern_manager]") {
+  Statement s1(1, NodeType::If);
+  s1.set_expr_string("count i ==");
+
+  REQUIRE(PKB::TestIfWhilePattern(&s1, "count") == true);
+  REQUIRE(PKB::TestIfWhilePattern(&s1, "co") == false);
+  REQUIRE(PKB::TestIfWhilePattern(&s1, "i") == true);
+  REQUIRE(PKB::TestIfWhilePattern(&s1, "v") == false);
+}
+
+TEST_CASE("TestIfWhilePattern_MultipleConditions_Success", "[pattern_manager]") {
+  Statement s1(1, NodeType::If);
+  s1.set_expr_string("7 x 0 != yellow 0 != &&");
+
+  REQUIRE(PKB::TestIfWhilePattern(&s1, "yellow") == true);
+  REQUIRE(PKB::TestIfWhilePattern(&s1, "y") == false);
+  REQUIRE(PKB::TestIfWhilePattern(&s1, "x") == true);
+  REQUIRE(PKB::TestIfWhilePattern(&s1, "a") == false);
 }

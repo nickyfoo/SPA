@@ -114,3 +114,12 @@ bool PatternManager::TestAssignmentPattern(Statement *assignment_stmt, std::stri
     return assign_expr == postfix_pattern;
   }
 }
+
+bool PatternManager::TestIfWhilePattern(Statement *stmt, std::string variable) {
+  if (variable.size() == 0) return false;
+  std::stringstream assign_expr_ss, variable_ss;
+  variable_ss << " " << variable << " ";
+  assign_expr_ss << " " << stmt->get_expr_string() << " ";
+  std::string assign_expr = assign_expr_ss.str();
+  return assign_expr.find(variable_ss.str()) != std::string::npos;
+}

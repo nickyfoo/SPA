@@ -10,24 +10,24 @@ PatternQueryManager::PatternQueryManager(PKB *pkb) {
 PatternQueryManager::~PatternQueryManager() = default;
 
 
-ResultTable* PatternQueryManager::EvaluatePattern(PatternClause pattern,
+ResultTable* PatternQueryManager::EvaluatePattern(std::shared_ptr<PatternClause> pattern,
                                                   const std::unordered_map<std::string, std::vector<Entity *>>& synonym_to_entities_vec) {
-  if (pattern.get_type() == EntityType::Assign) {
+  if (pattern->get_type() == EntityType::Assign) {
     return EvaluateAssignPattern(pattern, synonym_to_entities_vec);
-  } else if (pattern.get_type() == EntityType::If || pattern.get_type() == EntityType::While) {
+  } else if (pattern->get_type() == EntityType::If || pattern->get_type() == EntityType::While) {
     return EvaluateIfAndWhilePattern(pattern, synonym_to_entities_vec);
   } else {
     throw std::runtime_error("Unknown pattern type!");
   }
 }
 
-ResultTable* PatternQueryManager::EvaluateAssignPattern(PatternClause pattern,
+ResultTable* PatternQueryManager::EvaluateAssignPattern(std::shared_ptr<PatternClause> pattern,
                                                         std::unordered_map<std::string,
                                                         std::vector<Entity *>> synonym_to_entities_vec) {
   auto *ret = new ResultTable();
-  EntityDeclaration *synonym = pattern.get_synonym();
-  EntRef *left_ent = pattern.get_variable();
-  ExpressionSpec *right_ent = pattern.get_exp_spec();
+  EntityDeclaration *synonym = pattern->get_synonym();
+  EntRef *left_ent = pattern->get_variable();
+  ExpressionSpec *right_ent = pattern->get_exp_spec();
   std::string pattern_to_check = right_ent->get_expression();
   bool is_partial_pattern = right_ent->IsPartialPattern();
 
@@ -66,6 +66,15 @@ ResultTable* PatternQueryManager::EvaluateAssignPattern(PatternClause pattern,
       }
     }
   }
+  printf("completed here at pattern\n");
+  printf("printing statements...\n");
+  for (std::string s : stmt_vec) {
+    printf("%s\n", s.c_str());
+  }
+  printf("printing var...\n");
+  for (std::string s : var_vec) {
+    printf("%s\n", s.c_str());
+  }
   if (left_ent->get_type() == EntRefType::Synonym) {
     ret->AddDoubleColumns(synonym->get_synonym(), stmt_vec, left_synonym, var_vec);
   } else if (left_ent->get_type() == EntRefType::Argument ||
@@ -79,13 +88,13 @@ ResultTable* PatternQueryManager::EvaluateAssignPattern(PatternClause pattern,
   return ret;
 }
 
-ResultTable* PatternQueryManager::EvaluateIfAndWhilePattern(PatternClause pattern,
+ResultTable* PatternQueryManager::EvaluateIfAndWhilePattern(std::shared_ptr<PatternClause> pattern,
                                                             std::unordered_map<std::string,
                                                             std::vector<Entity *>> synonym_to_entities_vec) {
   auto *ret = new ResultTable();
-  EntityDeclaration *synonym = pattern.get_synonym();
-  EntRef *variable = pattern.get_variable();
-  EntityType type = pattern.get_type();
+  EntityDeclaration *synonym = pattern->get_synonym();
+  EntRef *variable = pattern->get_variable();
+  EntityType type = pattern->get_type();
 
   // list of assignment object
   std::vector<Entity *> entity_vec = synonym_to_entities_vec.at(synonym->get_synonym());
@@ -96,8 +105,8 @@ ResultTable* PatternQueryManager::EvaluateIfAndWhilePattern(PatternClause patter
 
   for (int i = 0; i < entity_vec.size(); i++) {
     auto *stmt = dynamic_cast<Statement *>(entity_vec.at(i));  // for each stmt object
-    if (stmt->get_modifies()->empty()
-        || !pkb_->TestIfWhilePattern(stmt, variable)) {
+    if (stmt->get_modifies()->empty()) {
+//        || !pkb_->TestIfWhilePattern(stmt, variable)) {
       continue;
     } else {
       if (variable->get_type() == EntRefType::Synonym) {  // pattern if(a, _, _)

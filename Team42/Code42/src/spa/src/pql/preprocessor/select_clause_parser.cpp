@@ -26,7 +26,11 @@ void SelectClauseParser::set_select_clause(std::unordered_map<std::string,
   this->select_statement_ = select_clause;
 }
 
-PQLQuery *SelectClauseParser::get_clauses() {
+std::tuple<std::vector<std::string> *,
+           std::vector<SuchThatClause *> *,
+           std::vector<PatternClause *> *,
+           std::vector<WithClause *> *,
+           std::unordered_map<std::string, EntityDeclaration *> *> *SelectClauseParser::get_clauses() {
   std::tuple<std::string,
              std::vector<std::string>,
              std::vector<std::string>,
@@ -86,41 +90,46 @@ PQLQuery *SelectClauseParser::get_clauses() {
     }
   }
 
-  // check for whether there are repeated synonyms
-  bool has_one_repeated_synonym = false;
-  bool has_two_repeated_synonyms = false;
-  for (SuchThatClause *relationship : *such_that_ret) {
-    std::string left_relationship_str, right_relationship_str;
-    if (relationship->get_left_ref()->get_type() == SuchThatRefType::Statement) {
-      left_relationship_str = relationship->get_left_ref()->get_stmt_ref().get_value();
-    } else {
-      left_relationship_str = relationship->get_left_ref()->get_ent_ref().get_value();
-    }
+//  // check for whether there are repeated synonyms
+//  bool has_one_repeated_synonym = false;
+//  bool has_two_repeated_synonyms = false;
+//  for (SuchThatClause *relationship : *such_that_ret) {
+//    std::string left_relationship_str, right_relationship_str;
+//    if (relationship->get_left_ref()->get_type() == SuchThatRefType::Statement) {
+//      left_relationship_str = relationship->get_left_ref()->get_stmt_ref().get_value();
+//    } else {
+//      left_relationship_str = relationship->get_left_ref()->get_ent_ref().get_value();
+//    }
+//
+//    if (relationship->get_right_ref()->get_type() == SuchThatRefType::Statement) {
+//      right_relationship_str = relationship->get_right_ref()->get_stmt_ref().get_value();
+//    } else {
+//      right_relationship_str = relationship->get_right_ref()->get_ent_ref().get_value();
+//    }
+//
+//    for (PatternClause *pattern : *pattern_ret) {
+//      if (left_relationship_str != "_" &&
+//          (pattern->get_synonym()->get_synonym() == left_relationship_str
+//              || pattern->get_variable()->get_value() == left_relationship_str)) {
+//        has_one_repeated_synonym = true;
+//      }
+//
+//      if (right_relationship_str != "_" &&
+//          (pattern->get_synonym()->get_synonym() == right_relationship_str
+//              || pattern->get_variable()->get_value() == right_relationship_str)) {
+//        has_one_repeated_synonym ? has_two_repeated_synonyms = true
+//                                 : has_one_repeated_synonym = true;
+//      }
+//    }
+//  }
 
-    if (relationship->get_right_ref()->get_type() == SuchThatRefType::Statement) {
-      right_relationship_str = relationship->get_right_ref()->get_stmt_ref().get_value();
-    } else {
-      right_relationship_str = relationship->get_right_ref()->get_ent_ref().get_value();
-    }
-
-    for (PatternClause *pattern : *pattern_ret) {
-      if (left_relationship_str != "_" &&
-      (pattern->get_synonym()->get_synonym() == left_relationship_str
-      || pattern->get_variable()->get_value() == left_relationship_str)) {
-        has_one_repeated_synonym = true;
-      }
-
-      if (right_relationship_str != "_" &&
-      (pattern->get_synonym()->get_synonym() == right_relationship_str
-      || pattern->get_variable()->get_value() == right_relationship_str)) {
-        has_one_repeated_synonym ? has_two_repeated_synonyms = true
-            : has_one_repeated_synonym = true;
-      }
-    }
-  }
-
-  auto *ret = new PQLQuery(select_ret, such_that_ret,
-                           pattern_ret, with_ret, synonym_to_entity_);
+  auto ret = new std::tuple<std::vector<std::string> *,
+                            std::vector<SuchThatClause *> *,
+                            std::vector<PatternClause *> *,
+                            std::vector<WithClause *> *,
+                            std::unordered_map<std::string, EntityDeclaration *> *>(
+                                select_ret, such_that_ret,
+                                pattern_ret, with_ret, synonym_to_entity_);
 
   return ret;
 }
@@ -182,7 +191,8 @@ std::vector<PatternClause *> *SelectClauseParser::MakePatternClause(
     if (pattern_clause.size() == 3) {  // assign and while
       auto *pattern = MakePatternRef(synonym, left_ref, right_ref);
       if (pattern == nullptr ||
-      !(pattern->get_type() == EntityType::Assign || pattern->get_type() == EntityType::While)) {
+          !(pattern->get_type() == EntityType::Assign ||
+              pattern->get_type() == EntityType::While)) {
         return nullptr;
       } else {
         ret->push_back(pattern);
@@ -208,7 +218,8 @@ std::vector<WithClause *> *SelectClauseParser::MakeWithClause(
     return nullptr;
   }
 
-  std::vector<std::pair<std::string, std::string>> with_clauses = SplitTokensByEqual(with_statement);
+  std::vector<std::pair<std::string, std::string>> with_clauses =
+      SplitTokensByEqual(with_statement);
   if (with_clauses.empty()) {
     return nullptr;
   }
@@ -221,12 +232,12 @@ std::vector<WithClause *> *SelectClauseParser::MakeWithClause(
     size_t start = left_ref.find_first_not_of(WHITESPACE);
     if (start != std::string::npos) left_ref = left_ref.substr(start);
     size_t end = left_ref.find_last_not_of(WHITESPACE);
-    if (end != std::string::npos) left_ref = left_ref.substr(0, end+1);
+    if (end != std::string::npos) left_ref = left_ref.substr(0, end + 1);
 
     start = right_ref.find_first_not_of(WHITESPACE);
     if (start != std::string::npos) right_ref = right_ref.substr(start);
     end = right_ref.find_last_not_of(WHITESPACE);
-    if (end != std::string::npos) right_ref = right_ref.substr(0, end+1);
+    if (end != std::string::npos) right_ref = right_ref.substr(0, end + 1);
 
     auto *with = MakeWithRef(left_ref, right_ref);
     if (with == nullptr) {
@@ -245,8 +256,8 @@ PatternClause *SelectClauseParser::MakePatternRef(const std::string &synonym,
   auto *ent_ref = new EntRef();
   if ((synonym_to_entity_->find(synonym) != synonym_to_entity_->end())
       && (synonym_to_entity_->at(synonym)->get_type() == EntityType::Assign
-      || synonym_to_entity_->at(synonym)->get_type() == EntityType::If
-      || synonym_to_entity_->at(synonym)->get_type() == EntityType::While)) {
+          || synonym_to_entity_->at(synonym)->get_type() == EntityType::If
+          || synonym_to_entity_->at(synonym)->get_type() == EntityType::While)) {
     ret = new PatternClause(synonym_to_entity_->find(synonym)->second);
   } else {
     return nullptr;
@@ -284,7 +295,7 @@ WithClause *SelectClauseParser::MakeWithRef(const std::string& left_ref,
     left_type = EntityType::None;
     left_attr_value_type = AttrValueType::Integer;
   } else if (IsValidIdentifier(left_ref)) {  // set as EntityType::None if it is an ident
-    left_str = left_ref.substr(1, left_ref.length()-2);
+    left_str = left_ref.substr(1, left_ref.length() - 2);
     left_type = EntityType::None;
     left_attr_value_type = AttrValueType::Name;
   } else {
@@ -298,11 +309,12 @@ WithClause *SelectClauseParser::MakeWithRef(const std::string& left_ref,
     right_type = EntityType::None;
     right_attr_value_type = AttrValueType::Integer;
   } else if (IsValidIdentifier(right_ref)) {  // set as EntityType::None if it is an ident
-    right_str = right_ref.substr(1, right_ref.length()-2);
+    right_str = right_ref.substr(1, right_ref.length() - 2);
     right_type = EntityType::None;
     right_attr_value_type = AttrValueType::Name;
   } else {
-    std::tie(right_str, right_type, right_attr_value_type) = GetWithRefTypeAndAttrValueType(right_ref);
+    std::tie(right_str, right_type, right_attr_value_type) =
+        GetWithRefTypeAndAttrValueType(right_ref);
     if (right_type == EntityType::None) {  // not valid ref
       return nullptr;
     }
@@ -317,8 +329,9 @@ WithClause *SelectClauseParser::MakeWithRef(const std::string& left_ref,
   return ret;
 }
 
-std::tuple<std::string, EntityType, AttrValueType> SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
-  std::vector<std::string> synonym_attribute = SplitTokensByDelimiter(std::move(ref), ".");
+std::tuple<std::string, EntityType, AttrValueType>
+SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
+  std::vector<std::string> synonym_attribute = SplitTokensByDelimiter(ref, ".");
   if (synonym_attribute.size() == 1) {  // prog line
     std::string synonym = synonym_attribute.at(0);
     if (synonym_to_entity_->find(synonym) != synonym_to_entity_->end()) {
@@ -337,11 +350,11 @@ std::tuple<std::string, EntityType, AttrValueType> SelectClauseParser::GetWithRe
         case EntityType::Procedure:
           if (attribute == "procName")
             attr_value_type = AttrValueType::Name;
-            break;
+          break;
         case EntityType::Variable:
           if (attribute == "varName")
             attr_value_type = AttrValueType::Name;
-            break;
+          break;
         case EntityType::Constant:
           if (attribute == "value")
             attr_value_type = AttrValueType::Integer;
@@ -363,10 +376,11 @@ std::tuple<std::string, EntityType, AttrValueType> SelectClauseParser::GetWithRe
         case EntityType::While:
         case EntityType::If:
         case EntityType::Assign:
-          if (attribute == "stmt#") attr_value_type = AttrValueType::Integer;
+          if (attribute == "stmt#") {
+            attr_value_type = AttrValueType::Integer;
+          }
           break;
-        default:
-          break;
+        default:break;
       }
       if (attr_value_type != AttrValueType::None) {
         return std::make_tuple(synonym, type, attr_value_type);
@@ -377,7 +391,7 @@ std::tuple<std::string, EntityType, AttrValueType> SelectClauseParser::GetWithRe
 }
 
 SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(
-    SuchThatClause *relationship, const std::string& left_ref) {
+    SuchThatClause *relationship, std::string left_ref) {
   SuchThatRef *left_such_that_ref;
   StmtRef left_stmt_ref;
   EntRef left_ent_ref;
@@ -421,7 +435,7 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(
       }
       case EntityType::Procedure:
         if (type == RelRef::Uses || type == RelRef::Modifies
-        || type == RelRef::Calls || type == RelRef::CallsT) {
+            || type == RelRef::Calls || type == RelRef::CallsT) {
           left_ent_ref.set_synonym(left_ref);
           left_such_that_ref = new SuchThatRef(left_ent_ref);
           break;
@@ -447,7 +461,7 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(
     }
   } else if (left_ref == "_") {  // wild card
     if (type == RelRef::Uses || type == RelRef::Modifies
-    || type == RelRef::Calls || type == RelRef::CallsT) {
+        || type == RelRef::Calls || type == RelRef::CallsT) {
       left_ent_ref.set_wild_card();
       left_such_that_ref = new SuchThatRef(left_ent_ref);
     } else if (type == RelRef::Next || type == RelRef::NextT) {
@@ -471,7 +485,7 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(
 }
 
 SuchThatRef *SelectClauseParser::MakeSuchThatRefRight(
-    SuchThatClause *relationship, const std::string& right_ref) {
+    SuchThatClause *relationship, std::string right_ref) {
   SuchThatRef *right_such_that_ref;
   StmtRef right_stmt_ref;
   EntRef right_ent_ref;
@@ -510,13 +524,12 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefRight(
           right_line_ref.set_entity_type(entity_type);
           right_such_that_ref = new SuchThatRef(right_line_ref);
           break;
-        } else if (type != RelRef::Affects && type != RelRef::AffectsT){
+        } else if (type != RelRef::Affects && type != RelRef::AffectsT) {
           right_stmt_ref.set_synonym(right_ref);
           right_stmt_ref.set_entity_type(entity_type);
           right_such_that_ref = new SuchThatRef(right_stmt_ref);
           break;
         }
-
       }
       case EntityType::Procedure:
         if (type == RelRef::Calls || type == RelRef::CallsT) {
@@ -537,7 +550,7 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefRight(
     }
   } else if (right_ref == "_") {  // wild card
     if (type == RelRef::Uses || type == RelRef::Modifies
-    || type == RelRef::Calls || type == RelRef::CallsT) {
+        || type == RelRef::Calls || type == RelRef::CallsT) {
       right_ent_ref.set_wild_card();
       right_such_that_ref = new SuchThatRef(right_ent_ref);
     } else if (type == RelRef::Next || type == RelRef::NextT) {
@@ -661,7 +674,8 @@ std::vector<std::string> SelectClauseParser::SplitTokensByEqualDelim(
 }
 
 // splits by such that, pattern and with
-std::tuple<std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>>
+std::tuple<std::string, std::vector<std::string>,
+           std::vector<std::string>, std::vector<std::string>>
 SelectClauseParser::SplitTokensByClauses(const std::string &input) {
   std::string SUCH_THAT_DELIM = "such that ";
   std::string PATTERN_DELIM = "pattern ";
@@ -750,7 +764,7 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
       || clean_input.find(WITH_DELIM) != std::string::npos) {
     // find the earliest clause
     pos = std::min(std::min(clean_input.find(SUCH_THAT_DELIM),
-                   clean_input.find(PATTERN_DELIM)),
+                            clean_input.find(PATTERN_DELIM)),
                    clean_input.find(WITH_DELIM));
     token = clean_input.substr(0, pos);
     if (last_found_such_that) {
@@ -774,12 +788,11 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
       last_found_such_that = false;
       last_found_with = false;
     } else if (clean_input.substr(pos, WITH_DELIM.length())
-      == WITH_DELIM) {
+        == WITH_DELIM) {
       clean_input.erase(0, pos + WITH_DELIM.length());
       last_found_with = true;
       last_found_such_that = false;
       last_found_pattern = false;
-
     }
   }
   if (!last_found_such_that && !last_found_pattern && !last_found_with) {
@@ -811,13 +824,14 @@ std::vector<std::vector<std::string>> SelectClauseParser::SplitTokensByBrackets(
     while (getline(input_stream, line)) {
       size_t prev = 0, pos;
       while ((pos = line.find_first_of(brackets, prev))
-      != std::string::npos) {
+          != std::string::npos) {
         if (pos >= prev)
           tokens.push_back(line.substr(prev, pos - prev));
         prev = pos + 1;
       }
       if (prev < line.length())
-        if (line.substr(prev, std::string::npos) != "" && line.substr(prev, std::string::npos) != " ")
+        if (line.substr(prev, std::string::npos) != "" &&
+            line.substr(prev, std::string::npos) != " ")
           tokens.push_back(line.substr(prev, std::string::npos));
     }
     ret.push_back(tokens);
@@ -825,7 +839,6 @@ std::vector<std::vector<std::string>> SelectClauseParser::SplitTokensByBrackets(
 
   return ret;
 }
-
 
 std::vector<std::pair<std::string, std::string>> SelectClauseParser::SplitTokensByEqual(
     const std::string &input) {
@@ -885,10 +898,11 @@ bool SelectClauseParser::IsValidAttr(const std::string &select) {
     case EntityType::While:
     case EntityType::If:
     case EntityType::Assign:
-      if (attribute == "stmt#") attr_value_type = AttrValueType::Integer;
+      if (attribute == "stmt#") {
+        attr_value_type = AttrValueType::Integer;
+      }
       break;
-    default:
-      break;
+    default:break;
   }
 
   if (attr_value_type != AttrValueType::None) {

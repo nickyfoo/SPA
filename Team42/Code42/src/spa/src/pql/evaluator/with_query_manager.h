@@ -14,7 +14,7 @@ class WithQueryManager {
  public:
   WithQueryManager();
   ~WithQueryManager();
-  ResultTable* EvaluateWith(WithClause with,
+  ResultTable* EvaluateWith(std::shared_ptr<WithClause> with,
                             std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec);
  private:
   std::vector<std::string> GetNames(std::string synonym, EntityType type,
@@ -26,5 +26,5 @@ class WithQueryManager {
                                        std::unordered_map<std::string,
                                                           std::vector<Entity *>> synonym_to_entities_vec);
   std::tuple<std::vector<std::string>, std::vector<std::string>> GetSynonymPairs(
-      WithClause with, std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec);
+      std::shared_ptr<WithClause> with, std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec);
 };

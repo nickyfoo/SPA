@@ -1,7 +1,8 @@
 #include "follows_parents_handler.h"
 #include "ast.h"
 
-FollowsParentsHandler::FollowsParentsHandler() = default;
+FollowsParentsHandler::FollowsParentsHandler() {};
+
 FollowsParentsHandler *FollowsParentsHandler::instance_ = nullptr;
 
 FollowsParentsHandler *FollowsParentsHandler::get_instance() {
@@ -19,7 +20,7 @@ void FollowsParentsHandler::set_function_pointers(
 }
 
 void FollowsParentsHandler::set_args(PKB *pkb,
-                                     SuchThatClause relationship,
+                                     std::shared_ptr<SuchThatClause> relationship,
                                      std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec) {
   this->pkb_ = pkb;
   this->relationship_ = relationship;
@@ -36,8 +37,8 @@ std::set<int> *FollowsParentsHandler::Forwarder(std::set<int> *(Statement::*func
 // if is empty, means that True with no synonyms
 ResultTable* FollowsParentsHandler::Evaluate() {
   ResultTable* ret = new ResultTable();
-  StmtRef left_ent = relationship_.get_left_ref()->get_stmt_ref();
-  StmtRef right_ent = relationship_.get_right_ref()->get_stmt_ref();
+  StmtRef left_ent = relationship_->get_left_ref()->get_stmt_ref();
+  StmtRef right_ent = relationship_->get_right_ref()->get_stmt_ref();
   // Going through 9 different cases for Follows/Parents
   if (left_ent.get_type() == StmtRefType::StmtNum &&
       right_ent.get_type() == StmtRefType::StmtNum) {  // Follows/Parents(4, 5)

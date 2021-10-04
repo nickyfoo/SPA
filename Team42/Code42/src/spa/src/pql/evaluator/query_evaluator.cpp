@@ -12,14 +12,16 @@
 
 QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
   if (pql_query != nullptr) {
-    QueryEvaluator::entities_to_return_ = pql_query->get_query_entities();
-    QueryEvaluator::clause_groups_ = pql_query->get_clause_groups();
-    QueryEvaluator::synonym_to_entity_dec_ = pql_query->get_synonym_to_entities();
+    this->entities_to_return_ = pql_query->get_query_entities();
+    this->clause_groups_ = pql_query->get_clause_groups();
+    //TODO (Wei Kiat): please remove this, I put this here to silence the errors.
+//    this->relationships_ = new std::vector<SuchThatClause *>();
+//    this->patterns_ = new std::vector<PatternClause *>();
+    this->synonym_to_entity_dec_ = pql_query->get_synonym_to_entities();
     this->pkb_ = pkb;
   } else {
-    QueryEvaluator::entities_to_return_ = nullptr;
-    QueryEvaluator::clause_groups_ = nullptr;
-    QueryEvaluator::synonym_to_entity_dec_ = nullptr;
+    this->entities_to_return_ = nullptr;
+    this->synonym_to_entity_dec_ = nullptr;
     this->pkb_ = nullptr;
   }
 }
@@ -28,7 +30,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
   if (synonym_to_entity_dec_ == nullptr) {
     return new std::vector<std::string>{};
   }
-
+  printf("EVALUATE\n");
   RelationshipQueryManager *relationship_query_manager;
   PatternQueryManager *pattern_query_manager;
   WithQueryManager *with_query_manager;
@@ -41,25 +43,28 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
   // where first group is without synonyms,
   // second group is without any return synonyms,
   // and third groups on are those with synonyms in results
-  for (int i = 0; i < clause_groups_->size(); i++) {
-    vector<ClauseVertex> clause_vertexes = clause_groups.at(i).get_clauses();
-    ResultTable *intermediate_table = new ResultTable(clause_vertexes.get_all_synonyms_used());
+  printf("clause groups size: %d\n", clause_groups_.size());
+  for (int i = 0; i < clause_groups_.size(); i++) {
+    std::vector<ClauseVertex> clause_vertexes = clause_groups_.at(i)->get_clauses();
+    printf("1\n");
+    ResultTable *intermediate_table = new ResultTable();
     bool first_table_entry = true;
     for (ClauseVertex clause_vertex: clause_vertexes) {
-      ClauseType type = clause_vertex.get_clause().get_type();
+      printf("2\n");
+      ClauseType type = clause_vertex.get_clause()->get_type();
       auto synonym_to_entities_vec = GetPossibleEntitiesVec(clause_vertex);
       ResultTable *table;
       switch (type) {
-        case ClauseType::SuchThat:
-          table = relationship_query_manager->EvaluateRelationship(dynamic_cast<SuchThatClause>(clause_vertex),
+        case ClauseType::SuchThatClause:
+          table = relationship_query_manager->EvaluateRelationship(std::dynamic_pointer_cast<SuchThatClause>(clause_vertex.get_clause()),
                                                                    synonym_to_entities_vec);
           break;
-        case ClauseType::Pattern:
-          table = pattern_query_manager->EvaluatePattern(dynamic_cast<PatternClause>(clause_vertex),
+        case ClauseType::PatternClause:
+          table = pattern_query_manager->EvaluatePattern(std::dynamic_pointer_cast<PatternClause>(clause_vertex.get_clause()),
                                                          synonym_to_entities_vec);
           break;
-        case ClauseType::With:
-          table = with_query_manager->EvaluateWith(dynamic_cast<WithClause>(clause_vertex),
+        case ClauseType::WithClause:
+          table = with_query_manager->EvaluateWith(std::dynamic_pointer_cast<WithClause>(clause_vertex.get_clause()),
                                                    synonym_to_entities_vec);
           break;
         default:throw std::runtime_error("Unknown ClauseType found");
@@ -74,21 +79,37 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         intermediate_table->NaturalJoin(*table);
       }
     }
+    printf("finished for loop\n");
     if (i == 1) {  // first two groups which only has to evaluate true / false
-      if (intermediate_table->get_table()->size() == 0) {
+      if (intermediate_table->get_table()->size() == 0 && !first_table_entry) {
         return ConvertToOutput(result_table, false);
       }
     } else if (i == 2) {  // first group when the result table is initially empty
+      printf("mihoere\n");
+      for (std::vector<std::string> v : *intermediate_table->get_table()) {
+        for (std::string s : v) {
+          printf("%s ", s.c_str());
+        }
+        printf("\n");
+      }
       result_table->set_table(*intermediate_table);
-    } else {
+    } else if (i > 2){
+      printf("in here\n");
       result_table->CrossJoin(*intermediate_table);
       if (result_table->get_table()->empty()) {
+        printf("it empty");
         return ConvertToOutput(result_table, false);
       }
     }
 
   }
-
+  printf("DAFKKK\n");
+  for (std::vector<std::string> v : *result_table->get_table()) {
+    for (std::string s : v) {
+      printf("%s ", s.c_str());
+    }
+    printf("\n");
+  }
   return ConvertToOutput(result_table, true);
 }
 
@@ -195,6 +216,83 @@ std::unordered_map<std::string, std::vector<Entity *>> QueryEvaluator::GetPossib
     }
     ret.insert({synonym, entities});
   }
+//  RelationshipQueryManager *relationship_query_manager;
+//  PatternQueryManager *pattern_query_manager;
+//  if (!relationships_->empty() &&
+//      !IsEmpty(synonym_to_entity_result)) {
+//    relationship_query_manager = new RelationshipQueryManager(synonym_to_entity_result,
+//                                                              relationships_,
+//                                                              entities_to_return_,
+//                                                              pkb_,
+//                                                              has_two_repeated_synonyms_);
+//
+//    relationship_query_manager->EvaluateRelationships();
+//  }
+//
+//  // Check if any entity vector is empty
+//  // If it is, return empty result.
+//  if (IsEmpty(synonym_to_entity_result)) {
+//    return new std::vector<std::string>{};
+//  }
+//
+//  if (!patterns_->empty() &&
+//      !IsEmpty(synonym_to_entity_result)) {
+//    pattern_query_manager = new PatternQueryManager(synonym_to_entity_result,
+//                                                    patterns_,
+//                                                    entities_to_return_,
+//                                                    pkb_,
+//                                                    has_two_repeated_synonyms_);
+//
+//    pattern_query_manager->EvaluatePatterns();
+//  }
+//  // Check if any entity vector is empty
+//  // If it is, return empty result.
+//  if (IsEmpty(synonym_to_entity_result)) {
+//    return new std::vector<std::string>{};
+//  }
+//
+//  // If there are repeated synonyms between relationship and pattern
+//  // run relationship manager again
+//  if (has_one_repeated_synonym_) {
+//    relationship_query_manager->EvaluateRelationships();
+//  }
+//
+//  if (has_two_repeated_synonyms_) {
+//    std::vector<std::pair<int, std::string>> *relationship_vec =
+//        relationship_query_manager->get_stmt_var_pair_vector();
+//    std::vector<std::pair<int, std::string>> *pattern_vec =
+//        pattern_query_manager->get_vec_results();
+//    sort(relationship_vec->begin(), relationship_vec->end());
+//    sort(pattern_vec->begin(), pattern_vec->end());
+//    std::vector<std::pair<int, std::string>> result;
+//    std::set_intersection(relationship_vec->begin(), relationship_vec->end(),
+//                          pattern_vec->begin(), pattern_vec->end(), std::back_inserter(result));
+//
+//    auto *output = new std::vector<std::string>();
+//    if (patterns_->at(0)->get_synonym()->get_synonym() == entities_to_return_->at(0)) {
+//      for (std::pair<int, std::string> pair : result) {
+//        // Add item to results vector if it doesn't already exist in vector.
+//        if (std::find(output->begin(), output->end(), std::to_string(pair.first)) ==
+//        output->end()) {
+//          output->push_back(std::to_string(pair.first));
+//        }
+//      }
+//      return output;
+//    } else if (patterns_->at(0)->get_variable()->get_synonym() == entities_to_return_->at(0)) {
+//      for (std::pair<int, std::string> pair : result) {
+//        // Add item to results vector if it doesn't already exist in vector.
+//        if (std::find(output->begin(), output->end(), pair.second) == output->end()) {
+//          output->push_back(pair.second);
+//        }
+//      }
+//      return output;
+//    } else if (!result.empty()) {
+//      ConvertToOutput(synonym_to_entity_result);
+//    } else {
+//      return {};
+//    }
+//    ret.insert({synonym, entities});
+//  }
   return ret;
 }
 
@@ -212,6 +310,7 @@ bool QueryEvaluator::IsEmpty(std::unordered_map<std::string,
 // Converting from vector Entity objects to vector of strings to output.
 std::vector<std::string>
 *QueryEvaluator::ConvertToOutput(ResultTable *table_result, bool is_valid_query) {
+  printf("came here\n");
   auto *output = new std::vector<std::string>();
   // Will loop through the entities_to_return_ for Advanced version
 
@@ -227,22 +326,32 @@ std::vector<std::string>
     return output;
   }
 
+  if (table_result->get_table()->empty() && is_valid_query) {  // return entities not within clauses
+    printf("gonna do this\n");
+    return GetAllPossibleReturnResults();
+  }
+
   std::vector<int> indexes_of_return_entities;
   auto synonym_to_index_map = table_result->get_synonym_to_index();
   for (std::string synonym : *entities_to_return_) {  // retrieve synonyms indexes
-    indexes_of_return_entities.push_back(synonym_to_index_map->at(synonym);
+    indexes_of_return_entities.push_back(synonym_to_index_map->at(synonym));
   }
 
+  std::set<std::string> unique_results;
   for (std::vector<std::string> row : *table_result->get_table()) {
     std::stringstream ss;
     for (int i = 0; i < indexes_of_return_entities.size(); i++) {
-      ss << indexes_of_return_entities.at(i);
+      int index = indexes_of_return_entities.at(i);
+      ss << row.at(index);
       if (i != indexes_of_return_entities.size() - 1) {
         ss << " ";
       }
     }
-    output->push_back(ss.str());
+    printf("finished\n");
+//    output->push_back(ss.str());
+    unique_results.insert(ss.str());
   }
+  output->assign(unique_results.begin(), unique_results.end());
 //  std::string synonym = entities_to_return_->at(0);
 //  EntityType entity_type = synonym_to_entity_dec_->at(synonym)->get_type();
 //  std::vector<Entity *> entities = table_result->at(synonym);
@@ -270,6 +379,106 @@ std::vector<std::string>
 //    }
 //  }
   return output;
+}
+std::vector<std::string> *QueryEvaluator::GetAllPossibleReturnResults() {
+  std::vector<std::vector<std::string> *> synonym_to_entities_result;
+  for (std::string synonym : *entities_to_return_) {
+    printf("synonym now is %s\n", synonym.c_str());
+    EntityType type = synonym_to_entity_dec_->at(synonym)->get_type();
+    printf("okay\n");
+    std::vector<std::string> *to_add = new std::vector<std::string>();
+    switch (type) {
+      case EntityType::Stmt: {
+        std::vector<Statement *> entities_stmt;
+        entities_stmt = pkb_->get_all_statements();
+        for (Statement *stmt: entities_stmt) {
+          to_add->push_back(std::to_string(stmt->get_stmt_no()));
+        }
+        break;
+      }
+      case EntityType::Read: {
+        std::vector<Statement *> entities_stmt;
+        entities_stmt = pkb_->get_statements(NodeType::Read);
+        for (Statement *stmt: entities_stmt) {
+          to_add->push_back(std::to_string(stmt->get_stmt_no()));
+        }
+        break;
+      }
+      case EntityType::Print: {
+        std::vector<Statement *> entities_stmt;
+        entities_stmt = pkb_->get_statements(NodeType::Print);
+        for (Statement *stmt: entities_stmt) {
+          to_add->push_back(std::to_string(stmt->get_stmt_no()));
+        }
+        break;
+      }
+      case EntityType::Call: {
+        std::vector<Statement *> entities_stmt;
+        entities_stmt = pkb_->get_statements(NodeType::Call);
+        for (Statement *stmt: entities_stmt) {
+          to_add->push_back(std::to_string(stmt->get_stmt_no()));
+        }
+        break;
+      }
+      case EntityType::While: {
+        std::vector<Statement *> entities_stmt;
+        entities_stmt = pkb_->get_statements(NodeType::While);
+        for (Statement *stmt: entities_stmt) {
+          to_add->push_back(std::to_string(stmt->get_stmt_no()));
+        }
+        break;
+      }
+      case EntityType::If: {
+        std::vector<Statement *> entities_stmt;
+        entities_stmt = pkb_->get_statements(NodeType::If);
+        for (Statement *stmt: entities_stmt) {
+          to_add->push_back(std::to_string(stmt->get_stmt_no()));
+        }
+        break;
+      }
+      case EntityType::Assign: {
+        std::vector<Statement *> entities_stmt;
+        entities_stmt = pkb_->get_statements(NodeType::Assign);
+        for (Statement *stmt: entities_stmt) {
+          to_add->push_back(std::to_string(stmt->get_stmt_no()));
+        }
+        break;
+      }
+      case EntityType::Variable: {
+        std::vector<Variable *> entities_var;
+        entities_var = pkb_->get_all_variables();
+        for (Variable *var: entities_var) {
+          to_add->push_back(var->get_name());
+        }
+        break;
+      }
+      case EntityType::Constant: {
+        std::vector<Constant *> entities_const;
+        entities_const = pkb_->get_all_constants();
+        for (Constant *cons: entities_const) {
+          to_add->push_back(cons->get_value());
+        }
+        break;
+      }
+      case EntityType::Procedure: {
+        std::vector<Procedure *> entities_proc;
+        entities_proc = pkb_->get_all_procedures();
+        for (Procedure *proc: entities_proc) {
+          to_add->push_back(proc->get_name());
+        }
+        break;
+      }
+      case EntityType::ProgLine:
+      case EntityType::None:
+        throw std::runtime_error("Unknown EntityType!");
+    }
+    // TODO: ACCOUNT FOR MULTIPLE PERMUTATIONS
+    synonym_to_entities_result.push_back(to_add);
+  }
+  printf("uhhhhhhh\n");
+  printf("size of syn to entities result: %d\n", synonym_to_entities_result.size());
+  return synonym_to_entities_result.at(0);
+
 }
 
 //bool QueryEvaluator::IsStmt(EntityType entity_type) {

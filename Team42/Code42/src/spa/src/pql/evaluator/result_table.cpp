@@ -63,8 +63,8 @@ void ResultTable::NaturalJoin(ResultTable &other_result_table) {
       table_ = new_table;
     }
   } else if (common_synonyms->size() == 0) { // should not happen
-    throw std::runtime_error("Error on natural join.");
-//    CrossJoin(other_result_table);
+//    throw std::runtime_error("Error on natural join.");
+    CrossJoin(other_result_table);
   }
 }
 
@@ -125,7 +125,7 @@ std::vector<std::pair<std::string, int>> *ResultTable::GetCommonSynonyms(ResultT
 }
 
 void ResultTable::AddSingleColumn(std::string synonym, std::vector<std::string> vec) {
-  synonym_to_index_->insert({synonym, synonym_to_index_->size()-1});
+  synonym_to_index_->insert({synonym, synonym_to_index_->size()});
   for (std::string value : vec) {
     table_->push_back(std::vector<std::string>({value}));
   }
@@ -133,10 +133,12 @@ void ResultTable::AddSingleColumn(std::string synonym, std::vector<std::string> 
 
 void ResultTable::AddDoubleColumns(std::string synonym_one, std::vector<std::string> vec_one,
                                    std::string synonym_two, std::vector<std::string> vec_two) {
-  synonym_to_index_->insert({synonym_one, synonym_to_index_->size()-1});
-  synonym_to_index_->insert({synonym_two, synonym_to_index_->size()-1});
+  synonym_to_index_->insert({synonym_one, synonym_to_index_->size()});
+  synonym_to_index_->insert({synonym_two, synonym_to_index_->size()});
   for (std::string value_one : vec_one) {
     for (std::string value_two : vec_two) {
+      printf("value one: %s\n", value_one.c_str());
+      printf("value two: %s\n", value_two.c_str());
       table_->push_back(std::vector<std::string>({value_one, value_two}));
     }
   }

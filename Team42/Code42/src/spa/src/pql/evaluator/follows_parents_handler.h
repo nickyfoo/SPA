@@ -14,7 +14,7 @@ class FollowsParentsHandler {
  public:
   static FollowsParentsHandler *get_instance();
   void set_args(PKB *pkb,
-                SuchThatClause relationship,
+                std::shared_ptr<SuchThatClause> relationship,
                 std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec);
   void set_function_pointers(std::set<int> *(Statement::*get_normal)(),
                              std::set<int> *(Statement::*get_reverse)());
@@ -26,8 +26,7 @@ class FollowsParentsHandler {
   std::set<int> *(Statement::*get_normal_)();
   std::set<int> *(Statement::*get_reverse_)();
   PKB *pkb_;
-  SuchThatClause relationship_;
-  std::vector<std::string> *entities_to_return_;
+  std::shared_ptr<SuchThatClause> relationship_;
   static std::set<int> *Forwarder(std::set<int> *(Statement::*function)(), Statement *stmt);
   std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec_;
 };

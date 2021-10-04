@@ -13,13 +13,14 @@ RelationshipQueryManager::RelationshipQueryManager(PKB *pkb) {
 
 RelationshipQueryManager::~RelationshipQueryManager() = default;
 
-ResultTable* RelationshipQueryManager::EvaluateRelationship(SuchThatClause relationship,
-                                                             std::unordered_map<std::string,
+ResultTable* RelationshipQueryManager::EvaluateRelationship(std::shared_ptr<SuchThatClause> relationship,
+                                                            std::unordered_map<std::string,
                                                                                 std::vector<Entity *>> synonym_to_entities_vec) {
   // Iterating through relationships_ and evaluating one by one.
   // For basic requirements, there will be only 1 relationship_.
 //  for (SuchThatClause *relationship : *relationships_) {
-    RelRef relationship_type = relationship.get_type();
+    printf("3\n");
+    RelRef relationship_type = relationship->get_type();
     switch (relationship_type) {
       case RelRef::Follows: {
         FollowsParentsHandler *follows_parents_handler =

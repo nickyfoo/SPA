@@ -7,6 +7,7 @@
 #include "pql_query.h"
 #include "entity_declaration.h"
 #include "result_table.h"
+#include "clause_group.h"
 
 class QueryEvaluator {
  public:
@@ -14,7 +15,9 @@ class QueryEvaluator {
   std::vector<std::string> *Evaluate();
  private:
   std::vector<std::string> *entities_to_return_;
-  std::vector<std::ClauseGroup> *clause_groups_;
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups_;
+//  std::vector<SuchThatClause *> *relationships_;
+//  std::vector<PatternClause *> *patterns_;
   PKB *pkb_;
   std::unordered_map<std::string, EntityDeclaration *> *synonym_to_entity_dec_;
   std::unordered_map<std::string, std::vector<Entity *>> GetPossibleEntitiesVec(ClauseVertex clause_vertex);
@@ -23,4 +26,5 @@ class QueryEvaluator {
       *synonym_to_entity_result);
   std::vector<std::string> *ConvertToOutput(ResultTable *table_result, bool is_valid_query);
   static bool IsStmt(EntityType entity_type);
+  std::vector<std::string> *GetAllPossibleReturnResults();
 };

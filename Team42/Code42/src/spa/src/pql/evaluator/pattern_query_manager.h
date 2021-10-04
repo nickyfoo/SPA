@@ -14,12 +14,12 @@ class PatternQueryManager {
  public:
   PatternQueryManager(PKB *pkb);
   ~PatternQueryManager();
-  ResultTable* EvaluatePattern(PatternClause pattern,
+  ResultTable* EvaluatePattern(std::shared_ptr<PatternClause> pattern,
                                const std::unordered_map<std::string, std::vector<Entity *>>& synonym_to_entities_vec);
-  ResultTable* EvaluateAssignPattern(PatternClause pattern,
+  ResultTable* EvaluateAssignPattern(std::shared_ptr<PatternClause> pattern,
                                      std::unordered_map<std::string,
                                      std::vector<Entity *>> synonym_to_entities_vec);
-  ResultTable* EvaluateIfAndWhilePattern(PatternClause pattern,
+  ResultTable* EvaluateIfAndWhilePattern(std::shared_ptr<PatternClause> pattern,
                                          std::unordered_map<std::string,
                                          std::vector<Entity *>> synonym_to_entities_vec);
   std::vector<std::pair<int, std::string>> *get_vec_results();

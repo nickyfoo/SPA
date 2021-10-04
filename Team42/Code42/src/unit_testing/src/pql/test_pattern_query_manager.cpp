@@ -127,6 +127,9 @@ TEST_CASE("Pattern_AssignVariableAndPartialPattern_ReturnsExpected") {
   std::vector<std::string> *ret = evaluator->Evaluate();
 
   std::vector<std::string> expected = {"16", "21", "23"};
+  for (int i = 0; i < ret->size(); ++i) {
+    printf("%s\n", ret->at(i).c_str());
+  }
   REQUIRE(ret->size() == expected.size());
   for (int i = 0; i < expected.size(); i++) {
     REQUIRE(ret->at(i) == expected.at(i));
@@ -251,15 +254,16 @@ TEST_CASE("Pattern_AssignWildCardAndWrongPartialPattern_ReturnsEmpty") {
 TEST_CASE("Pattern_AssignStmtAndPartialPattern_ReturnsEmpty") {
   std::string ss = "assign a; stmt s;\n"
                    "Select a pattern a(s, _'cenX'_)";
+  printf("what the hell\n");
   auto *query = new QueryPreprocessor(ss);
   PQLQuery *clause = query->get_pql_query();
-
+  printf("dafk\n");
   // Parse source
   BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
-
+  printf("MIHERE\n");
   auto evaluator = new QueryEvaluator(clause, &pkb);
   std::vector<std::string> *ret = evaluator->Evaluate();
 

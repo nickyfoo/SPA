@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "such_that_ref.h"
+#include "clause.hpp"
 
 enum class RelRef {
   Follows,
@@ -13,12 +14,19 @@ enum class RelRef {
   Modifies,
   ModifiesS,
   ModifiesP,
+  Calls,
+  CallsT,
+  Next,
+  NextT,
+  Affects,
+  AffectsT,
   None
 };
 
-class SuchThatClause {
+class SuchThatClause : public Clause {
  public:
   explicit SuchThatClause(const std::string &type);
+  ~SuchThatClause();
   bool set_ref(SuchThatRef *left, SuchThatRef *right);
   void set_type(RelRef rel);
   RelRef get_type();

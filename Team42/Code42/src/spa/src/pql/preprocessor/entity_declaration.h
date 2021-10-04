@@ -12,6 +12,7 @@ enum class EntityType {
   Variable,
   Constant,
   Procedure,
+  ProgLine,
   None
 };
 

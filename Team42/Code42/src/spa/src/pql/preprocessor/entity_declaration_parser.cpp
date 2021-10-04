@@ -119,6 +119,8 @@ EntityType EntityDeclarationParser::CheckEntityType(std::string type) {
     return EntityType::Constant;
   } else if (type == "procedure") {
     return EntityType::Procedure;
+  } else if (type == "prog_line") {
+    return EntityType::ProgLine;
   } else {
     return EntityType::None;
   }

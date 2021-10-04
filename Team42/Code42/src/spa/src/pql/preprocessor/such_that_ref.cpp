@@ -14,6 +14,11 @@ SuchThatRef::SuchThatRef(StmtRef stmt_ref) {
   this->stmt_ref_ = stmt_ref;
 }
 
+SuchThatRef::SuchThatRef(LineRef line_ref) {
+  this->type_ = SuchThatRefType::Line;
+  this->line_ref_ = line_ref;
+}
+
 SuchThatRefType SuchThatRef::get_type() {
   return this->type_;
 }
@@ -24,4 +29,8 @@ EntRef SuchThatRef::get_ent_ref() {
 
 StmtRef SuchThatRef::get_stmt_ref() {
   return this->stmt_ref_;
+}
+
+LineRef SuchThatRef::get_line_ref() {
+  return this->line_ref_;
 }

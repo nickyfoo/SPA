@@ -120,6 +120,6 @@ bool PatternManager::TestIfWhilePattern(Statement *stmt, std::string variable) {
   std::stringstream expr_ss, variable_ss;
   variable_ss << " " << variable << " ";
   expr_ss << " " << stmt->get_expr_string() << " ";
-  std::string assign_expr = expr_ss.str();
-  return assign_expr.find(variable_ss.str()) != std::string::npos;
+  std::string stmt_expr = expr_ss.str();
+  return stmt_expr.find(variable_ss.str()) != std::string::npos;
 }

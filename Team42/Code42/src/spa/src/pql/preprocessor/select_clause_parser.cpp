@@ -1,5 +1,6 @@
 #include <iostream>
 #include <tuple>
+#include <utility>
 #include "select_clause_parser.h"
 #include "such_that_clause.h"
 #include "line_ref.h"
@@ -119,14 +120,13 @@ PQLQuery *SelectClauseParser::get_clauses() {
   }
 
   auto *ret = new PQLQuery(select_ret, such_that_ret,
-                           pattern_ret, with_ret, synonym_to_entity_,
-                           has_one_repeated_synonym, has_two_repeated_synonyms);
+                           pattern_ret, with_ret, synonym_to_entity_);
 
   return ret;
 }
 
 std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
-    std::string relationship_statement) {
+    const std::string& relationship_statement) {
   auto *ret = new std::vector<SuchThatClause *>();
   if (relationship_statement.empty()) {
     return nullptr;
@@ -164,7 +164,7 @@ std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
 }
 
 std::vector<PatternClause *> *SelectClauseParser::MakePatternClause(
-    std::string pattern_statement) {
+    const std::string& pattern_statement) {
   auto *ret = new std::vector<PatternClause *>();
   if (pattern_statement.empty()) {
     return nullptr;
@@ -202,7 +202,7 @@ std::vector<PatternClause *> *SelectClauseParser::MakePatternClause(
 }
 
 std::vector<WithClause *> *SelectClauseParser::MakeWithClause(
-    std::string with_statement) {
+    const std::string& with_statement) {
   auto *ret = new std::vector<WithClause *>();
   if (with_statement.empty()) {
     return nullptr;
@@ -212,7 +212,7 @@ std::vector<WithClause *> *SelectClauseParser::MakeWithClause(
   if (with_clauses.empty()) {
     return nullptr;
   }
-  for (std::pair<std::string, std::string> with_clause : with_clauses) {
+  for (const std::pair<std::string, std::string>& with_clause : with_clauses) {
     const std::string WHITESPACE = " \n\r\t\f\v";
 
     std::string left_ref = with_clause.first;
@@ -235,13 +235,12 @@ std::vector<WithClause *> *SelectClauseParser::MakeWithClause(
       ret->push_back(with);
     }
   }
-
   return ret;
 }
 
 PatternClause *SelectClauseParser::MakePatternRef(const std::string &synonym,
-                                                  std::string left_ref,
-                                                  std::string right_ref) {
+                                                  const std::string& left_ref,
+                                                  const std::string& right_ref) {
   PatternClause *ret;
   auto *ent_ref = new EntRef();
   if ((synonym_to_entity_->find(synonym) != synonym_to_entity_->end())
@@ -271,8 +270,8 @@ PatternClause *SelectClauseParser::MakePatternRef(const std::string &synonym,
   }
 }
 
-WithClause *SelectClauseParser::MakeWithRef(std::string left_ref,
-                                            std::string right_ref) {
+WithClause *SelectClauseParser::MakeWithRef(const std::string& left_ref,
+                                            const std::string& right_ref) {
   std::string left_str;
   std::string right_str;
   EntityType left_type;
@@ -313,13 +312,13 @@ WithClause *SelectClauseParser::MakeWithRef(std::string left_ref,
     return nullptr;
   }
 
-  WithClause *ret = new WithClause(left_str, left_type, left_attr_value_type,
+  auto *ret = new WithClause(left_str, left_type, left_attr_value_type,
                                    right_str, right_type, right_attr_value_type);
   return ret;
 }
 
 std::tuple<std::string, EntityType, AttrValueType> SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
-  std::vector<std::string> synonym_attribute = SplitTokensByDelimiter(ref, ".");
+  std::vector<std::string> synonym_attribute = SplitTokensByDelimiter(std::move(ref), ".");
   if (synonym_attribute.size() == 1) {  // prog line
     std::string synonym = synonym_attribute.at(0);
     if (synonym_to_entity_->find(synonym) != synonym_to_entity_->end()) {
@@ -378,7 +377,7 @@ std::tuple<std::string, EntityType, AttrValueType> SelectClauseParser::GetWithRe
 }
 
 SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(
-    SuchThatClause *relationship, std::string left_ref) {
+    SuchThatClause *relationship, const std::string& left_ref) {
   SuchThatRef *left_such_that_ref;
   StmtRef left_stmt_ref;
   EntRef left_ent_ref;
@@ -436,7 +435,7 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(
       }
       case EntityType::Constant:
       default:
-        return nullptr;;
+        return nullptr;
     }
   } else if (IsInteger(left_ref)) {  // statement number
     if (type == RelRef::Next || type == RelRef::NextT) {
@@ -472,7 +471,7 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(
 }
 
 SuchThatRef *SelectClauseParser::MakeSuchThatRefRight(
-    SuchThatClause *relationship, std::string right_ref) {
+    SuchThatClause *relationship, const std::string& right_ref) {
   SuchThatRef *right_such_that_ref;
   StmtRef right_stmt_ref;
   EntRef right_ent_ref;
@@ -526,7 +525,7 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefRight(
           break;
         }
       case EntityType::Constant:
-      default:return nullptr;;
+      default:return nullptr;
     }
   } else if (IsInteger(right_ref)) {  // statement number
     if (type == RelRef::Next || type == RelRef::NextT) {
@@ -803,7 +802,7 @@ std::vector<std::vector<std::string>> SelectClauseParser::SplitTokensByBrackets(
   const std::string AND_DELIM = " and ";
   std::vector<std::vector<std::string>> ret;
   std::vector<std::string> clauses = SplitTokensByDelimiter(input, AND_DELIM);
-  for (std::string clause : clauses) {
+  for (const std::string& clause : clauses) {
     std::stringstream input_stream;
     input_stream << clause;
     std::vector<std::string> tokens;
@@ -834,7 +833,7 @@ std::vector<std::pair<std::string, std::string>> SelectClauseParser::SplitTokens
   const std::string AND_DELIM = " and ";
   std::vector<std::pair<std::string, std::string>> ret;
   std::vector<std::string> clauses = SplitTokensByDelimiter(input, AND_DELIM);
-  for (std::string clause : clauses) {
+  for (const std::string& clause : clauses) {
     std::vector<std::string> with_clause = SplitTokensByEqualDelim(clause);
     if (with_clause.size() != 2) {
       return {};

@@ -11,7 +11,7 @@ PatternQueryManager::~PatternQueryManager() = default;
 
 
 ResultTable* PatternQueryManager::EvaluatePattern(PatternClause pattern,
-                                                  std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec) {
+                                                  const std::unordered_map<std::string, std::vector<Entity *>>& synonym_to_entities_vec) {
   if (pattern.get_type() == EntityType::Assign) {
     return EvaluateAssignPattern(pattern, synonym_to_entities_vec);
   } else if (pattern.get_type() == EntityType::If || pattern.get_type() == EntityType::While) {
@@ -125,7 +125,7 @@ ResultTable* PatternQueryManager::EvaluateIfAndWhilePattern(PatternClause patter
   if (variable->get_type() == EntRefType::Synonym) {
     ret->AddDoubleColumns(synonym->get_synonym(), stmt_vec, left_synonym, var_vec);
   } else if (variable->get_type() == EntRefType::Argument ||
-      left_ent->get_type() == EntRefType::WildCard) {
+      variable->get_type() == EntRefType::WildCard) {
     ret->AddSingleColumn(synonym->get_synonym(), stmt_vec);
   }
 

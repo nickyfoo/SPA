@@ -15,7 +15,7 @@ class PatternQueryManager {
   PatternQueryManager(PKB *pkb);
   ~PatternQueryManager();
   ResultTable* EvaluatePattern(PatternClause pattern,
-                               std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec);
+                               const std::unordered_map<std::string, std::vector<Entity *>>& synonym_to_entities_vec);
   ResultTable* EvaluateAssignPattern(PatternClause pattern,
                                      std::unordered_map<std::string,
                                      std::vector<Entity *>> synonym_to_entities_vec);
@@ -26,5 +26,4 @@ class PatternQueryManager {
 
  private:
   PKB *pkb_;
-  std::vector<std::pair<int, std::string>> *vec_results_;
 };

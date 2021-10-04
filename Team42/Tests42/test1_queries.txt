@@ -1,0 +1,166 @@
+1 - Follows with statement and wild card
+stmt s;
+Select s such that Follows (s, _)
+1,2,3,4,5,6,10,12,13,14,15,19,20
+5000
+2 - Follows with wild card and statement
+stmt s;
+Select s such that Follows (_, s)
+2,3,4,6,9,10,11,13,14,15,18,20,21
+5000
+3 - Follows with assign and statement number
+assign a;
+Select a such that Follows (a,6)
+5
+5000
+4 - Follows* with statement number and statement number
+stmt s;
+Select s such that Follows*(3, s)
+4,10,11
+5000
+5 - Follows* with read and statement
+read r;
+Select r such that Follows*(r, 18)
+12,13
+5000
+6 - Follows* with statement and wild card
+stmt s;
+Select s such that Follows*(s,_)
+1,2,3,4,5,6,10,12,13,14,15,19,20
+5000
+7 - Parent with statement and wild card
+stmt s;
+Select s such that Parent (s, _)
+4,6,15
+5000
+8 - Parent with wild card and statement
+stmt s;
+Select s such that Parent(_, s)
+5,6,7,8,9,16,17
+5000
+9 - Parent with while and statement number
+while w;
+Select w such that Parent (w,6)
+4
+5000
+10 - Parent* with statement number and statement number
+stmt s;
+Select s such that Parent*(4, s)
+5,6,7,8,9
+5000
+11 - Parent* with if and statement
+if ifs;
+Select ifs such that Parent*(ifs, 17)
+15
+5000
+12 - Parent* with statement and wild card
+stmt s;
+Select s such that Parent*(s,_)
+4,6,15
+5000
+13 - Uses with assignment and variable
+assign a; variable v;
+Select a such that Uses(a,v)
+5,7,8,14
+5000
+14 - Uses with container and variable name
+if ifs;
+Select ifs such that Uses(ifs, "z")
+15
+5000
+15 - Uses with call and variable name
+call c;
+Select c such that Uses(c, "v")
+9,17
+5000
+16 - Uses with procedure and variable
+procedure p; variable v;
+Select p such that Uses(p, v)
+Example,f,g
+5000
+17 - Modifies with assignment and variable name
+assign a;
+Select a such that Modifies(a,"c")
+3,5
+5000
+18 - Modifies with container and variable
+if ifs; variable v;
+Select ifs such that Uses(ifs, v)
+6,15
+5000
+19 - Modifies with call and variable
+call c; variable v;
+Select c such that Modifies(c, v)
+9,17,21
+5000
+20 - Modifies with procedure and variable name
+procedure p;
+Select p such that Modifies(p, "t")
+Example,f,g,h
+5000
+21 - Pattern with variable and exact pattern
+assign a; variable v;
+Select a pattern a(v, "b-1")
+7
+5000
+22 - Pattern with variable name and wild card
+assign a;
+Select a pattern a("c", _)
+3,5
+5000
+23 - Pattern with variable and partial pattern
+assign a; variable v;
+Select a pattern a(v, _"2"_)
+3,5,19
+5000
+24 - Follow(s,s) pattern(_,_)
+assign a; stmt s;
+Select s such that Follows(a, s) pattern a(_,_)
+2,3,4,6,15,20
+5000
+25 - Follow*(s_num, s) pattern(_,partial)
+assign a;
+Select a pattern a(_, _"x"_) such that Follows*(13, a)
+14
+5000
+26 - Parent(s,s) pattern(_,_)
+assign a; stmt s;
+Select s such that Parent(s,a) pattern a(_,_)
+4,6
+5000
+27 - Parent*(s_num, s) pattern(_,partial)
+assign a;
+Select a pattern a(_, _"1"_) such that Parent*(4, a)
+5,7,8
+5000
+28 - Uses(a, v) pattern(v,_)
+assign a; variable v;
+Select a such that Uses(a, v) pattern a(v, _)
+5,7
+5000
+29 - Modifies(a, 'c') pattern(_,'64 / 2')
+assign a;
+Select a such that Modifies(a,"c") pattern a(_, "64 / 2")
+3
+5000
+30 - Modifies with no common synonyms
+assign a1, a2; variable v;
+Select a1 such that Modifies(a1,v) pattern a2(_,_)
+1,2,3,5,7,8,14,19
+5000
+31 - Selecting synonym not used in clauses
+read r; assign a; variable v;
+Select r such that Modifies(a,"c") pattern a(v,_)
+12,13,22
+5000
+32 - Selecting synonym not used in clauses and is an empty set in clause
+read r; assign a; variable v;
+Select r such that Modifies(a,"c") pattern a("test",_)
+
+5000
+33 - Select with keywords as synonyms
+assign Select; variable pattern;
+Select Select such that Uses(Select,pattern) pattern Select(pattern,_)
+5,7
+5000
+

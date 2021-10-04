@@ -1,0 +1,35 @@
+procedure Pattern {
+    read x;
+    v = a + b - c / d * e;
+    x = x * x + v;
+    f = 0;
+    g = 1000;
+    print ifs;
+    while(v <= g) {
+        read y;
+        if (v == sum) then {
+            x = i - c + v;
+        } else {
+            while(a > c) {
+                a = c % 5;
+            }
+        }
+    }
+    if (a != 0) then {
+        print a;
+        if (b != 0) then {
+            read a;
+        } else {
+            read b;
+        }
+    } else {
+        print b;
+    }
+    while (g != 0) {
+        read h;
+        while (h!=0) {
+            print h;
+            g = 0;
+        }
+    }
+}

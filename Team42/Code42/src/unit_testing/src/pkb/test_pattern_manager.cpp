@@ -105,7 +105,7 @@ TEST_CASE("TestIfWhilePattern_SingleCondition_Success", "[pattern_manager]") {
 }
 
 TEST_CASE("TestIfWhilePattern_MultipleConditions_Success", "[pattern_manager]") {
-  Statement s1(1, NodeType::If);
+  Statement s1(1, NodeType::While);
   s1.set_expr_string("7 x 0 != yellow 0 != &&");
 
   REQUIRE(PKB::TestIfWhilePattern(&s1, "yellow") == true);

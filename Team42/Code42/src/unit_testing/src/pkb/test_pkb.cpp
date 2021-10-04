@@ -302,6 +302,7 @@ TEST_CASE("PKB_FollowsNested_Correct") {
       "        e = e + 1;"
       "      }"
       "    } else {"
+      "      f = f + 1;"
       "    }"
       "  }"
       "}";
@@ -581,6 +582,7 @@ TEST_CASE("PKB_ParentNested_Correct") {
       "        e = e + 1;"
       "      }"
       "    } else {"
+      "      f = f + 1;"
       "    }"
       "  }"
       "}";
@@ -595,7 +597,7 @@ TEST_CASE("PKB_ParentNested_Correct") {
   children_ans[6] = {7};
   children_ans[7] = {8, 9};
   children_ans[10] = {11, 12};
-  children_ans[12] = {13};
+  children_ans[12] = {13, 16};
   children_ans[13] = {14, 15};
   for (auto stmt : pkb.get_all_statements()) {
     std::set<int> *stmt_children = stmt->get_children();
@@ -617,6 +619,7 @@ TEST_CASE("PKB_ParentNested_Correct") {
   parents_ans[13] = {12};
   parents_ans[14] = {13};
   parents_ans[15] = {13};
+  parents_ans[16] = {12};
   for (auto stmt : pkb.get_all_statements()) {
     std::set<int> *stmt_parents = stmt->get_parents();
     std::vector<int> parents = parents_ans[stmt->get_stmt_no()];
@@ -688,6 +691,7 @@ TEST_CASE("PKB_ParentStarNested_Correct") {
   parents_star_ans[13] = {12, 10};
   parents_star_ans[14] = {13, 12, 10};
   parents_star_ans[15] = {13, 12, 10};
+  parents_star_ans[16] = {12, 10};
   for (auto stmt : pkb.get_all_statements()) {
     std::set<int> *stmt_parents_star = stmt->get_parents_star();
     std::vector<int> parents_star = parents_star_ans[stmt->get_stmt_no()];
@@ -1264,28 +1268,28 @@ TEST_CASE("PKB_CFGSample_Correct") {
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   std::map<int, std::vector<int>> ans;
-  ans[1] = {2};
-  ans[2] = {3};
-  ans[4] = {5};
-  ans[5] = {6};
-  ans[6] = {7, 10};
-  ans[7] = {8};
-  ans[8] = {9};
-  ans[9] = {6};
-  ans[10] = {11, 12};
-  ans[11] = {13};
-  ans[12] = {13};
-  ans[13] = {14};
-  ans[14] = {15};
-  ans[16] = {17};
-  ans[17] = {18};
-  std::map<int, std::set<int>> cfgal = *pkb.get_cfgal();
-  REQUIRE(cfgal.size() == ans.size());
+  ans[1] = { 2 };
+  ans[2] = { 3 };
+  ans[4] = { 5 };
+  ans[5] = { 6 };
+  ans[6] = { 7,10 };
+  ans[7] = { 8 };
+  ans[8] = { 9 };
+  ans[9] = { 6 };
+  ans[10] = { 11,12 };
+  ans[11] = { 13 };
+  ans[12] = { 13 };
+  ans[13] = { 14 };
+  ans[14] = { 15 };
+  ans[16] = { 17 };
+  ans[17] = { 18 };
+  std::map<int, std::set<int>> cfg_al = *pkb.get_cfg_al();
+  REQUIRE(cfg_al.size() == ans.size());
   for (auto &[k, vals] : ans) {
-    REQUIRE(cfgal.find(k) != cfgal.end());
-    REQUIRE(cfgal[k].size() == vals.size());
+    REQUIRE(cfg_al.find(k) != cfg_al.end());
+    REQUIRE(cfg_al[k].size() == vals.size());
     for (auto &val : vals) {
-      REQUIRE(cfgal[k].find(val) != cfgal[k].end());
+      REQUIRE(cfg_al[k].find(val) != cfg_al[k].end());
     }
   }
 }
@@ -1323,13 +1327,13 @@ TEST_CASE("PKB_CFGNestedIf_Correct") {
   ans[6] = {7, 8};
   ans[7] = {9};
   ans[8] = {9};
-  std::map<int, std::set<int>> cfgal = *pkb.get_cfgal();
-  REQUIRE(cfgal.size() == ans.size());
+  std::map<int, std::set<int>> cfg_al = *pkb.get_cfg_al();
+  REQUIRE(cfg_al.size() == ans.size());
   for (auto &[k, vals] : ans) {
-    REQUIRE(cfgal.find(k) != cfgal.end());
-    REQUIRE(cfgal[k].size() == vals.size());
+    REQUIRE(cfg_al.find(k) != cfg_al.end());
+    REQUIRE(cfg_al[k].size() == vals.size());
     for (auto &val : vals) {
-      REQUIRE(cfgal[k].find(val) != cfgal[k].end());
+      REQUIRE(cfg_al[k].find(val) != cfg_al[k].end());
     }
   }
 }

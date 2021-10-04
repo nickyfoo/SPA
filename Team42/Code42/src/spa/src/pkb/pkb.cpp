@@ -145,12 +145,12 @@ std::vector<Constant *> PKB::get_all_constants() {
   return const_table_.get_all_constants();
 }
 
-std::map<int, std::set<int>> *PKB::get_cfgal() {
-  return &CFGAL_;
+std::map<int, std::set<int>> *PKB::get_cfg_al() {
+  return &cfg_al_;
 }
 
-std::map<int, std::set<int>> *PKB::get_reverse_cfgal() {
-  return &ReverseCFGAL_;
+std::map<int, std::set<int>> *PKB::get_reverse_cfg_al() {
+  return &reverse_cfg_al_;
 }
 
 std::set<std::pair<int, int>> PKB::get_next(int a, int b) {
@@ -159,21 +159,21 @@ std::set<std::pair<int, int>> PKB::get_next(int a, int b) {
   // Invalid line nums
   if (a < 0 || a >= n || b < 0 || b >= n) return ans;
   if (a == kWild && b == kWild) {
-    for (auto&[u, al_u] : CFGAL_) {
+    for (auto&[u, al_u] : cfg_al_) {
       for (auto &v : al_u) {
         ans.insert({u, v});
       }
     }
   } else if (a == kWild && b != kWild) {
-    for (auto &v : ReverseCFGAL_[b]) {
+    for (auto &v : reverse_cfg_al_[b]) {
       ans.insert({v, b});
     }
   } else if (a != kWild && b == kWild) {
-    for (auto &v : CFGAL_[a]) {
+    for (auto &v : cfg_al_[a]) {
       ans.insert({a, v});
     }
   } else {
-    if (CFGAL_[a].find(b) != CFGAL_[a].end()) {
+    if (cfg_al_[a].find(b) != cfg_al_[a].end()) {
       ans.insert({a, b});
     }
   }
@@ -188,7 +188,7 @@ std::set<std::pair<int, int>> PKB::get_next_star(int a, int b) {
   std::vector<std::vector<int>> d(n, std::vector<int>(n, 0));
   if (a == kWild && b == kWild) {
     for (int i = 0; i < n; i++) {
-      ReachabilityDFS(i, i, d, CFGAL_);
+      ReachabilityDFS(i, i, d, cfg_al_);
     }
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
@@ -196,18 +196,18 @@ std::set<std::pair<int, int>> PKB::get_next_star(int a, int b) {
       }
     }
   } else if (a == kWild && b != kWild) {
-    ReachabilityDFS(b, b, d, ReverseCFGAL_);
+    ReachabilityDFS(b, b, d, reverse_cfg_al_);
     for (int i = 0; i < n; i++) {
       // Be careful about the check, d[i][j] means that i can reach j!
       if (d[b][i] != 0) ans.insert({i, b});
     }
   } else if (a != kWild && b == kWild) {
-    ReachabilityDFS(a, a, d, CFGAL_);
+    ReachabilityDFS(a, a, d, cfg_al_);
     for (int j = 0; j < n; j++) {
       if (d[a][j] != 0) ans.insert({a, j});
     }
   } else {
-    ReachabilityDFS(a, a, d, CFGAL_);
+    ReachabilityDFS(a, a, d, cfg_al_);
     if (d[a][b] != 0) ans.insert({a, b});
   }
   return ans;
@@ -346,7 +346,7 @@ void PKB::PrintVariables() {
 }
 
 void PKB::PrintCFGAL() {
-  for (auto &[u, al] : CFGAL_) {
+  for (auto &[u, al] : cfg_al_) {
     std::cout << u << "->";
     for (auto &v : al) {
       std::cout << v << ' ';
@@ -354,6 +354,7 @@ void PKB::PrintCFGAL() {
     std::cout << '\n';
   }
 }
+
 
 void PKB::Initialise() {
   ExtractEntities();

@@ -16,6 +16,12 @@ class PatternQueryManager {
   ~PatternQueryManager();
   ResultTable* EvaluatePattern(PatternClause pattern,
                                std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec);
+  ResultTable* EvaluateAssignPattern(PatternClause pattern,
+                                     std::unordered_map<std::string,
+                                     std::vector<Entity *>> synonym_to_entities_vec);
+  ResultTable* EvaluateIfAndWhilePattern(PatternClause pattern,
+                                         std::unordered_map<std::string,
+                                         std::vector<Entity *>> synonym_to_entities_vec);
   std::vector<std::pair<int, std::string>> *get_vec_results();
 
  private:

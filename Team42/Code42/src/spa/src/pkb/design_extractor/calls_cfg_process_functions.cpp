@@ -57,8 +57,8 @@ void PKB::CFGProcessProcedureNode(Node *node) {
   });
   for (int i = 1; i < stmt_lst.size(); i++) {
     for (auto &last_stmt : LastStmts(stmt_lst[i - 1])) {
-      CFGAL_[last_stmt].insert(stmt_lst[i]->get_stmt_no());
-      ReverseCFGAL_[stmt_lst[i]->get_stmt_no()].insert(last_stmt);
+      cfg_al_[last_stmt].insert(stmt_lst[i]->get_stmt_no());
+      reverse_cfg_al_[stmt_lst[i]->get_stmt_no()].insert(last_stmt);
     }
   }
 }
@@ -70,14 +70,18 @@ void PKB::CFGProcessIfNode(Node *node) {
             [](StatementNode *a, StatementNode *b) {
     return a->get_stmt_no() < b->get_stmt_no();
   });
+
+  // Connect if node to first node of then_stmt_lst
   if (then_stmt_lst.size()) {
-    CFGAL_[if_node->get_stmt_no()].insert(then_stmt_lst[0]->get_stmt_no());
-    ReverseCFGAL_[then_stmt_lst[0]->get_stmt_no()].insert(if_node->get_stmt_no());
+    cfg_al_[if_node->get_stmt_no()].insert(then_stmt_lst[0]->get_stmt_no());
+    reverse_cfg_al_[then_stmt_lst[0]->get_stmt_no()].insert(if_node->get_stmt_no());
   }
+
+  // Connect LastStmts of stmt_lst to next in then_stmt_lst
   for (int i = 1; i < then_stmt_lst.size(); i++) {
     for (auto &last_stmt : LastStmts(then_stmt_lst[i - 1])) {
-      CFGAL_[last_stmt].insert(then_stmt_lst[i]->get_stmt_no());
-      ReverseCFGAL_[then_stmt_lst[i]->get_stmt_no()].insert(last_stmt);
+      cfg_al_[last_stmt].insert(then_stmt_lst[i]->get_stmt_no());
+      reverse_cfg_al_[then_stmt_lst[i]->get_stmt_no()].insert(last_stmt);
     }
   }
 
@@ -86,14 +90,18 @@ void PKB::CFGProcessIfNode(Node *node) {
             [](StatementNode *a, StatementNode *b) {
     return a->get_stmt_no() < b->get_stmt_no();
   });
+
+  // Connect if node to first node of else_stmt_lst
   if (else_stmt_lst.size()) {
-    CFGAL_[if_node->get_stmt_no()].insert(else_stmt_lst[0]->get_stmt_no());
-    ReverseCFGAL_[else_stmt_lst[0]->get_stmt_no()].insert(if_node->get_stmt_no());
+    cfg_al_[if_node->get_stmt_no()].insert(else_stmt_lst[0]->get_stmt_no());
+    reverse_cfg_al_[else_stmt_lst[0]->get_stmt_no()].insert(if_node->get_stmt_no());
   }
+
+  // Connect LastStmts of stmt_lst to next in else_stmt_lst
   for (int i = 1; i < else_stmt_lst.size(); i++) {
     for (auto &last_stmt : LastStmts(else_stmt_lst[i - 1])) {
-      CFGAL_[last_stmt].insert(else_stmt_lst[i]->get_stmt_no());
-      ReverseCFGAL_[else_stmt_lst[i]->get_stmt_no()].insert(last_stmt);
+      cfg_al_[last_stmt].insert(else_stmt_lst[i]->get_stmt_no());
+      reverse_cfg_al_[else_stmt_lst[i]->get_stmt_no()].insert(last_stmt);
     }
   }
 }
@@ -105,18 +113,26 @@ void PKB::CFGProcessWhileNode(Node *node) {
             [](StatementNode *a, StatementNode *b) {
     return a->get_stmt_no() < b->get_stmt_no();
   });
+
+  // Connect while node to first node of stmt_lst
   if (stmt_lst.size()) {
-    CFGAL_[while_node->get_stmt_no()].insert(stmt_lst[0]->get_stmt_no());
-    ReverseCFGAL_[stmt_lst[0]->get_stmt_no()].insert(while_node->get_stmt_no());
+    cfg_al_[while_node->get_stmt_no()].insert(stmt_lst[0]->get_stmt_no());
+    reverse_cfg_al_[stmt_lst[0]->get_stmt_no()].insert(while_node->get_stmt_no());
   }
+
+  // Connect LastStmts of stmt_lst to next in stmt_lst
   for (int i = 1; i < stmt_lst.size(); i++) {
     for (auto &last_stmt : LastStmts(stmt_lst[i - 1])) {
-      CFGAL_[last_stmt].insert(stmt_lst[i]->get_stmt_no());
-      ReverseCFGAL_[stmt_lst[i]->get_stmt_no()].insert(last_stmt);
+      cfg_al_[last_stmt].insert(stmt_lst[i]->get_stmt_no());
+      reverse_cfg_al_[stmt_lst[i]->get_stmt_no()].insert(last_stmt);
     }
   }
+
+  // Connect LastStmts of stmt_lst to while node
   if (stmt_lst.size()) {
-    CFGAL_[stmt_lst[stmt_lst.size() - 1]->get_stmt_no()].insert(while_node->get_stmt_no());
-    ReverseCFGAL_[while_node->get_stmt_no()].insert(stmt_lst[stmt_lst.size() - 1]->get_stmt_no());
+    for (auto& last_stmt : LastStmts(stmt_lst[stmt_lst.size() - 1])) {
+      cfg_al_[last_stmt].insert(while_node->get_stmt_no());
+      reverse_cfg_al_[while_node->get_stmt_no()].insert(last_stmt);
+    }
   }
 }

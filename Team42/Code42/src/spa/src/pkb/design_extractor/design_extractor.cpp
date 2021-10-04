@@ -7,24 +7,24 @@
 void PKB::ExtractEntities() {
   auto extract_variable =
       [this](Node *node, std::vector<Node *> ancestor_list) {
-    PKB::AddVariable(node, ancestor_list);
-  };
+        PKB::AddVariable(node, ancestor_list);
+      };
   auto extract_constant =
       [this](Node *node, std::vector<Node *> ancestor_list) {
-    PKB::AddConstant(node, ancestor_list);
-  };
+        PKB::AddConstant(node, ancestor_list);
+      };
   auto extract_statement =
       [this](Node *node, std::vector<Node *> ancestor_list) {
-    PKB::AddStatement(node, ancestor_list);
-  };
+        PKB::AddStatement(node, ancestor_list);
+      };
   auto extract_expr_string =
       [this](Node *node, std::vector<Node *> ancestor_list) {
-    PKB::AddExprString(node, ancestor_list);
-  };
+        PKB::AddExprString(node, ancestor_list);
+      };
   auto extract_procedure =
       [this](Node *node, std::vector<Node *> ancestor_list) {
-    PKB::AddProcedure(node, ancestor_list);
-  };
+        PKB::AddProcedure(node, ancestor_list);
+      };
 
   std::map<NodeType, std::vector<std::function<void(Node *, std::vector<Node *>)>>> functions = {
       {NodeType::Identifier, {extract_variable}},
@@ -36,7 +36,7 @@ void PKB::ExtractEntities() {
       {NodeType::Print, {extract_statement}},
       {NodeType::Call, {extract_statement}},
       {NodeType::Procedure, {extract_procedure}},
-      };
+  };
 
   std::vector<Node *> ancestors;
   VisitWithAncestors(root_, ancestors, functions);
@@ -55,7 +55,7 @@ void PKB::ExtractFollows() {
       {NodeType::If, {extract_follows_for_if_node}},
       {NodeType::While, {extract_follows_for_while_node}},
       {NodeType::Procedure, {extract_follows_for_procedure_node}},
-      };
+  };
   Visit(root_, functions);
   stmt_table_.ProcessFollows();
   stmt_table_.ProcessFollowsStar();
@@ -70,7 +70,7 @@ void PKB::ExtractParent() {
   std::map<NodeType, std::vector<std::function<void(Node *)>>> functions = {
       {NodeType::If, {extract_parents_for_if_node}},
       {NodeType::While, {extract_parents_for_while_node}},
-      };
+  };
   Visit(root_, functions);
   stmt_table_.ProcessParent();
   stmt_table_.ProcessParentStar();
@@ -79,24 +79,24 @@ void PKB::ExtractParent() {
 void PKB::ExtractUsesModifies() {
   auto extract_uses_modifies_for_assign_node =
       [this](Node *node, std::vector<Node *> ancestor_list) {
-    PKB::UsesModifiesProcessAssignNode(node, ancestor_list);
-  };
+        PKB::UsesModifiesProcessAssignNode(node, ancestor_list);
+      };
   auto extract_uses_modifies_for_if_node =
       [this](Node *node, std::vector<Node *> ancestor_list) {
-    PKB::UsesModifiesProcessIfNode(node, ancestor_list);
-  };
+        PKB::UsesModifiesProcessIfNode(node, ancestor_list);
+      };
   auto extract_uses_modifies_for_while_node =
       [this](Node *node, std::vector<Node *> ancestor_list) {
-    PKB::UsesModifiesProcessWhileNode(node, ancestor_list);
-  };
+        PKB::UsesModifiesProcessWhileNode(node, ancestor_list);
+      };
   auto extract_uses_modifies_for_read_node =
       [this](Node *node, std::vector<Node *> ancestor_list) {
-    PKB::UsesModifiesProcessReadNode(node, ancestor_list);
-  };
+        PKB::UsesModifiesProcessReadNode(node, ancestor_list);
+      };
   auto extract_uses_modifies_for_print_node =
       [this](Node *node, std::vector<Node *> ancestor_list) {
-    PKB::UsesModifiesProcessPrintNode(node, ancestor_list);
-  };
+        PKB::UsesModifiesProcessPrintNode(node, ancestor_list);
+      };
 
   std::map<NodeType, std::vector<std::function<void(Node *, std::vector<Node *>)>>> functions = {
       {NodeType::Assign, {extract_uses_modifies_for_assign_node}},
@@ -104,7 +104,7 @@ void PKB::ExtractUsesModifies() {
       {NodeType::While, {extract_uses_modifies_for_while_node}},
       {NodeType::Read, {extract_uses_modifies_for_read_node}},
       {NodeType::Print, {extract_uses_modifies_for_print_node}},
-      };
+  };
   std::vector<Node *> ancestors;
   VisitWithAncestors(root_, ancestors, functions);
   proc_table_.ProcessUsesModifiesIndirect();
@@ -139,15 +139,14 @@ void PKB::ExtractUsesModifies() {
 }
 
 void PKB::ExtractCalls() {
-  auto extract_calls_for_call_node =
-      [this](Node *node, std::vector<Node *> ancestor_list) {
+  auto extract_calls_for_call_node = [this](Node *node, std::vector<Node *> ancestor_list) {
     PKB::CallsProcessCallNode(node, ancestor_list);
   };
 
   std::map<NodeType, std::vector<std::function<void(Node *, std::vector<Node *>)>>>
-  functions = {
+      functions = {
       {NodeType::Call, {extract_calls_for_call_node}},
-      };
+  };
   std::vector<Node *> ancestors;
   VisitWithAncestors(root_, ancestors, functions);
 
@@ -167,7 +166,7 @@ void PKB::ExtractCFG() {
       {NodeType::If, {extract_cfg_for_if_node}},
       {NodeType::While, {extract_cfg_for_while_node}},
       {NodeType::Procedure, {extract_cfg_for_procedure_node}},
-      };
+  };
 
   Visit(root_, functions);
 
@@ -184,31 +183,27 @@ void PKB::ReachabilityDFS(int start, int u, std::vector<std::vector<int>> &d,
 }
 
 void PKB::AffectsDFS(int start, int target, int u, std::string var_name,
-                     std::vector<bool> &visited, std::vector<std::vector<int>> &d,
-                     bool &found) {
+                     std::vector<bool> &visited, std::vector<std::vector<int>> &d, bool &found) {
   if (found) return;
   Statement *stmt = stmt_table_.get_statement(start);
-  for (auto &v : CFGAL_[u]) {
+  for (auto &v : cfg_al_[u]) {
     Statement *stmt_v = stmt_table_.get_statement(v);
-    if (!visited[v]) {
-      visited[v] = true;
-      std::set<std::string> *uses = stmt_v->get_uses();
-      if (stmt_v->get_kind() == NodeType::Assign && uses->find(var_name) != uses->end()) {
-        d[start][v] = 1;
-        if (v == target) {
-          found = true;
-          return;
-        }
+    if (visited[v]) continue;
+    visited[v] = true;
+    std::set<std::string> *uses = stmt_v->get_uses();
+    if (stmt_v->get_kind() == NodeType::Assign && uses->find(var_name) != uses->end()) {
+      d[start][v] = 1;
+      if (v == target) {
+        found = true;
+        return;
       }
-      std::set<std::string> *modifies = stmt_v->get_modifies();
-      if (stmt_v->get_kind() == NodeType::Assign || stmt_v->get_kind() == NodeType::Read
-      || stmt_v->get_kind() == NodeType::Call) {
-        if (modifies->find(var_name) != modifies->end()) {
-          continue;
-        }
-      }
-      AffectsDFS(start, target, v, var_name, visited, d, found);
     }
+    std::set<std::string> *modifies = stmt_v->get_modifies();
+    if (stmt_v->get_kind() == NodeType::Assign || stmt_v->get_kind() == NodeType::Read
+        || stmt_v->get_kind() == NodeType::Call) {
+      if (modifies->find(var_name) != modifies->end()) continue;
+    }
+    AffectsDFS(start, target, v, var_name, visited, d, found);
   }
 }
 
@@ -229,6 +224,7 @@ void PKB::AffectsStarBFS(int start, int target, std::vector<bool> &visited,
             return;
           }
         }
+
         if (!visited[b]) {
           visited[b] = true;
           q.push(b);
@@ -243,6 +239,7 @@ void PKB::AffectsStarBFS(int start, int target, std::vector<bool> &visited,
             return;
           }
         }
+
         if (!visited[a]) {
           visited[a] = true;
           q.push(a);

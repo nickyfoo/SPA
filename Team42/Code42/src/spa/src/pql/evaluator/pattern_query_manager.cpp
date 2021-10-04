@@ -97,8 +97,7 @@ ResultTable* PatternQueryManager::EvaluateIfAndWhilePattern(PatternClause patter
   for (int i = 0; i < entity_vec.size(); i++) {
     auto *stmt = dynamic_cast<Statement *>(entity_vec.at(i));  // for each stmt object
     if (stmt->get_modifies()->empty()
-        || (type == EntityType::If && !pkb_->TestIfPattern(stmt, variable))
-        || (type == EntityType::While && !pkb_->TestWhilePattern(stmt, variable))) {
+        || !pkb_->TestIfWhilePattern(stmt, variable)) {
       continue;
     } else {
       if (variable->get_type() == EntRefType::Synonym) {  // pattern if(a, _, _)

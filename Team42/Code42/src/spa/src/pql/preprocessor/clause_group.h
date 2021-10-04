@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vector"
+#include "string"
 #include "clause_vertex.h"
 
 class ClauseGroup {

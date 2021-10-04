@@ -192,7 +192,8 @@ std::vector<PatternClause *> *SelectClauseParser::MakePatternClause(
     if (pattern_clause.size() == 3) {  // assign and while
       auto *pattern = MakePatternRef(synonym, left_ref, right_ref);
       if (pattern == nullptr ||
-          !(pattern->get_type() == EntityType::Assign || pattern->get_type() == EntityType::While)) {
+          !(pattern->get_type() == EntityType::Assign ||
+              pattern->get_type() == EntityType::While)) {
         return nullptr;
       } else {
         ret->push_back(pattern);
@@ -218,7 +219,8 @@ std::vector<WithClause *> *SelectClauseParser::MakeWithClause(
     return nullptr;
   }
 
-  std::vector<std::pair<std::string, std::string>> with_clauses = SplitTokensByEqual(with_statement);
+  std::vector<std::pair<std::string, std::string>> with_clauses =
+      SplitTokensByEqual(with_statement);
   if (with_clauses.empty()) {
     return nullptr;
   }
@@ -313,7 +315,8 @@ WithClause *SelectClauseParser::MakeWithRef(std::string left_ref,
     right_type = EntityType::None;
     right_attr_value_type = AttrValueType::Name;
   } else {
-    std::tie(right_str, right_type, right_attr_value_type) = GetWithRefTypeAndAttrValueType(right_ref);
+    std::tie(right_str, right_type, right_attr_value_type) =
+        GetWithRefTypeAndAttrValueType(right_ref);
     if (right_type == EntityType::None) {  // not valid ref
       return nullptr;
     }
@@ -328,7 +331,8 @@ WithClause *SelectClauseParser::MakeWithRef(std::string left_ref,
   return ret;
 }
 
-std::tuple<std::string, EntityType, AttrValueType> SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
+std::tuple<std::string, EntityType, AttrValueType>
+SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
   std::vector<std::string> synonym_attribute = SplitTokensByDelimiter(ref, ".");
   if (synonym_attribute.size() == 1) {  // prog line
     std::string synonym = synonym_attribute.at(0);
@@ -373,7 +377,10 @@ std::tuple<std::string, EntityType, AttrValueType> SelectClauseParser::GetWithRe
         case EntityType::Stmt:
         case EntityType::While:
         case EntityType::If:
-        case EntityType::Assign:if (attribute == "stmt#") attr_value_type = AttrValueType::Integer;
+        case EntityType::Assign:
+          if (attribute == "stmt#") {
+            attr_value_type = AttrValueType::Integer;
+          }
           break;
         default:break;
       }
@@ -524,7 +531,6 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefRight(
           right_such_that_ref = new SuchThatRef(right_stmt_ref);
           break;
         }
-
       }
       case EntityType::Procedure:
         if (type == RelRef::Calls || type == RelRef::CallsT) {
@@ -669,7 +675,8 @@ std::vector<std::string> SelectClauseParser::SplitTokensByEqualDelim(
 }
 
 // splits by such that, pattern and with
-std::tuple<std::string, std::vector<std::string>, std::vector<std::string>, std::vector<std::string>>
+std::tuple<std::string, std::vector<std::string>,
+           std::vector<std::string>, std::vector<std::string>>
 SelectClauseParser::SplitTokensByClauses(const std::string &input) {
   std::string SUCH_THAT_DELIM = "such that ";
   std::string PATTERN_DELIM = "pattern ";
@@ -787,7 +794,6 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
       last_found_with = true;
       last_found_such_that = false;
       last_found_pattern = false;
-
     }
   }
   if (!last_found_such_that && !last_found_pattern && !last_found_with) {
@@ -825,7 +831,8 @@ std::vector<std::vector<std::string>> SelectClauseParser::SplitTokensByBrackets(
         prev = pos + 1;
       }
       if (prev < line.length())
-        if (line.substr(prev, std::string::npos) != "" && line.substr(prev, std::string::npos) != " ")
+        if (line.substr(prev, std::string::npos) != "" &&
+            line.substr(prev, std::string::npos) != " ")
           tokens.push_back(line.substr(prev, std::string::npos));
     }
     ret.push_back(tokens);
@@ -891,7 +898,10 @@ bool SelectClauseParser::IsValidAttr(const std::string &select) {
     case EntityType::Stmt:
     case EntityType::While:
     case EntityType::If:
-    case EntityType::Assign:if (attribute == "stmt#") attr_value_type = AttrValueType::Integer;
+    case EntityType::Assign:
+      if (attribute == "stmt#") {
+        attr_value_type = AttrValueType::Integer;
+      }
       break;
     default:break;
   }

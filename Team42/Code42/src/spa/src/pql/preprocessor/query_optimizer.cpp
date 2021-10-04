@@ -79,13 +79,15 @@ std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateGroupings() {
   auto no_return_syn_group = ClauseGroup();
   no_return_syn_group.set_clauses(no_return_syn_used);
   no_return_syn_group.SortWithinGroup();
-  std::shared_ptr<ClauseGroup> no_return_syn_group_ptr = std::make_shared<ClauseGroup>(no_return_syn_group);
+  std::shared_ptr<ClauseGroup> no_return_syn_group_ptr =
+      std::make_shared<ClauseGroup>(no_return_syn_group);
   clause_groupings.push_back(no_return_syn_group_ptr);
 
   // If there are no clauses with return synonym, add an empty group to the vector.
   if (has_return_syn_used.empty()) {
     auto has_return_syn_group = ClauseGroup();
-    std::shared_ptr<ClauseGroup> has_return_syn_group_ptr = std::make_shared<ClauseGroup>(has_return_syn_group);
+    std::shared_ptr<ClauseGroup> has_return_syn_group_ptr =
+        std::make_shared<ClauseGroup>(has_return_syn_group);
     clause_groupings.push_back(has_return_syn_group_ptr);
   }
 
@@ -118,18 +120,20 @@ std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateGroupings() {
                           has_visited_clause,
                           pair.first);
       has_return_syn_group->SortWithinGroup();
-      std::shared_ptr<ClauseGroup> connected_syn_group_ptr = std::make_shared<ClauseGroup>(*has_return_syn_group);
+      std::shared_ptr<ClauseGroup> connected_syn_group_ptr =
+          std::make_shared<ClauseGroup>(*has_return_syn_group);
       clause_groupings.push_back(connected_syn_group_ptr);
     }
   }
   return clause_groupings;
 }
 
-void QueryOptimizer::FindConnectedGroups(ClauseGroup *clause_group,
-                                         std::unordered_map<std::string, std::vector<ClauseVertex>> syn_to_clause,
-                                         std::unordered_map<std::string, bool> *has_visited_syn,
-                                         std::unordered_map<int, bool> *has_visited_clause,
-                                         std::string curr_syn) {
+void QueryOptimizer::FindConnectedGroups(
+    ClauseGroup *clause_group,
+    std::unordered_map<std::string, std::vector<ClauseVertex>> syn_to_clause,
+    std::unordered_map<std::string, bool> *has_visited_syn,
+    std::unordered_map<int, bool> *has_visited_clause,
+    std::string curr_syn) {
   has_visited_syn->at(curr_syn) = true;
   std::vector<std::string> group_syn_used = clause_group->get_syn_used();
   if (std::find(group_syn_used.begin(), group_syn_used.end(), curr_syn) ==
@@ -161,11 +165,13 @@ void QueryOptimizer::FindConnectedGroups(ClauseGroup *clause_group,
   }
 }
 
-int QueryOptimizer::AssignPriority(std::vector<std::string> synonyms_used, std::shared_ptr<Clause> clause) {
+int QueryOptimizer::AssignPriority(std::vector<std::string> synonyms_used,
+                                   std::shared_ptr<Clause> clause) {
   if (clause->get_type() == ClauseType::WithClause) {
     return 0;
   } else if (clause->get_type() == ClauseType::SuchThatClause) {
-    std::shared_ptr<SuchThatClause> such_that_clause = std::dynamic_pointer_cast<SuchThatClause>(clause);
+    std::shared_ptr<SuchThatClause> such_that_clause =
+        std::dynamic_pointer_cast<SuchThatClause>(clause);
     // Assigning priority based on number of synonyms used and such that clause type.
     if (synonyms_used.size() == 1 &&
         (such_that_clause->get_type() == RelRef::Follows ||
@@ -237,7 +243,8 @@ ClauseVertex QueryOptimizer::MakeSuchThatVertex(SuchThatClause *such_that_clause
   if (left_syn != "") {
     synonyms_used.push_back(left_syn);
     // If synonym is part of return synonyms, set has_return_syn to true.
-    if (std::find(return_entities_->begin(), return_entities_->end(), left_syn) != return_entities_->end()) {
+    if (std::find(return_entities_->begin(), return_entities_->end(), left_syn) !=
+    return_entities_->end()) {
       has_return_syn = true;
     }
   }
@@ -257,7 +264,8 @@ ClauseVertex QueryOptimizer::MakeSuchThatVertex(SuchThatClause *such_that_clause
   if (right_syn != "") {
     synonyms_used.push_back(right_syn);
     // If synonym is part of return synonyms, set has_return_syn to true.
-    if (std::find(return_entities_->begin(), return_entities_->end(), right_syn) != return_entities_->end()) {
+    if (std::find(return_entities_->begin(), return_entities_->end(), right_syn) !=
+    return_entities_->end()) {
       has_return_syn = true;
     }
   }
@@ -281,7 +289,8 @@ ClauseVertex QueryOptimizer::MakePatternVertex(PatternClause *pattern_clause) {
   std::string left_syn = left_ent->get_synonym();
   synonyms_used.push_back(left_syn);
   // If left synonym is part of return synonyms, set has_return_syn to true.
-  if (std::find(return_entities_->begin(), return_entities_->end(), left_syn) != return_entities_->end()) {
+  if (std::find(return_entities_->begin(), return_entities_->end(), left_syn) !=
+  return_entities_->end()) {
     has_return_syn = true;
   }
 
@@ -290,7 +299,8 @@ ClauseVertex QueryOptimizer::MakePatternVertex(PatternClause *pattern_clause) {
     std::string right_syn = right_ent->get_synonym();
     synonyms_used.push_back(right_syn);
     // If right synonym is part of return synonyms, set has_return_syn to true.
-    if (std::find(return_entities_->begin(), return_entities_->end(), right_syn) != return_entities_->end()) {
+    if (std::find(return_entities_->begin(), return_entities_->end(), right_syn) !=
+    return_entities_->end()) {
       has_return_syn = true;
     }
   }
@@ -313,7 +323,8 @@ ClauseVertex QueryOptimizer::MakeWithVertex(WithClause *with_clause) {
     std::string left_syn = with_clause->get_left_ref();
     synonyms_used.push_back(left_syn);
     // If left synonym is part of return synonyms, set has_return_syn to true.
-    if (std::find(return_entities_->begin(), return_entities_->end(), left_syn) != return_entities_->end()) {
+    if (std::find(return_entities_->begin(), return_entities_->end(), left_syn) !=
+    return_entities_->end()) {
       has_return_syn = true;
     }
   }
@@ -323,7 +334,8 @@ ClauseVertex QueryOptimizer::MakeWithVertex(WithClause *with_clause) {
     std::string right_syn = with_clause->get_right_ref();
     synonyms_used.push_back(right_syn);
     // If left synonym is part of return synonyms, set has_return_syn to true.
-    if (std::find(return_entities_->begin(), return_entities_->end(), right_syn) != return_entities_->end()) {
+    if (std::find(return_entities_->begin(), return_entities_->end(), right_syn) !=
+    return_entities_->end()) {
       has_return_syn = true;
     }
   }

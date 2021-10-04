@@ -1,6 +1,7 @@
 #include "clause_group.h"
 
 #include <utility>
+#include <algorithm>
 
 ClauseGroup::ClauseGroup() = default;
 
@@ -29,7 +30,7 @@ void ClauseGroup::set_clauses(std::vector<ClauseVertex> clauses) {
 void ClauseGroup::SortWithinGroup() {
   std::sort(this->clauses_.begin(),
             this->clauses_.end(),
-            [](ClauseVertex& lhs, ClauseVertex& rhs) {
-    return lhs.get_priority() < rhs.get_priority();
-  });
+            [](ClauseVertex &lhs, ClauseVertex &rhs) {
+              return lhs.get_priority() < rhs.get_priority();
+            });
 }

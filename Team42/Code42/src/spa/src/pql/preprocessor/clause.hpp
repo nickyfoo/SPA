@@ -18,7 +18,7 @@ class Clause {
  protected:
   Clause() {}
 
-  virtual ~Clause() {};
+  virtual ~Clause() {}
 
  private:
   ClauseType clause_type_;

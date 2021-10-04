@@ -1,6 +1,8 @@
 #pragma once
 #include <unordered_map>
 #include <vector>
+#include <memory>
+#include <string>
 
 #include "entity_declaration.h"
 #include "pattern_clause.h"

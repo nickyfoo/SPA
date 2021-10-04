@@ -2,6 +2,8 @@
 
 #include "vector"
 #include "unordered_map"
+#include "memory"
+#include "string"
 #include "such_that_clause.h"
 #include "pattern_clause.h"
 #include "with_clause.h"

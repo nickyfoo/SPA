@@ -41,7 +41,6 @@ std::string source =
     "\tnormSq = cenX * cenX + cenY * cenY;\n"
     "}";
 
-
 TEST_CASE("PKBExtractEntities_SampleProgram_Correct") {
   BufferedLexer lexer(source);
   ParseState s{};
@@ -851,51 +850,51 @@ TEST_CASE("PKB_CyclicProcCalls_ThrowsException") {
 
 TEST_CASE("PKB_CFGSample_Correct") {
   std::string source =
-    "procedure First {"
-    "read x;"
-    "read y;"
-    "call Second; }"
-    "procedure Second {"
-    "x = 0;"
-    "i = 5;"
-    "while (i != 0) {"
-    "x = x + 2 * y;"
-    "call Third;"
-    "i = i - 1; "
-    "}"
-    "if (x == 1) then {"
-    "x = x + 1; }"
-    "else {"
-    "z = 1;"
-    "}"
-    "z = z + x + i;"
-    "y = z + 2;"
-    "x = x * y + z; }"
-    "procedure Third {"
-    "z = 5;"
-    "v = z;"
-    "print v; }";
+      "procedure First {"
+      "read x;"
+      "read y;"
+      "call Second; }"
+      "procedure Second {"
+      "x = 0;"
+      "i = 5;"
+      "while (i != 0) {"
+      "x = x + 2 * y;"
+      "call Third;"
+      "i = i - 1; "
+      "}"
+      "if (x == 1) then {"
+      "x = x + 1; }"
+      "else {"
+      "z = 1;"
+      "}"
+      "z = z + x + i;"
+      "y = z + 2;"
+      "x = x * y + z; }"
+      "procedure Third {"
+      "z = 5;"
+      "v = z;"
+      "print v; }";
 
   BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   std::map<int, std::vector<int>> ans;
-  ans[1] = { 2 };
-  ans[2] = { 3 };
-  ans[4] = { 5 };
-  ans[5] = { 6 };
-  ans[6] = { 7,10 };
-  ans[7] = { 8 };
-  ans[8] = { 9 };
-  ans[9] = { 6 };
-  ans[10] = { 11,12 };
-  ans[11] = { 13 };
-  ans[12] = { 13 };
-  ans[13] = { 14 };
-  ans[14] = { 15 };
-  ans[16] = { 17 };
-  ans[17] = { 18 };
+  ans[1] = {2};
+  ans[2] = {3};
+  ans[4] = {5};
+  ans[5] = {6};
+  ans[6] = {7, 10};
+  ans[7] = {8};
+  ans[8] = {9};
+  ans[9] = {6};
+  ans[10] = {11, 12};
+  ans[11] = {13};
+  ans[12] = {13};
+  ans[13] = {14};
+  ans[14] = {15};
+  ans[16] = {17};
+  ans[17] = {18};
   std::map<int, std::set<int>> cfgal = *pkb.get_cfg_al();
   REQUIRE(cfgal.size() == ans.size());
   for (auto &[k, vals] : ans) {
@@ -906,41 +905,40 @@ TEST_CASE("PKB_CFGSample_Correct") {
     }
   }
 }
-
 
 TEST_CASE("PKB_CFGNestedIf_Correct") {
   std::string source =
-    "procedure main {"
-    "zero = 1;"
-    "if(a==1) then {"
-    "if(b==1) then {"
-    "first = 1;"
-    "}else{"
-    "second = 1;"
-    "}"
-    "} else {"
-    "if(c==1) then {"
-    "third = 1;"
-    "} else {"
-    "fourth = 1;"
-    "}"
-    "}"
-    "fifth = 1;"
-    "}";
+      "procedure main {"
+      "zero = 1;"
+      "if(a==1) then {"
+      "if(b==1) then {"
+      "first = 1;"
+      "}else{"
+      "second = 1;"
+      "}"
+      "} else {"
+      "if(c==1) then {"
+      "third = 1;"
+      "} else {"
+      "fourth = 1;"
+      "}"
+      "}"
+      "fifth = 1;"
+      "}";
 
   BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   std::map<int, std::vector<int>> ans;
-  ans[1] = { 2 };
-  ans[2] = { 3,6 };
-  ans[3] = { 4,5 };
-  ans[4] = { 9 };
-  ans[5] = { 9 };
-  ans[6] = { 7,8 };
-  ans[7] = { 9 };
-  ans[8] = { 9 };
+  ans[1] = {2};
+  ans[2] = {3, 6};
+  ans[3] = {4, 5};
+  ans[4] = {9};
+  ans[5] = {9};
+  ans[6] = {7, 8};
+  ans[7] = {9};
+  ans[8] = {9};
   std::map<int, std::set<int>> cfgal = *pkb.get_cfg_al();
   REQUIRE(cfgal.size() == ans.size());
   for (auto &[k, vals] : ans) {
@@ -952,167 +950,166 @@ TEST_CASE("PKB_CFGNestedIf_Correct") {
   }
 }
 
-
 TEST_CASE("PKB_NextSample_Correct") {
   std::string source =
-    "procedure First {"
-    "read x;"
-    "read y;"
-    "call Second; }"
-    "procedure Second {"
-    "x = 0;"
-    "i = 5;"
-    "while (i != 0) {"
-    "x = x + 2 * y;"
-    "call Third;"
-    "i = i - 1; "
-    "}"
-    "if (x == 1) then {"
-    "x = x + 1; }"
-    "else {"
-    "z = 1;"
-    "}"
-    "z = z + x + i;"
-    "y = z + 2;"
-    "x = x * y + z; }"
-    "procedure Third {"
-    "z = 5;"
-    "v = z;"
-    "print v; }";
+      "procedure First {"
+      "read x;"
+      "read y;"
+      "call Second; }"
+      "procedure Second {"
+      "x = 0;"
+      "i = 5;"
+      "while (i != 0) {"
+      "x = x + 2 * y;"
+      "call Third;"
+      "i = i - 1; "
+      "}"
+      "if (x == 1) then {"
+      "x = x + 1; }"
+      "else {"
+      "z = 1;"
+      "}"
+      "z = z + x + i;"
+      "y = z + 2;"
+      "x = x * y + z; }"
+      "procedure Third {"
+      "z = 5;"
+      "v = z;"
+      "print v; }";
 
   BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   std::map<int, std::vector<int>> next_ans;
-  next_ans[1] = { 2 };
-  next_ans[2] = { 3 };
-  next_ans[4] = { 5 };
-  next_ans[5] = { 6 };
-  next_ans[6] = { 7,10 };
-  next_ans[7] = { 8 };
-  next_ans[8] = { 9 };
-  next_ans[9] = { 6 };
-  next_ans[10] = { 11,12 };
-  next_ans[11] = { 13 };
-  next_ans[12] = { 13 };
-  next_ans[13] = { 14 };
-  next_ans[14] = { 15 };
-  next_ans[16] = { 17 };
-  next_ans[17] = { 18 };
+  next_ans[1] = {2};
+  next_ans[2] = {3};
+  next_ans[4] = {5};
+  next_ans[5] = {6};
+  next_ans[6] = {7, 10};
+  next_ans[7] = {8};
+  next_ans[8] = {9};
+  next_ans[9] = {6};
+  next_ans[10] = {11, 12};
+  next_ans[11] = {13};
+  next_ans[12] = {13};
+  next_ans[13] = {14};
+  next_ans[14] = {15};
+  next_ans[16] = {17};
+  next_ans[17] = {18};
   std::set<std::pair<int, int>> next_wild_wild = pkb.get_next(PKB::PKB::kWild, PKB::kWild);
-  for (auto& [a, nexts] : next_ans) {
+  for (auto&[a, nexts] : next_ans) {
     // Check Next(a,_)
     std::set<std::pair<int, int>> next_a_wild = pkb.get_next(a, PKB::kWild);
     REQUIRE(next_ans[a].size() == next_a_wild.size());
-    for (auto& b : nexts) {
-      REQUIRE(next_a_wild.find({ a,b }) != next_a_wild.end());
+    for (auto &b : nexts) {
+      REQUIRE(next_a_wild.find({a, b}) != next_a_wild.end());
     }
 
     // Check Next(a,b)
-    for (auto& b : nexts) {
+    for (auto &b : nexts) {
       std::set<std::pair<int, int>> next_a_b = pkb.get_next(a, b);
       REQUIRE(next_a_b.size() == 1);
-      REQUIRE(next_a_b.find({ a,b }) != next_a_b.end());
+      REQUIRE(next_a_b.find({a, b}) != next_a_b.end());
     }
 
     // Check Next(_,_)
-    for (auto& b : nexts) {
-      REQUIRE(next_wild_wild.find({ a,b }) != next_wild_wild.end());
+    for (auto &b : nexts) {
+      REQUIRE(next_wild_wild.find({a, b}) != next_wild_wild.end());
     }
   }
 
   std::map<int, std::vector<int>> next_star_ans;
-  next_star_ans[1] = { 2,3 };
-  next_star_ans[2] = { 3 };
-  next_star_ans[4] = { 5,6,7,8,9,10,11,12,13,14,15 };
-  next_star_ans[5] = { 6,7,8,9,10,11,12,13,14,15 };
-  next_star_ans[6] = { 6,7,8,9,10,11,12,13,14,15 };
-  next_star_ans[7] = { 6,7,8,9,10,11,12,13,14,15 };
-  next_star_ans[8] = { 6,7,8,9,10,11,12,13,14,15 };
-  next_star_ans[9] = { 6,7,8,9,10,11,12,13,14,15 };
-  next_star_ans[10] = { 11,12,13,14,15 };
-  next_star_ans[11] = { 13,14,15 };
-  next_star_ans[12] = { 13,14,15 };
-  next_star_ans[13] = { 14,15 };
-  next_star_ans[14] = { 15 };
-  next_star_ans[16] = { 17,18 };
-  next_star_ans[17] = { 18 };
+  next_star_ans[1] = {2, 3};
+  next_star_ans[2] = {3};
+  next_star_ans[4] = {5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+  next_star_ans[5] = {6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+  next_star_ans[6] = {6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+  next_star_ans[7] = {6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+  next_star_ans[8] = {6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+  next_star_ans[9] = {6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+  next_star_ans[10] = {11, 12, 13, 14, 15};
+  next_star_ans[11] = {13, 14, 15};
+  next_star_ans[12] = {13, 14, 15};
+  next_star_ans[13] = {14, 15};
+  next_star_ans[14] = {15};
+  next_star_ans[16] = {17, 18};
+  next_star_ans[17] = {18};
   std::set<std::pair<int, int>> next_star_wild_wild = pkb.get_next_star(PKB::kWild, PKB::kWild);
-  for (auto& [a, nexts_star] : next_star_ans) {
+  for (auto&[a, nexts_star] : next_star_ans) {
     // Check Next*(a,_)
     std::set<std::pair<int, int>> next_star_a_wild = pkb.get_next_star(a, PKB::kWild);
     REQUIRE(next_star_ans[a].size() == next_star_a_wild.size());
-    for (auto& b : nexts_star) {
-      REQUIRE(next_star_a_wild.find({ a,b }) != next_star_a_wild.end());
+    for (auto &b : nexts_star) {
+      REQUIRE(next_star_a_wild.find({a, b}) != next_star_a_wild.end());
     }
 
     // Check Next*(a,b)
-    for (auto& b : nexts_star) {
+    for (auto &b : nexts_star) {
       std::set<std::pair<int, int>> next_star_a_b = pkb.get_next_star(a, b);
       REQUIRE(next_star_a_b.size() == 1);
-      REQUIRE(next_star_a_b.find({ a,b }) != next_star_a_b.end());
+      REQUIRE(next_star_a_b.find({a, b}) != next_star_a_b.end());
     }
 
     // Check Next*(_,_)
-    for (auto& b : nexts_star) {
-      REQUIRE(next_star_wild_wild.find({ a,b }) != next_star_wild_wild.end());
+    for (auto &b : nexts_star) {
+      REQUIRE(next_star_wild_wild.find({a, b}) != next_star_wild_wild.end());
     }
   }
 
   std::map<int, std::vector<int>> prev_ans;
-  prev_ans[2] = { 1 };
-  prev_ans[3] = { 2 };
-  prev_ans[5] = { 4 };
-  prev_ans[6] = { 5,9 };
-  prev_ans[7] = { 6 };
-  prev_ans[8] = { 7 };
-  prev_ans[9] = { 8 };
-  prev_ans[10] = { 6 };
-  prev_ans[11] = { 10 };
-  prev_ans[12] = { 10 };
-  prev_ans[13] = { 11,12 };
-  prev_ans[14] = { 13 };
-  prev_ans[15] = { 14 };
-  prev_ans[17] = { 16 };
-  prev_ans[18] = { 17 };
-  for (auto& [b, prevs] : prev_ans) {
+  prev_ans[2] = {1};
+  prev_ans[3] = {2};
+  prev_ans[5] = {4};
+  prev_ans[6] = {5, 9};
+  prev_ans[7] = {6};
+  prev_ans[8] = {7};
+  prev_ans[9] = {8};
+  prev_ans[10] = {6};
+  prev_ans[11] = {10};
+  prev_ans[12] = {10};
+  prev_ans[13] = {11, 12};
+  prev_ans[14] = {13};
+  prev_ans[15] = {14};
+  prev_ans[17] = {16};
+  prev_ans[18] = {17};
+  for (auto&[b, prevs] : prev_ans) {
     // Check Next(_,b)
     std::set<std::pair<int, int>> next_wild_b = pkb.get_next(PKB::kWild, b);
     REQUIRE(prev_ans[b].size() == next_wild_b.size());
-    for (auto& a : prevs) {
-      REQUIRE(next_wild_b.find({ a,b }) != next_wild_b.end());
+    for (auto &a : prevs) {
+      REQUIRE(next_wild_b.find({a, b}) != next_wild_b.end());
     }
   }
 
   std::map<int, std::vector<int>> prev_star_ans;
-  prev_star_ans[2] = { 1 };
-  prev_star_ans[3] = { 1,2 };
-  prev_star_ans[5] = { 4 };
-  prev_star_ans[6] = { 4,5,6,7,8,9 };
-  prev_star_ans[7] = { 4,5,6,7,8,9 };
-  prev_star_ans[8] = { 4,5,6,7,8,9 };
-  prev_star_ans[9] = { 4,5,6,7,8,9 };
-  prev_star_ans[10] = { 4,5,6,7,8,9 };
-  prev_star_ans[11] = { 4,5,6,7,8,9,10 };
-  prev_star_ans[12] = { 4,5,6,7,8,9,10 };
-  prev_star_ans[13] = { 4,5,6,7,8,9,10,11,12 };
-  prev_star_ans[14] = { 4,5,6,7,8,9,10,11,12,13 };
-  prev_star_ans[15] = { 4,5,6,7,8,9,10,11,12,13,14 };
-  prev_star_ans[17] = { 16 };
-  prev_star_ans[18] = { 16,17 };
-  for (auto& [b, prevs_star] : prev_star_ans) {
+  prev_star_ans[2] = {1};
+  prev_star_ans[3] = {1, 2};
+  prev_star_ans[5] = {4};
+  prev_star_ans[6] = {4, 5, 6, 7, 8, 9};
+  prev_star_ans[7] = {4, 5, 6, 7, 8, 9};
+  prev_star_ans[8] = {4, 5, 6, 7, 8, 9};
+  prev_star_ans[9] = {4, 5, 6, 7, 8, 9};
+  prev_star_ans[10] = {4, 5, 6, 7, 8, 9};
+  prev_star_ans[11] = {4, 5, 6, 7, 8, 9, 10};
+  prev_star_ans[12] = {4, 5, 6, 7, 8, 9, 10};
+  prev_star_ans[13] = {4, 5, 6, 7, 8, 9, 10, 11, 12};
+  prev_star_ans[14] = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
+  prev_star_ans[15] = {4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
+  prev_star_ans[17] = {16};
+  prev_star_ans[18] = {16, 17};
+  for (auto&[b, prevs_star] : prev_star_ans) {
     // Check Next*(_,b)
     std::set<std::pair<int, int>> next_star_wild_b = pkb.get_next_star(PKB::kWild, b);
     REQUIRE(prev_star_ans[b].size() == next_star_wild_b.size());
-    for (auto& a : prevs_star) {
-      REQUIRE(next_star_wild_b.find({ a,b }) != next_star_wild_b.end());
+    for (auto &a : prevs_star) {
+      REQUIRE(next_star_wild_b.find({a, b}) != next_star_wild_b.end());
     }
   }
 }
 
 TEST_CASE("PKB_NextNestedIf_Correct") {
-    std::string source =
+  std::string source =
       "procedure main {"
       "zero = 1;"
       "if(a==1) then {"
@@ -1136,233 +1133,231 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   std::map<int, std::vector<int>> next_ans;
-  next_ans[1] = { 2 };
-  next_ans[2] = { 3,6 };
-  next_ans[3] = { 4,5 };
-  next_ans[4] = { 9 };
-  next_ans[5] = { 9 };
-  next_ans[6] = { 7,8 };
-  next_ans[7] = { 9 };
-  next_ans[8] = { 9 };
+  next_ans[1] = {2};
+  next_ans[2] = {3, 6};
+  next_ans[3] = {4, 5};
+  next_ans[4] = {9};
+  next_ans[5] = {9};
+  next_ans[6] = {7, 8};
+  next_ans[7] = {9};
+  next_ans[8] = {9};
   std::set<std::pair<int, int>> next_wild_wild = pkb.get_next(PKB::kWild, PKB::kWild);
-  for (auto& [a, nexts] : next_ans) {
+  for (auto&[a, nexts] : next_ans) {
     // Check Next(a,_)
     std::set<std::pair<int, int>> next_a_wild = pkb.get_next(a, PKB::kWild);
     REQUIRE(next_ans[a].size() == next_a_wild.size());
-    for (auto& b : nexts) {
-      REQUIRE(next_a_wild.find({ a,b }) != next_a_wild.end());
+    for (auto &b : nexts) {
+      REQUIRE(next_a_wild.find({a, b}) != next_a_wild.end());
     }
 
     // Check Next(a,b)
-    for (auto& b : nexts) {
+    for (auto &b : nexts) {
       std::set<std::pair<int, int>> next_a_b = pkb.get_next(a, b);
       REQUIRE(next_a_b.size() == 1);
-      REQUIRE(next_a_b.find({ a,b }) != next_a_b.end());
+      REQUIRE(next_a_b.find({a, b}) != next_a_b.end());
     }
 
     // Check Next(_,_)
-    for (auto& b : nexts) {
-      REQUIRE(next_wild_wild.find({ a,b }) != next_wild_wild.end());
+    for (auto &b : nexts) {
+      REQUIRE(next_wild_wild.find({a, b}) != next_wild_wild.end());
     }
   }
 
-
   std::map<int, std::vector<int>> next_star_ans;
-  next_star_ans[1] = { 2,3,4,5,6,7,8,9 };
-  next_star_ans[2] = { 3,4,5,6,7,8,9 };
-  next_star_ans[3] = { 4,5,9 };
-  next_star_ans[4] = { 9 };
-  next_star_ans[5] = { 9 };
-  next_star_ans[6] = { 7,8,9 };
-  next_star_ans[7] = { 9 };
-  next_star_ans[8] = { 9 };
+  next_star_ans[1] = {2, 3, 4, 5, 6, 7, 8, 9};
+  next_star_ans[2] = {3, 4, 5, 6, 7, 8, 9};
+  next_star_ans[3] = {4, 5, 9};
+  next_star_ans[4] = {9};
+  next_star_ans[5] = {9};
+  next_star_ans[6] = {7, 8, 9};
+  next_star_ans[7] = {9};
+  next_star_ans[8] = {9};
   std::set<std::pair<int, int>> next_star_wild_wild = pkb.get_next_star(PKB::kWild, PKB::kWild);
-  for (auto& [a, nexts_star] : next_star_ans) {
+  for (auto&[a, nexts_star] : next_star_ans) {
     // Check Next*(a,_)
     std::set<std::pair<int, int>> next_star_a_wild = pkb.get_next_star(a, PKB::kWild);
     REQUIRE(next_star_ans[a].size() == next_star_a_wild.size());
-    for (auto& b : nexts_star) {
-      REQUIRE(next_star_a_wild.find({ a,b }) != next_star_a_wild.end());
+    for (auto &b : nexts_star) {
+      REQUIRE(next_star_a_wild.find({a, b}) != next_star_a_wild.end());
     }
 
     // Check Next*(a,b)
-    for (auto& b : nexts_star) {
+    for (auto &b : nexts_star) {
       std::set<std::pair<int, int>> next_star_a_b = pkb.get_next_star(a, b);
       REQUIRE(next_star_a_b.size() == 1);
-      REQUIRE(next_star_a_b.find({ a,b }) != next_star_a_b.end());
+      REQUIRE(next_star_a_b.find({a, b}) != next_star_a_b.end());
     }
 
     // Check Next*(_,_)
-    for (auto& b : nexts_star) {
-      REQUIRE(next_star_wild_wild.find({ a,b }) != next_star_wild_wild.end());
+    for (auto &b : nexts_star) {
+      REQUIRE(next_star_wild_wild.find({a, b}) != next_star_wild_wild.end());
     }
   }
 
-
   std::map<int, std::vector<int>> prev_ans;
-  prev_ans[2] = { 1 };
-  prev_ans[3] = { 2 };
-  prev_ans[4] = { 3 };
-  prev_ans[5] = { 3 };
-  prev_ans[6] = { 2 };
-  prev_ans[7] = { 6 };
-  prev_ans[8] = { 6 };
-  prev_ans[9] = { 4,5,7,8 };
-  for (auto& [b, prevs] : prev_ans) {
+  prev_ans[2] = {1};
+  prev_ans[3] = {2};
+  prev_ans[4] = {3};
+  prev_ans[5] = {3};
+  prev_ans[6] = {2};
+  prev_ans[7] = {6};
+  prev_ans[8] = {6};
+  prev_ans[9] = {4, 5, 7, 8};
+  for (auto&[b, prevs] : prev_ans) {
     // Check Next(_,b)
     std::set<std::pair<int, int>> next_wild_b = pkb.get_next(PKB::kWild, b);
     REQUIRE(prev_ans[b].size() == next_wild_b.size());
-    for (auto& a : prevs) {
-      REQUIRE(next_wild_b.find({ a,b }) != next_wild_b.end());
+    for (auto &a : prevs) {
+      REQUIRE(next_wild_b.find({a, b}) != next_wild_b.end());
     }
   }
 
   std::map<int, std::vector<int>> prev_star_ans;
-  prev_star_ans[2] = { 1 };
-  prev_star_ans[3] = { 1,2 };
-  prev_star_ans[4] = { 1,2,3 };
-  prev_star_ans[5] = { 1,2,3 };
-  prev_star_ans[6] = { 1,2 };
-  prev_star_ans[7] = { 1,2,6 };
-  prev_star_ans[8] = { 1,2,6 };
-  prev_star_ans[9] = { 1,2,3,4,5,6,7,8 };
-  for (auto& [b, prevs_star] : prev_star_ans) {
+  prev_star_ans[2] = {1};
+  prev_star_ans[3] = {1, 2};
+  prev_star_ans[4] = {1, 2, 3};
+  prev_star_ans[5] = {1, 2, 3};
+  prev_star_ans[6] = {1, 2};
+  prev_star_ans[7] = {1, 2, 6};
+  prev_star_ans[8] = {1, 2, 6};
+  prev_star_ans[9] = {1, 2, 3, 4, 5, 6, 7, 8};
+  for (auto&[b, prevs_star] : prev_star_ans) {
     // Check Next*(_,b)
     std::set<std::pair<int, int>> next_star_wild_b = pkb.get_next_star(PKB::kWild, b);
     REQUIRE(prev_star_ans[b].size() == next_star_wild_b.size());
-    for (auto& a : prevs_star) {
-      REQUIRE(next_star_wild_b.find({ a,b }) != next_star_wild_b.end());
+    for (auto &a : prevs_star) {
+      REQUIRE(next_star_wild_b.find({a, b}) != next_star_wild_b.end());
     }
   }
 }
 
 TEST_CASE("PKB_AffectsSample_Correct") {
   std::string source =
-    "procedure First {"
-    "read x;"
-    "read y;"
-    "call Second; }"
-    "procedure Second {"
-    "x = 0;"
-    "i = 5;"
-    "while (i != 0) {"
-    "x = x + 2 * y;"
-    "call Third;"
-    "i = i - 1; "
-    "}"
-    "if (x == 1) then {"
-    "x = x + 1; }"
-    "else {"
-    "z = 1;"
-    "}"
-    "z = z + x + i;"
-    "y = z + 2;"
-    "x = x * y + z; }"
-    "procedure Third {"
-    "z = 5;"
-    "v = z;"
-    "print v; }";
+      "procedure First {"
+      "read x;"
+      "read y;"
+      "call Second; }"
+      "procedure Second {"
+      "x = 0;"
+      "i = 5;"
+      "while (i != 0) {"
+      "x = x + 2 * y;"
+      "call Third;"
+      "i = i - 1; "
+      "}"
+      "if (x == 1) then {"
+      "x = x + 1; }"
+      "else {"
+      "z = 1;"
+      "}"
+      "z = z + x + i;"
+      "y = z + 2;"
+      "x = x * y + z; }"
+      "procedure Third {"
+      "z = 5;"
+      "v = z;"
+      "print v; }";
 
   BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   std::map<int, std::vector<int>> affects_ans;
-  affects_ans[4] = { 7,11,13,15 };
-  affects_ans[5] = { 9,13 };
-  affects_ans[7] = { 7,11,13,15 };
-  affects_ans[9] = { 9,13 };
-  affects_ans[11] = { 13,15 };
-  affects_ans[12] = { 13 };
-  affects_ans[13] = { 14,15 };
-  affects_ans[14] = { 15 };
-  affects_ans[16] = { 17 };
+  affects_ans[4] = {7, 11, 13, 15};
+  affects_ans[5] = {9, 13};
+  affects_ans[7] = {7, 11, 13, 15};
+  affects_ans[9] = {9, 13};
+  affects_ans[11] = {13, 15};
+  affects_ans[12] = {13};
+  affects_ans[13] = {14, 15};
+  affects_ans[14] = {15};
+  affects_ans[16] = {17};
 
   std::set<std::pair<int, int>> affects_wild_wild = pkb.get_affects(PKB::kWild, PKB::kWild);
-  for (auto& [a, affects] : affects_ans) {
+  for (auto&[a, affects] : affects_ans) {
     // Check Affects(a,_)
     std::set<std::pair<int, int>> affects_a_wild = pkb.get_affects(a, PKB::kWild);
     REQUIRE(affects_ans[a].size() == affects_a_wild.size());
-    for (auto& b : affects) {
-      REQUIRE(affects_a_wild.find({ a,b }) != affects_a_wild.end());
+    for (auto &b : affects) {
+      REQUIRE(affects_a_wild.find({a, b}) != affects_a_wild.end());
     }
 
     // Check Affects(a,b)
-    for (auto& b : affects) {
+    for (auto &b : affects) {
       std::set<std::pair<int, int>> affects_a_b = pkb.get_affects(a, b);
       REQUIRE(affects_a_b.size() == 1);
-      REQUIRE(affects_a_b.find({ a,b }) != affects_a_b.end());
+      REQUIRE(affects_a_b.find({a, b}) != affects_a_b.end());
     }
 
     // Check Affects(_,_)
-    for (auto& b : affects) {
-      REQUIRE(affects_wild_wild.find({ a,b }) != affects_wild_wild.end());
+    for (auto &b : affects) {
+      REQUIRE(affects_wild_wild.find({a, b}) != affects_wild_wild.end());
     }
   }
 
   std::map<int, std::vector<int>> affects_star_ans;
-  affects_star_ans[4] = { 7,11,13,14,15 };
-  affects_star_ans[5] = { 9,13,14,15 };
-  affects_star_ans[7] = { 7,11,13,14,15 };
-  affects_star_ans[9] = { 9,13,14,15 };
-  affects_star_ans[11] = { 13,14,15 };
-  affects_star_ans[12] = { 13,14,15 };
-  affects_star_ans[13] = { 14,15 };
-  affects_star_ans[14] = { 15 };
-  affects_star_ans[16] = { 17 };
+  affects_star_ans[4] = {7, 11, 13, 14, 15};
+  affects_star_ans[5] = {9, 13, 14, 15};
+  affects_star_ans[7] = {7, 11, 13, 14, 15};
+  affects_star_ans[9] = {9, 13, 14, 15};
+  affects_star_ans[11] = {13, 14, 15};
+  affects_star_ans[12] = {13, 14, 15};
+  affects_star_ans[13] = {14, 15};
+  affects_star_ans[14] = {15};
+  affects_star_ans[16] = {17};
   std::set<std::pair<int, int>> affects_star_wild_wild = pkb.get_affects_star(PKB::kWild, PKB::kWild);
-  for (auto& [a, affects_star] : affects_star_ans) {
+  for (auto&[a, affects_star] : affects_star_ans) {
     // Check Affects*(a,_)
     std::set<std::pair<int, int>> affects_star_a_wild = pkb.get_affects_star(a, PKB::kWild);
     REQUIRE(affects_star_ans[a].size() == affects_star_a_wild.size());
-    for (auto& b : affects_star) {
-      REQUIRE(affects_star_a_wild.find({ a,b }) != affects_star_a_wild.end());
+    for (auto &b : affects_star) {
+      REQUIRE(affects_star_a_wild.find({a, b}) != affects_star_a_wild.end());
     }
 
     // Check Affects*(a,b)
-    for (auto& b : affects_star) {
+    for (auto &b : affects_star) {
       std::set<std::pair<int, int>> affects_star_a_b = pkb.get_affects_star(a, b);
       REQUIRE(affects_star_a_b.size() == 1);
-      REQUIRE(affects_star_a_b.find({ a,b }) != affects_star_a_b.end());
+      REQUIRE(affects_star_a_b.find({a, b}) != affects_star_a_b.end());
     }
 
     // Check Affects*(_,_)
-    for (auto& b : affects_star) {
-      REQUIRE(affects_star_wild_wild.find({ a,b }) != affects_star_wild_wild.end());
+    for (auto &b : affects_star) {
+      REQUIRE(affects_star_wild_wild.find({a, b}) != affects_star_wild_wild.end());
     }
   }
 
   std::map<int, std::vector<int>> affected_by_ans;
-  affected_by_ans[7] = { 4,7 };
-  affected_by_ans[9] = { 5,9 };
-  affected_by_ans[11] = { 4,7 };
-  affected_by_ans[13] = { 4,5,7,9,11,12 };
-  affected_by_ans[14] = { 13 };
-  affected_by_ans[15] = { 4,7,11,13,14 };
-  affected_by_ans[17] = { 16 };
-  for (auto& [b, affected_bys] : affected_by_ans) {
+  affected_by_ans[7] = {4, 7};
+  affected_by_ans[9] = {5, 9};
+  affected_by_ans[11] = {4, 7};
+  affected_by_ans[13] = {4, 5, 7, 9, 11, 12};
+  affected_by_ans[14] = {13};
+  affected_by_ans[15] = {4, 7, 11, 13, 14};
+  affected_by_ans[17] = {16};
+  for (auto&[b, affected_bys] : affected_by_ans) {
     // Check Affects(_,b)
     std::set<std::pair<int, int>> affects_wild_b = pkb.get_affects(PKB::kWild, b);
     REQUIRE(affected_by_ans[b].size() == affects_wild_b.size());
-    for (auto& a : affected_bys) {
-      REQUIRE(affects_wild_b.find({ a,b }) != affects_wild_b.end());
+    for (auto &a : affected_bys) {
+      REQUIRE(affects_wild_b.find({a, b}) != affects_wild_b.end());
     }
   }
 
   std::map<int, std::vector<int>> affected_by_star_ans;
-  affected_by_star_ans[7] = { 4,7 };
-  affected_by_star_ans[9] = { 5,9 };
-  affected_by_star_ans[11] = { 4,7 };
-  affected_by_star_ans[13] = { 4,5,7,9,11,12 };
-  affected_by_star_ans[14] = { 4,5,7,9,11,12,13 };
-  affected_by_star_ans[15] = { 4,5,7,9,11,12,13,14 };
-  affected_by_star_ans[17] = { 16 };
-  for (auto& [b, affected_bys_star] : affected_by_star_ans) {
+  affected_by_star_ans[7] = {4, 7};
+  affected_by_star_ans[9] = {5, 9};
+  affected_by_star_ans[11] = {4, 7};
+  affected_by_star_ans[13] = {4, 5, 7, 9, 11, 12};
+  affected_by_star_ans[14] = {4, 5, 7, 9, 11, 12, 13};
+  affected_by_star_ans[15] = {4, 5, 7, 9, 11, 12, 13, 14};
+  affected_by_star_ans[17] = {16};
+  for (auto&[b, affected_bys_star] : affected_by_star_ans) {
     // Check Affects(_,b)
     std::set<std::pair<int, int>> affects_star_wild_b = pkb.get_affects_star(PKB::kWild, b);
     REQUIRE(affected_by_star_ans[b].size() == affects_star_wild_b.size());
-    for (auto& a : affected_bys_star) {
-      REQUIRE(affects_star_wild_b.find({ a,b }) != affects_star_wild_b.end());
+    for (auto &a : affected_bys_star) {
+      REQUIRE(affects_star_wild_b.find({a, b}) != affects_star_wild_b.end());
     }
   }
 }

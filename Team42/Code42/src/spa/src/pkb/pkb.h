@@ -15,7 +15,7 @@
 
 class PKB {
  public:
-   PKB();
+  PKB();
   explicit PKB(Node *programRoot);
 
   ~PKB();
@@ -65,7 +65,6 @@ class PKB {
   // Gets Next*(a,b) relation. if a==kWild or b==kWild, it is treated as a wildcard.
   // Does a check for valid stmt line input, or kWild, and returns empty set if invalid.
   std::set<std::pair<int, int>> get_next_star(int a, int b);
-
 
   // Gets Affects(a,b) relation. if a==0 or b==0, it is treated as a wildcard.
   // Does a check for valid stmt line input, or kWild, and returns empty set if invalid.
@@ -142,16 +141,18 @@ class PKB {
   void CFGProcessIfNode(Node *node);
   // Process and store the AST while node into the CFG.
   void CFGProcessWhileNode(Node *node);
-  
+
   // DFS to check reachability for Next and Affects* relationship
-  void ReachabilityDFS(int start, int u, std::vector<std::vector<int>>& d, std::map<int, std::set<int>>& al);
+  void ReachabilityDFS(int start, int u, std::vector<std::vector<int>> &d, std::map<int, std::set<int>> &al);
   // DFS to check reachability for Affects relationship.
   // If target is not kWild, this method supports fast termination to save on unnecessary computations.
-  void AffectsDFS(int start, int target, int u, std::string var_name, std::vector<bool>& visited, std::vector<std::vector<int>>& d, bool& found);
+  void AffectsDFS(int start, int target, int u, std::string var_name, std::vector<bool> &visited,
+                  std::vector<std::vector<int>> &d, bool &found);
   // DFS to check reachability for Affects* relationship
   // If target is not kWild, this method supports fast termination to save on unnecessary computations.
   // If forward relation is true, this method propagates forward in terms of Affects*(a,b)
-  void AffectsStarBFS(int start, int target, std::vector<bool>& visited, std::set<std::pair<int, int>>& ans, bool forward_relation);
+  void AffectsStarBFS(int start, int target, std::vector<bool> &visited,
+                      std::set<std::pair<int, int>> &ans, bool forward_relation);
 
   // Root AST node of the program.
   Node *root_;
@@ -167,5 +168,5 @@ class PKB {
   std::map<int, std::set<int>> cfg_al_;
   // Reverse Adjacency List of CFG for Next and Affects.
   std::map<int, std::set<int>> reverse_cfg_al_;
-  
+
 };

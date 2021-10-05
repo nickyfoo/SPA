@@ -146,11 +146,11 @@ std::vector<Constant *> PKB::get_all_constants() {
 }
 
 bool PKB::TestAssignmentPattern(Statement *statement, std::string pattern, bool is_partial_match) {
-  return PatternManager::TestAssignmentPattern(statement, pattern, is_partial_match);
+  return pattern_manager_.TestAssignmentPattern(statement, pattern, is_partial_match);
 }
 
 bool PKB::TestIfWhilePattern(Statement *stmt, std::string variable) {
-  return PatternManager::TestIfWhilePattern(stmt, variable);
+  return pattern_manager_.TestIfWhilePattern(stmt, variable);
 }
 
 void PKB::PrintStatements() {

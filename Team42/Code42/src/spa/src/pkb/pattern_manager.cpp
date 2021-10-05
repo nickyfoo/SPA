@@ -4,6 +4,10 @@
 #include <stack>
 #include <sstream>
 
+PatternManager::PatternManager() = default;
+
+PatternManager::~PatternManager() = default;
+
 auto CheckNextChar(bool is_ident);
 
 // Returns a curried function that checks for validity of the next character

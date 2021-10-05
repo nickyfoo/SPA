@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <utility>
 #include "tables/proc_table.h"
 #include "tables/stmt_table.h"
 #include "tables/var_table.h"
@@ -75,7 +76,8 @@ class PKB {
 
   // Tests the RHS of assignment statement against the given pattern.
   // Returns true if pattern matches.
-  static bool TestAssignmentPattern(Statement *statement, std::string pattern, bool is_partial_match);
+  static bool TestAssignmentPattern(Statement *statement, std::string pattern,
+                                    bool is_partial_match);
 
   // Prints information of statements in the statement table.
   void PrintStatements();
@@ -143,13 +145,14 @@ class PKB {
   void CFGProcessWhileNode(Node *node);
 
   // DFS to check reachability for Next and Affects* relationship
-  void ReachabilityDFS(int start, int u, std::vector<std::vector<int>> &d, std::map<int, std::set<int>> &al);
+  void ReachabilityDFS(int start, int u, std::vector<std::vector<int>> &d,
+                       std::map<int, std::set<int>> &al);
   // DFS to check reachability for Affects relationship.
-  // If target is not kWild, this method supports fast termination to save on unnecessary computations.
+  // If target is not kWild, supports fast termination to save on unnecessary computations.
   void AffectsDFS(int start, int target, int u, std::string var_name, std::vector<bool> &visited,
                   std::vector<std::vector<int>> &d, bool &found);
   // DFS to check reachability for Affects* relationship
-  // If target is not kWild, this method supports fast termination to save on unnecessary computations.
+  // If target is not kWild, supports fast termination to save on unnecessary computations.
   // If forward relation is true, this method propagates forward in terms of Affects*(a,b)
   void AffectsStarBFS(int start, int target, std::vector<bool> &visited,
                       std::set<std::pair<int, int>> &ans, bool forward_relation);
@@ -168,5 +171,4 @@ class PKB {
   std::map<int, std::set<int>> cfg_al_;
   // Reverse Adjacency List of CFG for Next and Affects.
   std::map<int, std::set<int>> reverse_cfg_al_;
-
 };

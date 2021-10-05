@@ -95,7 +95,6 @@ void PKB::AddExprString(Node *node, std::vector<Node *> ancestor_list) {
       default:break;
     }
   }
-
 }
 
 void PKB::AddVariable(Node *node, std::vector<Node *> ancestor_list) {
@@ -320,7 +319,6 @@ void PKB::ExtractUsesModifies() {
         var_table_.get_variable(var_modified)->AddStmtModifying(parent_star);
       }
     }
-
   }
 }
 
@@ -360,10 +358,10 @@ void PKB::ExtractCFG() {
   };
 
   Visit(root_, functions);
-
 }
 
-void PKB::ReachabilityDFS(int start, int u, std::vector<std::vector<int>> &d, std::map<int, std::set<int>> &al) {
+void PKB::ReachabilityDFS(int start, int u, std::vector<std::vector<int>> &d,
+                          std::map<int, std::set<int>> &al) {
   for (auto &v : al[u]) {
     if (d[start][v] == 0) {
       d[start][v] = 1;
@@ -470,8 +468,9 @@ void PKB::AffectsStarBFS(int start, int target, std::vector<bool> &visited,
     q.pop();
     if (forward_relation) {
       for (auto&[a, b] : get_affects(u, kWild)) {
-        if (target == kWild) ans.insert({start, b});
-        else {
+        if (target == kWild) {
+          ans.insert({ start, b });
+        } else {
           if (b == target) {
             ans.insert({start, target});
             return;
@@ -484,8 +483,9 @@ void PKB::AffectsStarBFS(int start, int target, std::vector<bool> &visited,
       }
     } else {
       for (auto&[a, b] : get_affects(kWild, u)) {
-        if (target == kWild) ans.insert({a, start});
-        else {
+        if (target == kWild) {
+          ans.insert({ a, start });
+        } else {
           if (a == target) {
             ans.insert({start, target});
             return;
@@ -725,7 +725,8 @@ void PKB::UsesModifiesProcessAssignNode(Node *node, std::vector<Node *> &ancesto
         var_table_.get_variable(var)->AddProcUsing(proc->get_name());
       }
       proc->AddModifies(assign_node->get_var()->get_name());
-      var_table_.get_variable(assign_node->get_var()->get_name())->AddProcModifying(proc->get_name());
+      var_table_.get_variable(assign_node->get_var()->get_name())
+          ->AddProcModifying(proc->get_name());
     }
 
     if (n->get_kind() == NodeType::If || n->get_kind() == NodeType::While) {
@@ -824,8 +825,10 @@ void PKB::UsesModifiesProcessReadNode(Node *node, std::vector<Node *> &ancestorL
     }
     if (n->get_kind() == NodeType::If || n->get_kind() == NodeType::While) {
       auto statement_node = dynamic_cast<StatementNode *>(n);
-      stmt_table_.get_statement(statement_node->get_stmt_no())->AddModifies(read_node->get_var()->get_name());
-      var_table_.get_variable(read_node->get_var()->get_name())->AddStmtModifying(statement_node->get_stmt_no());
+      stmt_table_.get_statement(statement_node->get_stmt_no())
+          ->AddModifies(read_node->get_var()->get_name());
+      var_table_.get_variable(read_node->get_var()->get_name())
+          ->AddStmtModifying(statement_node->get_stmt_no());
     }
   }
   stmt_table_.get_statement(read_node->get_stmt_no())
@@ -846,8 +849,10 @@ void PKB::UsesModifiesProcessPrintNode(Node *node, std::vector<Node *> &ancestor
     }
     if (n->get_kind() == NodeType::If || n->get_kind() == NodeType::While) {
       auto statement_node = dynamic_cast<StatementNode *>(n);
-      stmt_table_.get_statement(statement_node->get_stmt_no())->AddUses(print_node->get_var()->get_name());
-      var_table_.get_variable(print_node->get_var()->get_name())->AddStmtUsing(statement_node->get_stmt_no());
+      stmt_table_.get_statement(statement_node->get_stmt_no())
+          ->AddUses(print_node->get_var()->get_name());
+      var_table_.get_variable(print_node->get_var()->get_name())
+          ->AddStmtUsing(statement_node->get_stmt_no());
     }
   }
   stmt_table_.get_statement(print_node->get_stmt_no())->AddUses(print_node->get_var()->get_name());

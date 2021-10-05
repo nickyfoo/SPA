@@ -151,6 +151,7 @@ ResultTable* UsesPModifiesPHandler::Evaluate() {
     ret->AddSingleColumn(left_synonym, left_proc_vec);
   } else if (left_ent.get_type() == EntRefType::Argument &&
       right_ent.get_type() == EntRefType::Synonym) {  // UsesP("sth", v)
+    printf("lelrlyhere1\n");
     std::string left_arg = left_ent.get_argument();
     std::string right_synonym = right_ent.get_synonym();
     std::vector<Entity *> right_entity_vec;
@@ -160,9 +161,11 @@ ResultTable* UsesPModifiesPHandler::Evaluate() {
     for (int i = 0; i < right_entity_vec.size(); i++) {
       auto *variable = dynamic_cast<Variable *>(right_entity_vec.at(i));
       if (variable != nullptr && VariableForwarder(get_reverse_, variable)->count(left_arg)) {
+        printf("GOT OR NO\n");
         right_var_vec.push_back(variable->get_name());
       }
     }
+    ret->AddSingleColumn(right_synonym, right_var_vec);
   } else if (left_ent.get_type() == EntRefType::Argument &&
       right_ent.get_type() == EntRefType::WildCard) {  // UsesP("sth", _)
     std::string left_arg = left_ent.get_argument();

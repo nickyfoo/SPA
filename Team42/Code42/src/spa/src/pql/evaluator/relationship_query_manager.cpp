@@ -83,6 +83,7 @@ ResultTable* RelationshipQueryManager::EvaluateRelationship(std::shared_ptr<Such
         return usesp_modifiesp_handler->Evaluate();
       }
       case RelRef::ModifiesP: {
+        printf("MIHERE\n");
         UsesPModifiesPHandler *usesp_modifiesp_handler =
             UsesPModifiesPHandler::get_instance();
         usesp_modifiesp_handler->set_function_pointers(&Procedure::get_modifies,

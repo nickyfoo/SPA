@@ -92,6 +92,10 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         }
         printf("\n");
       }
+      if (!first_table_entry && intermediate_table->get_table()->empty()) {  // found a clause
+        printf("wtfukkkk\n");
+        return ConvertToOutput(result_table, false);
+      }
       result_table->set_table(*intermediate_table);
     } else if (i > 2){
       printf("in here\n");

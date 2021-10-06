@@ -54,7 +54,10 @@ class PKB {
 
   // Tests the RHS of assignment statement against the given pattern.
   // Returns true if pattern matches.
-  static bool TestAssignmentPattern(Statement *statement, std::string pattern, bool is_partial_match);
+  bool TestAssignmentPattern(Statement *statement, std::string pattern, bool is_partial_match);
+  // Tests for a variable in the expression of the if statement.
+  // Returns true if variable matches.
+  bool TestIfWhilePattern(Statement *stmt, std::string variable);
 
   // Prints information of statements in the statement table.
   void PrintStatements();
@@ -107,6 +110,8 @@ class PKB {
 
   // Root AST node of the program.
   Node *root_;
+  // Root AST node of the program.
+  PatternManager pattern_manager_;
   // Table of procedures in the program.
   ProcTable proc_table_;
   // Table of statements in the program.

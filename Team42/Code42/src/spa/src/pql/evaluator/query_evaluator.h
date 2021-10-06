@@ -14,10 +14,8 @@ class QueryEvaluator {
   explicit QueryEvaluator(PQLQuery *pql_query, PKB *pkb);
   std::vector<std::string> *Evaluate();
  private:
-  std::vector<std::string> *entities_to_return_;
+  std::vector<ResultClause *> *entities_to_return_;
   std::vector<std::shared_ptr<ClauseGroup>> clause_groups_;
-//  std::vector<SuchThatClause *> *relationships_;
-//  std::vector<PatternClause *> *patterns_;
   PKB *pkb_;
   std::unordered_map<std::string, EntityDeclaration *> *synonym_to_entity_dec_;
   std::unordered_map<std::string, std::vector<Entity *>> GetPossibleEntitiesVec(ClauseVertex clause_vertex);

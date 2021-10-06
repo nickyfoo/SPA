@@ -3,6 +3,9 @@
 #include <utility>
 #include "select_clause_parser.h"
 #include "such_that_clause.h"
+#include "pattern_clause.h"
+#include "with_clause.h"
+#include "result_clause.h"
 #include "line_ref.h"
 
 SelectClauseParser::SelectClauseParser() {
@@ -26,11 +29,11 @@ void SelectClauseParser::set_select_clause(std::unordered_map<std::string,
   this->select_statement_ = select_clause;
 }
 
-std::tuple<std::vector<std::string> *,
+std::tuple<std::vector<ResultClause *> *,
            std::vector<SuchThatClause *> *,
            std::vector<PatternClause *> *,
            std::vector<WithClause *> *,
-           std::unordered_map<std::string, EntityDeclaration *> *> *SelectClauseParser::get_clauses() {
+           std::unordered_map<std::string, EntityDeclaration *> *> * SelectClauseParser::get_clauses() {
   std::tuple<std::string,
              std::vector<std::string>,
              std::vector<std::string>,
@@ -40,7 +43,7 @@ std::tuple<std::vector<std::string> *,
   std::vector<std::string> such_that_clauses = std::get<1>(clauses);
   std::vector<std::string> pattern_clauses = std::get<2>(clauses);
   std::vector<std::string> with_clauses = std::get<3>(clauses);
-  auto *select_ret = new std::vector<std::string>();
+  auto *select_ret = new std::vector<ResultClause *>();
   auto *such_that_ret = new std::vector<SuchThatClause *>();
   auto *pattern_ret = new std::vector<PatternClause *>();
   auto *with_ret = new std::vector<WithClause *>();
@@ -60,17 +63,17 @@ std::tuple<std::vector<std::string> *,
     if (select == "BOOLEAN" && select_clauses.size() == 1) {
       printf("UH1\n");
       // do nothing, flag to evaluator that it requires a boolean output
+      select_ret->push_back(new ResultClause("", EntityType::None, ReturnType::Boolean));
     } else if (synonym_to_entity_->find(select) != synonym_to_entity_->end()) {
       printf("UH2\n");
-      select_ret->push_back(select);
+      select_ret->push_back(new ResultClause(select, synonym_to_entity_->at(select)->get_type(), ReturnType::Default));
     } else {
-      if (IsValidAttr(select)) {
-        printf("UH3\n");
-        select_ret->push_back(select);
-      } else {
-        printf("UH4\n");
+      auto *result_with_attr = ValidateResultClauseWithAttr(select);
+      if (result_with_attr == nullptr) {
         return nullptr;
+
       }
+      select_ret->push_back(result_with_attr);
     }
   }
   printf("came here 2\n");
@@ -137,7 +140,7 @@ std::tuple<std::vector<std::string> *,
 //    }
 //  }
   printf("came here5\n");
-  auto ret = new std::tuple<std::vector<std::string> *,
+  auto ret = new std::tuple<std::vector<ResultClause *> *,
                             std::vector<SuchThatClause *> *,
                             std::vector<PatternClause *> *,
                             std::vector<WithClause *> *,
@@ -872,59 +875,62 @@ std::vector<std::pair<std::string, std::string>> SelectClauseParser::SplitTokens
 
   return ret;
 }
-bool SelectClauseParser::IsValidAttr(const std::string &select) {
+
+ResultClause * SelectClauseParser::ValidateResultClauseWithAttr(const std::string &select) {
   std::vector<std::string> synonym_attribute = SplitTokensByDelimiter(select, ".");
   if (synonym_attribute.size() != 2) {
-    return false;
+    return nullptr;
   }
   std::string synonym = synonym_attribute.at(0);
   std::string attribute = synonym_attribute.at(1);
   printf("YAS\n");
   if (synonym_to_entity_->find(synonym) == synonym_to_entity_->end()) {
-    return false;
+    return nullptr;
   }
-  EntityType type = synonym_to_entity_->find(synonym)->second->get_type();
-  AttrValueType attr_value_type = AttrValueType::None;
-  switch (type) {
+  EntityType synonym_type = synonym_to_entity_->find(synonym)->second->get_type();
+  ReturnType return_type;
+//  AttrValueType attr_value_type = AttrValueType::None;
+  switch (synonym_type) {
     case EntityType::Procedure:
       if (attribute == "procName")
-        attr_value_type = AttrValueType::Name;
+        return_type = ReturnType::Name;
       break;
     case EntityType::Variable:
       if (attribute == "varName")
-        attr_value_type = AttrValueType::Name;
+        return_type = ReturnType::Name;
       break;
     case EntityType::Constant:
       if (attribute == "value")
-        attr_value_type = AttrValueType::Integer;
+        return_type = ReturnType::Integer;
       break;
     case EntityType::Call:
       if (attribute == "procName") {
-        attr_value_type = AttrValueType::Name;
+        return_type = ReturnType::Name;
         break;
       } else if (attribute == "stmt#") {
-        attr_value_type = AttrValueType::Integer;
+        return_type = ReturnType::Integer;
         break;
       }
     case EntityType::Print:
     case EntityType::Read:
-      if (attribute == "varName") attr_value_type = AttrValueType::Name;
-      else if (attribute == "stmt#") attr_value_type = AttrValueType::Integer;
-      break;
+      if (attribute == "varName") {
+        return_type = ReturnType::Name;
+        break;
+      } else if (attribute == "stmt#") {
+        return_type = ReturnType::Integer;
+        break;
+      }
     case EntityType::Stmt:
     case EntityType::While:
     case EntityType::If:
     case EntityType::Assign:
       if (attribute == "stmt#") {
-        attr_value_type = AttrValueType::Integer;
+        return_type = ReturnType::Integer;
+        break;
       }
-      break;
-    default:break;
+    default:
+      return nullptr;
   }
 
-  if (attr_value_type != AttrValueType::None) {
-    return true;
-  } else {
-    return false;
-  }
+  return new ResultClause(select, synonym_type, return_type);
 }

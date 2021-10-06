@@ -12,6 +12,7 @@
 #include "such_that_clause.h"
 #include "with_clause.h"
 #include "pql_query.h"
+#include "result_clause.h"
 
 class SelectClauseParser {
  public:
@@ -19,7 +20,7 @@ class SelectClauseParser {
   void set_select_clause(std::unordered_map<std::string,
                                             EntityDeclaration *> *syn_to_ent,
                          std::string select_clause);
-  std::tuple<std::vector<std::string> *,
+  std::tuple<std::vector<ResultClause *> *,
              std::vector<SuchThatClause *> *,
              std::vector<PatternClause *> *,
              std::vector<WithClause *> *,
@@ -54,5 +55,5 @@ class SelectClauseParser {
   std::tuple<std::string, EntityType, AttrValueType>
   GetWithRefTypeAndAttrValueType(std::string ref);
   static bool IsInteger(const std::string &str);
-  bool IsValidAttr(const std::string &select);
+  ResultClause * ValidateResultClauseWithAttr(const std::string &select);
 };

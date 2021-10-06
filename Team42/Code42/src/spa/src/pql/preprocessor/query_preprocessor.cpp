@@ -51,7 +51,7 @@ PQLQuery *QueryPreprocessor::MakePQLQuery(std::unordered_map<std::string,
                                           const std::string &select_clause) {
   SelectClauseParser *scp = SelectClauseParser::get_instance();
   scp->set_select_clause(entities_map, select_clause);
-  std::tuple<std::vector<std::string> *,
+  std::tuple<std::vector<ResultClause *> *,
              std::vector<SuchThatClause *> *,
              std::vector<PatternClause *> *,
              std::vector<WithClause *> *,

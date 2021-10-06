@@ -14,9 +14,6 @@ QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
   if (pql_query != nullptr) {
     this->entities_to_return_ = pql_query->get_query_entities();
     this->clause_groups_ = pql_query->get_clause_groups();
-    //TODO (Wei Kiat): please remove this, I put this here to silence the errors.
-//    this->relationships_ = new std::vector<SuchThatClause *>();
-//    this->patterns_ = new std::vector<PatternClause *>();
     this->synonym_to_entity_dec_ = pql_query->get_synonym_to_entities();
     this->pkb_ = pkb;
   } else {
@@ -322,13 +319,13 @@ std::vector<std::string>
   auto *output = new std::vector<std::string>();
 
   if (!is_valid_query) {
-    if (entities_to_return_->empty()) {  // flag to return boolean value
+    if (entities_to_return_->size() == 1 && entities_to_return_->at(0)->get_return_type() == ReturnType::Boolean) {
       output->push_back("FALSE");
     }
     return output;
   }
 
-  if (entities_to_return_->empty()) {  // flag to return boolean value
+  if (entities_to_return_->size() == 1 && entities_to_return_->at(0)->get_return_type() == ReturnType::Boolean) {
     output->push_back("TRUE");
     return output;
   }
@@ -343,7 +340,8 @@ std::vector<std::string>
   auto synonym_to_index_map = table_result->get_synonym_to_index();
 
   // first loop to detect all synonyms in return entities that were not in clauses
-  for (std::string synonym : *entities_to_return_) {
+  for (ResultClause *result_clause : *entities_to_return_) {
+    std::string synonym = result_clause->get_synonym();
     if (synonym_to_index_map->find(synonym) == synonym_to_index_map->end()) {
       std::string new_synonym = synonym;
       if (synonym.find(".") != std::string::npos) {  // retrieve select entities with attrvaluetype
@@ -372,8 +370,8 @@ std::vector<std::string>
   }
 
   // second loop to retrieve synonym indexes
-  for (std::string synonym : *entities_to_return_) {
-    indexes_of_return_entities.push_back(synonym_to_index_map->at(synonym));
+  for (ResultClause *result_clause : *entities_to_return_) {
+    indexes_of_return_entities.push_back(synonym_to_index_map->at(result_clause->get_synonym()));
   }
 
   std::set<std::string> unique_results;

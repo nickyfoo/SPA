@@ -128,6 +128,7 @@ std::unordered_map<std::string, std::vector<Entity *>> QueryEvaluator::GetPossib
     EntityType type = synonym_to_entity_dec_->at(synonym)->get_type();
     std::vector<Entity *> entities;
     switch (type) {
+      case EntityType::ProgLine:
       case EntityType::Stmt: {
         std::vector<Statement *> entities_stmt;
         entities_stmt = pkb_->get_all_statements();
@@ -218,7 +219,6 @@ std::unordered_map<std::string, std::vector<Entity *>> QueryEvaluator::GetPossib
         }
         break;
       }
-      case EntityType::ProgLine:
       case EntityType::None:
         throw std::runtime_error("Unknown EntityType!");
     }

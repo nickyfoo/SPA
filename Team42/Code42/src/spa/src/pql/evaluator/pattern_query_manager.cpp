@@ -114,23 +114,30 @@ ResultTable* PatternQueryManager::EvaluateIfAndWhilePattern(std::shared_ptr<Patt
   for (int i = 0; i < entity_vec.size(); i++) {
     auto *stmt = dynamic_cast<Statement *>(entity_vec.at(i));  // for each stmt object
     printf("ACTUALLY HERE\n");
-    if (stmt->get_modifies()->empty()) {
+    if (stmt->get_uses()->empty()) {
+//        || !pkb_->TestIfWhilePattern(stmt, )) {
       printf("ACTUALLY HERE1\n");
-//        || !pkb_->TestIfWhilePattern(stmt, variable)) {
       continue;
     } else {
       printf("ACTUALLY HERE2\n");
-      if (variable->get_type() == EntRefType::Synonym) {  // pattern if(a, _, _)
+      if (variable->get_type() == EntRefType::Synonym) {  // pattern if(v, _, _)
         left_synonym = variable->get_synonym();
-
         // getting list of variable objects
         std::vector<Entity *> variable_vec =
             synonym_to_entities_vec.at(variable->get_synonym());
 
-        std::set<std::string> *modified_set = stmt->get_modifies();
-        for (const std::string &s :*modified_set) {
-          stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
-          var_vec.push_back(s);
+//        std::set<std::string> *modified_set = stmt->get_modifies();
+//        for (const std::string &s :*modified_set) {
+//          stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
+//          var_vec.push_back(s);
+//        }
+        for (Entity *entity : variable_vec) {
+          auto *variable = dynamic_cast<Variable *>(entity);
+          if (pkb_->TestIfWhilePattern(stmt, variable->get_name())) {
+            stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
+            var_vec.push_back(variable->get_name());
+          }
+
         }
       } else if (variable->get_type() == EntRefType::Argument) {  // pattern if("a", _, _)
         printf("GOT COME HERE?????\n");
@@ -138,7 +145,7 @@ ResultTable* PatternQueryManager::EvaluateIfAndWhilePattern(std::shared_ptr<Patt
         for (auto &it : *stmt->get_modifies()) {
           printf("ITEM IS: %s\n", it.c_str());
         }
-        if (stmt->get_modifies()->count(variable->get_argument())) {
+        if (pkb_->TestIfWhilePattern(stmt, variable->get_argument())) {
           printf("HEREEEEEBLAH\n");
           stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
         }

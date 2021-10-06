@@ -24,6 +24,7 @@ class QueryEvaluator {
       *synonym_to_entity_result);
   std::vector<std::string> *ConvertToOutput(ResultTable *table_result, bool is_valid_query);
   static bool IsStmt(EntityType entity_type);
+  bool IsDefaultType(ResultClause *result_clause);
   std::vector<std::string> *GetAllPossibleReturnResults();
   ResultTable *MakeTableForUnusedEntity(std::string synonym);
 };

@@ -932,5 +932,5 @@ ResultClause * SelectClauseParser::ValidateResultClauseWithAttr(const std::strin
       return nullptr;
   }
 
-  return new ResultClause(select, synonym_type, return_type);
+  return new ResultClause(synonym, synonym_type, return_type);
 }

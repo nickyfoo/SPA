@@ -62,12 +62,15 @@ std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateGroupings() {
     // If there are no synonyms used in this clause,
     // add to no_syn_used vector
     if (with_vertex.get_synonyms_used().empty()) {
+      printf("AINTNO1\n");
       no_syn_used.push_back(with_vertex);
     } else if (!with_vertex.get_has_return_syn()) {
+      printf("AINTNO2\n");
       // If there are no return synonyms in the clause,
       // add to no_return_syn_used vector
       has_syn_used.push_back(with_vertex);
     } else {
+      printf("AINTNO3\n");
       has_syn_used.push_back(with_vertex);
       has_return_syn_used.push_back(with_vertex);
     }
@@ -355,27 +358,32 @@ ClauseVertex QueryOptimizer::MakeWithVertex(WithClause *with_clause) {
 
   std::vector<std::string> synonyms_used;
   bool has_return_syn = false;
-
+  printf("YAYSSSS1\n");
   // If left arg is a synonym, add to synonyms_used.
   if (with_clause->get_left_type() != EntityType::None) {
+    printf("YASSSS2\n");
     std::string left_syn = with_clause->get_left_ref();
+    printf("LEFT SYN: %s", left_syn.c_str());
     synonyms_used.push_back(left_syn);
     // If left synonym is part of return synonyms, set has_return_syn to true.
     if (ReturnEntitiesContainSynonym(left_syn)) {
+      printf("YASSSS3\n");
       has_return_syn = true;
     }
   }
-
+  printf("YASSSS4\n");
   // If right arg is a synonym, add to synonyms_used.
   if (with_clause->get_right_type() != EntityType::None) {
+    printf("YASSSS5\n");
     std::string right_syn = with_clause->get_right_ref();
     synonyms_used.push_back(right_syn);
     // If left synonym is part of return synonyms, set has_return_syn to true.
     if (ReturnEntitiesContainSynonym(right_syn)) {
+      printf("YASSSS6\n");
       has_return_syn = true;
     }
   }
-
+  printf("YASSSS7\n");
   // Creating clause vertex and assigning priority to it.
   ClauseVertex clause_vertex = ClauseVertex(synonyms_used, has_return_syn, clause_ptr);
   clause_vertex.set_priority(AssignPriority(synonyms_used, clause_ptr));
@@ -383,7 +391,9 @@ ClauseVertex QueryOptimizer::MakeWithVertex(WithClause *with_clause) {
 }
 
 bool QueryOptimizer::ReturnEntitiesContainSynonym(std::string s) {
+  printf("S IS: %S\n", s.c_str());
   for (ResultClause *result : *return_entities_) {
+    printf("synonym is %s\n", result->get_synonym().c_str());
     if (result->get_synonym() == s) {
       return true;
     }

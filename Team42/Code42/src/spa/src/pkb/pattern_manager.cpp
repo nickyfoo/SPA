@@ -4,6 +4,10 @@
 #include <stack>
 #include <sstream>
 
+PatternManager::PatternManager() = default;
+
+PatternManager::~PatternManager() = default;
+
 auto CheckNextChar(bool is_ident);
 
 // Returns a curried function that checks for validity of the next character
@@ -82,6 +86,7 @@ std::string PatternManager::GetPostfixExpr(std::string infix_expr) {
           }
           break;
         }
+        case '\t':
         case ' ': break;
         default: throw std::invalid_argument("Expression is not valid");
       }
@@ -112,4 +117,13 @@ bool PatternManager::TestAssignmentPattern(Statement *assignment_stmt, std::stri
   } else {
     return assign_expr == postfix_pattern;
   }
+}
+
+bool PatternManager::TestIfWhilePattern(Statement *stmt, std::string variable) {
+  if (variable.size() == 0) return false;
+  std::stringstream expr_ss, variable_ss;
+  variable_ss << " " << variable << " ";
+  expr_ss << " " << stmt->get_expr_string() << " ";
+  std::string stmt_expr = expr_ss.str();
+  return stmt_expr.find(variable_ss.str()) != std::string::npos;
 }

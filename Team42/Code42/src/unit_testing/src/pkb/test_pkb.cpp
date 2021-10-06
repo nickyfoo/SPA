@@ -1188,6 +1188,7 @@ TEST_CASE("PKB_CFGSample_Correct") {
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
+
   std::map<int, std::vector<int>> ans = {
       {1, {2}}, {2, {3}}, {4, {5}}, {5, {6}}, {6, {7, 10}}, {7, {8}}, {8, {9}}, {9, {6}},
       {10, {11, 12}}, {11, {13}}, {12, {13}}, {13, {14}}, {14, {15}}, {16, {17}}, {17, {18}},
@@ -1227,6 +1228,7 @@ TEST_CASE("PKB_CFGNestedIf_Correct") {
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
+
   std::map<int, std::vector<int>> ans = {
       {1, {2}}, {2, {3, 6}}, {3, {4, 5}}, {4, {9}}, {5, {9}}, {6, {7, 8}}, {7, {9}}, {8, {9}}
   };
@@ -1376,6 +1378,7 @@ TEST_CASE("PKB_NextStarSample_Correct") {
       {16, {17, 18}},
       {17, {18}},
   };
+
   std::set<std::pair<int, int>> next_star_wild_wild = pkb.get_next_star(PKB::kWild, PKB::kWild);
   for (auto&[a, nexts_star] : next_star_ans) {
     // Check Next*(a,_)

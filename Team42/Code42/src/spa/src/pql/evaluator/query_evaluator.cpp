@@ -130,6 +130,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         }
         break;
       }
+      case EntityType::ProgLine:
       case EntityType::None:
         return new std::vector<std::string>{};
     }
@@ -196,7 +197,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         }
       }
       return output;
-    } else if (patterns_->at(0)->get_left_ref()->get_synonym() == entities_to_return_->at(0)) {
+    } else if (patterns_->at(0)->get_variable()->get_synonym() == entities_to_return_->at(0)) {
       for (std::pair<int, std::string> pair : result) {
         // Add item to results vector if it doesn't already exist in vector.
         if (std::find(output->begin(), output->end(), pair.second) == output->end()) {

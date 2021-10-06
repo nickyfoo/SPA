@@ -94,7 +94,6 @@ void PKB::AddExprString(Node *node, std::vector<Node *> ancestor_list) {
       default:break;
     }
   }
-
 }
 
 void PKB::AddVariable(Node *node, std::vector<Node *> ancestor_list) {
@@ -330,7 +329,11 @@ std::set<std::pair<int, int>> PKB::get_affects_star(int a, int b) {
 }
 
 bool PKB::TestAssignmentPattern(Statement *statement, std::string pattern, bool is_partial_match) {
-  return PatternManager::TestAssignmentPattern(statement, pattern, is_partial_match);
+  return pattern_manager_.TestAssignmentPattern(statement, pattern, is_partial_match);
+}
+
+bool PKB::TestIfWhilePattern(Statement *stmt, std::string variable) {
+  return pattern_manager_.TestIfWhilePattern(stmt, variable);
 }
 
 void PKB::PrintStatements() {
@@ -354,7 +357,6 @@ void PKB::PrintCFGAL() {
     std::cout << '\n';
   }
 }
-
 
 void PKB::Initialise() {
   ExtractEntities();

@@ -9,6 +9,7 @@
 #include <vector>
 #include "entity_declaration.h"
 #include "such_that_clause.h"
+#include "with_clause.h"
 #include "pql_query.h"
 
 class SelectClauseParser {
@@ -29,16 +30,23 @@ class SelectClauseParser {
   PatternClause *MakePatternRef(const std::string &synonym,
                                 std::string left_ref,
                                 std::string right_ref);
-  SuchThatClause *MakeSuchThatClause(std::string relationship_statement);
-  PatternClause *MakePatternClause(std::string pattern_statement);
+  WithClause *MakeWithRef(std::string left_ref, std::string right_ref);
+  std::vector<SuchThatClause *> *MakeSuchThatClause(std::string relationship_statement);
+  std::vector<PatternClause *> *MakePatternClause(std::string pattern_statement);
+  std::vector<WithClause *> *MakeWithClause(std::string with_statement);
   static std::vector<std::string> SplitSelect(std::string select_clause);
   static std::vector<std::string> SplitTokensByDelimiter(
       std::string input, const std::string &delimiter);
-  static std::vector<std::string> SplitTokensByMultipleDelimiters(
-      const std::string &input, const std::string &delimiters);
+  static std::vector<std::vector<std::string>> SplitTokensByBrackets(
+      const std::string &input);
+  static std::vector<std::pair<std::string, std::string>> SplitTokensByEqual(
+      const std::string &input);
+  static std::vector<std::string> SplitTokensByEqualDelim(std::string input);
   static std::tuple<std::string, std::vector<std::string>,
-                    std::vector<std::string>> SplitTokensByClauses(
+                    std::vector<std::string>, std::vector<std::string>> SplitTokensByClauses(
       const std::string &input);
   static bool IsValidIdentifier(const std::string &str);
+  std::tuple<std::string, EntityType, AttrValueType> GetWithRefTypeAndAttrValueType(std::string ref);
   static bool IsInteger(const std::string &str);
+  bool IsValidAttr(const std::string &select);
 };

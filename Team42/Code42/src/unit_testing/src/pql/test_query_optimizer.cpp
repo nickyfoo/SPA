@@ -203,6 +203,33 @@ TEST_CASE("GroupingWith_ClausesWithReturnSynonyms_AddsOnlyToReturnSynGroup") {
   }
 }
 
+TEST_CASE("GroupingNoReturnButConnected_ClausesWithSynonyms_AddsToReturnSynGroup") {
+  SECTION("1 Clause with no return syn and 1 Clause with return syn but connected") {
+    std::string ss = "assign a; stmt s1, s2;\n"
+                     "Select s1 with a.stmt# = s1.stmt# such that Follows(a, s2)";
+    auto query_preprocessor = QueryPreprocessor(ss);
+    PQLQuery *pql_query = query_preprocessor.get_pql_query();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = pql_query->get_clause_groups();
+    REQUIRE(clause_groups.size() == 3);
+    REQUIRE(clause_groups[0]->get_clauses().size() == 0);
+    REQUIRE(clause_groups[1]->get_clauses().size() == 0);
+    REQUIRE(clause_groups[2]->get_clauses().size() == 2);
+  }
+
+  SECTION("2 Clause with no return syn and 1 Clause with return syn but connected") {
+    std::string ss = "assign a; variable v; stmt s1, s2;\n"
+                     "Select s1 such that Follows(a, s1) pattern a(v, _) with 3 = s2.stmt#";
+    auto query_preprocessor = QueryPreprocessor(ss);
+    PQLQuery *pql_query = query_preprocessor.get_pql_query();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = pql_query->get_clause_groups();
+    REQUIRE(clause_groups.size() == 3);
+    REQUIRE(clause_groups[0]->get_clauses().size() == 0);
+    REQUIRE(clause_groups[1]->get_clauses().size() == 1);
+    REQUIRE(clause_groups[1]->get_clauses()[0].get_clause()->get_type() == ClauseType::WithClause);
+    REQUIRE(clause_groups[2]->get_clauses().size() == 2);
+  }
+}
+
 TEST_CASE("SortingWithinGroup_SortingHasReturnSynonymGroup_AddsOnlyToReturnSynGroup") {
   SECTION("With and 1 synonym Follows clause") {
     std::string ss = "assign a; stmt s1;\n"

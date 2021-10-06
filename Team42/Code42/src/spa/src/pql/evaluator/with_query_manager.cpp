@@ -30,7 +30,11 @@ ResultTable* WithQueryManager::EvaluateWith(std::shared_ptr<WithClause> with,
       vec = GetIntegers(with->get_left_ref(), with->get_left_type(), with->get_right_ref(), synonym_to_entities_vec);
       ret->AddSingleColumn(with->get_left_ref(), vec);
     } else if (return_type == AttrValueType::Name) {
+      printf("mamamia\n");
       vec = GetNames(with->get_left_ref(), with->get_left_type(), with->get_right_ref(), synonym_to_entities_vec);
+      for(std::string s : vec) {
+        printf("item: %s\n", s.c_str());
+      }
       ret->AddSingleColumn(with->get_left_ref(), vec);
     } else {
       throw std::runtime_error("Unknown AttrValueType!");

@@ -41,7 +41,7 @@ ResultTable* UsesPModifiesPHandler::Evaluate() {
   ResultTable *ret = new ResultTable();
   EntRef left_ent = relationship_->get_left_ref()->get_ent_ref();
   EntRef right_ent = relationship_->get_right_ref()->get_ent_ref();
-
+  printf("GOTCOMHERE\n");
   // Going through 6 different cases for UsesP
   if (left_ent.get_type() == EntRefType::Synonym &&
       right_ent.get_type() == EntRefType::Synonym) {  // UsesP(p, v)
@@ -154,7 +154,13 @@ ResultTable* UsesPModifiesPHandler::Evaluate() {
 
     for (int i = 0; i < left_entity_vec.size(); i++) {
       auto *proc = dynamic_cast<Procedure *>(left_entity_vec.at(i));
+      printf("WHAT IS THIS \n");
+      for (auto &i : *ProcedureForwarder(get_normal_, proc)) {
+        printf("%s\n", i.c_str());
+      }
       if (proc != nullptr && ProcedureForwarder(get_normal_, proc)->count(right_arg)) {
+        printf("CUMM\n");
+        printf("name: %s\n", proc->get_name().c_str());
         left_proc_vec.push_back(proc->get_name());
       }
     }

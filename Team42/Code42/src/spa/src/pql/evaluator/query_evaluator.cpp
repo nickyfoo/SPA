@@ -426,6 +426,7 @@ ResultTable *QueryEvaluator::MakeTableForUnusedEntity(std::string synonym) {
   printf("okay\n");
   std::vector<std::string> to_add = std::vector<std::string>();
   switch (type) {
+    case EntityType::ProgLine:
     case EntityType::Stmt: {
       std::vector<Statement *> entities_stmt;
       entities_stmt = pkb_->get_all_statements();
@@ -506,7 +507,6 @@ ResultTable *QueryEvaluator::MakeTableForUnusedEntity(std::string synonym) {
       }
       break;
     }
-    case EntityType::ProgLine:
     case EntityType::None:
       throw std::runtime_error("Unknown EntityType!");
   }

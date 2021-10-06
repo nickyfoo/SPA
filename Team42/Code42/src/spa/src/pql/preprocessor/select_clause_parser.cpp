@@ -879,7 +879,10 @@ bool SelectClauseParser::IsValidAttr(const std::string &select) {
   }
   std::string synonym = synonym_attribute.at(0);
   std::string attribute = synonym_attribute.at(1);
-
+  printf("YAS\n");
+  if (synonym_to_entity_->find(synonym) == synonym_to_entity_->end()) {
+    return false;
+  }
   EntityType type = synonym_to_entity_->find(synonym)->second->get_type();
   AttrValueType attr_value_type = AttrValueType::None;
   switch (type) {

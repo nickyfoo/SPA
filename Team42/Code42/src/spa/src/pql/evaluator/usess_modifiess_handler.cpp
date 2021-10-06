@@ -52,19 +52,22 @@ ResultTable* UsesSModifiesSHandler::Evaluate() {
     left_entity_vec = synonym_to_entities_vec_.at(left_synonym);
     std::vector<std::string> left_stmt_vec;
     std::vector<std::string> right_var_vec;
-
     for (int i = 0; i < left_entity_vec.size(); i++) {
       auto *stmt = dynamic_cast<Statement *>(left_entity_vec.at(i));
-      if (stmt != nullptr && !StatementForwarder(get_normal_, stmt)->empty()) {
-        left_stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
+      for (int j = 0; j < right_entity_vec.size(); j++) {
+        auto *variable = dynamic_cast<Variable *>(right_entity_vec.at(j));
+        if (stmt != nullptr && variable != nullptr && StatementForwarder(get_normal_, stmt)->count(variable->get_name())) {
+          left_stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
+          right_var_vec.push_back(variable->get_name());
+        }
       }
     }
-    for (int j = 0; j < right_entity_vec.size(); j++) {
-      auto *variable = dynamic_cast<Variable *>(right_entity_vec.at(j));
-      if (variable != nullptr && !VariableForwarder(get_reverse_, variable)->empty()) {
-        right_var_vec.push_back(variable->get_name());
-      }
-    }
+//    for (int j = 0; j < right_entity_vec.size(); j++) {
+//      auto *variable = dynamic_cast<Variable *>(right_entity_vec.at(j));
+//      if (variable != nullptr && !VariableForwarder(get_reverse_, variable)->empty()) {
+//        right_var_vec.push_back(variable->get_name());
+//      }
+//    }
 
     ret->AddDoubleColumns(left_synonym, left_stmt_vec, right_synonym, right_var_vec);
 //    left_entity_vec->erase(std::remove_if(left_entity_vec->begin(),

@@ -252,6 +252,10 @@ TEST_CASE("PQL_ModifiesAndPattern_ReturnsExpected") {
 
   std::vector<std::string> expected = {"1", "10", "11", "12"};
 
+  printf("RESULTSSSS: ");
+  for (int i = 0; i < ret->size(); i++) {
+    printf("%s ", ret->at(i).c_str());
+  }
   REQUIRE(ret->size() == expected.size());
   for (int i = 0; i < expected.size(); i++) {
     REQUIRE(ret->at(i) == expected.at(i));
@@ -300,7 +304,10 @@ TEST_CASE("PQL_RelationshipAndPatternDependencies_ReturnsExpected") {
   std::vector<std::string> *ret = evaluator->Evaluate();
 
   std::vector<std::string> expected = {"15", "16", "17", "21", "22"};
-
+  printf("RESULT:");
+  for (std::string s : *ret) {
+    printf("%s ", s.c_str());
+  }
   REQUIRE(ret->size() == expected.size());
   for (int i = 0; i < expected.size(); i++) {
     REQUIRE(ret->at(i) == expected.at(i));

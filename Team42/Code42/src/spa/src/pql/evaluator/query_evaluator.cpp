@@ -45,6 +45,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
   // and third groups on are those with synonyms in results
   printf("clause groups size: %d\n", clause_groups_.size());
   for (int i = 0; i < clause_groups_.size(); i++) {
+    printf("I IS : %d\n", i);
     std::vector<ClauseVertex> clause_vertexes = clause_groups_.at(i)->get_clauses();
     printf("1\n");
     ResultTable *intermediate_table = new ResultTable();
@@ -53,6 +54,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
       printf("2\n");
       ClauseType type = clause_vertex.get_clause()->get_type();
       auto synonym_to_entities_vec = GetPossibleEntitiesVec(clause_vertex);
+      bool has_synonyms = !clause_vertex.get_synonyms_used().empty();
       ResultTable *table;
       switch (type) {
         case ClauseType::SuchThatClause:
@@ -72,10 +74,12 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
       if (table == nullptr) {  // if a nullptr is received, it means that clause evaluates to false or empty results
         return ConvertToOutput(result_table, false);
       }
-      if (first_table_entry) {
+      if (first_table_entry && has_synonyms) {
+        printf("GOTTTT1\n");
         intermediate_table->set_table(*table);
         first_table_entry = false;
-      } else {
+      } else if (has_synonyms) {
+        printf("GOTTTT2\n");
         intermediate_table->NaturalJoin(*table);
       }
     }
@@ -85,7 +89,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         return ConvertToOutput(result_table, false);
       }
     } else if (i == 2) {  // first group when the result table is initially empty
-      printf("mihoere\n");
+      printf("rehana\n");
       for (std::vector<std::string> v : *intermediate_table->get_table()) {
         for (std::string s : v) {
           printf("%s ", s.c_str());
@@ -100,7 +104,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
     } else if (i > 2){
       printf("in here\n");
       result_table->CrossJoin(*intermediate_table);
-      if (result_table->get_table()->empty()) {
+      if (!first_table_entry && result_table->get_table()->empty()) {
         printf("it empty");
         return ConvertToOutput(result_table, false);
       }

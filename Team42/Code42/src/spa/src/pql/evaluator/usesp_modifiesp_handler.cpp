@@ -56,16 +56,26 @@ ResultTable* UsesPModifiesPHandler::Evaluate() {
 
     for (int i = 0; i < left_entity_vec.size(); i++) {
       auto *proc = dynamic_cast<Procedure *>(left_entity_vec.at(i));
-      if (proc != nullptr && !ProcedureForwarder(get_normal_, proc)->empty()) {
-        left_proc_vec.push_back(proc->get_name());
+      for (int j = 0; j < right_entity_vec.size(); j++) {
+        auto *variable = dynamic_cast<Variable *>(right_entity_vec.at(j));
+        if (proc != nullptr && variable != nullptr && ProcedureForwarder(get_normal_, proc)->count(variable->get_name())) {
+          left_proc_vec.push_back(proc->get_name());
+          right_var_vec.push_back(variable->get_name());
+        }
       }
     }
-    for (int j = 0; j < right_entity_vec.size(); j++) {
-      auto *variable = dynamic_cast<Variable *>(right_entity_vec.at(j));
-      if (variable != nullptr && !VariableForwarder(get_reverse_, variable)->empty()) {
-        right_var_vec.push_back(variable->get_name());
-      }
-    }
+//    for (int i = 0; i < left_entity_vec.size(); i++) {
+//      auto *proc = dynamic_cast<Procedure *>(left_entity_vec.at(i));
+//      if (proc != nullptr && !ProcedureForwarder(get_normal_, proc)->empty()) {
+//        left_proc_vec.push_back(proc->get_name());
+//      }
+//    }
+//    for (int j = 0; j < right_entity_vec.size(); j++) {
+//      auto *variable = dynamic_cast<Variable *>(right_entity_vec.at(j));
+//      if (variable != nullptr && !VariableForwarder(get_reverse_, variable)->empty()) {
+//        right_var_vec.push_back(variable->get_name());
+//      }
+//    }
     ret->AddDoubleColumns(left_synonym, left_proc_vec, right_synonym, right_var_vec);
 
 

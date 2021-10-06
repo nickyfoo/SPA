@@ -39,6 +39,7 @@ ResultTable* FollowsParentsHandler::Evaluate() {
   ResultTable* ret = new ResultTable();
   StmtRef left_ent = relationship_->get_left_ref()->get_stmt_ref();
   StmtRef right_ent = relationship_->get_right_ref()->get_stmt_ref();
+  printf("MI HERE YAHHHH\n");
   // Going through 9 different cases for Follows/Parents
   if (left_ent.get_type() == StmtRefType::StmtNum &&
       right_ent.get_type() == StmtRefType::StmtNum) {  // Follows/Parents(4, 5)
@@ -200,6 +201,8 @@ ResultTable* FollowsParentsHandler::Evaluate() {
     }
   } else if (left_ent.get_type() == StmtRefType::WildCard &&
       right_ent.get_type() == StmtRefType::Synonym) {  // eg Follows(_, s)
+    printf("pls amitofu come to here\n");
+
     std::string right_synonym = right_ent.get_synonym();
     std::vector<Entity *> right_entity_vec;
     right_entity_vec = synonym_to_entities_vec_.at(right_synonym);

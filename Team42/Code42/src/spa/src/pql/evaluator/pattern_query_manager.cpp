@@ -85,6 +85,13 @@ ResultTable* PatternQueryManager::EvaluateAssignPattern(std::shared_ptr<PatternC
   if (ret->get_table()->empty()) {
     return nullptr;
   }
+  printf("TABLE HERE IS:\n");
+  for (std::vector<std::string> vec : *ret->get_table()) {
+    for (std::string s : vec) {
+      printf("%s ", s.c_str());
+    }
+    printf("\n");
+  }
   return ret;
 }
 

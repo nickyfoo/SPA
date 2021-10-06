@@ -279,6 +279,7 @@ void ResultTable::AddSingleColumn(std::string synonym, std::vector<std::string> 
       table_->at(i).push_back(vec.at(i));
     } else {
       printf("HEREE\n");
+      printf("vec value is : %s\n", vec.at(i).c_str());
       table_->push_back(std::vector<std::string>({vec.at(i)}));
     }
   }

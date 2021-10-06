@@ -45,22 +45,35 @@ std::tuple<std::vector<std::string> *,
   auto *pattern_ret = new std::vector<PatternClause *>();
   auto *with_ret = new std::vector<WithClause *>();
   std::vector<std::string> select_clauses = SplitSelect(select_clause);
+  printf("PRINTING THE CONTENTS\n");
+  for (auto &it : *synonym_to_entity_) {
+    printf("synonym: %s\n", it.first.c_str());
+  }
+  printf("came here\n");
   if (select_clauses.empty()) {  // invalid select syntax
     return nullptr;
   }
+  printf("cae here1\n");
   for (const std::string &select : select_clauses) {
+    printf("am here\n");
+    printf("select is: %s\n", select.c_str());
     if (select == "BOOLEAN" && select_clauses.size() == 1) {
+      printf("UH1\n");
       // do nothing, flag to evaluator that it requires a boolean output
     } else if (synonym_to_entity_->find(select) != synonym_to_entity_->end()) {
+      printf("UH2\n");
       select_ret->push_back(select);
     } else {
       if (IsValidAttr(select)) {
+        printf("UH3\n");
         select_ret->push_back(select);
       } else {
+        printf("UH4\n");
         return nullptr;
       }
     }
   }
+  printf("came here 2\n");
   for (const std::string &such_that_clause : such_that_clauses) {
     std::vector<SuchThatClause *> *relationship = MakeSuchThatClause(such_that_clause);
     if (relationship == nullptr) {
@@ -70,6 +83,7 @@ std::tuple<std::vector<std::string> *,
       such_that_ret->push_back(clause);
     }
   }
+  printf("came here3\n");
   for (const std::string &pattern_clause : pattern_clauses) {
     std::vector<PatternClause *> *pattern = MakePatternClause(pattern_clause);
     if (pattern == nullptr) {
@@ -79,7 +93,7 @@ std::tuple<std::vector<std::string> *,
       pattern_ret->push_back(clause);
     }
   }
-
+  printf("came here4\n");
   for (const std::string &with_clause : with_clauses) {
     std::vector<WithClause *> *with = MakeWithClause(with_clause);
     if (with == nullptr) {
@@ -122,7 +136,7 @@ std::tuple<std::vector<std::string> *,
 //      }
 //    }
 //  }
-
+  printf("came here5\n");
   auto ret = new std::tuple<std::vector<std::string> *,
                             std::vector<SuchThatClause *> *,
                             std::vector<PatternClause *> *,

@@ -197,8 +197,8 @@ TEST_CASE("Test 6: Follows Unused entity declaration") {
                                        "15", "16", "17", "18", "19", "20", "21", "22", "23"};
 
   REQUIRE(ret->size() == expected.size());
-  for (int i = 0; i < ret->size(); i++) {
-    REQUIRE(ret->at(i) == expected.at(i));
+  for (int i = 0; i < expected.size(); i++) {
+    REQUIRE(std::find(expected.begin(), expected.end(), ret->at(i)) != expected.end());
   }
 }
 
@@ -221,8 +221,8 @@ TEST_CASE("Test 7: Follows Integer, Wildcard") {
                                          "15", "16", "17", "18", "19", "20", "21", "22", "23"};
 
     REQUIRE(ret->size() == expected.size());
-    for (int i = 0; i < ret->size(); i++) {
-        REQUIRE(ret->at(i) == expected.at(i));
+    for (int i = 0; i < expected.size(); i++) {
+      REQUIRE(std::find(expected.begin(), expected.end(), ret->at(i)) != expected.end());
     }
 }
 
@@ -245,8 +245,8 @@ TEST_CASE("Test 8: Follows Wildcard, Integer") {
                                          "15", "16", "17", "18", "19", "20", "21", "22", "23"};
 
     REQUIRE(ret->size() == expected.size());
-    for (int i = 0; i < ret->size(); i++) {
-        REQUIRE(ret->at(i) == expected.at(i));
+    for (int i = 0; i < expected.size(); i++) {
+      REQUIRE(std::find(expected.begin(), expected.end(), ret->at(i)) != expected.end());
     }
 }
 
@@ -269,8 +269,8 @@ TEST_CASE("Test 9: Follows Wildcard, Wildcard") {
                                          "15", "16", "17", "18", "19", "20", "21", "22", "23"};
 
     REQUIRE(ret->size() == expected.size());
-    for (int i = 0; i < ret->size(); i++) {
-        REQUIRE(ret->at(i) == expected.at(i));
+    for (int i = 0; i < expected.size(); i++) {
+      REQUIRE(std::find(expected.begin(), expected.end(), ret->at(i)) != expected.end());
     }
 }
 
@@ -343,8 +343,8 @@ TEST_CASE("Test 11: Follows* Integer, Integer") {
                                          "15", "16", "17", "18", "19", "20", "21", "22", "23"};
 
     REQUIRE(ret->size() == expected.size());
-    for (int i = 0; i < ret->size(); i++) {
-        REQUIRE(ret->at(i) == expected.at(i));
+    for (int i = 0; i < expected.size(); i++) {
+      REQUIRE(std::find(expected.begin(), expected.end(), ret->at(i)) != expected.end());
     }
 }
 
@@ -389,8 +389,8 @@ TEST_CASE("Test 13: Parent Integer, Integer") {
                                          "15", "16", "17", "18", "19", "20", "21", "22", "23"};
 
     REQUIRE(ret->size() == expected.size());
-    for (int i = 0; i < ret->size(); i++) {
-        REQUIRE(ret->at(i) == expected.at(i));
+    for (int i = 0; i < expected.size(); i++) {
+      REQUIRE(std::find(expected.begin(), expected.end(), ret->at(i)) != expected.end());
     }
 }
 
@@ -435,8 +435,8 @@ TEST_CASE("Test 15: Parent Integer, Integer") {
                                          "15", "16", "17", "18", "19", "20", "21", "22", "23"};
 
     REQUIRE(ret->size() == expected.size());
-    for (int i = 0; i < ret->size(); i++) {
-        REQUIRE(ret->at(i) == expected.at(i));
+    for (int i = 0; i < expected.size(); i++) {
+      REQUIRE(std::find(expected.begin(), expected.end(), ret->at(i)) != expected.end());
     }
 }
 

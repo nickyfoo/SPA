@@ -320,28 +320,59 @@ std::vector<std::string>
 *QueryEvaluator::ConvertToOutput(ResultTable *table_result, bool is_valid_query) {
   printf("came here\n");
   auto *output = new std::vector<std::string>();
-  // Will loop through the entities_to_return_ for Advanced version
 
   if (!is_valid_query) {
-    if (entities_to_return_->empty()) {  // flag to return boolean values
+    if (entities_to_return_->empty()) {  // flag to return boolean value
       output->push_back("FALSE");
     }
     return output;
   }
 
-  if (entities_to_return_->empty()) {  // flag to return boolean values
+  if (entities_to_return_->empty()) {  // flag to return boolean value
     output->push_back("TRUE");
     return output;
   }
 
-  if (table_result->get_table()->empty() && is_valid_query) {  // return entities not within clauses
-    printf("gonna do this\n");
-    return GetAllPossibleReturnResults();
-  }
+//  if (table_result->get_table()->empty() && is_valid_query) {  // return entities not within clauses
+//    printf("gonna do this\n");
+//    return GetAllPossibleReturnResults();
+//  }
+
 
   std::vector<int> indexes_of_return_entities;
   auto synonym_to_index_map = table_result->get_synonym_to_index();
-  for (std::string synonym : *entities_to_return_) {  // retrieve synonyms indexes
+
+  // first loop to detect all synonyms in return entities that were not in clauses
+  for (std::string synonym : *entities_to_return_) {
+    if (synonym_to_index_map->find(synonym) == synonym_to_index_map->end()) {
+      std::string new_synonym = synonym;
+      if (synonym.find(".") != std::string::npos) {  // retrieve select entities with attrvaluetype
+        new_synonym = synonym.substr(0, synonym.find("."));
+        if (synonym_to_index_map->find(new_synonym) != synonym_to_index_map->end()) {
+          std::remove(entities_to_return_->begin(), entities_to_return_->end(), synonym);
+          continue;
+        }
+        std::replace(entities_to_return_->begin(), entities_to_return_->end(),
+                     synonym, new_synonym);
+      }
+
+      printf("GOT COME HERE??????\n");
+      ResultTable *new_table = MakeTableForUnusedEntity(new_synonym);
+      printf("HMM1\n");
+      synonym_to_index_map->insert({new_synonym, synonym_to_index_map->size()});
+      printf("HMM2\n");
+      if (table_result->get_table()->empty()) {
+        printf("HMM3\n");
+        table_result = new_table;
+      } else {
+        printf("MM4\n");
+        table_result->CrossJoin( *new_table);
+      }
+    }
+  }
+
+  // second loop to retrieve synonym indexes
+  for (std::string synonym : *entities_to_return_) {
     indexes_of_return_entities.push_back(synonym_to_index_map->at(synonym));
   }
 
@@ -388,106 +419,204 @@ std::vector<std::string>
 //  }
   return output;
 }
-std::vector<std::string> *QueryEvaluator::GetAllPossibleReturnResults() {
-  std::vector<std::vector<std::string> *> synonym_to_entities_result;
-  for (std::string synonym : *entities_to_return_) {
-    printf("synonym now is %s\n", synonym.c_str());
-    EntityType type = synonym_to_entity_dec_->at(synonym)->get_type();
-    printf("okay\n");
-    std::vector<std::string> *to_add = new std::vector<std::string>();
-    switch (type) {
-      case EntityType::Stmt: {
-        std::vector<Statement *> entities_stmt;
-        entities_stmt = pkb_->get_all_statements();
-        for (Statement *stmt: entities_stmt) {
-          to_add->push_back(std::to_string(stmt->get_stmt_no()));
-        }
-        break;
+
+ResultTable *QueryEvaluator::MakeTableForUnusedEntity(std::string synonym) {
+  printf("synonym now is %s\n", synonym.c_str());
+  EntityType type = synonym_to_entity_dec_->at(synonym)->get_type();
+  printf("okay\n");
+  std::vector<std::string> to_add = std::vector<std::string>();
+  switch (type) {
+    case EntityType::Stmt: {
+      std::vector<Statement *> entities_stmt;
+      entities_stmt = pkb_->get_all_statements();
+      for (Statement *stmt: entities_stmt) {
+        to_add.push_back(std::to_string(stmt->get_stmt_no()));
       }
-      case EntityType::Read: {
-        std::vector<Statement *> entities_stmt;
-        entities_stmt = pkb_->get_statements(NodeType::Read);
-        for (Statement *stmt: entities_stmt) {
-          to_add->push_back(std::to_string(stmt->get_stmt_no()));
-        }
-        break;
-      }
-      case EntityType::Print: {
-        std::vector<Statement *> entities_stmt;
-        entities_stmt = pkb_->get_statements(NodeType::Print);
-        for (Statement *stmt: entities_stmt) {
-          to_add->push_back(std::to_string(stmt->get_stmt_no()));
-        }
-        break;
-      }
-      case EntityType::Call: {
-        std::vector<Statement *> entities_stmt;
-        entities_stmt = pkb_->get_statements(NodeType::Call);
-        for (Statement *stmt: entities_stmt) {
-          to_add->push_back(std::to_string(stmt->get_stmt_no()));
-        }
-        break;
-      }
-      case EntityType::While: {
-        std::vector<Statement *> entities_stmt;
-        entities_stmt = pkb_->get_statements(NodeType::While);
-        for (Statement *stmt: entities_stmt) {
-          to_add->push_back(std::to_string(stmt->get_stmt_no()));
-        }
-        break;
-      }
-      case EntityType::If: {
-        std::vector<Statement *> entities_stmt;
-        entities_stmt = pkb_->get_statements(NodeType::If);
-        for (Statement *stmt: entities_stmt) {
-          to_add->push_back(std::to_string(stmt->get_stmt_no()));
-        }
-        break;
-      }
-      case EntityType::Assign: {
-        std::vector<Statement *> entities_stmt;
-        entities_stmt = pkb_->get_statements(NodeType::Assign);
-        for (Statement *stmt: entities_stmt) {
-          to_add->push_back(std::to_string(stmt->get_stmt_no()));
-        }
-        break;
-      }
-      case EntityType::Variable: {
-        std::vector<Variable *> entities_var;
-        entities_var = pkb_->get_all_variables();
-        for (Variable *var: entities_var) {
-          to_add->push_back(var->get_name());
-        }
-        break;
-      }
-      case EntityType::Constant: {
-        std::vector<Constant *> entities_const;
-        entities_const = pkb_->get_all_constants();
-        for (Constant *cons: entities_const) {
-          to_add->push_back(cons->get_value());
-        }
-        break;
-      }
-      case EntityType::Procedure: {
-        std::vector<Procedure *> entities_proc;
-        entities_proc = pkb_->get_all_procedures();
-        for (Procedure *proc: entities_proc) {
-          to_add->push_back(proc->get_name());
-        }
-        break;
-      }
-      case EntityType::ProgLine:
-      case EntityType::None:
-        throw std::runtime_error("Unknown EntityType!");
+      break;
     }
-    // TODO: ACCOUNT FOR MULTIPLE PERMUTATIONS
-    synonym_to_entities_result.push_back(to_add);
+    case EntityType::Read: {
+      std::vector<Statement *> entities_stmt;
+      entities_stmt = pkb_->get_statements(NodeType::Read);
+      for (Statement *stmt: entities_stmt) {
+        to_add.push_back(std::to_string(stmt->get_stmt_no()));
+      }
+      break;
+    }
+    case EntityType::Print: {
+      std::vector<Statement *> entities_stmt;
+      entities_stmt = pkb_->get_statements(NodeType::Print);
+      for (Statement *stmt: entities_stmt) {
+        to_add.push_back(std::to_string(stmt->get_stmt_no()));
+      }
+      break;
+    }
+    case EntityType::Call: {
+      std::vector<Statement *> entities_stmt;
+      entities_stmt = pkb_->get_statements(NodeType::Call);
+      for (Statement *stmt: entities_stmt) {
+        to_add.push_back(std::to_string(stmt->get_stmt_no()));
+      }
+      break;
+    }
+    case EntityType::While: {
+      std::vector<Statement *> entities_stmt;
+      entities_stmt = pkb_->get_statements(NodeType::While);
+      for (Statement *stmt: entities_stmt) {
+        to_add.push_back(std::to_string(stmt->get_stmt_no()));
+      }
+      break;
+    }
+    case EntityType::If: {
+      std::vector<Statement *> entities_stmt;
+      entities_stmt = pkb_->get_statements(NodeType::If);
+      for (Statement *stmt: entities_stmt) {
+        to_add.push_back(std::to_string(stmt->get_stmt_no()));
+      }
+      break;
+    }
+    case EntityType::Assign: {
+      std::vector<Statement *> entities_stmt;
+      entities_stmt = pkb_->get_statements(NodeType::Assign);
+      for (Statement *stmt: entities_stmt) {
+        to_add.push_back(std::to_string(stmt->get_stmt_no()));
+      }
+      break;
+    }
+    case EntityType::Variable: {
+      std::vector<Variable *> entities_var;
+      entities_var = pkb_->get_all_variables();
+      for (Variable *var: entities_var) {
+        to_add.push_back(var->get_name());
+      }
+      break;
+    }
+    case EntityType::Constant: {
+      std::vector<Constant *> entities_const;
+      entities_const = pkb_->get_all_constants();
+      for (Constant *cons: entities_const) {
+        to_add.push_back(cons->get_value());
+      }
+      break;
+    }
+    case EntityType::Procedure: {
+      std::vector<Procedure *> entities_proc;
+      entities_proc = pkb_->get_all_procedures();
+      for (Procedure *proc: entities_proc) {
+        to_add.push_back(proc->get_name());
+      }
+      break;
+    }
+    case EntityType::ProgLine:
+    case EntityType::None:
+      throw std::runtime_error("Unknown EntityType!");
   }
   printf("uhhhhhhh\n");
-  printf("size of syn to entities result: %d\n", synonym_to_entities_result.size());
-  return synonym_to_entities_result.at(0);
 
+  ResultTable *ret = new ResultTable();
+  ret->AddSingleColumn(synonym, to_add);
+  return ret;
 }
+
+//std::vector<std::string> *QueryEvaluator::GetAllPossibleReturnResults() {
+//  std::vector<std::vector<std::string> *> synonym_to_entities_result;
+//  for (std::string synonym : *entities_to_return_) {
+//    printf("synonym now is %s\n", synonym.c_str());
+//    EntityType type = synonym_to_entity_dec_->at(synonym)->get_type();
+//    printf("okay\n");
+//    std::vector<std::string> *to_add = new std::vector<std::string>();
+//    switch (type) {
+//      case EntityType::Stmt: {
+//        std::vector<Statement *> entities_stmt;
+//        entities_stmt = pkb_->get_all_statements();
+//        for (Statement *stmt: entities_stmt) {
+//          to_add->push_back(std::to_string(stmt->get_stmt_no()));
+//        }
+//        break;
+//      }
+//      case EntityType::Read: {
+//        std::vector<Statement *> entities_stmt;
+//        entities_stmt = pkb_->get_statements(NodeType::Read);
+//        for (Statement *stmt: entities_stmt) {
+//          to_add->push_back(std::to_string(stmt->get_stmt_no()));
+//        }
+//        break;
+//      }
+//      case EntityType::Print: {
+//        std::vector<Statement *> entities_stmt;
+//        entities_stmt = pkb_->get_statements(NodeType::Print);
+//        for (Statement *stmt: entities_stmt) {
+//          to_add->push_back(std::to_string(stmt->get_stmt_no()));
+//        }
+//        break;
+//      }
+//      case EntityType::Call: {
+//        std::vector<Statement *> entities_stmt;
+//        entities_stmt = pkb_->get_statements(NodeType::Call);
+//        for (Statement *stmt: entities_stmt) {
+//          to_add->push_back(std::to_string(stmt->get_stmt_no()));
+//        }
+//        break;
+//      }
+//      case EntityType::While: {
+//        std::vector<Statement *> entities_stmt;
+//        entities_stmt = pkb_->get_statements(NodeType::While);
+//        for (Statement *stmt: entities_stmt) {
+//          to_add->push_back(std::to_string(stmt->get_stmt_no()));
+//        }
+//        break;
+//      }
+//      case EntityType::If: {
+//        std::vector<Statement *> entities_stmt;
+//        entities_stmt = pkb_->get_statements(NodeType::If);
+//        for (Statement *stmt: entities_stmt) {
+//          to_add->push_back(std::to_string(stmt->get_stmt_no()));
+//        }
+//        break;
+//      }
+//      case EntityType::Assign: {
+//        std::vector<Statement *> entities_stmt;
+//        entities_stmt = pkb_->get_statements(NodeType::Assign);
+//        for (Statement *stmt: entities_stmt) {
+//          to_add->push_back(std::to_string(stmt->get_stmt_no()));
+//        }
+//        break;
+//      }
+//      case EntityType::Variable: {
+//        std::vector<Variable *> entities_var;
+//        entities_var = pkb_->get_all_variables();
+//        for (Variable *var: entities_var) {
+//          to_add->push_back(var->get_name());
+//        }
+//        break;
+//      }
+//      case EntityType::Constant: {
+//        std::vector<Constant *> entities_const;
+//        entities_const = pkb_->get_all_constants();
+//        for (Constant *cons: entities_const) {
+//          to_add->push_back(cons->get_value());
+//        }
+//        break;
+//      }
+//      case EntityType::Procedure: {
+//        std::vector<Procedure *> entities_proc;
+//        entities_proc = pkb_->get_all_procedures();
+//        for (Procedure *proc: entities_proc) {
+//          to_add->push_back(proc->get_name());
+//        }
+//        break;
+//      }
+//      case EntityType::ProgLine:
+//      case EntityType::None:
+//        throw std::runtime_error("Unknown EntityType!");
+//    }
+//    // TODO: ACCOUNT FOR MULTIPLE PERMUTATIONS
+//    synonym_to_entities_result.push_back(to_add);
+//  }
+//  printf("uhhhhhhh\n");
+//  printf("size of syn to entities result: %d\n", synonym_to_entities_result.size());
+//  return synonym_to_entities_result.at(0);
+//
+//}
 
 //bool QueryEvaluator::IsStmt(EntityType entity_type) {
 //  if (entity_type == EntityType::Stmt

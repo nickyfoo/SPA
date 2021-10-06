@@ -121,16 +121,27 @@ ResultTable* FollowsParentsHandler::Evaluate() {
 
     // Remove statements that do not have a follower
     // or do not have any follower that's part of right arg vector
+//    for (int i = 0; i < left_entity_vec.size(); i++) {
+//      auto *stmt = dynamic_cast<Statement *>(left_entity_vec.at(i));
+//      if (stmt != nullptr && !Forwarder(get_normal_, stmt)->empty()) {
+//        left_stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
+//      }
+//    }
+//    for (int j = 0; j < right_entity_vec.size(); j++) {
+//      auto *stmt = dynamic_cast<Statement *>(right_entity_vec.at(j));
+//      if (stmt != nullptr && !Forwarder(get_reverse_, stmt)->empty()) {
+//        right_stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
+//      }
+//    }
+
     for (int i = 0; i < left_entity_vec.size(); i++) {
-      auto *stmt = dynamic_cast<Statement *>(left_entity_vec.at(i));
-      if (stmt != nullptr && !Forwarder(get_normal_, stmt)->empty()) {
-        left_stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
-      }
-    }
-    for (int j = 0; j < right_entity_vec.size(); j++) {
-      auto *stmt = dynamic_cast<Statement *>(right_entity_vec.at(j));
-      if (stmt != nullptr && !Forwarder(get_reverse_, stmt)->empty()) {
-        right_stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
+      auto *stmt_left = dynamic_cast<Statement *>(left_entity_vec.at(i));
+      for (int j = 0; j < right_entity_vec.size(); j++) {
+        auto *stmt_right = dynamic_cast<Statement *>(right_entity_vec.at(j));
+        if (stmt_left != nullptr && stmt_right != nullptr && Forwarder(get_normal_, stmt_left)->count(stmt_right->get_stmt_no())) {
+          left_stmt_vec.push_back(std::to_string(stmt_left->get_stmt_no()));
+          right_stmt_vec.push_back(std::to_string(stmt_right->get_stmt_no()));
+        }
       }
     }
     ret->AddDoubleColumns(left_synonym, left_stmt_vec, right_synonym, right_stmt_vec);

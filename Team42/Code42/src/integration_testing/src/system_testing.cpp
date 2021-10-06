@@ -89,3 +89,57 @@ TEST_CASE("PQL_FollowsAndParent_ReturnsExpected") {
     REQUIRE(ret->at(i) == expected.at(i));
   }
 }
+
+TEST_CASE("PQL_BOOLEAN_ReturnsExpected") {
+
+  std::string ss = "assign a; stmt s; while w;\n"
+                   "Select BOOLEAN such that Parent(s,a) with s.stmt# = w.stmt#";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(source);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"TRUE"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < expected.size(); i++) {
+    REQUIRE(ret->at(i) == expected.at(i));
+  }
+}
+
+TEST_CASE("PQL_Tuple_ReturnsExpected") {
+
+  std::string ss = "call c1, c2;\n"
+                   "Select <c1, c2>";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(source);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"2 2", "2 3", "2 13", "2 18", "3 2", "3 3", "3 13", "3 18",
+                                       "13 2", "13 3", "13 13", "13 18", "18 2", "18 3", "18 13", "18 18"};
+
+  for (std::string s : *ret) {
+    printf("s is: %s\n", s.c_str());
+  }
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < expected.size(); i++) {
+    REQUIRE(std::find(expected.begin(), expected.end(), ret->at(i)) != expected.end());
+  }
+}
+
+

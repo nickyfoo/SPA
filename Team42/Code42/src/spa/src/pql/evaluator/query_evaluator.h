@@ -27,4 +27,5 @@ class QueryEvaluator {
   std::vector<std::string> *ConvertToOutput(ResultTable *table_result, bool is_valid_query);
   static bool IsStmt(EntityType entity_type);
   std::vector<std::string> *GetAllPossibleReturnResults();
+  ResultTable *MakeTableForUnusedEntity(std::string synonym);
 };

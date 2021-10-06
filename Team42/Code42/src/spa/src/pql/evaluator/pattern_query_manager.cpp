@@ -12,6 +12,7 @@ PatternQueryManager::~PatternQueryManager() = default;
 
 ResultTable* PatternQueryManager::EvaluatePattern(std::shared_ptr<PatternClause> pattern,
                                                   const std::unordered_map<std::string, std::vector<Entity *>>& synonym_to_entities_vec) {
+  printf("HEEREEEE?? EVALUTAE PATTERN\n");
   if (pattern->get_type() == EntityType::Assign) {
     return EvaluateAssignPattern(pattern, synonym_to_entities_vec);
   } else if (pattern->get_type() == EntityType::If || pattern->get_type() == EntityType::While) {
@@ -112,10 +113,13 @@ ResultTable* PatternQueryManager::EvaluateIfAndWhilePattern(std::shared_ptr<Patt
 
   for (int i = 0; i < entity_vec.size(); i++) {
     auto *stmt = dynamic_cast<Statement *>(entity_vec.at(i));  // for each stmt object
+    printf("ACTUALLY HERE\n");
     if (stmt->get_modifies()->empty()) {
+      printf("ACTUALLY HERE1\n");
 //        || !pkb_->TestIfWhilePattern(stmt, variable)) {
       continue;
     } else {
+      printf("ACTUALLY HERE2\n");
       if (variable->get_type() == EntRefType::Synonym) {  // pattern if(a, _, _)
         left_synonym = variable->get_synonym();
 
@@ -129,7 +133,13 @@ ResultTable* PatternQueryManager::EvaluateIfAndWhilePattern(std::shared_ptr<Patt
           var_vec.push_back(s);
         }
       } else if (variable->get_type() == EntRefType::Argument) {  // pattern if("a", _, _)
+        printf("GOT COME HERE?????\n");
+        printf("VARIABLE GET ARGUMENT: %s\n", variable->get_argument().c_str());
+        for (auto &it : *stmt->get_modifies()) {
+          printf("ITEM IS: %s\n", it.c_str());
+        }
         if (stmt->get_modifies()->count(variable->get_argument())) {
+          printf("HEREEEEEBLAH\n");
           stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
         }
       } else if (variable->get_type() == EntRefType::WildCard) {  // pattern if(_, _, _)

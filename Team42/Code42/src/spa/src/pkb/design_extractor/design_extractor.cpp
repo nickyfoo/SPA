@@ -216,7 +216,7 @@ void PKB::AffectsStarBFS(int start, int target, std::vector<bool> &visited,
     int u = q.front();
     q.pop();
     if (forward_relation) {
-      for (auto&[a, b] : get_affects(u, kWild)) {
+      for (auto &[a, b] : get_affects(u, kWild)) {
         if (target == kWild) ans.insert({start, b});
         else {
           if (b == target) {
@@ -231,7 +231,7 @@ void PKB::AffectsStarBFS(int start, int target, std::vector<bool> &visited,
         }
       }
     } else {
-      for (auto&[a, b] : get_affects(kWild, u)) {
+      for (auto &[a, b] : get_affects(kWild, u)) {
         if (target == kWild) ans.insert({a, start});
         else {
           if (a == target) {

@@ -30,8 +30,8 @@ void PatternQueryManager::EvaluatePatterns() {
 
 void PatternQueryManager::ManagePatterns(PatternClause *pattern) {
   EntityDeclaration *synonym = pattern->get_synonym();
-  EntRef *left_ent = pattern->get_left_ref();
-  ExpressionSpec *right_ent = pattern->get_right_ref();
+  EntRef *left_ent = pattern->get_variable();
+  ExpressionSpec *right_ent = pattern->get_exp_spec();
   std::string pattern_to_check = right_ent->get_expression();
   bool is_partial_pattern = right_ent->IsPartialPattern();
 

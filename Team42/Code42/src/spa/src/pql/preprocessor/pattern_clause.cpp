@@ -2,33 +2,44 @@
 
 PatternClause::PatternClause(EntityDeclaration *synonym) {
   this->synonym_ = synonym;
-  this->left_ref_ = nullptr;
-  this->right_ref_ = nullptr;
+  this->type_ = synonym->get_type();
+  this->variable_ = nullptr;
+  this->exp_spec_ = nullptr;
 }
 
-bool PatternClause::set_ref(EntRef *left, const std::string &right) {
-  this->left_ref_ = left;
-  return IsValidRightRef(right);
+PatternClause::~PatternClause() = default;
+
+bool PatternClause::set_ref(EntRef *variable, const std::string &right_ref) {
+  this->variable_ = variable;
+  if (this->type_ == EntityType::Assign) {
+    return IsValidExpSpec(right_ref);
+  } else {
+    return right_ref == "_";
+  }
 }
 
 EntityDeclaration *PatternClause::get_synonym() {
   return this->synonym_;
 }
 
-EntRef *PatternClause::get_left_ref() {
-  return this->left_ref_;
+EntityType PatternClause::get_type() {
+  return this->type_;
 }
 
-ExpressionSpec *PatternClause::get_right_ref() {
-  return this->right_ref_;
+EntRef *PatternClause::get_variable() {
+  return this->variable_;
 }
 
-bool PatternClause::IsValidRightRef(std::string ref) {
+ExpressionSpec *PatternClause::get_exp_spec() {
+  return this->exp_spec_;
+}
+
+bool PatternClause::IsValidExpSpec(std::string ref) {
   bool partial_pattern;
   auto *exp_spec = new ExpressionSpec();
   if (ref == "_") {
     exp_spec->set_wild_card();
-    this->right_ref_ = exp_spec;
+    this->exp_spec_ = exp_spec;
     return true;
   }
 
@@ -68,7 +79,7 @@ bool PatternClause::IsValidRightRef(std::string ref) {
   exp_spec->set_expression(ref);
   exp_spec->set_partial_pattern(partial_pattern);
 
-  this->right_ref_ = exp_spec;
+  this->exp_spec_ = exp_spec;
   return true;
 }
 

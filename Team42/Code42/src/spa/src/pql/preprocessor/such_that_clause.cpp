@@ -14,6 +14,18 @@ SuchThatClause::SuchThatClause(const std::string &type) {
     this->type_ = RelRef::Uses;
   } else if (type == "Modifies") {
     this->type_ = RelRef::Modifies;
+  } else if (type == "Calls") {
+    this->type_ = RelRef::Calls;
+  } else if (type == "Calls*") {
+    this->type_ = RelRef::CallsT;
+  } else if (type == "Next") {
+    this->type_ = RelRef::Next;
+  } else if (type == "Next*") {
+    this->type_ = RelRef::NextT;
+  } else if (type == "Affects") {
+    this->type_ = RelRef::Affects;
+  } else if (type == "Affects*") {
+    this->type_ = RelRef::AffectsT;
   } else {
     this->type_ = RelRef::None;
   }
@@ -22,12 +34,16 @@ SuchThatClause::SuchThatClause(const std::string &type) {
   this->right_ref_ = nullptr;
 }
 
+SuchThatClause::~SuchThatClause() = default;
+
 bool SuchThatClause::set_ref(SuchThatRef *left, SuchThatRef *right) {
   switch (this->type_) {
     case RelRef::Follows:
     case RelRef::FollowsT:
     case RelRef::Parent:
     case RelRef::ParentT:
+    case RelRef::Affects:
+    case RelRef::AffectsT:
       if (left->get_type() == SuchThatRefType::Statement
           && right->get_type() == SuchThatRefType::Statement) {
         this->left_ref_ = left;
@@ -71,6 +87,24 @@ bool SuchThatClause::set_ref(SuchThatRef *left, SuchThatRef *right) {
         }
       }
       return false;
+    case RelRef::Calls:
+    case RelRef::CallsT:
+      if (left->get_type() == SuchThatRefType::Entity
+      && right->get_type() == SuchThatRefType::Entity) {
+        this->left_ref_ = left;
+        this->right_ref_ = right;
+        return true;
+      }
+      return false;
+    case RelRef::Next:
+    case RelRef::NextT:
+      if (left->get_type() == SuchThatRefType::Line
+      && right->get_type() == SuchThatRefType::Line) {
+        this->left_ref_ = left;
+        this->right_ref_ = right;
+        return true;
+      }
+      return false;
     default:break;
   }
   return false;
@@ -96,6 +130,12 @@ std::string SuchThatClause::get_type_str() {
     case RelRef::Modifies:
     case RelRef::ModifiesP:
     case RelRef::ModifiesS:return "Modifies";
+    case RelRef::Next:return "Next";
+    case RelRef::NextT:return "Next*";
+    case RelRef::Affects:return "Affects";
+    case RelRef::AffectsT:return "Affects*";
+    case RelRef::Calls:return "Calls";
+    case RelRef::CallsT:return "Calls*";
     default:return "Unknown Type";
   }
 }

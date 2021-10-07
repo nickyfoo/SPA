@@ -469,7 +469,6 @@ TEST_CASE("Test 17: Sample source query 1") {
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
-  pkb.PrintStatements();
   auto evaluator = new QueryEvaluator(clause, &pkb);
   std::vector<std::string> *ret = evaluator->Evaluate();
 
@@ -624,7 +623,6 @@ TEST_CASE("Test 22: Sample source query 4") {
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
-  pkb.PrintStatements();
   auto evaluator = new QueryEvaluator(clause, &pkb);
   std::vector<std::string> *ret = evaluator->Evaluate();
 

@@ -1,6 +1,7 @@
 #include "pkb.h"
 #include <algorithm>
 #include <vector>
+#include <queue>
 #include "ast_utils.hpp"
 #include "pkb_exception.h"
 
@@ -94,7 +95,6 @@ void PKB::AddExprString(Node *node, std::vector<Node *> ancestor_list) {
       default:break;
     }
   }
-
 }
 
 void PKB::AddVariable(Node *node, std::vector<Node *> ancestor_list) {
@@ -145,8 +145,20 @@ std::vector<Constant *> PKB::get_all_constants() {
   return const_table_.get_all_constants();
 }
 
+std::map<int, std::set<int>> *PKB::get_cfg_al() {
+  return &cfg_al_;
+}
+
+std::map<int, std::set<int>> *PKB::get_reverse_cfg_al() {
+  return &reverse_cfg_al_;
+}
+
 bool PKB::TestAssignmentPattern(Statement *statement, std::string pattern, bool is_partial_match) {
-  return PatternManager::TestAssignmentPattern(statement, pattern, is_partial_match);
+  return pattern_manager_.TestAssignmentPattern(statement, pattern, is_partial_match);
+}
+
+bool PKB::TestIfWhilePattern(Statement *stmt, std::string variable) {
+  return pattern_manager_.TestIfWhilePattern(stmt, variable);
 }
 
 void PKB::PrintStatements() {
@@ -161,12 +173,23 @@ void PKB::PrintVariables() {
   var_table_.PrintVariableDetails();
 }
 
+void PKB::PrintCFGAL() {
+  for (auto &[u, al] : cfg_al_) {
+    std::cout << u << "->";
+    for (auto &v : al) {
+      std::cout << v << ' ';
+    }
+    std::cout << '\n';
+  }
+}
+
 void PKB::Initialise() {
   ExtractEntities();
   ExtractFollows();
   ExtractParent();
   ExtractCalls();
   ExtractUsesModifies();
+  ExtractCFG();
 }
 
 void PKB::ExtractEntities() {
@@ -300,7 +323,6 @@ void PKB::ExtractUsesModifies() {
         var_table_.get_variable(var_modified)->AddStmtModifying(parent_star);
       }
     }
-
   }
 }
 
@@ -320,6 +342,282 @@ void PKB::ExtractCalls() {
 
   proc_table_.ProcessCalls();
   proc_table_.ProcessCallsStar();
+}
+
+void PKB::ExtractCFG() {
+  auto extract_cfg_for_if_node = [this](Node *node) {
+    PKB::CFGProcessIfNode(node);
+  };
+  auto extract_cfg_for_while_node = [this](Node *node) {
+    PKB::CFGProcessWhileNode(node);
+  };
+  auto extract_cfg_for_procedure_node = [this](Node *node) {
+    PKB::CFGProcessProcedureNode(node);
+  };
+
+  std::map<NodeType, std::vector<std::function<void(Node *)>>> functions = {
+      {NodeType::If, {extract_cfg_for_if_node}},
+      {NodeType::While, {extract_cfg_for_while_node}},
+      {NodeType::Procedure, {extract_cfg_for_procedure_node}},
+  };
+
+  Visit(root_, functions);
+}
+
+void PKB::ReachabilityDFS(int start, int u, std::vector<std::vector<int>> &d,
+                          std::map<int, std::set<int>> &al) {
+  for (auto &v : al[u]) {
+    if (d[start][v] == 0) {
+      d[start][v] = 1;
+      ReachabilityDFS(start, v, d, al);
+    }
+  }
+}
+
+std::set<std::pair<int, int>> PKB::get_next(int a, int b) {
+  int n = stmt_table_.get_num_statements() + 1;
+  std::set<std::pair<int, int>> ans;
+  // Invalid line nums
+  if (a < 0 || a >= n || b < 0 || b >= n) return ans;
+  if (a == kWild && b == kWild) {
+    for (auto&[u, al_u] : cfg_al_) {
+      for (auto &v : al_u) {
+        ans.insert({u, v});
+      }
+    }
+  } else if (a == kWild && b != kWild) {
+    for (auto &v : reverse_cfg_al_[b]) {
+      ans.insert({v, b});
+    }
+  } else if (a != kWild && b == kWild) {
+    for (auto &v : cfg_al_[a]) {
+      ans.insert({a, v});
+    }
+  } else {
+    if (cfg_al_[a].find(b) != cfg_al_[a].end()) {
+      ans.insert({a, b});
+    }
+  }
+  return ans;
+}
+
+std::set<std::pair<int, int>> PKB::get_next_star(int a, int b) {
+  int n = stmt_table_.get_num_statements() + 1;
+  std::set<std::pair<int, int>> ans;
+  // Invalid line nums
+  if (a < 0 || a >= n || b < 0 || b >= n) return ans;
+  std::vector<std::vector<int>> d(n, std::vector<int>(n, 0));
+  if (a == kWild && b == kWild) {
+    for (int i = 0; i < n; i++) {
+      ReachabilityDFS(i, i, d, cfg_al_);
+    }
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < n; j++) {
+        if (d[i][j] != 0) ans.insert({i, j});
+      }
+    }
+  } else if (a == kWild && b != kWild) {
+    ReachabilityDFS(b, b, d, reverse_cfg_al_);
+    for (int i = 0; i < n; i++) {
+      // Be careful about the check, d[i][j] means that i can reach j!
+      if (d[b][i] != 0) ans.insert({i, b});
+    }
+  } else if (a != kWild && b == kWild) {
+    ReachabilityDFS(a, a, d, cfg_al_);
+    for (int j = 0; j < n; j++) {
+      if (d[a][j] != 0) ans.insert({a, j});
+    }
+  } else {
+    ReachabilityDFS(a, a, d, cfg_al_);
+    if (d[a][b] != 0) ans.insert({a, b});
+  }
+  return ans;
+}
+
+void PKB::AffectsDFS(int start, int target, int u, std::string var_name,
+                     std::vector<bool> &visited, std::vector<std::vector<int>> &d, bool &found) {
+  if (found) return;
+  Statement *stmt = stmt_table_.get_statement(start);
+  for (auto &v : cfg_al_[u]) {
+    Statement *stmt_v = stmt_table_.get_statement(v);
+    if (!visited[v]) {
+      visited[v] = true;
+      std::set<std::string> *uses = stmt_v->get_uses();
+      if (stmt_v->get_kind() == NodeType::Assign && uses->find(var_name) != uses->end()) {
+        d[start][v] = 1;
+        if (v == target) {
+          found = true;
+          return;
+        }
+      }
+      std::set<std::string> *modifies = stmt_v->get_modifies();
+      if (stmt_v->get_kind() == NodeType::Assign || stmt_v->get_kind() == NodeType::Read
+          || stmt_v->get_kind() == NodeType::Call) {
+        if (modifies->find(var_name) != modifies->end()) {
+          continue;
+        }
+      }
+      AffectsDFS(start, target, v, var_name, visited, d, found);
+    }
+  }
+}
+
+void PKB::AffectsStarBFS(int start, int target, std::vector<bool> &visited,
+                         std::set<std::pair<int, int>> &ans, bool forward_relation) {
+  std::queue<int> q;
+  visited[start] = true;
+  q.push(start);
+  while (q.size()) {
+    int u = q.front();
+    q.pop();
+    if (forward_relation) {
+      for (auto&[a, b] : get_affects(u, kWild)) {
+        if (target == kWild) {
+          ans.insert({ start, b });
+        } else {
+          if (b == target) {
+            ans.insert({start, target});
+            return;
+          }
+        }
+        if (!visited[b]) {
+          visited[b] = true;
+          q.push(b);
+        }
+      }
+    } else {
+      for (auto&[a, b] : get_affects(kWild, u)) {
+        if (target == kWild) {
+          ans.insert({ a, start });
+        } else {
+          if (a == target) {
+            ans.insert({start, target});
+            return;
+          }
+        }
+        if (!visited[a]) {
+          visited[a] = true;
+          q.push(a);
+        }
+      }
+    }
+  }
+}
+
+std::set<std::pair<int, int>> PKB::get_affects(int a, int b) {
+  int n = stmt_table_.get_num_statements() + 1;
+  std::set<std::pair<int, int>> ans;
+  // Invalid line nums
+  if (a < 0 || a >= n || b < 0 || b >= n) return ans;
+  std::vector<std::vector<int>> d(n, std::vector<int>(n, 0));
+  if (a == kWild && b == kWild) {
+    for (auto &stmt : stmt_table_.get_statements(NodeType::Assign)) {
+      if (stmt->get_modifies()->size() != 1) continue;
+      std::vector<bool> visited(n, false);
+      std::string var_name = *(stmt->get_modifies()->begin());
+      bool found = false;
+      AffectsDFS(stmt->get_stmt_no(), kWild, stmt->get_stmt_no(), var_name, visited, d, found);
+    }
+
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < n; j++) {
+        if (d[i][j] != 0) ans.insert({i, j});
+      }
+    }
+  } else if (a == kWild && b != kWild) {
+    Statement *stmt = stmt_table_.get_statement(b);
+    // Invalid, not an assign stmt
+    if (stmt == nullptr || stmt->get_kind() != NodeType::Assign) return ans;
+
+    std::vector<bool> stmt_checked(n, false);
+    for (auto &var_used : *(stmt->get_uses())) {
+      for (auto &stmt_using : *(var_table_.get_variable(var_used)->get_stmts_modifying())) {
+        if (!stmt_checked[stmt_using]) {
+          stmt_checked[stmt_using] = true;
+          if (stmt_table_.get_statement(stmt_using)->get_kind() != NodeType::Assign) continue;
+          std::vector<bool> visited(n, false);
+          bool found = false;
+          AffectsDFS(stmt_using, b, stmt_using, var_used, visited, d, found);
+        }
+      }
+    }
+
+    for (int i = 0; i < n; i++) {
+      // Be careful about the check, d[i][j] means that i can reach j!
+      if (d[i][b] != 0) ans.insert({i, b});
+    }
+  } else if (a != kWild && b == kWild) {
+    Statement *stmt = stmt_table_.get_statement(a);
+    // Invalid, not an assign stmt
+    if (stmt == nullptr || stmt->get_kind() != NodeType::Assign) return ans;
+    if (stmt->get_modifies()->size() != 1) return ans;
+    std::vector<bool> visited(n, false);
+    bool found = false;
+    std::string var_name = *(stmt->get_modifies()->begin());
+    AffectsDFS(stmt->get_stmt_no(), kWild, stmt->get_stmt_no(), var_name, visited, d, found);
+
+    for (int j = 0; j < n; j++) {
+      if (d[a][j] != 0) ans.insert({a, j});
+    }
+  } else {
+    Statement *stmt = stmt_table_.get_statement(a);
+    Statement *stmt2 = stmt_table_.get_statement(b);
+    // Invalid, not an assign stmt
+    if (stmt == nullptr || stmt->get_kind() != NodeType::Assign) return ans;
+    if (stmt2 == nullptr || stmt2->get_kind() != NodeType::Assign) return ans;
+    if (stmt->get_modifies()->size() != 1) return ans;
+    std::vector<bool> visited(n, false);
+    bool found = false;
+    std::string var_name = *(stmt->get_modifies()->begin());
+    AffectsDFS(stmt->get_stmt_no(), b, stmt->get_stmt_no(), var_name, visited, d, found);
+
+    if (d[a][b] != 0) ans.insert({a, b});
+  }
+  return ans;
+}
+
+std::set<std::pair<int, int>> PKB::get_affects_star(int a, int b) {
+  int n = stmt_table_.get_num_statements() + 1;
+  std::set<std::pair<int, int>> ans;
+  // Invalid line nums
+  if (a < 0 || a >= n || b < 0 || b >= n) return ans;
+  std::vector<std::vector<int>> d(n, std::vector<int>(n, 0));
+  if (a == kWild && b == kWild) {
+    std::map<int, std::set<int>> affects_al;
+    for (auto&[a, b] : get_affects(kWild, kWild)) {
+      affects_al[a].insert(b);
+    }
+    for (auto&[u, al_u] : affects_al) {
+      ReachabilityDFS(u, u, d, affects_al);
+    }
+
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < n; j++) {
+        if (d[i][j] != 0) ans.insert({i, j});
+      }
+    }
+  } else if (a == kWild && b != kWild) {
+    Statement *stmt = stmt_table_.get_statement(b);
+    // Invalid, not an assign stmt
+    if (stmt == nullptr || stmt->get_kind() != NodeType::Assign) return ans;
+    std::vector<bool> visited(n, false);
+    AffectsStarBFS(b, kWild, visited, ans, false);
+  } else if (a != kWild && b == kWild) {
+    Statement *stmt = stmt_table_.get_statement(a);
+    // Invalid, not an assign stmt
+    if (stmt == nullptr || stmt->get_kind() != NodeType::Assign) return ans;
+    std::vector<bool> visited(n, false);
+    AffectsStarBFS(a, 0, visited, ans, true);
+  } else {
+    Statement *stmt = stmt_table_.get_statement(a);
+    Statement *stmt2 = stmt_table_.get_statement(b);
+    // Invalid, not an assign stmt
+    if (stmt == nullptr || stmt->get_kind() != NodeType::Assign) return ans;
+    if (stmt2 == nullptr || stmt2->get_kind() != NodeType::Assign) return ans;
+    std::vector<bool> visited(n, false);
+    AffectsStarBFS(a, b, visited, ans, true);
+  }
+  return ans;
 }
 
 void PKB::UpdateVarTableWithProcs() {
@@ -431,7 +729,8 @@ void PKB::UsesModifiesProcessAssignNode(Node *node, std::vector<Node *> &ancesto
         var_table_.get_variable(var)->AddProcUsing(proc->get_name());
       }
       proc->AddModifies(assign_node->get_var()->get_name());
-      var_table_.get_variable(assign_node->get_var()->get_name())->AddProcModifying(proc->get_name());
+      var_table_.get_variable(assign_node->get_var()->get_name())
+          ->AddProcModifying(proc->get_name());
     }
 
     if (n->get_kind() == NodeType::If || n->get_kind() == NodeType::While) {
@@ -443,7 +742,7 @@ void PKB::UsesModifiesProcessAssignNode(Node *node, std::vector<Node *> &ancesto
       stmt_table_.get_statement(statement_node->get_stmt_no())
           ->AddModifies(assign_node->get_var()->get_name());
       var_table_.get_variable(assign_node->get_var()->get_name())
-        ->AddStmtModifying(statement_node->get_stmt_no());
+          ->AddStmtModifying(statement_node->get_stmt_no());
     }
   }
 }
@@ -526,12 +825,14 @@ void PKB::UsesModifiesProcessReadNode(Node *node, std::vector<Node *> &ancestorL
       proc_table_.get_procedure(procedure_node->get_name())
           ->AddModifies(read_node->get_var()->get_name());
       var_table_.get_variable(read_node->get_var()->get_name())
-        ->AddProcModifying(procedure_node->get_name());
+          ->AddProcModifying(procedure_node->get_name());
     }
     if (n->get_kind() == NodeType::If || n->get_kind() == NodeType::While) {
-      auto statement_node = dynamic_cast<StatementNode*>(n);
-      stmt_table_.get_statement(statement_node->get_stmt_no())->AddModifies(read_node->get_var()->get_name());
-      var_table_.get_variable(read_node->get_var()->get_name())->AddStmtModifying(statement_node->get_stmt_no());
+      auto statement_node = dynamic_cast<StatementNode *>(n);
+      stmt_table_.get_statement(statement_node->get_stmt_no())
+          ->AddModifies(read_node->get_var()->get_name());
+      var_table_.get_variable(read_node->get_var()->get_name())
+          ->AddStmtModifying(statement_node->get_stmt_no());
     }
   }
   stmt_table_.get_statement(read_node->get_stmt_no())
@@ -548,12 +849,14 @@ void PKB::UsesModifiesProcessPrintNode(Node *node, std::vector<Node *> &ancestor
       proc_table_.get_procedure(procedure_node->get_name())
           ->AddUses(print_node->get_var()->get_name());
       var_table_.get_variable(print_node->get_var()->get_name())
-        ->AddProcUsing(procedure_node->get_name());
+          ->AddProcUsing(procedure_node->get_name());
     }
     if (n->get_kind() == NodeType::If || n->get_kind() == NodeType::While) {
-      auto statement_node = dynamic_cast<StatementNode*>(n);
-      stmt_table_.get_statement(statement_node->get_stmt_no())->AddUses(print_node->get_var()->get_name());
-      var_table_.get_variable(print_node->get_var()->get_name())->AddStmtUsing(statement_node->get_stmt_no());
+      auto statement_node = dynamic_cast<StatementNode *>(n);
+      stmt_table_.get_statement(statement_node->get_stmt_no())
+          ->AddUses(print_node->get_var()->get_name());
+      var_table_.get_variable(print_node->get_var()->get_name())
+          ->AddStmtUsing(statement_node->get_stmt_no());
     }
   }
   stmt_table_.get_statement(print_node->get_stmt_no())->AddUses(print_node->get_var()->get_name());
@@ -573,6 +876,123 @@ void PKB::CallsProcessCallNode(Node *node, std::vector<Node *> &ancestorList) {
         throw PKBException("Called an undefined procedure: " + call_node->get_proc()->get_name());
       }
       called_procedure->AddCallers(procedure_node->get_name());
+    }
+  }
+}
+
+std::set<int> PKB::LastStmts(StatementNode *node) {
+  std::set<int> ans;
+  if (node->get_kind() == NodeType::If) {
+    auto *if_node = dynamic_cast<IfNode *>(node);
+    // Sort stmt list in ascending order,
+    std::vector<StatementNode *> then_stmt_lst = if_node->get_then_stmt_lst();
+    std::sort(then_stmt_lst.begin(), then_stmt_lst.end(),
+              [](StatementNode *a, StatementNode *b) {
+                return a->get_stmt_no() > b->get_stmt_no();
+              });
+    for (auto &stmt : (LastStmts(*(then_stmt_lst.begin())))) {
+      ans.insert(stmt);
+    }
+
+    std::vector<StatementNode *> else_stmt_lst = if_node->get_else_stmt_lst();
+    std::sort(else_stmt_lst.begin(), else_stmt_lst.end(),
+              [](StatementNode *a, StatementNode *b) {
+                return a->get_stmt_no() > b->get_stmt_no();
+              });
+    for (auto &stmt : (LastStmts(*(else_stmt_lst.begin())))) {
+      ans.insert(stmt);
+    }
+  } else {
+    ans.insert(node->get_stmt_no());
+  }
+  return ans;
+}
+
+void PKB::CFGProcessProcedureNode(Node *node) {
+  auto *procedure_node = dynamic_cast<ProcedureNode *>(node);
+  std::vector<StatementNode *> stmt_lst = procedure_node->get_stmt_lst();
+  std::sort(stmt_lst.begin(), stmt_lst.end(),
+            [](StatementNode *a, StatementNode *b) {
+              return a->get_stmt_no() < b->get_stmt_no();
+            });
+  for (int i = 1; i < stmt_lst.size(); i++) {
+    for (auto &last_stmt : LastStmts(stmt_lst[i - 1])) {
+      cfg_al_[last_stmt].insert(stmt_lst[i]->get_stmt_no());
+      reverse_cfg_al_[stmt_lst[i]->get_stmt_no()].insert(last_stmt);
+    }
+  }
+}
+
+void PKB::CFGProcessIfNode(Node *node) {
+  auto *if_node = dynamic_cast<IfNode *>(node);
+  std::vector<StatementNode *> then_stmt_lst = if_node->get_then_stmt_lst();
+  std::sort(then_stmt_lst.begin(), then_stmt_lst.end(),
+            [](StatementNode *a, StatementNode *b) {
+              return a->get_stmt_no() < b->get_stmt_no();
+            });
+
+  // Connect if node to first node of then_stmt_lst
+  if (then_stmt_lst.size()) {
+    cfg_al_[if_node->get_stmt_no()].insert(then_stmt_lst[0]->get_stmt_no());
+    reverse_cfg_al_[then_stmt_lst[0]->get_stmt_no()].insert(if_node->get_stmt_no());
+  }
+
+  // Connect LastStmts of stmt_lst to next in then_stmt_lst
+  for (int i = 1; i < then_stmt_lst.size(); i++) {
+    for (auto &last_stmt : LastStmts(then_stmt_lst[i - 1])) {
+      cfg_al_[last_stmt].insert(then_stmt_lst[i]->get_stmt_no());
+      reverse_cfg_al_[then_stmt_lst[i]->get_stmt_no()].insert(last_stmt);
+    }
+  }
+
+  std::vector<StatementNode *> else_stmt_lst = if_node->get_else_stmt_lst();
+  std::sort(else_stmt_lst.begin(), else_stmt_lst.end(),
+            [](StatementNode *a, StatementNode *b) {
+              return a->get_stmt_no() < b->get_stmt_no();
+            });
+
+  // Connect if node to first node of else_stmt_lst
+  if (else_stmt_lst.size()) {
+    cfg_al_[if_node->get_stmt_no()].insert(else_stmt_lst[0]->get_stmt_no());
+    reverse_cfg_al_[else_stmt_lst[0]->get_stmt_no()].insert(if_node->get_stmt_no());
+  }
+
+  // Connect LastStmts of stmt_lst to next in else_stmt_lst
+  for (int i = 1; i < else_stmt_lst.size(); i++) {
+    for (auto &last_stmt : LastStmts(else_stmt_lst[i - 1])) {
+      cfg_al_[last_stmt].insert(else_stmt_lst[i]->get_stmt_no());
+      reverse_cfg_al_[else_stmt_lst[i]->get_stmt_no()].insert(last_stmt);
+    }
+  }
+}
+
+void PKB::CFGProcessWhileNode(Node *node) {
+  auto *while_node = dynamic_cast<WhileNode *>(node);
+  std::vector<StatementNode *> stmt_lst = while_node->get_stmt_list();
+  std::sort(stmt_lst.begin(), stmt_lst.end(),
+            [](StatementNode *a, StatementNode *b) {
+              return a->get_stmt_no() < b->get_stmt_no();
+            });
+
+  // Connect while node to first node of stmt_lst
+  if (stmt_lst.size()) {
+    cfg_al_[while_node->get_stmt_no()].insert(stmt_lst[0]->get_stmt_no());
+    reverse_cfg_al_[stmt_lst[0]->get_stmt_no()].insert(while_node->get_stmt_no());
+  }
+
+  // Connect LastStmts of stmt_lst to next in stmt_lst
+  for (int i = 1; i < stmt_lst.size(); i++) {
+    for (auto &last_stmt : LastStmts(stmt_lst[i - 1])) {
+      cfg_al_[last_stmt].insert(stmt_lst[i]->get_stmt_no());
+      reverse_cfg_al_[stmt_lst[i]->get_stmt_no()].insert(last_stmt);
+    }
+  }
+
+  // Connect LastStmts of stmt_lst to while node
+  if (stmt_lst.size()) {
+    for (auto &last_stmt : LastStmts(stmt_lst[stmt_lst.size() - 1])) {
+      cfg_al_[last_stmt].insert(while_node->get_stmt_no());
+      reverse_cfg_al_[while_node->get_stmt_no()].insert(last_stmt);
     }
   }
 }

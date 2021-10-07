@@ -6,6 +6,7 @@
 #include "sstream"
 #include "query_preprocessor.h"
 #include "query_evaluator.h"
+#include "query_optimizer.h"
 
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;
@@ -52,8 +53,23 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results){
   // store the answers to the query in the results list (it is initially empty)
   // each result must be a string.
   auto *query_preprocessor = new QueryPreprocessor(query);
-  PQLQuery *clause = query_preprocessor->get_pql_query();
-  QueryEvaluator *query_evaluator = new QueryEvaluator(clause, pkb_);
+  std::tuple<std::vector<std::string> *,
+  std::vector<SuchThatClause *> *,
+  std::vector<PatternClause *> *,
+  std::vector<WithClause *> *,
+  std::unordered_map<std::string, EntityDeclaration *> *,
+  bool, bool> *clauses = query_preprocessor->get_clauses();
+  QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clauses),
+                                                  std::get<2>(*clauses),
+                                                  std::get<3>(*clauses),
+                                                  std::get<0>(*clauses));
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  PQLQuery *pql_query = new PQLQuery(std::get<0>(*clauses),
+                                     clause_groups,
+                                     std::get<4>(*clauses),
+                                     std::get<5>(*clauses),
+                                     std::get<6>(*clauses));
+  QueryEvaluator *query_evaluator = new QueryEvaluator(pql_query, pkb_);
   std::vector<std::string> *res = query_evaluator->Evaluate();
   std::copy(res->begin(), res->end(), std::back_inserter(results));
 }

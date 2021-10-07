@@ -14,15 +14,30 @@ class QueryPreprocessor {
  public:
   explicit QueryPreprocessor(std::string input);
   ~QueryPreprocessor();
-  PQLQuery *get_pql_query();
+  std::tuple<std::vector<std::string> *,
+  std::vector<SuchThatClause *> *,
+  std::vector<PatternClause *> *,
+  std::vector<WithClause *> *,
+  std::unordered_map<std::string, EntityDeclaration *> *,
+  bool, bool> *get_clauses();
  private:
   std::unordered_map<std::string, EntityDeclaration> syn_to_entity_;
-  PQLQuery *clauses_;
+  std::tuple<std::vector<std::string> *,
+  std::vector<SuchThatClause *> *,
+  std::vector<PatternClause *> *,
+  std::vector<WithClause *> *,
+  std::unordered_map<std::string, EntityDeclaration *> *,
+  bool, bool> *clauses_;
   static std::tuple<std::vector<std::string> *, std::string>
   SplitEntitiesAndSelectClause(std::string input);
   static std::unordered_map<std::string, EntityDeclaration *>
   *MakeEntitiesMap(std::vector<std::string> *entities);
-  static PQLQuery *MakePQLQuery(
+  static std::tuple<std::vector<std::string> *,
+  std::vector<SuchThatClause *> *,
+  std::vector<PatternClause *> *,
+  std::vector<WithClause *> *,
+  std::unordered_map<std::string, EntityDeclaration *> *,
+  bool, bool> *MakeClauses(
       std::unordered_map<std::string, EntityDeclaration *> *entities_map,
       const std::string &select_clause);
 };

@@ -44,8 +44,12 @@ ResultTable* PatternQueryManager::EvaluateAssignPattern(std::shared_ptr<PatternC
     if ((stmt->get_modifies()->empty()
         || !pkb_->TestAssignmentPattern(stmt, pattern_to_check, is_partial_pattern))
         && !right_ent->IsWildCard()) {
+      printf("ISIT THE WRONG NANIMEDUSA\n");
+      printf("pattern to check: %s\n", pattern_to_check.c_str());
+      printf("is partial pattern: %d\n", is_partial_pattern);
       continue;
     } else {
+      printf("actual came\n");
       if (left_ent->get_type() == EntRefType::Synonym) {  // pattern a(v, "pattern")
         left_synonym = left_ent->get_synonym();
 

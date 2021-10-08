@@ -10,6 +10,7 @@ PatternClause::PatternClause(EntityDeclaration *synonym) {
 PatternClause::~PatternClause() = default;
 
 bool PatternClause::set_ref(EntRef *variable, const std::string &right_ref) {
+  printf("inside1\n");
   this->variable_ = variable;
   if (this->type_ == EntityType::Assign) {
     return IsValidExpSpec(right_ref);
@@ -35,12 +36,15 @@ ExpressionSpec *PatternClause::get_exp_spec() {
 }
 
 bool PatternClause::IsValidExpSpec(std::string ref) {
+  printf("wat the spec: %s\n", ref.c_str());
   bool partial_pattern;
   auto *exp_spec = new ExpressionSpec();
   if (ref == "_") {
     exp_spec->set_wild_card();
     this->exp_spec_ = exp_spec;
     return true;
+  } else if (ref == "") {
+    return false;
   }
 
   if (ref.at(0) == '_' && ref.at(ref.length() - 1) == '_') {
@@ -59,14 +63,19 @@ bool PatternClause::IsValidExpSpec(std::string ref) {
   ref = ref.substr(1, ref.length() - 2);  // remove ""
   bool expecting_exp = false;
   for (char &c : ref) {
+    printf("%c\n", c);
     if (!expecting_exp && IsExp(c)) {
+      printf("RETURN FALSE1\n");
       return false;
     } else {
       if (IsExp(c)) {
         expecting_exp = false;
       } else if (IsChar(c)) {
         expecting_exp = true;
+      } else if (c == '(' || c == ')' || c == ' ') {
+        continue;
       } else {
+        printf("RETURN FALSE2\n");
         return false;
       }
     }

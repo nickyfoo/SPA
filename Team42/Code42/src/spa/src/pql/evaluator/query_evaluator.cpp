@@ -62,20 +62,29 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
     bool first_table_entry = true;
     for (ClauseVertex clause_vertex: clause_vertexes) {
       printf("2\n");
+      clause_vertex.get_clause();
+      printf("hachoo\n");
+      clause_vertex.get_clause()->get_type();
+      printf("hachoo2\n");
       ClauseType type = clause_vertex.get_clause()->get_type();
+      printf("test1\n");
       auto synonym_to_entities_vec = GetPossibleEntitiesVec(clause_vertex);
+      printf("test2\n");
       bool has_synonyms = !clause_vertex.get_synonyms_used().empty();
       ResultTable *table;
       switch (type) {
         case ClauseType::SuchThatClause:
+          printf("test3\n");
           table = relationship_query_manager->EvaluateRelationship(std::dynamic_pointer_cast<SuchThatClause>(clause_vertex.get_clause()),
                                                                    synonym_to_entities_vec);
           break;
         case ClauseType::PatternClause:
+          printf("test4\n");
           table = pattern_query_manager->EvaluatePattern(std::dynamic_pointer_cast<PatternClause>(clause_vertex.get_clause()),
                                                          synonym_to_entities_vec);
           break;
         case ClauseType::WithClause:
+          printf("test5\n");
           table = with_query_manager->EvaluateWith(std::dynamic_pointer_cast<WithClause>(clause_vertex.get_clause()),
                                                    synonym_to_entities_vec);
           break;

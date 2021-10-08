@@ -10,6 +10,8 @@ ResultTable* WithQueryManager::EvaluateWith(std::shared_ptr<WithClause> with,
   ResultTable *ret = new ResultTable();
   AttrValueType return_type = with->get_left_attr_value_type();
   std::vector<std::string> vec;
+  printf("left: %s\n", with->get_left_ref().c_str());
+  printf("right: %s\n", with->get_right_ref().c_str());
     // I SHOULD ALWAYS JUST ADD DEFAULT TYPE RATHER THAN THE RETURN TYPE
   if (with->get_left_type() == EntityType::None && with->get_right_type() == EntityType::None) {  // 12 = 12
     if (with->get_left_ref() != with->get_right_ref()) {
@@ -26,6 +28,7 @@ ResultTable* WithQueryManager::EvaluateWith(std::shared_ptr<WithClause> with,
       throw std::runtime_error("Unknown AttrValueType!");
     }
   } else if (with->get_left_type() != EntityType::None && with->get_right_type() == EntityType::None) {  // s.stmt# = 12
+    printf("here1 or\n");
     if (return_type == AttrValueType::Integer) {
       vec = GetIntegers(with->get_left_ref(), with->get_left_type(), with->get_right_ref(), synonym_to_entities_vec);
       ret->AddSingleColumn(with->get_left_ref(), vec);
@@ -40,6 +43,7 @@ ResultTable* WithQueryManager::EvaluateWith(std::shared_ptr<WithClause> with,
       throw std::runtime_error("Unknown AttrValueType!");
     }
   } else if (with->get_left_type() != EntityType::None && with->get_right_type() != EntityType::None) {  // s.stmt# = a.stmt#
+    printf("here2\n");
     std::vector<std::string> left_vec, right_vec;
     std::tie(left_vec, right_vec) = GetSynonymPairs(with, synonym_to_entities_vec);
     ret->AddDoubleColumns(with->get_left_ref(), left_vec, with->get_right_ref(), right_vec);
@@ -58,11 +62,12 @@ std::vector<std::string> WithQueryManager::GetNames(std::string synonym,
                                                     std::unordered_map<std::string,
                                                                        std::vector<Entity *>> synonym_to_entities_vec) {
   std::vector<std::string> output;
-  printf("SYNONYM HERE IS %s\n", synonym.c_str());
+  printf("ARGUMENTS HERE IS %s\n", argument.c_str());
   for (Entity *entity : synonym_to_entities_vec.at(synonym)) {
     switch(type) {
       case EntityType::Procedure: {
         auto *procedure = dynamic_cast<Procedure *>(entity);
+        printf("here right: %s\n", procedure->get_name().c_str());
         if (procedure->get_name() == argument) {
           output.push_back(procedure->get_name());
         }
@@ -136,6 +141,7 @@ std::vector<std::string> WithQueryManager::GetIntegers(std::string synonym,
         break;
       }
       case EntityType::Stmt:
+      case EntityType::ProgLine:
       case EntityType::Call:
       case EntityType::Read:
       case EntityType::While:
@@ -161,6 +167,7 @@ std::tuple<std::vector<std::string>, std::vector<std::string>> WithQueryManager:
   std::vector<std::string> left_synonym;
   std::vector<std::string> right_synonym;
   if (with->get_left_attr_value_type() == AttrValueType::Integer) {
+    printf("hereboii\n");
     for (Entity *right_entity : synonym_to_entities_vec.at(with->get_right_ref())) {
       EntityType type = with->get_right_type();
       std::vector<std::string> curr_vec;
@@ -174,16 +181,21 @@ std::tuple<std::vector<std::string>, std::vector<std::string>> WithQueryManager:
           break;
         }
         case EntityType::Stmt:
+        case EntityType::ProgLine:
         case EntityType::Call:
         case EntityType::Read:
         case EntityType::While:
         case EntityType::If:
         case EntityType::Assign:
         case EntityType::Print: {
+          printf("inside1\n");
           auto *stmt = dynamic_cast<Statement *>(right_entity);
+          printf("inside2\n");
           right_arg = std::to_string(stmt->get_stmt_no());
+          printf("inside3\n");
           curr_vec = GetIntegers(with->get_left_ref(), with->get_left_type(), right_arg,
                                  synonym_to_entities_vec);
+          printf("inside4\n");
           break;
         }
         default:
@@ -214,10 +226,19 @@ std::tuple<std::vector<std::string>, std::vector<std::string>> WithQueryManager:
                               synonym_to_entities_vec);
           break;
         }
-        case EntityType::Call:
+        case EntityType::Call: {
+          auto *stmt = dynamic_cast<Statement *>(right_entity);
+          right_arg = stmt->get_called_proc_name();
+          printf("right arg IS: %s\n", right_arg.c_str());
+          curr_vec = GetNames(with->get_left_ref(), with->get_left_type(), right_arg,
+                              synonym_to_entities_vec);
+          right_arg = std::to_string(stmt->get_stmt_no());
+          break;
+        }
         case EntityType::Read: {
           auto *stmt = dynamic_cast<Statement *>(right_entity);
           for (auto &i : *stmt->get_modifies()) {
+            printf("I IS: %s\n", i.c_str());
             curr_vec = GetNames(with->get_left_ref(), with->get_left_type(), i,
                                 synonym_to_entities_vec);
             right_arg = std::to_string(stmt->get_stmt_no());

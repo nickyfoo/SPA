@@ -61,6 +61,7 @@ std::tuple<std::vector<ResultClause *> *,
   }
   printf("came here\n");
   if (select_clauses.empty()) {  // invalid select syntax
+    printf("HURR???\n");
     return nullptr;
   }
   printf("cae here1\n");
@@ -109,6 +110,7 @@ std::tuple<std::vector<ResultClause *> *,
   }
   printf("came here3\n");
   for (const std::string &pattern_clause : pattern_clauses) {
+    printf("PATTERN CLAUSE IS: %s\n", pattern_clause.c_str());
     std::vector<PatternClause *> *pattern = MakePatternClause(pattern_clause);
     if (pattern == nullptr) {
       if (!is_select_boolean) {
@@ -183,7 +185,7 @@ std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
 
   std::vector<std::vector<std::string>> relationship_clauses;
   relationship_clauses = SplitTokensByBrackets(relationship_statement);
-
+  if (relationship_clauses.empty()) return nullptr;
   for (std::vector<std::string> relationship_clause : relationship_clauses) {
     if (relationship_clause.size() != 3) {
       return nullptr;
@@ -215,26 +217,31 @@ std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
 std::vector<PatternClause *> *SelectClauseParser::MakePatternClause(
     const std::string& pattern_statement) {
   auto *ret = new std::vector<PatternClause *>();
-  if (pattern_statement.empty()) {
-    return nullptr;
-  }
+  if (pattern_statement.empty()) return nullptr;
 
+  printf("madude1\n");
   std::vector<std::vector<std::string>> pattern_clauses = SplitTokensByBrackets(
       pattern_statement);
+  if (pattern_clauses.empty()) return nullptr;
   for (std::vector<std::string> pattern_clause : pattern_clauses) {
-    if (pattern_clause.size() < 3 || pattern_clause.size() > 4) {
-      return nullptr;
-    }
+    printf("madude2\n");
+    if (pattern_clause.size() < 3 || pattern_clause.size() > 4) return nullptr;
+    printf("madude3\n");
     std::string synonym = pattern_clause.at(0);
     std::string left_ref = pattern_clause.at(1);
     std::string right_ref = pattern_clause.at(2);
+    if (synonym.empty() || left_ref.empty() || right_ref.empty()) return nullptr;
     if (pattern_clause.size() == 3) {  // assign and while
+      printf("madude4\n");
       auto *pattern = MakePatternRef(synonym, left_ref, right_ref);
+      printf("madude5\n");
       if (pattern == nullptr ||
           !(pattern->get_type() == EntityType::Assign ||
               pattern->get_type() == EntityType::While)) {
+        printf("in1\n");
         return nullptr;
       } else {
+        printf("in2\n");
         ret->push_back(pattern);
       }
     } else {  // if
@@ -255,15 +262,13 @@ std::vector<WithClause *> *SelectClauseParser::MakeWithClause(
     const std::string& with_statement) {
   auto *ret = new std::vector<WithClause *>();
   printf("making with clause...\n");
-  if (with_statement.empty()) {
-    return nullptr;
-  }
-
+  if (with_statement.empty()) return nullptr;
+  printf("\n");
   std::vector<std::pair<std::string, std::string>> with_clauses =
       SplitTokensByEqual(with_statement);
-  if (with_clauses.empty()) {
-    return nullptr;
-  }
+  printf("lampa2\n");
+  if (with_clauses.empty()) return nullptr;
+  printf("lampa3\n");
   for (const std::pair<std::string, std::string>& with_clause : with_clauses) {
     const std::string WHITESPACE = " \n\r\t\f\v";
 
@@ -299,6 +304,10 @@ PatternClause *SelectClauseParser::MakePatternRef(const std::string &synonym,
                                                   const std::string& right_ref) {
   PatternClause *ret;
   auto *ent_ref = new EntRef();
+  printf("madude8\n");
+  printf("Synonym: %s\n", synonym.c_str());
+  printf("left ref: %s\n", left_ref.c_str());
+  printf("right ref: %s\n", right_ref.c_str());
   if ((synonym_to_entity_->find(synonym) != synonym_to_entity_->end())
       && (synonym_to_entity_->at(synonym)->get_type() == EntityType::Assign
           || synonym_to_entity_->at(synonym)->get_type() == EntityType::If
@@ -307,7 +316,7 @@ PatternClause *SelectClauseParser::MakePatternRef(const std::string &synonym,
   } else {
     return nullptr;
   }
-
+  printf("madude9\n");
   if ((synonym_to_entity_->find(left_ref) != synonym_to_entity_->end()) &&
       (synonym_to_entity_->at(left_ref)->get_type() == EntityType::Variable)) {
     ent_ref->set_synonym(left_ref);
@@ -318,7 +327,7 @@ PatternClause *SelectClauseParser::MakePatternRef(const std::string &synonym,
   } else {
     return nullptr;
   }
-
+  printf("madude10\n");
   if (ret->set_ref(ent_ref, right_ref)) {
     return ret;
   } else {
@@ -669,6 +678,7 @@ bool SelectClauseParser::IsInteger(const std::string &str) {
 
 std::vector<std::string> SelectClauseParser::SplitSelect(
     std::string select_clause) {
+  printf("select at start: %s\n", select_clause.c_str());
   const std::string WHITESPACE = " \n\r\t\f\v";
   size_t pos = select_clause.find_first_not_of(WHITESPACE);
   if (pos == std::string::npos) {
@@ -737,6 +747,7 @@ std::vector<std::string> SelectClauseParser::SplitTokensByEqualDelim(
 std::tuple<std::string, std::vector<std::string>,
            std::vector<std::string>, std::vector<std::string>>
 SelectClauseParser::SplitTokensByClauses(const std::string &input) {
+  printf("INPUT AT START IS : %s\n", input.c_str());
   std::string SUCH_THAT_DELIM = "such that ";
   std::string PATTERN_DELIM = "pattern ";
   std::string WITH_DELIM = "with ";
@@ -755,9 +766,19 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
   // first pass to remove all whitespaces within brackets and before brackets
   bool whitespace_found = true;
   bool open_bracket_found = false;
+  bool inverted_commas_found = false;
   std::stringstream prev_word_stream;
   for (char c : input) {
-    if (c == ' ') {
+    printf("c is %c\n", c);
+    if (c == '\"' || c == '\'') {
+      printf("CAME TO THIS BIJJJJ\n");
+      ss << c;
+      inverted_commas_found = !inverted_commas_found;
+      whitespace_found = false;
+    } else if (inverted_commas_found) {
+      printf("in\n");
+      ss << c;
+    } else if (c == ' ') {
       // extra check to account for such that clause without extra spaces
       std::string check_for_such = prev_word_stream.str();
       bool such_clause_found = false;
@@ -803,22 +824,26 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
       }
     }
   }
-
+  printf("one\n");
   std::string clean_input = ss.str();
+  printf("CLEAN INPUT IS: %s\n", clean_input.c_str());
   pos = clean_input.find(' ');
   if (pos == std::string::npos) {  // find first whitespace
     return make_tuple(select_clause, such_that_clauses, pattern_clauses, with_clauses);
   }
-
+  printf("two\n");
   pos = clean_input.find(' ', pos + 1);
   if (pos == std::string::npos) {  // find second white space
     select_clause = clean_input;
     return make_tuple(select_clause, such_that_clauses, pattern_clauses, with_clauses);
   }
-
+  printf("three\n");
   select_clause = clean_input.substr(0, pos);  // adds the select clause
+  printf("select clause is ? : %s\n", select_clause.c_str());
+  printf("SELECT CLAUSE: %s\n", select_clause.c_str());
   clean_input.erase(0, pos);
-
+  printf("four\n");
+  printf("CLEAN INPUT AFTER IS: %s\n", clean_input.c_str());
   while (clean_input.find(SUCH_THAT_DELIM) != std::string::npos
       || clean_input.find(PATTERN_DELIM) != std::string::npos
       || clean_input.find(WITH_DELIM) != std::string::npos) {
@@ -826,6 +851,7 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
     pos = std::min(std::min(clean_input.find(SUCH_THAT_DELIM),
                             clean_input.find(PATTERN_DELIM)),
                    clean_input.find(WITH_DELIM));
+    printf("pos is : %d\n", pos);
     token = clean_input.substr(0, pos);
     if (last_found_such_that) {
       such_that_clauses.push_back(token);
@@ -855,9 +881,12 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
       last_found_pattern = false;
     }
   }
+  printf("five\n");
   if (!last_found_such_that && !last_found_pattern && !last_found_with) {
+    printf("six\n");
     select_clause.append(clean_input);  // error
   }
+  printf("seven\n");
   if (last_found_such_that) {
     such_that_clauses.push_back(clean_input);
   } else if (last_found_pattern) {
@@ -865,7 +894,10 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
   } else if (last_found_with) {
     with_clauses.push_back(clean_input);
   }
-
+  for (std::string s : pattern_clauses) {
+    printf("clause: %s\n", s.c_str());
+  }
+  printf("eight\n");
   return make_tuple(select_clause, such_that_clauses, pattern_clauses, with_clauses);
 }
 
@@ -876,24 +908,55 @@ std::vector<std::vector<std::string>> SelectClauseParser::SplitTokensByBrackets(
   std::vector<std::vector<std::string>> ret;
   std::vector<std::string> clauses = SplitTokensByDelimiter(input, AND_DELIM);
   for (const std::string& clause : clauses) {
-    std::stringstream input_stream;
-    input_stream << clause;
+//    std::stringstream input_stream;
+//    input_stream << clause;
     std::vector<std::string> tokens;
+    printf("CLAUUUUUUSE IS : %s\n", clause.c_str());
 
-    std::string line;
-    while (getline(input_stream, line)) {
-      size_t prev = 0, pos;
-      while ((pos = line.find_first_of(brackets, prev))
-          != std::string::npos) {
-        if (pos >= prev)
-          tokens.push_back(line.substr(prev, pos - prev));
-        prev = pos + 1;
+//    std::string line;
+    std::stringstream ss;
+
+    bool inverted_commas_found = false;
+    bool open_bracket_found = false;
+    bool close_bracket_found = false;
+    for (char c : clause) {
+      printf("c is %c\n", c);
+      if (c == '\"' || c == '\'') {
+        ss << c;
+        inverted_commas_found = !inverted_commas_found;
+      } else if (inverted_commas_found) {
+        ss << c;
+      } else if (c == '(' || c == '<') {
+        if (open_bracket_found) return std::vector<std::vector<std::string>>();  // error, found extra
+        open_bracket_found = true;
+        tokens.push_back(ss.str());
+        ss.str("");
+      } else if (c == ')' || c == '>') {
+        if (close_bracket_found) return std::vector<std::vector<std::string>>();  // error, found extra
+        close_bracket_found = true;
+        tokens.push_back(ss.str());
+        ss.str("");
+      } else if (c == ',') {
+        tokens.push_back(ss.str());
+        ss.str("");
+      } else if (c != ' ') {
+        ss << c;
       }
-      if (prev < line.length())
-        if (line.substr(prev, std::string::npos) != "" &&
-            line.substr(prev, std::string::npos) != " ")
-          tokens.push_back(line.substr(prev, std::string::npos));
     }
+
+//    while (getline(input_stream, line)) {
+//      size_t prev = 0, pos;
+//      while ((pos = line.find_first_of(brackets, prev))
+//          != std::string::npos) {
+//        if (pos >= prev)
+//          tokens.push_back(line.substr(prev, pos - prev));
+//        prev = pos + 1;
+//      }
+//      if (prev < line.length())
+//        if (line.substr(prev, std::string::npos) != "" &&
+//            line.substr(prev, std::string::npos) != " ")
+//          tokens.push_back(line.substr(prev, std::string::npos));
+//    }
     ret.push_back(tokens);
   }
 
@@ -904,9 +967,13 @@ std::vector<std::pair<std::string, std::string>> SelectClauseParser::SplitTokens
     const std::string &input) {
   const std::string equal = "=";
   const std::string AND_DELIM = " and ";
+  printf("INSIDE HEREEE\n");
+  printf("INPUT IS: %s\n", input.c_str());
   std::vector<std::pair<std::string, std::string>> ret;
   std::vector<std::string> clauses = SplitTokensByDelimiter(input, AND_DELIM);
   for (const std::string& clause : clauses) {
+    printf("GOTBOH\n");
+    printf("CLAUSE: %s\n", clause.c_str());
     std::vector<std::string> with_clause = SplitTokensByEqualDelim(clause);
     if (with_clause.size() != 2) {
       return {};

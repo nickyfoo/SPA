@@ -215,18 +215,30 @@ std::tuple<std::vector<std::string>, std::vector<std::string>> WithQueryManager:
           break;
         }
         case EntityType::Call:
-        case EntityType::Read:
+        case EntityType::Read: {
+          auto *stmt = dynamic_cast<Statement *>(right_entity);
+          for (auto &i : *stmt->get_modifies()) {
+            curr_vec = GetNames(with->get_left_ref(), with->get_left_type(), i,
+                                synonym_to_entities_vec);
+            right_arg = std::to_string(stmt->get_stmt_no());
+          }
+          break;
+        }
         case EntityType::Print: {
           auto *stmt = dynamic_cast<Statement *>(right_entity);
-          right_arg = std::to_string(stmt->get_stmt_no());
-          curr_vec = GetNames(with->get_left_ref(), with->get_left_type(), right_arg,
-                              synonym_to_entities_vec);
+          for (auto &i : *stmt->get_uses()) {
+            curr_vec = GetNames(with->get_left_ref(), with->get_left_type(), i,
+                                synonym_to_entities_vec);
+            right_arg = std::to_string(stmt->get_stmt_no());
+          }
           break;
         }
         default:
           throw std::runtime_error("Wrong EntityType!");
       }
       for (std::string s : curr_vec) {
+        printf("s is : %s\n", s.c_str());
+        printf("right arg is: %s\n", right_arg.c_str());
         left_synonym.push_back(s);
         right_synonym.push_back(right_arg);
       }

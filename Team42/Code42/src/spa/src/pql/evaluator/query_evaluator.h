@@ -19,14 +19,9 @@ class QueryEvaluator {
   PKB *pkb_;
   std::unordered_map<std::string, EntityDeclaration *> *synonym_to_entity_dec_;
   bool is_valid_query_;
-  std::unordered_map<std::string, std::vector<Entity *>> GetPossibleEntitiesVec(ClauseVertex clause_vertex);
-    static bool IsEmpty(
-      std::unordered_map<std::string, std::vector<Entity *>>
-      *synonym_to_entity_result);
+  std::unordered_map<std::string, std::vector<Entity *>> GetPossibleEntitiesVec(
+      ClauseVertex clause_vertex);
   std::vector<std::string> *ConvertToOutput(ResultTable *table_result, bool is_valid_query);
-  static bool IsStmt(EntityType entity_type);
-  bool IsDefaultType(ResultClause *result_clause);
-  std::vector<std::string> *GetAllPossibleReturnResults();
   void MakeTableForUnusedEntity(ResultTable *result_table, ResultClause *result_clause);
   void MakeTableForUsedEntity(ResultTable *result_table,
                               ResultClause *result_clause,

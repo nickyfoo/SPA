@@ -133,9 +133,6 @@ TEST_CASE("PQL_Tuple_ReturnsExpected") {
   std::vector<std::string> expected = {"2 2", "2 3", "2 13", "2 18", "3 2", "3 3", "3 13", "3 18",
                                        "13 2", "13 3", "13 13", "13 18", "18 2", "18 3", "18 13", "18 18"};
 
-  for (std::string s : *ret) {
-    printf("s is: %s\n", s.c_str());
-  }
   REQUIRE(ret->size() == expected.size());
   for (int i = 0; i < expected.size(); i++) {
     REQUIRE(std::find(expected.begin(), expected.end(), ret->at(i)) != expected.end());

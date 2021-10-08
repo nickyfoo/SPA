@@ -53,7 +53,6 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results){
   // each result must be a string.
   auto *query_preprocessor = new QueryPreprocessor(query);
   PQLQuery *clause = query_preprocessor->get_pql_query();
-  printf("wassupdog\n");
   QueryEvaluator *query_evaluator = new QueryEvaluator(clause, pkb_);
   std::vector<std::string> *res = query_evaluator->Evaluate();
   std::copy(res->begin(), res->end(), std::back_inserter(results));

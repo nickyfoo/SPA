@@ -9,7 +9,6 @@ using table = std::vector<std::vector<std::string>>;
 
 class ResultTable {
  public:
-  ResultTable(std::vector<std::string> synonyms);
   ResultTable();
   void NaturalJoin(ResultTable &result_table);
   void CrossJoin(ResultTable &result_table);

@@ -12,7 +12,8 @@ UsesSModifiesSHandler *UsesSModifiesSHandler::get_instance() {
 
 void UsesSModifiesSHandler::set_args(PKB *pkb,
                                      std::shared_ptr<SuchThatClause> relationship,
-                                     std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec) {
+                                     std::unordered_map<std::string,
+                                     std::vector<Entity *>> synonym_to_entities_vec) {
   this->pkb_ = pkb;
   this->relationship_ = relationship;
   this->synonym_to_entities_vec_ = synonym_to_entities_vec;
@@ -53,85 +54,18 @@ ResultTable* UsesSModifiesSHandler::Evaluate() {
     std::vector<std::string> left_stmt_vec;
     std::vector<std::string> right_var_vec;
 
-    printf("OKAY AH REALLY NEED TO CHECK IN USESS WHAT IS THIS:\n\n\n\n");
-    for (auto &i : *pkb_->get_statement(6)->get_uses()) {
-      printf("WAT: %s\n", i.c_str());
-    }
     for (int i = 0; i < left_entity_vec.size(); i++) {
       auto *stmt = dynamic_cast<Statement *>(left_entity_vec.at(i));
       for (int j = 0; j < right_entity_vec.size(); j++) {
         auto *variable = dynamic_cast<Variable *>(right_entity_vec.at(j));
-        if (stmt != nullptr && variable != nullptr && StatementForwarder(get_normal_, stmt)->count(variable->get_name())) {
+        if (stmt != nullptr && variable != nullptr
+        && StatementForwarder(get_normal_, stmt)->count(variable->get_name())) {
           left_stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
           right_var_vec.push_back(variable->get_name());
         }
       }
     }
-//    for (int j = 0; j < right_entity_vec.size(); j++) {
-//      auto *variable = dynamic_cast<Variable *>(right_entity_vec.at(j));
-//      if (variable != nullptr && !VariableForwarder(get_reverse_, variable)->empty()) {
-//        right_var_vec.push_back(variable->get_name());
-//      }
-//    }
-
     ret->AddDoubleColumns(left_synonym, left_stmt_vec, right_synonym, right_var_vec);
-//    left_entity_vec->erase(std::remove_if(left_entity_vec->begin(),
-//                                          left_entity_vec->end(),
-//                                          [this, &right_entity_vec](Entity *entity) {
-//                                            auto *stmt = dynamic_cast<Statement *>(entity);
-//                                            bool has_matching_follower = false;
-//                                            std::set<std::string> *follower_set =
-//                                                StatementForwarder(get_normal_, stmt);
-//                                            // Check if followers contain something
-//                                            // from right arg vector
-//                                            // remove that statement if it doesn't
-//                                            for (std::string follower : *follower_set) {
-//                                              if (has_two_repeated_synonyms_) {
-//                                                // Adding to set if there are 2 common synonyms with
-//                                                // pattern.
-//                                                stmt_var_pair_vector_->push_back(
-//                                                    {stmt->get_stmt_no(),
-//                                                     follower});
-//                                              }
-//                                              for (Entity *ent : *right_entity_vec) {
-//                                                std::string right_name =
-//                                                    dynamic_cast<Variable *>(ent)->get_name();
-//                                                if (right_name == follower) {
-//                                                  has_matching_follower = true;
-//                                                  break;
-//                                                }
-//                                              }
-//                                            }
-//                                            return stmt == nullptr ||
-//                                                follower_set->empty() ||
-//                                                !has_matching_follower;
-//                                          }),
-//                           left_entity_vec->end());
-//    right_entity_vec->erase(std::remove_if(right_entity_vec->begin(),
-//                                           right_entity_vec->end(),
-//                                           [this, &left_entity_vec](Entity *entity) {
-//                                             auto *variable = dynamic_cast<Variable *>(entity);
-//                                             bool has_matching_followee = false;
-//                                             std::set<int> *followee_set =
-//                                                 VariableForwarder(get_reverse_, variable);
-//                                             // Check if followees contain something
-//                                             // from left arg vector
-//                                             // remove that variable if it doesn't
-//                                             for (int followee : *followee_set) {
-//                                               for (Entity *ent : *left_entity_vec) {
-//                                                 int left_num =
-//                                                     dynamic_cast<Statement *>(ent)->get_stmt_no();
-//                                                 if (left_num == followee) {
-//                                                   has_matching_followee = true;
-//                                                   break;
-//                                                 }
-//                                               }
-//                                             }
-//                                             return variable == nullptr ||
-//                                                 followee_set->empty() ||
-//                                                 !has_matching_followee;
-//                                           }),
-//                            right_entity_vec->end());
   } else if (left_ent.get_type() == StmtRefType::Synonym &&
       right_ent.get_type() == EntRefType::WildCard) {  // Uses(s, _)
     std::string left_synonym = left_ent.get_synonym();

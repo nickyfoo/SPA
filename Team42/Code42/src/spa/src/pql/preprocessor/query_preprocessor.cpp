@@ -12,7 +12,6 @@ QueryPreprocessor::QueryPreprocessor(std::string input) {
     this->clauses_ = nullptr;
     return;
   }
-  printf("here1\n");
   PQLQuery *pql_query = MakePQLQuery(entities_map, select_clause);
   this->clauses_ = pql_query;
 }
@@ -57,12 +56,9 @@ PQLQuery *QueryPreprocessor::MakePQLQuery(std::unordered_map<std::string,
              std::vector<WithClause *> *,
              std::unordered_map<std::string, EntityDeclaration *> *,
              bool> *clauses_tuple = scp->get_clauses();
-  printf("muthafucker\n");
   if (clauses_tuple == nullptr) return nullptr;
-  printf("DID IT STILL ALIVE HERE\n");
   bool is_valid_clause = std::get<5>(*clauses_tuple);
   if (!is_valid_clause) {
-    printf("HEREBOI\n");
     return new PQLQuery(std::get<0>(*clauses_tuple),
                                        std::vector<std::shared_ptr<ClauseGroup>>(),
                                        std::get<4>(*clauses_tuple),

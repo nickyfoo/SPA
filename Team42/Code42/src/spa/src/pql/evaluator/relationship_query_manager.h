@@ -11,10 +11,11 @@
 
 class RelationshipQueryManager {
  public:
-  RelationshipQueryManager(PKB *pkb);
+  explicit RelationshipQueryManager(PKB *pkb);
   ResultTable *EvaluateRelationship(std::shared_ptr<SuchThatClause> relationship,
                                     std::unordered_map<std::string,
-                                                       std::vector<Entity *>> synonym_to_entities_vec);
+                                                       std::vector<Entity *>>
+                                                       synonym_to_entities_vec);
   ~RelationshipQueryManager();
  private:
   PKB *pkb_;

@@ -29,11 +29,14 @@ void SelectClauseParser::set_select_clause(std::unordered_map<std::string,
   this->select_statement_ = select_clause;
 }
 
+// returns nullptr if any clauses are invalid
+// returns a tuple with is_valid_clause = false if BOOLEAN operation
 std::tuple<std::vector<ResultClause *> *,
            std::vector<SuchThatClause *> *,
            std::vector<PatternClause *> *,
            std::vector<WithClause *> *,
-           std::unordered_map<std::string, EntityDeclaration *> *> * SelectClauseParser::get_clauses() {
+           std::unordered_map<std::string, EntityDeclaration *> *,
+           bool> *SelectClauseParser::get_clauses() {
   std::tuple<std::string,
              std::vector<std::string>,
              std::vector<std::string>,
@@ -61,6 +64,7 @@ std::tuple<std::vector<ResultClause *> *,
     return nullptr;
   }
   printf("cae here1\n");
+  bool is_select_boolean = false;
   for (const std::string &select : select_clauses) {
     printf("am here\n");
     printf("select is: %s\n", select.c_str());
@@ -69,6 +73,7 @@ std::tuple<std::vector<ResultClause *> *,
       printf("UH1\n");
       // do nothing, flag to evaluator that it requires a boolean output
       result_clause = new ResultClause("", EntityType::None, ReturnType::Boolean);
+      is_select_boolean = true;
     } else if (synonym_to_entity_->find(select) != synonym_to_entity_->end()) {
       printf("UH2\n");
       result_clause = new ResultClause(select, synonym_to_entity_->at(select)->get_type(), ReturnType::Default);
@@ -85,7 +90,18 @@ std::tuple<std::vector<ResultClause *> *,
   for (const std::string &such_that_clause : such_that_clauses) {
     std::vector<SuchThatClause *> *relationship = MakeSuchThatClause(such_that_clause);
     if (relationship == nullptr) {
-      return nullptr;
+      if (!is_select_boolean) {
+        return nullptr;
+      } else {
+        return new std::tuple<std::vector<ResultClause *> *,
+                              std::vector<SuchThatClause *> *,
+                              std::vector<PatternClause *> *,
+                              std::vector<WithClause *> *,
+                              std::unordered_map<std::string, EntityDeclaration *> *,
+                              bool>(
+            select_ret, such_that_ret,
+            pattern_ret, with_ret, synonym_to_entity_, false);
+      }
     }
     for (SuchThatClause *clause : *relationship) {
       such_that_ret->push_back(clause);
@@ -95,7 +111,18 @@ std::tuple<std::vector<ResultClause *> *,
   for (const std::string &pattern_clause : pattern_clauses) {
     std::vector<PatternClause *> *pattern = MakePatternClause(pattern_clause);
     if (pattern == nullptr) {
-      return nullptr;
+      if (!is_select_boolean) {
+        return nullptr;
+      } else {
+        return new std::tuple<std::vector<ResultClause *> *,
+                              std::vector<SuchThatClause *> *,
+                              std::vector<PatternClause *> *,
+                              std::vector<WithClause *> *,
+                              std::unordered_map<std::string, EntityDeclaration *> *,
+                              bool>(
+            select_ret, such_that_ret,
+            pattern_ret, with_ret, synonym_to_entity_, false);
+      }
     }
     for (PatternClause *clause : *pattern) {
       pattern_ret->push_back(clause);
@@ -104,54 +131,37 @@ std::tuple<std::vector<ResultClause *> *,
   printf("came here4\n");
   for (const std::string &with_clause : with_clauses) {
     std::vector<WithClause *> *with = MakeWithClause(with_clause);
+    printf("SHUD BE HERE\n");
     if (with == nullptr) {
-      return nullptr;
+      if (!is_select_boolean) {
+        printf("SHUD BE HERE2\n");
+        return nullptr;
+      } else {
+        printf("AM I HERE LEL\n");
+        return new std::tuple<std::vector<ResultClause *> *,
+                              std::vector<SuchThatClause *> *,
+                              std::vector<PatternClause *> *,
+                              std::vector<WithClause *> *,
+                              std::unordered_map<std::string, EntityDeclaration *> *,
+                              bool>(
+            select_ret, such_that_ret,
+            pattern_ret, with_ret, synonym_to_entity_, false);
+      }
     }
     for (WithClause *clause : *with) {
       with_ret->push_back(clause);
     }
   }
 
-//  // check for whether there are repeated synonyms
-//  bool has_one_repeated_synonym = false;
-//  bool has_two_repeated_synonyms = false;
-//  for (SuchThatClause *relationship : *such_that_ret) {
-//    std::string left_relationship_str, right_relationship_str;
-//    if (relationship->get_left_ref()->get_type() == SuchThatRefType::Statement) {
-//      left_relationship_str = relationship->get_left_ref()->get_stmt_ref().get_value();
-//    } else {
-//      left_relationship_str = relationship->get_left_ref()->get_ent_ref().get_value();
-//    }
-//
-//    if (relationship->get_right_ref()->get_type() == SuchThatRefType::Statement) {
-//      right_relationship_str = relationship->get_right_ref()->get_stmt_ref().get_value();
-//    } else {
-//      right_relationship_str = relationship->get_right_ref()->get_ent_ref().get_value();
-//    }
-//
-//    for (PatternClause *pattern : *pattern_ret) {
-//      if (left_relationship_str != "_" &&
-//          (pattern->get_synonym()->get_synonym() == left_relationship_str
-//              || pattern->get_variable()->get_value() == left_relationship_str)) {
-//        has_one_repeated_synonym = true;
-//      }
-//
-//      if (right_relationship_str != "_" &&
-//          (pattern->get_synonym()->get_synonym() == right_relationship_str
-//              || pattern->get_variable()->get_value() == right_relationship_str)) {
-//        has_one_repeated_synonym ? has_two_repeated_synonyms = true
-//                                 : has_one_repeated_synonym = true;
-//      }
-//    }
-//  }
   printf("came here5\n");
   auto ret = new std::tuple<std::vector<ResultClause *> *,
                             std::vector<SuchThatClause *> *,
                             std::vector<PatternClause *> *,
                             std::vector<WithClause *> *,
-                            std::unordered_map<std::string, EntityDeclaration *> *>(
+                            std::unordered_map<std::string, EntityDeclaration *> *,
+                            bool>(
                                 select_ret, such_that_ret,
-                                pattern_ret, with_ret, synonym_to_entity_);
+                                pattern_ret, with_ret, synonym_to_entity_, true);
   printf("SELECT CLAUSE TOTAL SIZE: %d\n", select_ret->size());
   printf("RESULT SIZE AT THE END: %d\n", synonym_to_entity_->size());
   for (auto &i : *synonym_to_entity_) {
@@ -276,7 +286,9 @@ std::vector<WithClause *> *SelectClauseParser::MakeWithClause(
     if (with == nullptr) {
       return nullptr;
     } else {
+      printf("FOUR\n");
       ret->push_back(with);
+      printf("FIVE\n");
     }
   }
   return ret;
@@ -333,9 +345,12 @@ WithClause *SelectClauseParser::MakeWithRef(const std::string& left_ref,
     left_attr_value_type = AttrValueType::Name;
   } else {
     std::tie(left_str, left_type, left_attr_value_type) = GetWithRefTypeAndAttrValueType(left_ref);
+    printf("ONEPOINTFIVE\n");
     if (left_type == EntityType::None) {  // not valid ref
+      printf("ONEPOINTSEVENFIVE\n");
       return nullptr;
     }
+    printf("ONEPOINT875\n");
   }
   if (IsInteger(right_ref)) {  // set as EntityType::None if it is an integer
     right_str = right_ref;
@@ -348,12 +363,15 @@ WithClause *SelectClauseParser::MakeWithRef(const std::string& left_ref,
   } else {
     std::tie(right_str, right_type, right_attr_value_type) =
         GetWithRefTypeAndAttrValueType(right_ref);
+    printf("DAFKBOI");
     if (right_type == EntityType::None) {  // not valid ref
+      printf("DAFKBOI1\n");
       return nullptr;
     }
   }
-
+  printf("TWO\n");
   if (left_attr_value_type != right_attr_value_type) {  // must be same attribute value types
+    printf("THREE\n");
     return nullptr;
   }
 
@@ -423,6 +441,7 @@ SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
         default:break;
       }
       if (attr_value_type != AttrValueType::None) {
+        printf("ONE\n");
         return std::make_tuple(synonym, type, attr_value_type);
       }
     }

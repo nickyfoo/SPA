@@ -24,7 +24,8 @@ class SelectClauseParser {
              std::vector<SuchThatClause *> *,
              std::vector<PatternClause *> *,
              std::vector<WithClause *> *,
-             std::unordered_map<std::string, EntityDeclaration *> *> * get_clauses();
+             std::unordered_map<std::string, EntityDeclaration *> *,
+             bool> * get_clauses();
 
  private:
   static SelectClauseParser *instance;

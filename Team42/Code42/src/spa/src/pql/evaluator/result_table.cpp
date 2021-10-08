@@ -16,6 +16,12 @@ ResultTable::ResultTable() {
 void ResultTable::NaturalJoin(ResultTable &other_result_table) {
   auto common_synonyms = GetCommonSynonyms(other_result_table);
   table *other_table = other_result_table.get_table();
+  if (other_table->empty()) {
+    printf("GOT COME HERE LA PLS NATURALJOINCANCELL\n");
+    delete table_;
+    table_ = new std::vector<std::vector<std::string>>();
+    return;
+  }
   printf("PRINT MY TABLE\n");
   for (std::vector<std::string> vec : *table_) {
     for (std::string s : vec) {
@@ -24,6 +30,8 @@ void ResultTable::NaturalJoin(ResultTable &other_result_table) {
     printf("\n");
   }
   printf("PRINT oTHER TABLE\n");
+  printf("TABLE SIZE 1: %d\n", other_table->size());
+  printf("TABLE SIZE 2: %d\n", other_table->at(0).size());
   for (std::vector<std::string> vec : *other_table) {
     for (std::string s : vec) {
       printf("%s ", s.c_str());
@@ -195,6 +203,13 @@ void ResultTable::NaturalJoin(ResultTable &other_result_table) {
 }
 
 void ResultTable::CrossJoin(ResultTable &other_result_table) {
+  table *new_table = new std::vector<std::vector<std::string>>();
+  table *other_table = other_result_table.get_table();
+  if (other_table->empty()) {
+    delete table_;
+    table_ = new_table;
+    return;
+  }
   printf("AT the start of cross join:\n");
   for (auto &i : *synonym_to_index_) {
     printf("key is : %s\n", i.first.c_str());
@@ -215,8 +230,6 @@ void ResultTable::CrossJoin(ResultTable &other_result_table) {
     synonyms_->push_back(synonym);
   }
 
-  table *other_table = other_result_table.get_table();
-  table *new_table = new std::vector<std::vector<std::string>>();
   auto *other_synonym_to_index = other_result_table.get_synonym_to_index();
   if (other_table->size() == 0) {
     delete table_;

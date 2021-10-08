@@ -11,21 +11,34 @@
 #include "pkb.h"
 
 QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
-  if (pql_query != nullptr) {
+  printf("Isithere1\n");
+//  printf("valid or not: %d\n", pql_query->is_valid_query());
+  if (pql_query != nullptr && pql_query->is_valid_query()) {
+    printf("isithere2\n");
     this->entities_to_return_ = pql_query->get_query_entities();
     this->clause_groups_ = pql_query->get_clause_groups();
     this->synonym_to_entity_dec_ = pql_query->get_synonym_to_entities();
+    this->is_valid_query_ = pql_query->is_valid_query();
     this->pkb_ = pkb;
-  } else {
+  } else if (pql_query == nullptr){
+    printf("isithere3\n");
     this->entities_to_return_ = nullptr;
     this->synonym_to_entity_dec_ = nullptr;
     this->pkb_ = nullptr;
+  } else {
+    this->synonym_to_entity_dec_ = pql_query->get_synonym_to_entities();
+    this->is_valid_query_ = false;
   }
 }
 
 std::vector<std::string> *QueryEvaluator::Evaluate() {
+  printf("isithereah\n");
   if (synonym_to_entity_dec_ == nullptr) {
     return new std::vector<std::string>{};
+  }
+  if (!is_valid_query_) {  // if not valid at the start, means that it is a FALSE boolean
+    printf("got come here or not ah \n");
+    return new std::vector<std::string>{"FALSE"};
   }
   printf("EVALUATE\n");
   RelationshipQueryManager *relationship_query_manager;

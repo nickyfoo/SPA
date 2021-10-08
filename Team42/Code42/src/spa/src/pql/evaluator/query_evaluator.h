@@ -18,6 +18,7 @@ class QueryEvaluator {
   std::vector<std::shared_ptr<ClauseGroup>> clause_groups_;
   PKB *pkb_;
   std::unordered_map<std::string, EntityDeclaration *> *synonym_to_entity_dec_;
+  bool is_valid_query_;
   std::unordered_map<std::string, std::vector<Entity *>> GetPossibleEntitiesVec(ClauseVertex clause_vertex);
     static bool IsEmpty(
       std::unordered_map<std::string, std::vector<Entity *>>

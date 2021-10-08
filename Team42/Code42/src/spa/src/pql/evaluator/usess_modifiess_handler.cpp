@@ -52,6 +52,11 @@ ResultTable* UsesSModifiesSHandler::Evaluate() {
     left_entity_vec = synonym_to_entities_vec_.at(left_synonym);
     std::vector<std::string> left_stmt_vec;
     std::vector<std::string> right_var_vec;
+
+    printf("OKAY AH REALLY NEED TO CHECK IN USESS WHAT IS THIS:\n\n\n\n");
+    for (auto &i : *pkb_->get_statement(6)->get_uses()) {
+      printf("WAT: %s\n", i.c_str());
+    }
     for (int i = 0; i < left_entity_vec.size(); i++) {
       auto *stmt = dynamic_cast<Statement *>(left_entity_vec.at(i));
       for (int j = 0; j < right_entity_vec.size(); j++) {

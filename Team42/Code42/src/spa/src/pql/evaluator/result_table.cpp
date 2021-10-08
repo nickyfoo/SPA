@@ -32,6 +32,8 @@ void ResultTable::NaturalJoin(ResultTable &other_result_table) {
   }
   if (common_synonyms->size() == 2) {  // two common
     printf("CAME ONE\n");
+    printf("col one synonym: %s\n", common_synonyms->at(0).first.c_str());
+    printf("col two synonym: %s\n", common_synonyms->at(1).first.c_str());
     std::vector<std::string> col_one = GetColumnVec(common_synonyms->at(0).first);
     std::vector<std::string> col_two = GetColumnVec(common_synonyms->at(1).first);
     std::vector<std::string> other_col_one = other_result_table.GetColumnVec(common_synonyms->at(0).first);
@@ -59,10 +61,10 @@ void ResultTable::NaturalJoin(ResultTable &other_result_table) {
         bool found_matching_row = false;
         for (int j = 0; j < other_col_one.size() && j < other_col_two.size(); ++j) {
 //          printf("got reach here2\n");
-          printf("col one: %s\n", col_one.at(i).c_str());
-          printf("col two: %s\n", col_two.at(i).c_str());
-          printf("other col one: %s\n", other_col_one.at(j).c_str());
-          printf("other col two: %s\n", other_col_two.at(j).c_str());
+//          printf("col one: %s\n", col_one.at(i).c_str());
+//          printf("col two: %s\n", col_two.at(i).c_str());
+//          printf("other col one: %s\n", other_col_one.at(j).c_str());
+//          printf("other col two: %s\n", other_col_two.at(j).c_str());
           if (col_one.at(i) == other_col_one.at(j) && col_two.at(i) == other_col_two.at(j)) {
             printf("got something heree\n");
             found_matching_row = true;
@@ -113,6 +115,14 @@ void ResultTable::NaturalJoin(ResultTable &other_result_table) {
     if (num_of_synonyms == 2) {
       printf("DID IT EVEN COME HERE NO AH\n");
       other_col_two_index = (common_synonyms->at(0).second + 1) % 2;
+      auto *other_synonyms_to_index = other_result_table.get_synonym_to_index();
+      for (auto& it : *other_synonyms_to_index) {
+        if (std::find(synonyms_->begin(), synonyms_->end(), it.first) == synonyms_->end()) {  // if item is new
+          synonym_to_index_->insert({it.first, synonym_to_index_->size()});
+          index_to_synonym_->insert({index_to_synonym_->size(), it.first});
+          synonyms_->push_back(it.first);
+        }
+      }
 //      std::unordered_map<std::string, int> *other_synonyms_to_index = other_result_table.get_synonym_to_index();
 //      for (auto& it : *other_synonyms_to_index) {
 //        if (synonym_to_index_->find(it.first) != synonym_to_index_->end()) {
@@ -166,30 +176,55 @@ void ResultTable::NaturalJoin(ResultTable &other_result_table) {
     for (int k = index_to_erase.size()-1; k >= 0; --k) {
       table_->erase(table_->begin()+index_to_erase.at(k));
     }
-  } else if (common_synonyms->size() == 0) { // should not happen
+  } else if (common_synonyms->size() == 0) {
 //    throw std::runtime_error("Error on natural join.");
     printf("DAHECK\n");
+    printf("BEFORE cross join:\n");
+
+    for (auto &i : *synonym_to_index_) {
+      printf("key is : %s\n", i.first.c_str());
+      printf("value is : %d\n", i.second);
+    }
+    for (std::vector<std::string> vec : *table_) {
+      for (std::string s : vec) {
+        printf("%s ", s.c_str());
+      }
+    }
     CrossJoin(other_result_table);
   }
 }
 
 void ResultTable::CrossJoin(ResultTable &other_result_table) {
+  printf("AT the start of cross join:\n");
+  for (auto &i : *synonym_to_index_) {
+    printf("key is : %s\n", i.first.c_str());
+    printf("value is : %d\n", i.second);
+  }
+  for (std::vector<std::string> vec : *table_) {
+    for (std::string s : vec) {
+      printf("%s ", s.c_str());
+    }
+  }
+
   std::unordered_map<int, std::string> *other_index_to_synonym = other_result_table.get_index_to_synonym();
+
   for (int i = 0; i < other_index_to_synonym->size(); ++i) {
     std::string synonym = other_index_to_synonym->at(i);
     synonym_to_index_->insert({synonym, synonym_to_index_->size()});
     index_to_synonym_->insert({index_to_synonym_->size(), synonym});
+    synonyms_->push_back(synonym);
   }
 
   table *other_table = other_result_table.get_table();
   table *new_table = new std::vector<std::vector<std::string>>();
-  other_result_table.get_synonym_to_index();
+  auto *other_synonym_to_index = other_result_table.get_synonym_to_index();
   if (other_table->size() == 0) {
     delete table_;
     table_ = new_table;
     return;
   }
 
+  // THIS IS WHY
   for (int i = 0; i < table_->size(); ++i) {
     for (int j = 0; j < other_table->size(); ++j) {
       std::vector<std::string> curr_row = table_->at(i);
@@ -201,6 +236,18 @@ void ResultTable::CrossJoin(ResultTable &other_result_table) {
   }
   delete table_;
   table_ = new_table;
+
+  printf("AT the end of cross join:\n");
+  for (auto &i : *synonym_to_index_) {
+    printf("key is : %s\n", i.first.c_str());
+    printf("value is : %d\n", i.second);
+  }
+  for (std::vector<std::string> vec : *table_) {
+    for (std::string s : vec) {
+      printf("%s ", s.c_str());
+    }
+    printf("\n");
+  }
 }
 
 //void ResultTable::CrossJoin(ResultTable &other_result_table) {
@@ -253,22 +300,25 @@ void ResultTable::CrossJoin(ResultTable &other_result_table) {
 std::vector<std::pair<std::string, int>> *ResultTable::GetCommonSynonyms(ResultTable &other_result_table) {
   for (auto &i : *other_result_table.get_synonym_to_index()) {
     printf("other_result table key: %s\n", i.first.c_str());
+    printf("other_result table value: %d\n", i.second);
   }
 
   for (auto &i : *synonym_to_index_) {
     printf("current table table key: %s\n", i.first.c_str());
+    printf("current table value: %d\n", i.second);
   }
 
   auto ret = new std::vector<std::pair<std::string, int>>();
-  std::unordered_map<std::string, int> *other_synonyms_to_index = other_result_table.get_synonym_to_index();
+  auto *other_synonyms_to_index = other_result_table.get_synonym_to_index();
+  int initial_num_of_synonyms = synonym_to_index_->size();
   for (auto& it : *other_synonyms_to_index) {
     if (synonym_to_index_->find(it.first) != synonym_to_index_->end()) {
       printf("other table it first is : %s\n", it.first.c_str());
       ret->push_back(std::make_pair(it.first, it.second));
     } else {
-      synonym_to_index_->insert({it.first, synonym_to_index_->size()});
-      index_to_synonym_->insert({index_to_synonym_->size(), it.first});
-      synonyms_->push_back(it.first);
+//      synonym_to_index_->insert({it.first, synonym_to_index_->size()});
+//      index_to_synonym_->insert({index_to_synonym_->size(), it.first});
+//      synonyms_->push_back(it.first);
     }
   }
   return ret;
@@ -284,6 +334,7 @@ void ResultTable::AddSingleColumn(std::string synonym, std::vector<std::string> 
   printf("gottt not\n");
   synonym_to_index_->insert({synonym, synonym_to_index_->size()});
   index_to_synonym_->insert({index_to_synonym_->size(), synonym});
+  synonyms_->push_back(synonym);
   bool empty_table = table_->empty();
   for (int i = 0; i < vec.size(); ++i) {
     if (!empty_table) {
@@ -305,6 +356,8 @@ void ResultTable::AddDoubleColumns(std::string synonym_one, std::vector<std::str
   synonym_to_index_->insert({synonym_two, synonym_to_index_->size()});
   index_to_synonym_->insert({index_to_synonym_->size(), synonym_one});
   index_to_synonym_->insert({index_to_synonym_->size(), synonym_two});
+  synonyms_->push_back(synonym_one);
+  synonyms_->push_back(synonym_two);
   bool empty_table = table_->empty();
   for (int i = 0; i < vec_one.size() && i < vec_two.size(); ++i) {
     if (!empty_table) {
@@ -329,6 +382,7 @@ std::vector<std::string> ResultTable::GetColumnVec(std::string synonym) {
     throw std::runtime_error("Error finding synonym!");
   }
   int index = synonym_to_index_->at(synonym);
+  printf("INDEX IS??? %d\n", index);
   std::vector<std::string> ret;
   for (std::vector<std::string> row : *table_) {
     ret.push_back(row.at(index));

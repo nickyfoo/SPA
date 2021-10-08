@@ -53,7 +53,7 @@ void StmtTable::CategorizeStatements() {
 void StmtTable::ProcessFollows() {
   for (auto&[line_no, stmt] : table_) {
     for (auto &followerLineNo : *(stmt.get_followers())) {
-      follows_.insert({line_no, followerLineNo});
+      follows_[line_no].insert(followerLineNo);
     }
   }
 }
@@ -66,7 +66,7 @@ void StmtTable::ProcessFollowsStar() {
     if (stmt == nullptr) continue;
 
     for (int j = 0; j < n; j++) {
-      if (d[i][j] == kInf) continue;
+      if (d[i][j] == 0) continue;
       stmt->AddFollowerStar(j);
       get_statement(j)->AddFolloweeStar(i);
     }
@@ -77,7 +77,7 @@ void StmtTable::ProcessFollowsStar() {
 void StmtTable::ProcessParent() {
   for (auto&[line_no, stmt] : table_) {
     for (auto &child_line_no : *(stmt.get_children())) {
-      parent_.insert({line_no, child_line_no});
+      parent_[line_no].insert(child_line_no);
     }
   }
 }
@@ -90,7 +90,7 @@ void StmtTable::ProcessParentStar() {
     if (stmt == nullptr) continue;
 
     for (int j = 0; j < n; j++) {
-      if (d[i][j] == kInf) continue;
+      if (d[i][j] == 0) continue;
       stmt->AddChildStar(j);
       get_statement(j)->AddParentStar(i);
     }

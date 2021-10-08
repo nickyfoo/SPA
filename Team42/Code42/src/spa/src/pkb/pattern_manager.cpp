@@ -51,7 +51,7 @@ std::string PatternManager::GetPostfixExpr(std::string infix_expr) {
             output << ops.top() << ' ';
             ops.pop();
           }
-          ops.pop();
+          ops.pop(); // pop the '('
           break;
         case '+':
         case '-':

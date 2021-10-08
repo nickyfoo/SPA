@@ -3,10 +3,10 @@
 #include <string>
 
 class PKBException : public std::exception {
-public:
+ public:
   PKBException(std::string error);
   virtual const char *what() const noexcept;
 
-private:
+ private:
   std::string msg_;
 };

@@ -14,7 +14,7 @@ TEST_CASE("GetNumVariables_DifferentSizeTables_ReturnsNumVariables", "[variable]
   SECTION("Table size: 5") {
     std::set<std::string> var_names{"apple", "banana", "carrot", "donut", "either"};
     VarTable var_table;
-    for (const std::string& var_name: var_names) var_table.AddVariable(var_name);
+    for (const std::string &var_name: var_names) var_table.AddVariable(var_name);
 
     REQUIRE(var_table.get_num_variables() == var_names.size());
   }
@@ -36,7 +36,7 @@ TEST_CASE("AddGetAllVariables_DifferentSizeTables_ReturnsVectorVariables", "[var
   SECTION("Table size: 5") {
     std::set<std::string> var_names{"apple", "banana", "carrot", "donut", "either"};
     VarTable var_table;
-    for (const std::string& var_name: var_names) var_table.AddVariable(var_name);
+    for (const std::string &var_name: var_names) var_table.AddVariable(var_name);
     std::vector<Variable *> var_vec = var_table.get_all_variables();
 
     REQUIRE(var_vec.size() == var_names.size());
@@ -60,9 +60,9 @@ TEST_CASE("GetVariable_DifferentSizeTables_ReturnsVariable", "[variable][table]"
   SECTION("Table size: 5") {
     std::set<std::string> var_names{"apple", "banana", "carrot", "donut", "either"};
     VarTable var_table;
-    for (const std::string& var_name: var_names) var_table.AddVariable(var_name);
+    for (const std::string &var_name: var_names) var_table.AddVariable(var_name);
 
-    for (const std::string& var_name: var_names) {
+    for (const std::string &var_name: var_names) {
       REQUIRE(var_table.get_variable(var_name)->get_name() == var_name);
     }
   }

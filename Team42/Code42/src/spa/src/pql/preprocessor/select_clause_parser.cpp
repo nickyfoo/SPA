@@ -943,7 +943,9 @@ std::vector<std::vector<std::string>> SelectClauseParser::SplitTokensByBrackets(
         ss << c;
       }
     }
-
+    if (ss.str() != "") {
+      tokens.push_back(ss.str());
+    }
 //    while (getline(input_stream, line)) {
 //      size_t prev = 0, pos;
 //      while ((pos = line.find_first_of(brackets, prev))

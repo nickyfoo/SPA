@@ -10,7 +10,7 @@ ResultTable* WithQueryManager::EvaluateWith(std::shared_ptr<WithClause> with,
   ResultTable *ret = new ResultTable();
   AttrValueType return_type = with->get_left_attr_value_type();
   std::vector<std::string> vec;
-
+    // I SHOULD ALWAYS JUST ADD DEFAULT TYPE RATHER THAN THE RETURN TYPE
   if (with->get_left_type() == EntityType::None && with->get_right_type() == EntityType::None) {  // 12 = 12
     if (with->get_left_ref() != with->get_right_ref()) {
       return nullptr;
@@ -51,12 +51,14 @@ ResultTable* WithQueryManager::EvaluateWith(std::shared_ptr<WithClause> with,
   return ret;
 }
 
+// checks for matching name, but adds the default type to table
 std::vector<std::string> WithQueryManager::GetNames(std::string synonym,
                                                     EntityType type,
                                                     std::string argument,
                                                     std::unordered_map<std::string,
                                                                        std::vector<Entity *>> synonym_to_entities_vec) {
   std::vector<std::string> output;
+  printf("SYNONYM HERE IS %s\n", synonym.c_str());
   for (Entity *entity : synonym_to_entities_vec.at(synonym)) {
     switch(type) {
       case EntityType::Procedure: {
@@ -73,12 +75,41 @@ std::vector<std::string> WithQueryManager::GetNames(std::string synonym,
         }
         break;
       }
-      case EntityType::Call:
-      case EntityType::Read:
-      case EntityType::Print: {
+      case EntityType::Call: {
+        printf("SHUD BE HERE\n");
         auto *stmt = dynamic_cast<Statement *>(entity);
-        if (std::to_string(stmt->get_stmt_no()) == argument) {
+        printf("get stmt number in int %d\n", stmt->get_stmt_no());
+        printf("get exp string %s\n", stmt->get_expr_string().c_str());
+        printf("get called proc name: %s\n", stmt->get_called_proc_name().c_str());
+        if (stmt->get_called_proc_name() == argument) {
+          printf("pls did it \n");
           output.push_back(std::to_string(stmt->get_stmt_no()));
+        }
+        break;
+      }
+      case EntityType::Read: {
+        printf("SHUD BE HERE\n");
+        auto *stmt = dynamic_cast<Statement *>(entity);
+        printf("get stmt number in int %d\n", stmt->get_stmt_no());
+        for (auto &i : *stmt->get_modifies()) {
+          if (i == argument) {
+            printf("pls did it \n");
+            output.push_back(std::to_string(stmt->get_stmt_no()));
+          }
+        }
+        break;
+      }
+      case EntityType::Print: {
+        printf("SHUD BE HERE\n");
+        auto *stmt = dynamic_cast<Statement *>(entity);
+        printf("get stmt number in int %d\n", stmt->get_stmt_no());
+        printf("get exp string %s\n", stmt->get_expr_string().c_str());
+        printf("get called proc name: %s\n", stmt->get_called_proc_name().c_str());
+        for (auto &i : *stmt->get_uses()) {
+          if (i == argument) {
+            printf("pls did it \n");
+            output.push_back(std::to_string(stmt->get_stmt_no()));
+          }
         }
         break;
       }

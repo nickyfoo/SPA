@@ -317,15 +317,24 @@ std::vector<std::string>
 *QueryEvaluator::ConvertToOutput(ResultTable *table_result, bool is_valid_query) {
   printf("came here\n");
   auto *output = new std::vector<std::string>();
+  printf("IS VALID QUERY: %d\n", is_valid_query);
+  printf("ENTITIES TO RETURN SIZE: %d\n", entities_to_return_->size());
+  printf("RETURN TYPE IS BOOLEAN: %d\n", entities_to_return_->at(0)->get_return_type() == ReturnType::Boolean);
+  printf("RETURN TYPE IS DEFAULT: %d\n", entities_to_return_->at(0)->get_return_type() == ReturnType::Default);
+  printf("RETURN TYPE IS Integer: %d\n", entities_to_return_->at(0)->get_return_type() == ReturnType::Integer);
+  printf("RETURN TYPE IS Name: %d\n", entities_to_return_->at(0)->get_return_type() == ReturnType::Name);
+
 
   if (!is_valid_query) {
     if (entities_to_return_->size() == 1 && entities_to_return_->at(0)->get_return_type() == ReturnType::Boolean) {
+      printf("WTFFFF1\n");
       output->push_back("FALSE");
     }
     return output;
   }
 
   if (entities_to_return_->size() == 1 && entities_to_return_->at(0)->get_return_type() == ReturnType::Boolean) {
+    printf("WTFFF2\n");
     output->push_back("TRUE");
     return output;
   }
@@ -341,38 +350,51 @@ std::vector<std::string>
   auto index_to_synonym_map = table_result->get_index_to_synonym();
   // first loop to detect all synonyms in return entities that were not in clauses
   for (ResultClause *result_clause : *entities_to_return_) {
+    std::string elem = result_clause->get_elem();
     std::string synonym = result_clause->get_synonym();
-    if (synonym_to_index_map->find(synonym) == synonym_to_index_map->end()) {
-//      std::string new_synonym = synonym;
-//      if (synonym.find(".") != std::string::npos) {  // retrieve select entities with attrvaluetype
-//        new_synonym = synonym.substr(0, synonym.find("."));
+    printf("CAME HERE BEFORE LIAO LA BOSS\n");
+    printf("ELEM IS : %s\n", elem.c_str());
+    printf("SYNONYM IS : %s\n", synonym.c_str());
+    if (synonym_to_index_map->find(elem) == synonym_to_index_map->end()) {  // use the exact result as key
+//      std::string new_synonym = elem;
+//      if (elem.find(".") != std::string::npos) {  // retrieve select entities with attrvaluetype
+//        new_synonym = elem.substr(0, elem.find("."));
 //        if (synonym_to_index_map->find(new_synonym) != synonym_to_index_map->end()) {
-//          std::remove(entities_to_return_->begin(), entities_to_return_->end(), synonym);
+//          std::remove(entities_to_return_->begin(), entities_to_return_->end(), elem);
 //          continue;
 //        }
 //        std::replace(entities_to_return_->begin(), entities_to_return_->end(),
-//                     synonym, new_synonym);
+//                     elem, new_synonym);
 //      }
 
       printf("GOT COME HERE??????\n");
-      ResultTable *new_table = MakeTableForUnusedEntity(synonym);
+      ResultTable *new_table = new ResultTable();
+      if (synonym_to_index_map->find(synonym) != synonym_to_index_map->end()) {  // synonym was used previously,
+        MakeTableForUsedEntity(new_table, result_clause, table_result);
+      } else {
+        MakeTableForUnusedEntity(new_table, result_clause);
+      }
+
       printf("HMM1\n");
-      synonym_to_index_map->insert({synonym, synonym_to_index_map->size()});
-      index_to_synonym_map->insert({index_to_synonym_map->size(), synonym});
+//      synonym_to_index_map->insert({elem, synonym_to_index_map->size()});
+//      index_to_synonym_map->insert({index_to_synonym_map->size(), elem});
       printf("HMM2\n");
       if (table_result->get_table()->empty()) {
         printf("HMM3\n");
         table_result = new_table;
+        synonym_to_index_map = table_result->get_synonym_to_index();
       } else {
         printf("MM4\n");
-        table_result->CrossJoin( *new_table);
+        table_result->NaturalJoin( *new_table);
       }
     }
   }
-
+  printf("CAME TO HERE AFTER DONE\n");
   // second loop to retrieve synonym indexes
   for (ResultClause *result_clause : *entities_to_return_) {
-    indexes_of_return_entities.push_back(synonym_to_index_map->at(result_clause->get_synonym()));
+    printf("issue here?\n");
+    indexes_of_return_entities.push_back(synonym_to_index_map->at(result_clause->get_elem()));
+    printf("no\n");
   }
 
   std::set<std::string> unique_results;
@@ -380,15 +402,15 @@ std::vector<std::string>
     std::stringstream ss;
     for (int i = 0; i < indexes_of_return_entities.size(); i++) {
       int index = indexes_of_return_entities.at(i);
-      ResultClause *result_clause = entities_to_return_->at(i);
-      if (result_clause->get_return_type() == ReturnType::Default
-      || IsDefaultType(result_clause)) {
-        ss << row.at(index);
-      } else {  // must be from integer to name
-        int line_num = std::stoi(row.at(index));
-        std::string exp = pkb_->get_statement(line_num)->get_expr_string();
-        ss << exp;
-      }
+//      ResultClause *result_clause = entities_to_return_->at(i);
+//      if (result_clause->get_return_type() == ReturnType::Default)
+//      || IsDefaultType(result_clause)) {
+      ss << row.at(index);
+//      } else {  // must be from integer to name
+//        int line_num = std::stoi(row.at(index));
+//        std::string exp = pkb_->get_statement(line_num)->get_expr_string();
+//        ss << exp;
+//      }
 
       if (i != indexes_of_return_entities.size() - 1) {
         ss << " ";
@@ -428,12 +450,17 @@ std::vector<std::string>
   return output;
 }
 
-ResultTable *QueryEvaluator::MakeTableForUnusedEntity(std::string synonym) {
-  printf("synonym now is %s\n", synonym.c_str());
-  EntityType type = synonym_to_entity_dec_->at(synonym)->get_type();
+void QueryEvaluator::MakeTableForUnusedEntity(ResultTable *result_table, ResultClause *result_clause) {
+  printf("synonym now is %s\n", result_clause->get_elem().c_str());
+//  EntityType type = synonym_to_entity_dec_->at(result_clause)->get_type();
   printf("okay\n");
+
+  std::string elem = result_clause->get_elem();
+  EntityType synonym_type = result_clause->get_synonym_type();
+  ReturnType return_type = result_clause->get_return_type();
   std::vector<std::string> to_add = std::vector<std::string>();
-  switch (type) {
+
+  switch (synonym_type) {
     case EntityType::ProgLine:
     case EntityType::Stmt: {
       std::vector<Statement *> entities_stmt;
@@ -447,7 +474,13 @@ ResultTable *QueryEvaluator::MakeTableForUnusedEntity(std::string synonym) {
       std::vector<Statement *> entities_stmt;
       entities_stmt = pkb_->get_statements(NodeType::Read);
       for (Statement *stmt: entities_stmt) {
-        to_add.push_back(std::to_string(stmt->get_stmt_no()));
+        if (return_type == ReturnType::Default || return_type == ReturnType::Integer) {
+          to_add.push_back(std::to_string(stmt->get_stmt_no()));
+        } else {
+          for (auto &i : *stmt->get_modifies()) {
+            to_add.push_back(i);
+          }
+        }
       }
       break;
     }
@@ -455,7 +488,15 @@ ResultTable *QueryEvaluator::MakeTableForUnusedEntity(std::string synonym) {
       std::vector<Statement *> entities_stmt;
       entities_stmt = pkb_->get_statements(NodeType::Print);
       for (Statement *stmt: entities_stmt) {
-        to_add.push_back(std::to_string(stmt->get_stmt_no()));
+        if (return_type == ReturnType::Default || return_type == ReturnType::Integer) {
+          printf("OR DID IT COME HERE LEL\n");
+          to_add.push_back(std::to_string(stmt->get_stmt_no()));
+        } else {
+          printf("DID IT COME HERE BIJJJJ\n");
+          for (auto &i : *stmt->get_uses()) {
+            to_add.push_back(i);
+          }
+        }
       }
       break;
     }
@@ -463,7 +504,11 @@ ResultTable *QueryEvaluator::MakeTableForUnusedEntity(std::string synonym) {
       std::vector<Statement *> entities_stmt;
       entities_stmt = pkb_->get_statements(NodeType::Call);
       for (Statement *stmt: entities_stmt) {
-        to_add.push_back(std::to_string(stmt->get_stmt_no()));
+        if (return_type == ReturnType::Default || return_type == ReturnType::Integer) {
+          to_add.push_back(std::to_string(stmt->get_stmt_no()));
+        } else {
+          to_add.push_back(stmt->get_called_proc_name());
+        }
       }
       break;
     }
@@ -520,10 +565,79 @@ ResultTable *QueryEvaluator::MakeTableForUnusedEntity(std::string synonym) {
   }
   printf("uhhhhhhh\n");
 
-  ResultTable *ret = new ResultTable();
-  ret->AddSingleColumn(synonym, to_add);
-  return ret;
+  result_table->AddSingleColumn(elem, to_add);
 }
+
+
+void QueryEvaluator::MakeTableForUsedEntity(ResultTable *result_table,
+                                            ResultClause *result_clause,
+                                            ResultTable *other_result_table) {
+  printf("synonym now is %s\n", result_clause->get_elem().c_str());
+  printf("okay\n");
+  std::vector<std::string> synonym_vec = other_result_table->GetColumnVec(result_clause->get_synonym());
+
+  std::string elem = result_clause->get_elem();
+  EntityType synonym_type = result_clause->get_synonym_type();
+  ReturnType return_type = result_clause->get_return_type();
+  std::vector<std::string> to_add = std::vector<std::string>();
+
+  for (std::string synonym : synonym_vec) {
+    switch (synonym_type) {
+      case EntityType::ProgLine:
+      case EntityType::While:
+      case EntityType::If:
+      case EntityType::Assign:
+      case EntityType::Constant:
+      case EntityType::Stmt: {  // guaranteed to be Integer
+        to_add.push_back(synonym);
+        break;
+      }
+      case EntityType::Read: {
+        if (return_type == ReturnType::Integer) {
+          to_add.push_back(synonym);
+        } else if (return_type == ReturnType::Name) {
+          Statement *stmt = pkb_->get_statement(stoi(synonym));
+          for (auto &i : *stmt->get_modifies()) {
+            to_add.push_back(i);
+          }
+        }
+        break;
+      }
+      case EntityType::Print: {
+        if (return_type == ReturnType::Integer) {
+          to_add.push_back(synonym);
+        } else if (return_type == ReturnType::Name) {
+          Statement *stmt = pkb_->get_statement(stoi(synonym));
+          for (auto &i : *stmt->get_uses()) {
+            to_add.push_back(i);
+          }
+        }
+        break;
+      }
+      case EntityType::Call: {
+        if (return_type == ReturnType::Integer) {
+          to_add.push_back(synonym);
+        } else if (return_type == ReturnType::Name) {
+          Statement *stmt = pkb_->get_statement(stoi(synonym));
+          to_add.push_back(stmt->get_called_proc_name());
+        }
+        break;
+      }
+      case EntityType::Variable:
+      case EntityType::Procedure: {  // guaranteed to be Name
+        to_add.push_back(synonym);
+        break;
+      }
+      case EntityType::None:
+        throw std::runtime_error("Unknown EntityType!");
+    }
+  }
+
+  printf("uhhhhhhh\n");
+
+  result_table->AddDoubleColumns(result_clause->get_synonym(), synonym_vec, elem, to_add);
+}
+
 
 bool QueryEvaluator::IsDefaultType(ResultClause *result_clause) {
   EntityType type = result_clause->get_synonym_type();

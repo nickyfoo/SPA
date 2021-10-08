@@ -4,7 +4,6 @@ ResultClause::ResultClause(std::string synonym, EntityType synonym_type, ReturnT
   this->synonym_ = synonym;
   this->synonym_type_ = synonym_type;
   this->return_type_ = return_type;
-  MakeElem();
 }
 
 ResultClause::~ResultClause() = default;
@@ -25,27 +24,33 @@ std::string ResultClause::get_elem() {
   return this->elem_;
 }
 
-void ResultClause::MakeElem() {
-  if (return_type_ == ReturnType::Default || return_type_ == ReturnType::Boolean) return;
+bool ResultClause::set_elem() {
+  if (return_type_ == ReturnType::Default || return_type_ == ReturnType::Boolean) {
+    this->elem_ = synonym_;
+    return true;
+  }
   switch (synonym_type_) {
     case EntityType::Stmt:
       if (return_type_ == ReturnType::Integer) {
         this->elem_ = synonym_ + ".stmt#";
+        break;
       }
-      break;
     case EntityType::Read:
     case EntityType::Print:
       if (return_type_ == ReturnType::Integer) {
         this->elem_ = synonym_ + ".stmt#";
+        break;
       } else if (return_type_ == ReturnType::Name) {
         this->elem_ = synonym_ + ".varName";
+        break;
       }
-      break;
     case EntityType::Call:
       if (return_type_ == ReturnType::Integer) {
         this->elem_ = synonym_ + ".stmt#";
+        break;
       } else if (return_type_ == ReturnType::Name) {
         this->elem_ = synonym_ + ".procName";
+        break;
       }
       break;
     case EntityType::While:
@@ -53,24 +58,25 @@ void ResultClause::MakeElem() {
     case EntityType::Assign:
       if (return_type_ == ReturnType::Integer) {
         this->elem_ = synonym_ + ".stmt#";
+        break;
       }
-      break;
     case EntityType::Constant:
       if (return_type_ == ReturnType::Integer) {
         this->elem_ = synonym_ + ".value";
+        break;
       }
-      break;
     case EntityType::Variable:
       if (return_type_ == ReturnType::Name) {
         this->elem_ = synonym_ + ".varName";
+        break;
       }
-      break;
     case EntityType::Procedure:
       if (return_type_ == ReturnType::Name) {
         this->elem_ = synonym_ + ".procName";
+        break;
       }
-      break;
     default:
-      this->return_type_ = ReturnType::Default;  // error
+      return false;  // error
   }
+  return true;
 }

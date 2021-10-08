@@ -31,6 +31,7 @@ void ResultTable::NaturalJoin(ResultTable &other_result_table) {
     printf("\n");
   }
   if (common_synonyms->size() == 2) {  // two common
+    printf("CAME ONE\n");
     std::vector<std::string> col_one = GetColumnVec(common_synonyms->at(0).first);
     std::vector<std::string> col_two = GetColumnVec(common_synonyms->at(1).first);
     std::vector<std::string> other_col_one = other_result_table.GetColumnVec(common_synonyms->at(0).first);
@@ -167,6 +168,7 @@ void ResultTable::NaturalJoin(ResultTable &other_result_table) {
     }
   } else if (common_synonyms->size() == 0) { // should not happen
 //    throw std::runtime_error("Error on natural join.");
+    printf("DAHECK\n");
     CrossJoin(other_result_table);
   }
 }
@@ -249,10 +251,19 @@ void ResultTable::CrossJoin(ResultTable &other_result_table) {
 // maximum of two synonyms due to the nature of the clauses
 // returns pair of synonym and index in other result table
 std::vector<std::pair<std::string, int>> *ResultTable::GetCommonSynonyms(ResultTable &other_result_table) {
+  for (auto &i : *other_result_table.get_synonym_to_index()) {
+    printf("other_result table key: %s\n", i.first.c_str());
+  }
+
+  for (auto &i : *synonym_to_index_) {
+    printf("current table table key: %s\n", i.first.c_str());
+  }
+
   auto ret = new std::vector<std::pair<std::string, int>>();
   std::unordered_map<std::string, int> *other_synonyms_to_index = other_result_table.get_synonym_to_index();
   for (auto& it : *other_synonyms_to_index) {
     if (synonym_to_index_->find(it.first) != synonym_to_index_->end()) {
+      printf("other table it first is : %s\n", it.first.c_str());
       ret->push_back(std::make_pair(it.first, it.second));
     } else {
       synonym_to_index_->insert({it.first, synonym_to_index_->size()});

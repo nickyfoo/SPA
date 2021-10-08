@@ -26,5 +26,8 @@ class QueryEvaluator {
   static bool IsStmt(EntityType entity_type);
   bool IsDefaultType(ResultClause *result_clause);
   std::vector<std::string> *GetAllPossibleReturnResults();
-  ResultTable *MakeTableForUnusedEntity(std::string synonym);
-};
+  void MakeTableForUnusedEntity(ResultTable *result_table, ResultClause *result_clause);
+  void MakeTableForUsedEntity(ResultTable *result_table,
+                              ResultClause *result_clause,
+                              ResultTable *other_result_table);
+  };

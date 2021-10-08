@@ -38,6 +38,10 @@ std::tuple<std::vector<ResultClause *> *,
              std::vector<std::string>,
              std::vector<std::string>,
              std::vector<std::string>> clauses;
+  printf("RESULT SIZE: %d\n", synonym_to_entity_->size());
+  for (auto &i : *synonym_to_entity_) {
+    printf("KEY: %s\n", i.first.c_str());
+  }
   clauses = SplitTokensByClauses(select_statement_);
   std::string select_clause = std::get<0>(clauses);
   std::vector<std::string> such_that_clauses = std::get<1>(clauses);
@@ -60,21 +64,22 @@ std::tuple<std::vector<ResultClause *> *,
   for (const std::string &select : select_clauses) {
     printf("am here\n");
     printf("select is: %s\n", select.c_str());
+    ResultClause *result_clause;
     if (select == "BOOLEAN" && select_clauses.size() == 1) {
       printf("UH1\n");
       // do nothing, flag to evaluator that it requires a boolean output
-      select_ret->push_back(new ResultClause("", EntityType::None, ReturnType::Boolean));
+      result_clause = new ResultClause("", EntityType::None, ReturnType::Boolean);
     } else if (synonym_to_entity_->find(select) != synonym_to_entity_->end()) {
       printf("UH2\n");
-      select_ret->push_back(new ResultClause(select, synonym_to_entity_->at(select)->get_type(), ReturnType::Default));
+      result_clause = new ResultClause(select, synonym_to_entity_->at(select)->get_type(), ReturnType::Default);
     } else {
-      auto *result_with_attr = ValidateResultClauseWithAttr(select);
-      if (result_with_attr == nullptr) {
-        return nullptr;
-
-      }
-      select_ret->push_back(result_with_attr);
+      result_clause = ValidateResultClauseWithAttr(select);
     }
+    if (result_clause == nullptr || !result_clause->set_elem()) {
+      return nullptr;
+    }
+    select_ret->push_back(result_clause);
+
   }
   printf("came here 2\n");
   for (const std::string &such_that_clause : such_that_clauses) {
@@ -147,7 +152,15 @@ std::tuple<std::vector<ResultClause *> *,
                             std::unordered_map<std::string, EntityDeclaration *> *>(
                                 select_ret, such_that_ret,
                                 pattern_ret, with_ret, synonym_to_entity_);
-
+  printf("SELECT CLAUSE TOTAL SIZE: %d\n", select_ret->size());
+  printf("RESULT SIZE AT THE END: %d\n", synonym_to_entity_->size());
+  for (auto &i : *synonym_to_entity_) {
+    printf("KEY: %s\n", i.first.c_str());
+  }
+  printf("RETURN ENTITIES AT THE END: \n");
+  for (ResultClause *r : *select_ret) {
+    printf("KEY: %s\n", r->get_synonym().c_str());
+  }
   return ret;
 }
 
@@ -231,6 +244,7 @@ std::vector<PatternClause *> *SelectClauseParser::MakePatternClause(
 std::vector<WithClause *> *SelectClauseParser::MakeWithClause(
     const std::string& with_statement) {
   auto *ret = new std::vector<WithClause *>();
+  printf("making with clause...\n");
   if (with_statement.empty()) {
     return nullptr;
   }
@@ -245,6 +259,8 @@ std::vector<WithClause *> *SelectClauseParser::MakeWithClause(
 
     std::string left_ref = with_clause.first;
     std::string right_ref = with_clause.second;
+    printf("LEFT REF: %s\n", left_ref.c_str());
+    printf("RIGHT REF: %s\n", right_ref.c_str());
 
     size_t start = left_ref.find_first_not_of(WHITESPACE);
     if (start != std::string::npos) left_ref = left_ref.substr(start);
@@ -359,13 +375,19 @@ SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
   } else if (synonym_attribute.size() == 2) {
     std::string synonym = synonym_attribute.at(0);
     std::string attribute = synonym_attribute.at(1);
-
+    printf("AM HERE SYNONYM SIZE 2: %s\n", synonym.c_str());
+    printf("AM HERE ATTRIBUTE SIZE 2: %s\n", attribute.c_str());
+//    printf("does the actual thing exist: %d\n", synonym_to_entity_->find("cl"));
+//    printf("does the current synonym exist: %d\n", synonym_to_entity_->find(synonym));
     if (synonym_to_entity_->find(synonym) != synonym_to_entity_->end()) {
+      printf("INHERE1\n");
       EntityType type = synonym_to_entity_->find(synonym)->second->get_type();
       AttrValueType attr_value_type = AttrValueType::None;
       switch (type) {
         case EntityType::Procedure:
+          printf("OUTSIDE YEEH\n");
           if (attribute == "procName")
+            printf("INTO HERE SHOULD BE\n");
             attr_value_type = AttrValueType::Name;
           break;
         case EntityType::Variable:
@@ -378,6 +400,7 @@ SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
           break;
         case EntityType::Call:
           if (attribute == "procName") {
+            printf("goddamit u better be here\n");
             attr_value_type = AttrValueType::Name;
             break;
           } else if (attribute == "stmt#") {
@@ -404,6 +427,7 @@ SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
       }
     }
   }
+  printf("actually fucked up wtf...\n");
   return std::make_tuple("", EntityType::None, AttrValueType::None);  // not a valid with clause
 }
 

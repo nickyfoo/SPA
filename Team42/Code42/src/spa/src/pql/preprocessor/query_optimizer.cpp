@@ -10,6 +10,10 @@ QueryOptimizer::QueryOptimizer(std::vector<SuchThatClause *> *relationships,
   printf("here6\n");
   this->withs_ = withs;
   this->return_entities_ = return_entities;
+  printf("RETURN ENTITIES STUFF:\n");
+  for (ResultClause *r : *return_entities_) {
+    printf("KEY: %s\n", r->get_synonym().c_str());
+  }
 }
 
 std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateGroupings() {
@@ -18,7 +22,10 @@ std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateGroupings() {
   std::vector<ClauseVertex> has_syn_used;
   std::vector<ClauseVertex> has_return_syn_used;
   int count = 0;
-
+  printf("AT THE STARTTT\n");
+  for (ResultClause* r : *return_entities_) {
+    printf("WAT: %s\n", r->get_synonym().c_str());
+  }
   // Iterating through relationship, pattern and with vectors
   // and creating ClauseVertexes.
   for (SuchThatClause *relationship : *relationships_) {
@@ -363,8 +370,12 @@ ClauseVertex QueryOptimizer::MakeWithVertex(WithClause *with_clause) {
   if (with_clause->get_left_type() != EntityType::None) {
     printf("YASSSS2\n");
     std::string left_syn = with_clause->get_left_ref();
-    printf("LEFT SYN: %s", left_syn.c_str());
+    printf("LEFT SYN: %s\n", left_syn.c_str());
     synonyms_used.push_back(left_syn);
+    printf("Print return entities:\n");
+    for (ResultClause *r : *return_entities_) {
+      printf("entry: %s\n", r->get_synonym().c_str());
+    }
     // If left synonym is part of return synonyms, set has_return_syn to true.
     if (ReturnEntitiesContainSynonym(left_syn)) {
       printf("YASSSS3\n");

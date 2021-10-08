@@ -18,10 +18,10 @@ class ResultClause {
   EntityType get_synonym_type();
   ReturnType get_return_type();
   std::string get_elem();
+  bool set_elem();
  private:
   std::string synonym_;
   EntityType synonym_type_;
   ReturnType return_type_;
   std::string elem_;
-  void MakeElem();
 };

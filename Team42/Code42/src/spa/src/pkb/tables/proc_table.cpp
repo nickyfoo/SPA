@@ -99,8 +99,8 @@ void ProcTable::DFS(int u, std::vector<std::vector<int>> &al,
 
 void ProcTable::PropagateUsesModifiesIndirect(int u,
                                               std::vector<std::vector<int>> &al,
-                                              std::set<std::string> &uses,
-                                              std::set<std::string> &modifies) {
+                                              std::set<std::string> uses,
+                                              std::set<std::string> modifies) {
   for (auto &var_name : *(table_[u].get_uses())) {
     uses.insert(var_name);
   }

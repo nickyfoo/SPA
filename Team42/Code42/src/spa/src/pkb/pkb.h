@@ -61,18 +61,18 @@ class PKB {
   std::map<int, std::set<int>> *get_reverse_cfg_al();
 
   // Gets Next(a,b) relation. if a==kWild or b==kWild, it is treated as a wildcard.
-  // Does a check for valid stmt line input, or kWild, and returns empty set if invalid.
-  std::set<std::pair<int, int>> get_next(int a, int b);
+  // Does a check for valid stmt line input, or kWild, and returns nullptr if invalid.
+  std::set<std::pair<int, int>> *get_next(int a, int b);
   // Gets Next*(a,b) relation. if a==kWild or b==kWild, it is treated as a wildcard.
   // Does a check for valid stmt line input, or kWild, and returns empty set if invalid.
-  std::set<std::pair<int, int>> get_next_star(int a, int b);
+  std::set<std::pair<int, int>> *get_next_star(int a, int b);
 
   // Gets Affects(a,b) relation. if a==0 or b==0, it is treated as a wildcard.
   // Does a check for valid stmt line input, or kWild, and returns empty set if invalid.
-  std::set<std::pair<int, int>> get_affects(int a, int b);
+  std::set<std::pair<int, int>> *get_affects(int a, int b);
   // Gets Affects*(a,b) relation. if a==0 or b==0, it is treated as a wildcard.
   // Does a check for valid stmt line input, or kWild, and returns empty set if invalid.
-  std::set<std::pair<int, int>> get_affects_star(int a, int b);
+  std::set<std::pair<int, int>> *get_affects_star(int a, int b);
 
   // Tests the RHS of assignment statement against the given pattern.
   // Returns true if pattern matches.
@@ -80,6 +80,11 @@ class PKB {
   // Tests for a variable in the expression of the if statement.
   // Returns true if variable matches.
   bool TestIfWhilePattern(Statement *stmt, std::string variable);
+
+  // Clears cache for Next and Affects
+  void ClearNextAffectsCache();
+  // Checks if cache for Next and Affects is empty
+  bool NextAffectsCacheIsEmpty();
 
   // Prints information of statements in the statement table.
   void PrintStatements();
@@ -157,7 +162,16 @@ class PKB {
   // If target is not kWild, supports fast termination to save on unnecessary computations.
   // If forward relation is true, this method propagates forward in terms of Affects*(a,b)
   void AffectsStarBFS(int start, int target, std::vector<bool> &visited,
-                      std::set<std::pair<int, int>> &ans, bool forward_relation);
+                      bool forward_relation);
+  // Cache for Next
+  std::unordered_map<int, std::unordered_map<int, std::set<std::pair<int,int>>>> next_cache;
+  // Cache for Next*
+  std::unordered_map<int, std::unordered_map<int, std::set<std::pair<int,int>>>> next_star_cache;
+  // Cache for Affects
+  std::unordered_map<int, std::unordered_map<int, std::set<std::pair<int,int>>>> affects_cache;
+  // Cache for Affects*
+  std::unordered_map<int, std::unordered_map<int, std::set<std::pair<int,int>>>> affects_star_cache;
+
 
   // Root AST node of the program.
   Node *root_;
@@ -175,4 +189,7 @@ class PKB {
   std::map<int, std::set<int>> cfg_al_;
   // Reverse Adjacency List of CFG for Next and Affects.
   std::map<int, std::set<int>> reverse_cfg_al_;
+
+
+
 };

@@ -2062,8 +2062,8 @@ TEST_CASE("PKB_NextCacheTestTime_correct") {
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
   std::chrono::duration<double> empty_cache_elapsed_seconds = empty_cache_end - empty_cache_start;
   std::chrono::duration<double> full_cache_elapsed_seconds = full_cache_end - full_cache_start;
-  // std::cout << "next empty cache elapsed time: " << empty_cache_elapsed_seconds.count() << "s\n";
-  // std::cout << "next full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
+  std::cout << "next empty cache elapsed time: " << empty_cache_elapsed_seconds.count() << "s\n";
+  std::cout << "next full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
   REQUIRE(full_cache_elapsed_seconds.count() < empty_cache_elapsed_seconds.count());
 }
 TEST_CASE("PKB_NextStarCacheTestTime_correct") {
@@ -2135,8 +2135,8 @@ TEST_CASE("PKB_NextStarCacheTestTime_correct") {
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
   std::chrono::duration<double> empty_cache_elapsed_seconds = empty_cache_end - empty_cache_start;
   std::chrono::duration<double> full_cache_elapsed_seconds = full_cache_end - full_cache_start;
-  // std::cout << "next* empty cache elapsed time: " << empty_cache_elapsed_seconds.count() << "s\n";
-  // std::cout << "next* full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
+  std::cout << "next* empty cache elapsed time: " << empty_cache_elapsed_seconds.count() << "s\n";
+  std::cout << "next* full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
   REQUIRE(full_cache_elapsed_seconds.count() < empty_cache_elapsed_seconds.count());
 }
 
@@ -2209,8 +2209,8 @@ TEST_CASE("PKB_AffectsCacheTestTime_correct") {
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
   std::chrono::duration<double> empty_cache_elapsed_seconds = empty_cache_end - empty_cache_start;
   std::chrono::duration<double> full_cache_elapsed_seconds = full_cache_end - full_cache_start;
-  // std::cout << "affects empty cache elapsed time: " << empty_cache_elapsed_seconds.count() << "s\n";
-  // std::cout << "affects full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
+  std::cout << "affects empty cache elapsed time: " << empty_cache_elapsed_seconds.count() << "s\n";
+  std::cout << "affects full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
   REQUIRE(full_cache_elapsed_seconds.count() < empty_cache_elapsed_seconds.count());
 }
 
@@ -2283,7 +2283,7 @@ TEST_CASE("PKB_AffectsStarCacheTestTime_correct") {
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
   std::chrono::duration<double> empty_cache_elapsed_seconds = empty_cache_end - empty_cache_start;
   std::chrono::duration<double> full_cache_elapsed_seconds = full_cache_end - full_cache_start;
-  // std::cout << "affects empty cache elapsed time: " << empty_cache_elapsed_seconds.count() << "s\n";
-  // std::cout << "affects full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
+  std::cout << "affects* empty cache elapsed time: " << empty_cache_elapsed_seconds.count() << "s\n";
+  std::cout << "affects* full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
   REQUIRE(full_cache_elapsed_seconds.count() < empty_cache_elapsed_seconds.count());
 }

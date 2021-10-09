@@ -164,13 +164,17 @@ class PKB {
   void AffectsStarBFS(int start, int target, std::vector<bool> &visited,
                       bool forward_relation);
   // Cache for Next
-  std::unordered_map<int, std::unordered_map<int, std::set<std::pair<int,int>>>> next_cache;
+  std::map<int, std::map<int,
+    std::set<std::pair<int, int>>>> next_cache;
   // Cache for Next*
-  std::unordered_map<int, std::unordered_map<int, std::set<std::pair<int,int>>>> next_star_cache;
+  std::map<int, std::map<int,
+    std::set<std::pair<int, int>>>> next_star_cache;
   // Cache for Affects
-  std::unordered_map<int, std::unordered_map<int, std::set<std::pair<int,int>>>> affects_cache;
+  std::map<int, std::map<int,
+    std::set<std::pair<int, int>>>> affects_cache;
   // Cache for Affects*
-  std::unordered_map<int, std::unordered_map<int, std::set<std::pair<int,int>>>> affects_star_cache;
+  std::map<int, std::map<int,
+    std::set<std::pair<int, int>>>> affects_star_cache;
 
 
   // Root AST node of the program.
@@ -189,7 +193,4 @@ class PKB {
   std::map<int, std::set<int>> cfg_al_;
   // Reverse Adjacency List of CFG for Next and Affects.
   std::map<int, std::set<int>> reverse_cfg_al_;
-
-
-
 };

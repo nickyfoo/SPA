@@ -1,5 +1,5 @@
-#include "pkb.h"
 #include <queue>
+#include "pkb.h"
 
 void PKB::ClearNextAffectsCache() {
   next_cache.clear();
@@ -9,7 +9,8 @@ void PKB::ClearNextAffectsCache() {
 }
 
 bool PKB::NextAffectsCacheIsEmpty() {
-  return next_cache.empty() && next_star_cache.empty() && affects_cache.empty() && affects_star_cache.empty();
+  return next_cache.empty() && next_star_cache.empty()
+    && affects_cache.empty() && affects_star_cache.empty();
 }
 
 std::set<std::pair<int, int>> *PKB::get_next(int a, int b) {
@@ -25,26 +26,23 @@ std::set<std::pair<int, int>> *PKB::get_next(int a, int b) {
   if (a == kWild && b == kWild) {
     for (auto& [u, al_u] : cfg_al_) {
       for (auto& v : al_u) {
-        next_cache[kWild][kWild].insert({ u,v });
-        next_cache[kWild][v].insert({ u,v });
-        next_cache[u][kWild].insert({ u,v });
-        next_cache[u][v].insert({ u,v });
+        next_cache[kWild][kWild].insert({ u, v });
+        next_cache[kWild][v].insert({ u, v });
+        next_cache[u][kWild].insert({ u, v });
+        next_cache[u][v].insert({ u, v });
       }
     }
-  }
-  else if (a == kWild && b != kWild) {
+  } else if (a == kWild && b != kWild) {
     for (auto& v : reverse_cfg_al_[b]) {
       next_cache[kWild][b].insert({ v, b });
       next_cache[v][b].insert({ v, b });
     }
-  }
-  else if (a != kWild && b == kWild) {
+  } else if (a != kWild && b == kWild) {
     for (auto& v : cfg_al_[a]) {
       next_cache[a][kWild].insert({ a, v });
       next_cache[a][v].insert({ a, v });
     }
-  }
-  else {
+  } else {
     if (cfg_al_[a].find(b) != cfg_al_[a].end()) {
       next_cache[a][b].insert({ a, b });
     }
@@ -53,7 +51,8 @@ std::set<std::pair<int, int>> *PKB::get_next(int a, int b) {
 }
 
 std::set<std::pair<int, int>> *PKB::get_next_star(int a, int b) {
-  if (next_star_cache.find(a) != next_star_cache.end() && next_star_cache[a].find(b) != next_star_cache[a].end()) {
+  if (next_star_cache.find(a) != next_star_cache.end()
+    && next_star_cache[a].find(b) != next_star_cache[a].end()) {
     return &next_star_cache[a][b];
   }
   int n = stmt_table_.get_num_statements() + 1;
@@ -78,32 +77,29 @@ std::set<std::pair<int, int>> *PKB::get_next_star(int a, int b) {
         }
       }
     }
-  }
-  else if (a == kWild && b != kWild) {
+  } else if (a == kWild && b != kWild) {
     ReachabilityDFS(b, b, d, reverse_cfg_al_);
     for (int i = 0; i < n; i++) {
       // Be careful about the check, d[i][j] means that i can reach j!
       if (d[b][i] != 0) {
-        next_star_cache[kWild][b].insert({ i,b });
+        next_star_cache[kWild][b].insert({ i, b });
         next_star_cache[i][b].insert({ i, b });
       }
     }
-  }
-  else if (a != kWild && b == kWild) {
+  } else if (a != kWild && b == kWild) {
     ReachabilityDFS(a, a, d, cfg_al_);
     for (int j = 0; j < n; j++) {
       if (d[a][j] != 0) {
-        next_star_cache[a][kWild].insert({ a,j });
-        next_star_cache[a][j].insert({ a,j });
+        next_star_cache[a][kWild].insert({ a, j });
+        next_star_cache[a][j].insert({ a, j });
       }
     }
-  }
-  else {
+  } else {
     ReachabilityDFS(a, a, d, cfg_al_);
     for (int j = 0; j < n; j++) {
       if (d[a][j] != 0) {
-        next_star_cache[a][kWild].insert({ a,j });
-        next_star_cache[a][j].insert({ a,j });
+        next_star_cache[a][kWild].insert({ a, j });
+        next_star_cache[a][j].insert({ a, j });
       }
     }
   }
@@ -111,7 +107,8 @@ std::set<std::pair<int, int>> *PKB::get_next_star(int a, int b) {
 }
 
 std::set<std::pair<int, int>> *PKB::get_affects(int a, int b) {
-  if (affects_cache.find(a) != affects_cache.end() && affects_cache[a].find(b) != affects_cache[a].end()) {
+  if (affects_cache.find(a) != affects_cache.end()
+    && affects_cache[a].find(b) != affects_cache[a].end()) {
     return &affects_cache[a][b];
   }
   int n = stmt_table_.get_num_statements() + 1;
@@ -133,15 +130,14 @@ std::set<std::pair<int, int>> *PKB::get_affects(int a, int b) {
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
         if (d[i][j] != 0) {
-          affects_cache[kWild][kWild].insert({ i,j });
-          affects_cache[i][kWild].insert({ i,j });
-          affects_cache[kWild][j].insert({ i,j });
-          affects_cache[i][j].insert({ i,j });
+          affects_cache[kWild][kWild].insert({ i, j });
+          affects_cache[i][kWild].insert({ i, j });
+          affects_cache[kWild][j].insert({ i, j });
+          affects_cache[i][j].insert({ i, j });
         }
       }
     }
-  }
-  else if (a == kWild && b != kWild) {
+  } else if (a == kWild && b != kWild) {
     Statement* stmt = stmt_table_.get_statement(b);
     // Invalid, not an assign stmt
     if (stmt == nullptr || stmt->get_kind() != NodeType::Assign) {
@@ -165,18 +161,18 @@ std::set<std::pair<int, int>> *PKB::get_affects(int a, int b) {
     for (int i = 0; i < n; i++) {
       // Be careful about the check, d[i][j] means that i can reach j!
       if (d[i][b] != 0) {
-        affects_cache[kWild][b].insert({ i,b });
-        affects_cache[i][b].insert({ i,b });
+        affects_cache[kWild][b].insert({ i, b });
+        affects_cache[i][b].insert({ i, b });
       }
     }
-  }
-  else if (a != kWild && b == kWild) {
+  } else if (a != kWild && b == kWild) {
     Statement* stmt = stmt_table_.get_statement(a);
     // Invalid, not an assign stmt
-    if (stmt == nullptr || stmt->get_kind() != NodeType::Assign || stmt->get_modifies()->size() != 1) {
+    if (stmt == nullptr || stmt->get_kind() != NodeType::Assign
+      || stmt->get_modifies()->size() != 1) {
       affects_cache[a][b] = std::set<std::pair<int, int>>();
       return &affects_cache[a][b];
-    };
+    }
     std::vector<bool> visited(n, false);
     bool found = false;
     std::string var_name = *(stmt->get_modifies()->begin());
@@ -184,16 +180,17 @@ std::set<std::pair<int, int>> *PKB::get_affects(int a, int b) {
 
     for (int j = 0; j < n; j++) {
       if (d[a][j] != 0) {
-        affects_cache[a][kWild].insert({ a,j });
-        affects_cache[a][j].insert({ a,j });
+        affects_cache[a][kWild].insert({ a, j });
+        affects_cache[a][j].insert({ a, j });
       }
     }
-  }
-  else {
+  } else {
     Statement* stmt = stmt_table_.get_statement(a);
     Statement* stmt2 = stmt_table_.get_statement(b);
     // Invalid, not an assign stmt
-    if (stmt == nullptr || stmt->get_kind() != NodeType::Assign || stmt->get_modifies()->size() !=1 || stmt2==nullptr || stmt2->get_kind() != NodeType::Assign) {
+    if (stmt == nullptr || stmt->get_kind() != NodeType::Assign
+      || stmt->get_modifies()->size() !=1
+      || stmt2 == nullptr || stmt2->get_kind() != NodeType::Assign) {
       affects_cache[a][b] = std::set<std::pair<int, int>>();
       return &affects_cache[a][b];
     }
@@ -203,14 +200,15 @@ std::set<std::pair<int, int>> *PKB::get_affects(int a, int b) {
     AffectsDFS(stmt->get_stmt_no(), b, stmt->get_stmt_no(), var_name, visited, d, found);
 
     if (d[a][b] != 0) {
-      affects_cache[a][b].insert({ a,b });
+      affects_cache[a][b].insert({ a, b });
     }
   }
   return &affects_cache[a][b];
 }
 
 std::set<std::pair<int, int>> *PKB::get_affects_star(int a, int b) {
-  if (affects_star_cache.find(a) != affects_star_cache.end() && affects_star_cache[a].find(b) != affects_star_cache[a].end()) {
+  if (affects_star_cache.find(a) != affects_star_cache.end()
+    && affects_star_cache[a].find(b) != affects_star_cache[a].end()) {
     return &affects_star_cache[a][b];
   }
   int n = stmt_table_.get_num_statements() + 1;
@@ -233,15 +231,14 @@ std::set<std::pair<int, int>> *PKB::get_affects_star(int a, int b) {
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
         if (d[i][j] != 0) {
-          affects_star_cache[kWild][kWild].insert({ i,j });
-          affects_star_cache[i][kWild].insert({ i,j });
-          affects_star_cache[kWild][j].insert({ i,j });
-          affects_star_cache[i][j].insert({ i,j });
+          affects_star_cache[kWild][kWild].insert({ i, j });
+          affects_star_cache[i][kWild].insert({ i, j });
+          affects_star_cache[kWild][j].insert({ i, j });
+          affects_star_cache[i][j].insert({ i, j });
         }
       }
     }
-  }
-  else if (a == kWild && b != kWild) {
+  } else if (a == kWild && b != kWild) {
     Statement* stmt = stmt_table_.get_statement(b);
     // Invalid, not an assign stmt
     if (stmt == nullptr || stmt->get_kind() != NodeType::Assign) {
@@ -250,8 +247,7 @@ std::set<std::pair<int, int>> *PKB::get_affects_star(int a, int b) {
     }
     std::vector<bool> visited(n, false);
     AffectsStarBFS(b, kWild, visited, false);
-  }
-  else if (a != kWild && b == kWild) {
+  } else if (a != kWild && b == kWild) {
     Statement* stmt = stmt_table_.get_statement(a);
     // Invalid, not an assign stmt
     if (stmt == nullptr || stmt->get_kind() != NodeType::Assign) {
@@ -260,12 +256,12 @@ std::set<std::pair<int, int>> *PKB::get_affects_star(int a, int b) {
     }
     std::vector<bool> visited(n, false);
     AffectsStarBFS(a, 0, visited, true);
-  }
-  else {
+  } else {
     Statement* stmt = stmt_table_.get_statement(a);
     Statement* stmt2 = stmt_table_.get_statement(b);
     // Invalid, not an assign stmt
-    if (stmt == nullptr || stmt->get_kind() != NodeType::Assign || stmt2 == nullptr || stmt2->get_kind() != NodeType::Assign) {
+    if (stmt == nullptr || stmt->get_kind() != NodeType::Assign
+      || stmt2 == nullptr || stmt2->get_kind() != NodeType::Assign) {
       affects_star_cache[a][b] = std::set<std::pair<int, int>>();
       return &affects_star_cache[a][b];
     }
@@ -321,12 +317,11 @@ void PKB::AffectsStarBFS(int start, int target, std::vector<bool>& visited, bool
     if (forward_relation) {
       for (auto& [a, b] : *get_affects(u, kWild)) {
         if (target == kWild) {
-          affects_star_cache[start][kWild].insert({ start,b });
+          affects_star_cache[start][kWild].insert({ start, b });
           affects_star_cache[start][b].insert({ start, b });
-        }
-        else {
+        } else {
           if (b == target) {
-            affects_star_cache[start][b].insert({ start,target });
+            affects_star_cache[start][b].insert({ start, target });
             return;
           }
         }
@@ -336,16 +331,14 @@ void PKB::AffectsStarBFS(int start, int target, std::vector<bool>& visited, bool
           q.push(b);
         }
       }
-    }
-    else {
+    } else {
       for (auto& [a, b] : *get_affects(kWild, u)) {
         if (target == kWild) {
-          affects_star_cache[kWild][start].insert({ a,start });
-          affects_star_cache[a][start].insert({ a,start });
-        }
-        else {
+          affects_star_cache[kWild][start].insert({ a, start });
+          affects_star_cache[a][start].insert({ a, start });
+        } else {
           if (a == target) {
-            affects_star_cache[start][target].insert({ start,target });
+            affects_star_cache[start][target].insert({ start, target });
             return;
           }
         }

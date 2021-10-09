@@ -14,30 +14,30 @@ class QueryPreprocessor {
  public:
   explicit QueryPreprocessor(std::string input);
   ~QueryPreprocessor();
-  std::tuple<std::vector<std::string> *,
+  std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool, bool> *get_clauses();
+  bool> *get_clauses();
  private:
   std::unordered_map<std::string, EntityDeclaration> syn_to_entity_;
-  std::tuple<std::vector<std::string> *,
+  std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool, bool> *clauses_;
+  bool> *clauses_;
   static std::tuple<std::vector<std::string> *, std::string>
   SplitEntitiesAndSelectClause(std::string input);
   static std::unordered_map<std::string, EntityDeclaration *>
   *MakeEntitiesMap(std::vector<std::string> *entities);
-  static std::tuple<std::vector<std::string> *,
+  static std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool, bool> *MakeClauses(
+  bool> *MakeClauses(
       std::unordered_map<std::string, EntityDeclaration *> *entities_map,
       const std::string &select_clause);
 };

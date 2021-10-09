@@ -12,23 +12,23 @@ QueryPreprocessor::QueryPreprocessor(std::string input) {
     this->clauses_ = nullptr;
     return;
   }
-  std::tuple<std::vector<std::string> *,
+  std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool, bool> *clauses = MakeClauses(entities_map, select_clause);
+  bool> *clauses = MakeClauses(entities_map, select_clause);
   this->clauses_ = clauses;
 }
 
 QueryPreprocessor::~QueryPreprocessor() = default;
 
-std::tuple<std::vector<std::string> *,
+std::tuple<std::vector<ResultClause *> *,
 std::vector<SuchThatClause *> *,
 std::vector<PatternClause *> *,
 std::vector<WithClause *> *,
 std::unordered_map<std::string, EntityDeclaration *> *,
-bool, bool> *QueryPreprocessor::get_clauses() {
+bool> *QueryPreprocessor::get_clauses() {
   return this->clauses_;
 }
 
@@ -55,21 +55,21 @@ std::unordered_map<std::string, EntityDeclaration *>
   return ep->get_entities_map();
 }
 
-std::tuple<std::vector<std::string> *,
+std::tuple<std::vector<ResultClause *> *,
 std::vector<SuchThatClause *> *,
 std::vector<PatternClause *> *,
 std::vector<WithClause *> *,
 std::unordered_map<std::string, EntityDeclaration *> *,
-bool, bool> *QueryPreprocessor::MakeClauses(std::unordered_map<std::string,
+bool> *QueryPreprocessor::MakeClauses(std::unordered_map<std::string,
                                                              EntityDeclaration *> *entities_map,
                                           const std::string &select_clause) {
   SelectClauseParser *scp = SelectClauseParser::get_instance();
   scp->set_select_clause(entities_map, select_clause);
-  std::tuple<std::vector<std::string> *,
+  std::tuple<std::vector<ResultClause *> *,
              std::vector<SuchThatClause *> *,
              std::vector<PatternClause *> *,
              std::vector<WithClause *> *,
              std::unordered_map<std::string, EntityDeclaration *> *,
-             bool, bool> *clauses_tuple = scp->get_clauses();
+             bool> *clauses_tuple = scp->get_clauses();
   return clauses_tuple;
 }

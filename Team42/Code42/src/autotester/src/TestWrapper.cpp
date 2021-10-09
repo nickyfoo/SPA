@@ -53,12 +53,12 @@ void TestWrapper::evaluate(std::string query, std::list<std::string> &results) {
   // store the answers to the query in the results list (it is initially empty)
   // each result must be a string.
   auto *query_preprocessor = new QueryPreprocessor(query);
-  std::tuple<std::vector<std::string> *,
-             std::vector<SuchThatClause *> *,
-             std::vector<PatternClause *> *,
-             std::vector<WithClause *> *,
-             std::unordered_map<std::string, EntityDeclaration *> *,
-             bool, bool> *clauses = query_preprocessor->get_clauses();
+  std::tuple<std::vector<ResultClause *> *,
+  std::vector<SuchThatClause *> *,
+  std::vector<PatternClause *> *,
+  std::vector<WithClause *> *,
+  std::unordered_map<std::string, EntityDeclaration *> *,
+  bool> *clauses = query_preprocessor->get_clauses();
   PQLQuery *pql_query;
   if (clauses == nullptr) {
     pql_query = nullptr;
@@ -71,8 +71,7 @@ void TestWrapper::evaluate(std::string query, std::list<std::string> &results) {
     pql_query = new PQLQuery(std::get<0>(*clauses),
                              clause_groups,
                              std::get<4>(*clauses),
-                             std::get<5>(*clauses),
-                             std::get<6>(*clauses));
+                             std::get<5>(*clauses));
   }
   QueryEvaluator *query_evaluator = new QueryEvaluator(pql_query, pkb_);
   std::vector<std::string> *res = query_evaluator->Evaluate();

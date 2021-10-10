@@ -51,8 +51,16 @@ std::tuple<std::vector<ResultClause *> *,
   auto *pattern_ret = new std::vector<PatternClause *>();
   auto *with_ret = new std::vector<WithClause *>();
   std::vector<std::string> select_clauses = SplitSelect(select_clause);
+  auto *false_res = new std::tuple<std::vector<ResultClause *> *,
+                                     std::vector<SuchThatClause *> *,
+                                     std::vector<PatternClause *> *,
+                                     std::vector<WithClause *> *,
+                                     std::unordered_map<std::string, EntityDeclaration *> *,
+                                     bool>(
+      select_ret, such_that_ret,
+      pattern_ret, with_ret, synonym_to_entity_, false);
   if (select_clauses.empty()) {  // invalid select syntax
-    return nullptr;
+    return false_res;
   }
   bool is_select_boolean = false;
   for (const std::string &select : select_clauses) {
@@ -70,25 +78,14 @@ std::tuple<std::vector<ResultClause *> *,
       result_clause = ValidateResultClauseWithAttr(select);
     }
     if (result_clause == nullptr || !result_clause->set_elem()) {
-      return nullptr;
+      return false_res;
     }
     select_ret->push_back(result_clause);
   }
   for (const std::string &such_that_clause : such_that_clauses) {
     std::vector<SuchThatClause *> *relationship = MakeSuchThatClause(such_that_clause);
     if (relationship == nullptr) {
-      if (!is_select_boolean) {
-        return nullptr;
-      } else {
-        return new std::tuple<std::vector<ResultClause *> *,
-                              std::vector<SuchThatClause *> *,
-                              std::vector<PatternClause *> *,
-                              std::vector<WithClause *> *,
-                              std::unordered_map<std::string, EntityDeclaration *> *,
-                              bool>(
-            select_ret, such_that_ret,
-            pattern_ret, with_ret, synonym_to_entity_, false);
-      }
+      return false_res;
     }
     for (SuchThatClause *clause : *relationship) {
       such_that_ret->push_back(clause);
@@ -97,18 +94,7 @@ std::tuple<std::vector<ResultClause *> *,
   for (const std::string &pattern_clause : pattern_clauses) {
     std::vector<PatternClause *> *pattern = MakePatternClause(pattern_clause);
     if (pattern == nullptr) {
-      if (!is_select_boolean) {
-        return nullptr;
-      } else {
-        return new std::tuple<std::vector<ResultClause *> *,
-                              std::vector<SuchThatClause *> *,
-                              std::vector<PatternClause *> *,
-                              std::vector<WithClause *> *,
-                              std::unordered_map<std::string, EntityDeclaration *> *,
-                              bool>(
-            select_ret, such_that_ret,
-            pattern_ret, with_ret, synonym_to_entity_, false);
-      }
+      return false_res;
     }
     for (PatternClause *clause : *pattern) {
       pattern_ret->push_back(clause);
@@ -117,18 +103,7 @@ std::tuple<std::vector<ResultClause *> *,
   for (const std::string &with_clause : with_clauses) {
     std::vector<WithClause *> *with = MakeWithClause(with_clause);
     if (with == nullptr) {
-      if (!is_select_boolean) {
-        return nullptr;
-      } else {
-        return new std::tuple<std::vector<ResultClause *> *,
-                              std::vector<SuchThatClause *> *,
-                              std::vector<PatternClause *> *,
-                              std::vector<WithClause *> *,
-                              std::unordered_map<std::string, EntityDeclaration *> *,
-                              bool>(
-            select_ret, such_that_ret,
-            pattern_ret, with_ret, synonym_to_entity_, false);
-      }
+      return false_res;
     }
     for (WithClause *clause : *with) {
       with_ret->push_back(clause);
@@ -890,7 +865,6 @@ ResultClause * SelectClauseParser::ValidateResultClauseWithAttr(const std::strin
   }
   EntityType synonym_type = synonym_to_entity_->find(synonym)->second->get_type();
   ReturnType return_type;
-//  AttrValueType attr_value_type = AttrValueType::None;
   switch (synonym_type) {
     case EntityType::Procedure:
       if (attribute == "procName")

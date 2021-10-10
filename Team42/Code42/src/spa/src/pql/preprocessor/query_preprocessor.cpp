@@ -56,7 +56,6 @@ PQLQuery *QueryPreprocessor::MakePQLQuery(std::unordered_map<std::string,
              std::vector<WithClause *> *,
              std::unordered_map<std::string, EntityDeclaration *> *,
              bool> *clauses_tuple = scp->get_clauses();
-  if (clauses_tuple == nullptr) return nullptr;
   bool is_valid_clause = std::get<5>(*clauses_tuple);
   if (!is_valid_clause) {
     return new PQLQuery(std::get<0>(*clauses_tuple),

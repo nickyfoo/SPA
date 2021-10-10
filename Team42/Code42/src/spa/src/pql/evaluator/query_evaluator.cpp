@@ -17,23 +17,29 @@ QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
     this->synonym_to_entity_dec_ = pql_query->get_synonym_to_entities();
     this->is_valid_query_ = pql_query->is_valid_query();
     this->pkb_ = pkb;
-  } else if (pql_query == nullptr) {
-    this->entities_to_return_ = nullptr;
-    this->synonym_to_entity_dec_ = nullptr;
-    this->pkb_ = nullptr;
   } else {
-    this->synonym_to_entity_dec_ = pql_query->get_synonym_to_entities();
+    if (pql_query != nullptr && !pql_query->get_query_entities()->empty()) {
+      this->entities_to_return_ = pql_query->get_query_entities();
+    } else {
+      this->entities_to_return_ = nullptr;
+    }
+    this->synonym_to_entity_dec_ = nullptr;
     this->is_valid_query_ = false;
+    this->pkb_ = nullptr;
   }
 }
 
 std::vector<std::string> *QueryEvaluator::Evaluate() {
-  if (synonym_to_entity_dec_ == nullptr) {
-    return new std::vector<std::string>{};
+  if (!is_valid_query_) {  // if not valid query
+    if (entities_to_return_ != nullptr &&
+    entities_to_return_->size() == 1 &&
+    entities_to_return_->at(0)->get_return_type() == ReturnType::Boolean) {
+      return new std::vector<std::string>{"FALSE"};
+    } else {
+      return new std::vector<std::string>{};
+    }
   }
-  if (!is_valid_query_) {  // if not valid at the start, means that it is a FALSE boolean
-    return new std::vector<std::string>{"FALSE"};
-  }
+
   RelationshipQueryManager *relationship_query_manager;
   PatternQueryManager *pattern_query_manager;
   WithQueryManager *with_query_manager;

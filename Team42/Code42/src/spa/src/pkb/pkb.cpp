@@ -15,7 +15,14 @@ PKB::~PKB() = default;
 
 void PKB::AddProcedure(Node *node, std::vector<Node *> ancestor_list) {
   auto *procedure_node = dynamic_cast<ProcedureNode *>(node);
-  proc_table_.AddProcedure(procedure_node->get_name());
+  std::string proc_name = procedure_node->get_name();
+  std::vector<StatementNode*> stmt_lst = procedure_node->get_stmt_lst();
+  sort(stmt_lst.begin(), stmt_lst.end(),
+    [](StatementNode* a, StatementNode* b) {
+      return a->get_stmt_no() < b->get_stmt_no();
+    });
+  int stmt_no = procedure_node->get_stmt_lst()[0]->get_stmt_no();
+  proc_table_.AddProcedure(proc_name, stmt_no);
 }
 
 void PKB::AddStatement(Node *node, std::vector<Node *> ancestor_list) {
@@ -152,6 +159,13 @@ std::map<int, std::set<int>> *PKB::get_reverse_cfg_al() {
   return &reverse_cfg_al_;
 }
 
+std::map<int, std::set<std::pair<int, int>>>* PKB::get_cfg_bip_al() {
+  return &cfg_bip_al_;
+}
+std::map<int, std::set<std::pair<int, int>>>* PKB::get_reverse_cfg_bip_al() {
+  return &reverse_cfg_bip_al_;
+}
+
 bool PKB::TestAssignmentPattern(Statement *statement, std::string pattern, bool is_partial_match) {
   return pattern_manager_.TestAssignmentPattern(statement, pattern, is_partial_match);
 }
@@ -165,7 +179,7 @@ void PKB::PrintStatements() {
 }
 
 void PKB::PrintProcedures() {
-  proc_table_.PrintProcedureDetails();
+  proc_table_.PrintProcedures();
 }
 
 void PKB::PrintVariables() {
@@ -177,6 +191,16 @@ void PKB::PrintCFGAL() {
     std::cout << u << "->";
     for (auto &v : al) {
       std::cout << v << ' ';
+    }
+    std::cout << '\n';
+  }
+}
+
+void PKB::PrintCFGBIPAL() {
+  for (auto& [u, al] : cfg_bip_al_) {
+    std::cout << u << "->";
+    for (auto& [v,b] : al) {
+      std::cout << v << ',' << b << ' ';
     }
     std::cout << '\n';
   }

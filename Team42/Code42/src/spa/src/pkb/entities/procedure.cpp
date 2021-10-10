@@ -1,14 +1,19 @@
 #include "procedure.h"
 #include <iostream>
 
-Procedure::Procedure(std::string name) {
+Procedure::Procedure(std::string name, int stmt_no) {
   this->name_ = name;
+  this->first_statement_ = stmt_no;
 }
 
 Procedure::~Procedure() = default;
 
 std::string Procedure::get_name() {
   return name_;
+}
+
+int Procedure::get_stmt_no() {
+  return first_statement_;
 }
 
 std::set<std::string> *Procedure::get_uses() {

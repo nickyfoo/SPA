@@ -6,13 +6,13 @@ ProcTable::ProcTable() = default;
 
 ProcTable::~ProcTable() = default;
 
-int ProcTable::AddProcedure(const std::string &name) {
+int ProcTable::AddProcedure(const std::string & name, int stmt_no) {
   auto it = name_to_index_.find(name);
   if (it != name_to_index_.end()) {
     return it->second;
   }
   int pos = table_.size();
-  Procedure p(name);
+  Procedure p(name, stmt_no);
   table_.push_back(p);
   name_to_index_[name] = pos;
   return pos;
@@ -60,7 +60,7 @@ void ProcTable::ProcessCallsStar() {
 void ProcTable::PrintProcedures() {
   std::cout << "ProcTable size: " << table_.size() << '\n';
   for (Procedure p : table_) {
-    std::cout << p.get_name() << '\n';
+    std::cout << p.get_name() << ' ' << p.get_stmt_no() << '\n';
   }
 }
 

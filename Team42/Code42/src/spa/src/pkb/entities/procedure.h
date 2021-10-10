@@ -5,12 +5,14 @@
 
 class Procedure : public Entity {
  public:
-  explicit Procedure(std::string name);
+  explicit Procedure(std::string name, int stmt_no);
 
   ~Procedure();
 
   // Gets the name of procedure.
   std::string get_name();
+  // Gets the first StmtNo of procedure.
+  int get_stmt_no();
   // Gets the variables used by the procedure.
   std::set<std::string> *get_uses();
   // Gets the variables modified by the procedure.
@@ -47,6 +49,8 @@ class Procedure : public Entity {
  private:
   // Name of procedure.
   std::string name_;
+  // StmtNo of first statement in procedure
+  int first_statement_;
   // Variables used by the procedure.
   std::set<std::string> uses_;
   // Variables modified by the procedure.

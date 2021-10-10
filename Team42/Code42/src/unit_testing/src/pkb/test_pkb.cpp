@@ -1191,7 +1191,7 @@ TEST_CASE("PKB_CFGSample_Correct") {
   PKB pkb(p);
 
   std::map<int, std::vector<int>> ans = {
-      {1, {2}}, {2, {3}}, {4, {5}}, {5, {6}}, {6, {7, 10}}, {7, {8}}, {8, {9}}, {9, {6}},
+      {1, {2}}, {2, {3}}, {3, {}}, {4, {5}}, {5, {6}}, {6, {7, 10}}, {7, {8}}, {8, {9}}, {9, {6}},
       {10, {11, 12}}, {11, {13}}, {12, {13}}, {13, {14}}, {14, {15}}, {16, {17}}, {17, {18}},
   };
   std::map<int, std::set<int>> cfg_al = *pkb.get_cfg_al();
@@ -2286,4 +2286,97 @@ TEST_CASE("PKB_AffectsStarCacheTestTime_correct") {
   std::cout << "affects* empty cache elapsed time: " << empty_cache_elapsed_seconds.count() << "s\n";
   std::cout << "affects* full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
   REQUIRE(full_cache_elapsed_seconds.count() < empty_cache_elapsed_seconds.count());
+}
+
+
+TEST_CASE("PKB_CFGBIPSample_Correct") {
+  std::string source =
+    "procedure Bill {"
+    "  x = 5;"
+    "  call Mary;"
+    "  y = x + 6;"
+    "  call John;"
+    "  z = x * y + 2;"
+    "}"
+    "procedure Mary {"
+    "  y = x * 3;"
+    "  call John;"
+    "  z = x + y;"
+    "}"
+    "procedure John {"
+    "  if (i > 0) then {"
+    "    x = x + z;"
+    "  } else {"
+    "    y = x * y;"
+    "  }"
+    "}";
+
+
+  BufferedLexer lexer(source);
+  ParseState s{};
+  ProgramNode* p = ParseProgram(&lexer, &s);
+  PKB pkb(p);
+  pkb.PrintStatements();
+  pkb.PrintProcedures();
+  pkb.PrintCFGBIPAL();
+  std::map<int, std::vector<std::pair<int, int>>> ans = {
+    {1, {{2,pkb.kNoBranch}}},
+    {2, {{6,2}}},
+    {3, {{4,pkb.kNoBranch}}},
+    {4, {{9,4}}},
+    {6, {{7,pkb.kNoBranch}}},
+    {7, {{9,7}}},
+    {8, {{3,2}}},
+    {9, {{10,pkb.kNoBranch},{11,pkb.kNoBranch}}},
+    {10, {{8,7},{5,4}}},
+    {11, {{8,7},{5,4}}}
+  };
+  std::map<int, std::set<std::pair<int, int>>> cfg_bip_al = *pkb.get_cfg_bip_al();
+  REQUIRE(cfg_bip_al.size() == ans.size());
+  for (auto& [u, vals] : ans) {
+    REQUIRE(cfg_bip_al.find(u) != cfg_bip_al.end());
+    REQUIRE(cfg_bip_al[u].size() == vals.size());
+    for (auto&v: vals) {
+      REQUIRE(cfg_bip_al[u].find(v) != cfg_bip_al[u].end());
+    }
+  }
+}
+
+TEST_CASE("PKB_CFGBIPSample2_Correct") {
+  std::string source =
+    "procedure B {"
+    "  call C;"
+    "  call C;"
+    "  call C;"
+    "}"
+    "procedure C {"
+    "d = a;"
+    "a = b;"
+    "b = c;"
+    "c = d;"
+    "}";
+
+  BufferedLexer lexer(source);
+  ParseState s{};
+  ProgramNode* p = ParseProgram(&lexer, &s);
+  PKB pkb(p);
+  pkb.PrintCFGBIPAL();
+  std::map<int, std::vector<std::pair<int, int>>> ans = {
+    {1, {{4,1}}},
+    {2, {{4,2}}},
+    {3, {{4,3}}}, 
+    {4, {{5,pkb.kNoBranch}}}, 
+    {5, {{6,pkb.kNoBranch}}}, 
+    {6, {{7,pkb.kNoBranch}}}, 
+    {7, {{2,1},{3,2}}},
+  };
+  std::map<int, std::set<std::pair<int, int>>> cfg_bip_al = *pkb.get_cfg_bip_al();
+  REQUIRE(cfg_bip_al.size() == ans.size());
+  for (auto& [u, vals] : ans) {
+    REQUIRE(cfg_bip_al.find(u) != cfg_bip_al.end());
+    REQUIRE(cfg_bip_al[u].size() == vals.size());
+    for (auto& v : vals) {
+      REQUIRE(cfg_bip_al[u].find(v) != cfg_bip_al[u].end());
+    }
+  }
 }

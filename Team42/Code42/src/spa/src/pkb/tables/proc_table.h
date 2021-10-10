@@ -15,7 +15,7 @@ class ProcTable : public Table {
   ~ProcTable();
 
   // Adds a procedure to the table.
-  int AddProcedure(const std::string &name);
+  int AddProcedure(const std::string &name, int stmt_no);
 
   // Get total number of procedures.
   int get_num_procedures();

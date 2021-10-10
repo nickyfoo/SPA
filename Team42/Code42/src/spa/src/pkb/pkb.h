@@ -23,6 +23,8 @@ class PKB {
 
   // Value representing wild card.
   inline static const int kWild = 0;
+  // Value representing no branch.
+  inline static const int kNoBranch = -1;
 
   // Adds a procedure to the procedures table.
   void AddProcedure(Node *node, std::vector<Node *> ancestor_list);
@@ -59,6 +61,8 @@ class PKB {
 
   std::map<int, std::set<int>> *get_cfg_al();
   std::map<int, std::set<int>> *get_reverse_cfg_al();
+  std::map<int, std::set<std::pair<int, int>>>* get_cfg_bip_al();
+  std::map<int, std::set<std::pair<int, int>>>* get_reverse_cfg_bip_al();
 
   // Gets Next(a,b) relation. if a==kWild or b==kWild, it is treated as a wildcard.
   // Does a check for valid stmt line input, or kWild, and returns nullptr if invalid.
@@ -94,6 +98,8 @@ class PKB {
   void PrintVariables();
   // Prints CFGAL.
   void PrintCFGAL();
+  // Prints CFGBIPAL.
+  void PrintCFGBIPAL();
 
  private:
   // Populates the tables with entities and relationships from AST.
@@ -143,7 +149,9 @@ class PKB {
   void CallsProcessCallNode(Node *node, std::vector<Node *> &ancestorList);
 
   // Recursively gets the last stmts of a statement.
-  std::set<int> LastStmts(StatementNode *node);
+  std::set<int> LastStmts(StatementNode* node);
+    // Recursively gets the last stmts of a procedure starting at first_stmt.
+  void LastStmtsOfProcedure(int u, std::set<int>& visited, std::set<int>& ans);
   // Process and store the AST procedure node into the CFG.
   void CFGProcessProcedureNode(Node *node);
   // Process and store the AST if node into the CFG.
@@ -189,8 +197,12 @@ class PKB {
   VarTable var_table_;
   // Table of constants in the program.
   ConstTable const_table_;
-  // Adjacency List of CFG for Next and Affects.
+  // Adjacency List of CFG for Next and Affects
   std::map<int, std::set<int>> cfg_al_;
   // Reverse Adjacency List of CFG for Next and Affects.
   std::map<int, std::set<int>> reverse_cfg_al_;
+  // Adjacency List of CFG for NextBip and AffectsBip, u -> {v, branch}
+  std::map<int, std::set<std::pair<int, int>>> cfg_bip_al_;
+  // Reverse Adjacency List of CFG for NextBip and AffectsBip.
+  std::map<int, std::set<std::pair<int, int>>> reverse_cfg_bip_al_;
 };

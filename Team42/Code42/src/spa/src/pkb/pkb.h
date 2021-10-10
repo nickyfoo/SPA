@@ -165,17 +165,16 @@ class PKB {
                       bool forward_relation);
   // Cache for Next
   std::map<int, std::map<int,
-    std::set<std::pair<int, int>>>> next_cache;
+                         std::set<std::pair<int, int>>>> next_cache;
   // Cache for Next*
   std::map<int, std::map<int,
-    std::set<std::pair<int, int>>>> next_star_cache;
+                         std::set<std::pair<int, int>>>> next_star_cache;
   // Cache for Affects
   std::map<int, std::map<int,
-    std::set<std::pair<int, int>>>> affects_cache;
+                         std::set<std::pair<int, int>>>> affects_cache;
   // Cache for Affects*
   std::map<int, std::map<int,
-    std::set<std::pair<int, int>>>> affects_star_cache;
-
+                         std::set<std::pair<int, int>>>> affects_star_cache;
 
   // Root AST node of the program.
   Node *root_;

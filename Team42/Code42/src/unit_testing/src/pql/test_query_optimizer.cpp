@@ -19,9 +19,11 @@ TEST_CASE("GroupingSuchThat_ClausesWithNoSynonyms_AddsOnlyToNoSynGroup") {
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("s1",
+                                            EntityType::Stmt,
+                                            ReturnType::Default));
     such_that_clauses->push_back(follows);
-    return_syns->push_back("s1");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -67,11 +69,13 @@ TEST_CASE("GroupingSuchThat_ClausesWithNoSynonyms_AddsOnlyToNoSynGroup") {
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("s1",
+                                            EntityType::Stmt,
+                                            ReturnType::Default));
     such_that_clauses->push_back(follows);
     such_that_clauses->push_back(parent);
     such_that_clauses->push_back(uses);
-    return_syns->push_back("s1");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -100,9 +104,11 @@ TEST_CASE("GroupingSuchThat_ClausesWithNoReturnSynonyms_AddsOnlyToNoReturnSynGro
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("s1",
+                                            EntityType::Stmt,
+                                            ReturnType::Default));
     such_that_clauses->push_back(follows);
-    return_syns->push_back("s1");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -147,11 +153,13 @@ TEST_CASE("GroupingSuchThat_ClausesWithNoReturnSynonyms_AddsOnlyToNoReturnSynGro
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("s1",
+                                            EntityType::Stmt,
+                                            ReturnType::Default));
     such_that_clauses->push_back(follows);
     such_that_clauses->push_back(parent);
     such_that_clauses->push_back(uses);
-    return_syns->push_back("s1");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -180,9 +188,11 @@ TEST_CASE("GroupingSuchThat_ClausesWithReturnSynonyms_AddsOnlyToReturnSynGroup")
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("s1",
+                                            EntityType::Stmt,
+                                            ReturnType::Default));
     such_that_clauses->push_back(follows);
-    return_syns->push_back("s1");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -227,12 +237,16 @@ TEST_CASE("GroupingSuchThat_ClausesWithReturnSynonyms_AddsOnlyToReturnSynGroup")
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("s1",
+                                            EntityType::Stmt,
+                                            ReturnType::Default));
+    return_syns->push_back(new ResultClause("s2",
+                                            EntityType::Stmt,
+                                            ReturnType::Default));
     such_that_clauses->push_back(follows);
     such_that_clauses->push_back(parent);
     such_that_clauses->push_back(uses);
-    return_syns->push_back("s1");
-    return_syns->push_back("s2");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -257,9 +271,11 @@ TEST_CASE("GroupingPattern_ClausesWithNoReturnSynonyms_AddsOnlyToNoReturnSynGrou
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("s1",
+                                            EntityType::Stmt,
+                                            ReturnType::Default));
     pattern_clauses->push_back(pattern);
-    return_syns->push_back("s1");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -292,11 +308,13 @@ TEST_CASE("GroupingPattern_ClausesWithNoReturnSynonyms_AddsOnlyToNoReturnSynGrou
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("s1",
+                                            EntityType::Stmt,
+                                            ReturnType::Default));
     pattern_clauses->push_back(pattern1);
     pattern_clauses->push_back(pattern2);
     pattern_clauses->push_back(pattern3);
-    return_syns->push_back("s1");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -321,9 +339,11 @@ TEST_CASE("GroupingPattern_ClausesWithReturnSynonyms_AddsOnlyToReturnSynGroup") 
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("a",
+                                            EntityType::Assign,
+                                            ReturnType::Default));
     pattern_clauses->push_back(pattern);
-    return_syns->push_back("a");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -357,12 +377,16 @@ TEST_CASE("GroupingPattern_ClausesWithReturnSynonyms_AddsOnlyToReturnSynGroup") 
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("v",
+                                            EntityType::Variable,
+                                            ReturnType::Default));
+    return_syns->push_back(new ResultClause("a",
+                                            EntityType::Assign,
+                                            ReturnType::Default));
     pattern_clauses->push_back(pattern1);
     pattern_clauses->push_back(pattern2);
     pattern_clauses->push_back(pattern3);
-    return_syns->push_back("v");
-    return_syns->push_back("a");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -386,9 +410,11 @@ TEST_CASE("GroupingWith_ClausesWithNoSynonyms_AddsOnlyToNoSynGroup") {
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("a",
+                                            EntityType::Assign,
+                                            ReturnType::Default));
     with_clauses->push_back(with);
-    return_syns->push_back("a");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -405,7 +431,7 @@ TEST_CASE("GroupingWith_ClausesWithNoSynonyms_AddsOnlyToNoSynGroup") {
     std::string ss = "variable v; assign a;\n"
                      "Select a with 3 = 3 and 2 = 4 and 5 = 5";
     WithClause *with1 = new WithClause("3", EntityType::None, AttrValueType::Integer,
-                                      "3", EntityType::None, AttrValueType::Integer);
+                                       "3", EntityType::None, AttrValueType::Integer);
     WithClause *with2 = new WithClause("2", EntityType::None, AttrValueType::Integer,
                                        "4", EntityType::None, AttrValueType::Integer);
     WithClause *with3 = new WithClause("5", EntityType::None, AttrValueType::Integer,
@@ -414,11 +440,13 @@ TEST_CASE("GroupingWith_ClausesWithNoSynonyms_AddsOnlyToNoSynGroup") {
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("a",
+                                            EntityType::Assign,
+                                            ReturnType::Default));
     with_clauses->push_back(with1);
     with_clauses->push_back(with2);
     with_clauses->push_back(with3);
-    return_syns->push_back("a");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -442,9 +470,11 @@ TEST_CASE("GroupingWith_ClausesWithNoReturnSynonyms_AddsOnlyToNoReturnSynGroup")
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("a",
+                                            EntityType::Assign,
+                                            ReturnType::Default));
     with_clauses->push_back(with);
-    return_syns->push_back("a");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -470,11 +500,13 @@ TEST_CASE("GroupingWith_ClausesWithNoReturnSynonyms_AddsOnlyToNoReturnSynGroup")
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("",
+                                            EntityType::None,
+                                            ReturnType::Boolean));
     with_clauses->push_back(with1);
     with_clauses->push_back(with2);
     with_clauses->push_back(with3);
-    return_syns->push_back("BOOLEAN");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -498,9 +530,11 @@ TEST_CASE("GroupingWith_ClausesWithReturnSynonyms_AddsOnlyToReturnSynGroup") {
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("s1",
+                                            EntityType::Stmt,
+                                            ReturnType::Default));
     with_clauses->push_back(with);
-    return_syns->push_back("s1");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -526,12 +560,16 @@ TEST_CASE("GroupingWith_ClausesWithReturnSynonyms_AddsOnlyToReturnSynGroup") {
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("a",
+                                            EntityType::Assign,
+                                            ReturnType::Default));
+    return_syns->push_back(new ResultClause("a2",
+                                            EntityType::Assign,
+                                            ReturnType::Default));
     with_clauses->push_back(with1);
     with_clauses->push_back(with2);
     with_clauses->push_back(with3);
-    return_syns->push_back("a");
-    return_syns->push_back("a2");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -564,10 +602,12 @@ TEST_CASE("GroupingNoReturnButConnected_ClausesWithSynonyms_AddsToReturnSynGroup
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("s1",
+                                            EntityType::Stmt,
+                                            ReturnType::Default));
     with_clauses->push_back(with);
     such_that_clauses->push_back(follows);
-    return_syns->push_back("s1");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -603,11 +643,13 @@ TEST_CASE("GroupingNoReturnButConnected_ClausesWithSynonyms_AddsToReturnSynGroup
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("s1",
+                                            EntityType::Stmt,
+                                            ReturnType::Default));
     with_clauses->push_back(with);
     such_that_clauses->push_back(follows);
     pattern_clauses->push_back(pattern);
-    return_syns->push_back("s1");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -641,10 +683,12 @@ TEST_CASE("SortingWithinGroup_SortingHasReturnSynonymGroup_AddsOnlyToReturnSynGr
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("s1",
+                                            EntityType::Stmt,
+                                            ReturnType::Default));
     with_clauses->push_back(with);
     such_that_clauses->push_back(follows);
-    return_syns->push_back("s1");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -686,12 +730,16 @@ TEST_CASE("SortingWithinGroup_SortingHasReturnSynonymGroup_AddsOnlyToReturnSynGr
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("s1",
+                                            EntityType::Stmt,
+                                            ReturnType::Default));
+    return_syns->push_back(new ResultClause("a",
+                                            EntityType::Assign,
+                                            ReturnType::Default));
     with_clauses->push_back(with);
     such_that_clauses->push_back(follows);
     such_that_clauses->push_back(parent);
-    return_syns->push_back("s1");
-    return_syns->push_back("a");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -739,13 +787,17 @@ TEST_CASE("SortingWithinGroup_SortingHasReturnSynonymGroup_AddsOnlyToReturnSynGr
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("s1",
+                                            EntityType::Stmt,
+                                            ReturnType::Default));
+    return_syns->push_back(new ResultClause("a",
+                                            EntityType::Assign,
+                                            ReturnType::Default));
     with_clauses->push_back(with);
     such_that_clauses->push_back(follows);
     such_that_clauses->push_back(parent);
     pattern_clauses->push_back(pattern);
-    return_syns->push_back("s1");
-    return_syns->push_back("a");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -785,10 +837,12 @@ TEST_CASE("SortingWithinGroup_SortingNoReturnSynonymGroup_AddsOnlyToNoReturnSynG
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("s1",
+                                            EntityType::Stmt,
+                                            ReturnType::Default));
     with_clauses->push_back(with);
     such_that_clauses->push_back(follows);
-    return_syns->push_back("s1");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -830,11 +884,13 @@ TEST_CASE("SortingWithinGroup_SortingNoReturnSynonymGroup_AddsOnlyToNoReturnSynG
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("s2",
+                                            EntityType::Stmt,
+                                            ReturnType::Default));
     with_clauses->push_back(with);
     such_that_clauses->push_back(follows);
     such_that_clauses->push_back(parent);
-    return_syns->push_back("s2");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
@@ -883,12 +939,14 @@ TEST_CASE("SortingWithinGroup_SortingNoReturnSynonymGroup_AddsOnlyToNoReturnSynG
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
     auto *with_clauses = new std::vector<WithClause *>();
-    auto *return_syns = new std::vector<std::string >();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("s2",
+                                            EntityType::Stmt,
+                                            ReturnType::Default));
     with_clauses->push_back(with);
     such_that_clauses->push_back(follows);
     such_that_clauses->push_back(parent);
     pattern_clauses->push_back(pattern);
-    return_syns->push_back("s2");
 
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,

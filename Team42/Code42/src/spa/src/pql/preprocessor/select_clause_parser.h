@@ -35,11 +35,11 @@ class SelectClauseParser {
   SuchThatRef *MakeSuchThatRefLeft(SuchThatClause *relationship, std::string ref);
   SuchThatRef *MakeSuchThatRefRight(SuchThatClause *relationship, std::string ref);
   PatternClause *MakePatternRef(const std::string &synonym,
-                                const std::string& left_ref,
-                                const std::string& right_ref);
-  WithClause *MakeWithRef(const std::string& left_ref, const std::string& right_ref);
-  std::vector<SuchThatClause *> *MakeSuchThatClause(const std::string& relationship_statement);
-  std::vector<PatternClause *> *MakePatternClause(const std::string& pattern_statement);
+                                const std::string &left_ref,
+                                const std::string &right_ref);
+  WithClause *MakeWithRef(const std::string& left_ref, const std::string &right_ref);
+  std::vector<SuchThatClause *> *MakeSuchThatClause(const std::string &relationship_statement);
+  std::vector<PatternClause *> *MakePatternClause(const std::string &pattern_statement);
   std::vector<WithClause *> *MakeWithClause(const std::string& with_statement);
   static std::vector<std::string> SplitSelect(std::string select_clause);
   static std::vector<std::string> SplitTokensByDelimiter(

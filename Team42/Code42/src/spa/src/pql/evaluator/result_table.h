@@ -18,12 +18,12 @@ class ResultTable {
   std::vector<std::string> GetColumnVec(std::string synonym);
   std::vector<std::pair<std::string, int>> *GetCommonSynonyms(ResultTable &result_table);
   void set_table(ResultTable &result_table);
-  table* get_table();
+  table *get_table();
   std::unordered_map<std::string, int> *get_synonym_to_index();
   std::unordered_map<int, std::string> *get_index_to_synonym();
   std::vector<std::string> *get_synonyms();
  private:
-  table* table_;
+  table *table_;
   std::vector<std::string> *synonyms_;
   std::unordered_map<std::string, int> *synonym_to_index_;
   std::unordered_map<int, std::string> *index_to_synonym_;

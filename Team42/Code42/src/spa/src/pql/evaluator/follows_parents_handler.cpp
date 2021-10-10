@@ -36,7 +36,7 @@ std::set<int> *FollowsParentsHandler::Forwarder(std::set<int> *(Statement::*func
 // if is nullpointer, means False
 // if is empty, means that True with no synonyms
 ResultTable* FollowsParentsHandler::Evaluate() {
-  ResultTable* ret = new ResultTable();
+  ResultTable *ret = new ResultTable();
   StmtRef left_ent = relationship_->get_left_ref()->get_stmt_ref();
   StmtRef right_ent = relationship_->get_right_ref()->get_stmt_ref();
   // Going through 9 different cases for Follows/Parents

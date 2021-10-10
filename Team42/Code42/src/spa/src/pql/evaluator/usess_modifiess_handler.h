@@ -19,8 +19,7 @@ class UsesSModifiesSHandler {
   void set_function_pointers(
       std::set<std::string> *(Statement::*get_normal)(),
       std::set<int> *(Variable::*get_reverse)());
-  ResultTable* Evaluate();
-  std::vector<std::pair<int, std::string>> *get_stmt_var_pair_vector();
+  ResultTable *Evaluate();
 
  private:
   static UsesSModifiesSHandler *instance_;

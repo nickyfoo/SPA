@@ -38,7 +38,7 @@ void UsesSModifiesSHandler::set_function_pointers(
   this->get_reverse_ = get_reverse;
 }
 
-ResultTable* UsesSModifiesSHandler::Evaluate() {
+ResultTable *UsesSModifiesSHandler::Evaluate() {
   ResultTable *ret = new ResultTable();
   StmtRef left_ent = relationship_->get_left_ref()->get_stmt_ref();
   EntRef right_ent = relationship_->get_right_ref()->get_ent_ref();

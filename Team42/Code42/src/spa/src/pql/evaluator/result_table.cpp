@@ -26,19 +26,19 @@ void ResultTable::NaturalJoin(ResultTable &other_result_table) {
 
     std::vector<int> index_to_erase;
     for (int i = 0; i < col_one.size() && i < col_two.size(); ++i) {
-        bool found_matching_row = false;
-        for (int j = 0; j < other_col_one.size() && j < other_col_two.size(); ++j) {
-          if (col_one.at(i) == other_col_one.at(j) && col_two.at(i) == other_col_two.at(j)) {
-            found_matching_row = true;
-            break;
-          }
+      bool found_matching_row = false;
+      for (int j = 0; j < other_col_one.size() && j < other_col_two.size(); ++j) {
+        if (col_one.at(i) == other_col_one.at(j) && col_two.at(i) == other_col_two.at(j)) {
+          found_matching_row = true;
+          break;
         }
-        if (!found_matching_row) {
-          index_to_erase.push_back(i);
-        }
+      }
+      if (!found_matching_row) {
+        index_to_erase.push_back(i);
+      }
     }
     for (int k = index_to_erase.size()-1; k >= 0; --k) {
-      table_->erase(table_->begin()+index_to_erase.at(k));
+      table_->erase(table_->begin() + index_to_erase.at(k));
     }
   } else if (common_synonyms->size() == 1) {  // one common
     int num_of_synonyms = other_table->at(0).size();
@@ -50,7 +50,7 @@ void ResultTable::NaturalJoin(ResultTable &other_result_table) {
     if (num_of_synonyms == 2) {
       other_col_two_index = (common_synonyms->at(0).second + 1) % 2;
       auto *other_synonyms_to_index = other_result_table.get_synonym_to_index();
-      for (auto& it : *other_synonyms_to_index) {
+      for (auto &it : *other_synonyms_to_index) {
         if (std::find(synonyms_->begin(), synonyms_->end(), it.first)
         == synonyms_->end()) {  // if item is new
           synonym_to_index_->insert({it.first, synonym_to_index_->size()});
@@ -110,18 +110,10 @@ void ResultTable::CrossJoin(ResultTable &other_result_table) {
     synonyms_->push_back(synonym);
   }
 
-  if (other_table->size() == 0) {
-    delete table_;
-    table_ = new_table;
-    return;
-  }
-
   for (int i = 0; i < table_->size(); ++i) {
     for (int j = 0; j < other_table->size(); ++j) {
       std::vector<std::string> curr_row = table_->at(i);
-      for (int k = 0; k < other_table->at(j).size(); ++k) {
-        curr_row.push_back(other_table->at(j).at(k));
-      }
+      curr_row.insert(curr_row.end(), other_table->at(j).begin(), other_table->at(j).end());
       new_table->push_back(curr_row);
     }
   }
@@ -202,7 +194,7 @@ void ResultTable::set_table(ResultTable &result_table) {
   this->index_to_synonym_ = result_table.get_index_to_synonym();
 }
 
-table* ResultTable::get_table() {
+table *ResultTable::get_table() {
   return this->table_;
 }
 

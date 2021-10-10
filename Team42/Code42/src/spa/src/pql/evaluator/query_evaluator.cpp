@@ -67,7 +67,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
           break;
         case ClauseType::WithClause:
           table = with_query_manager->EvaluateWith(std::dynamic_pointer_cast<WithClause>(
-              clause_vertex.get_clause()),synonym_to_entities_vec);
+              clause_vertex.get_clause()), synonym_to_entities_vec);
           break;
         default:throw std::runtime_error("Unknown ClauseType found");
       }
@@ -91,7 +91,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         return ConvertToOutput(result_table, false);
       }
       result_table->set_table(*intermediate_table);
-    } else if (i > 2){
+    } else if (i > 2) {
       result_table->CrossJoin(*intermediate_table);
       if (!first_table_entry && result_table->get_table()->empty()) {
         return ConvertToOutput(result_table, false);

@@ -5,7 +5,7 @@ WithQueryManager::WithQueryManager() {
 
 WithQueryManager::~WithQueryManager() = default;
 
-ResultTable* WithQueryManager::EvaluateWith(std::shared_ptr<WithClause> with,
+ResultTable *WithQueryManager::EvaluateWith(std::shared_ptr<WithClause> with,
                                             std::unordered_map<std::string,
                                             std::vector<Entity *>> synonym_to_entities_vec) {
   ResultTable *ret = new ResultTable();

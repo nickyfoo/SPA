@@ -147,7 +147,7 @@ std::tuple<std::vector<ResultClause *> *,
 }
 
 std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
-    const std::string& relationship_statement) {
+    const std::string &relationship_statement) {
   auto *ret = new std::vector<SuchThatClause *>();
   if (relationship_statement.empty()) {
     return nullptr;
@@ -185,7 +185,7 @@ std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
 }
 
 std::vector<PatternClause *> *SelectClauseParser::MakePatternClause(
-    const std::string& pattern_statement) {
+    const std::string &pattern_statement) {
   auto *ret = new std::vector<PatternClause *>();
   if (pattern_statement.empty()) return nullptr;
 
@@ -221,7 +221,7 @@ std::vector<PatternClause *> *SelectClauseParser::MakePatternClause(
 }
 
 std::vector<WithClause *> *SelectClauseParser::MakeWithClause(
-    const std::string& with_statement) {
+    const std::string &with_statement) {
   auto *ret = new std::vector<WithClause *>();
   if (with_statement.empty()) return nullptr;
   std::vector<std::pair<std::string, std::string>> with_clauses =
@@ -254,8 +254,8 @@ std::vector<WithClause *> *SelectClauseParser::MakeWithClause(
 }
 
 PatternClause *SelectClauseParser::MakePatternRef(const std::string &synonym,
-                                                  const std::string& left_ref,
-                                                  const std::string& right_ref) {
+                                                  const std::string &left_ref,
+                                                  const std::string &right_ref) {
   PatternClause *ret;
   auto *ent_ref = new EntRef();
   if ((synonym_to_entity_->find(synonym) != synonym_to_entity_->end())
@@ -283,8 +283,8 @@ PatternClause *SelectClauseParser::MakePatternRef(const std::string &synonym,
   }
 }
 
-WithClause *SelectClauseParser::MakeWithRef(const std::string& left_ref,
-                                            const std::string& right_ref) {
+WithClause *SelectClauseParser::MakeWithRef(const std::string &left_ref,
+                                            const std::string &right_ref) {
   std::string left_str;
   std::string right_str;
   EntityType left_type;
@@ -820,7 +820,7 @@ std::vector<std::vector<std::string>> SelectClauseParser::SplitTokensByBrackets(
   const std::string AND_DELIM = " and ";
   std::vector<std::vector<std::string>> ret;
   std::vector<std::string> clauses = SplitTokensByDelimiter(input, AND_DELIM);
-  for (const std::string& clause : clauses) {
+  for (const std::string &clause : clauses) {
     std::vector<std::string> tokens;
     std::stringstream ss;
 
@@ -865,7 +865,7 @@ std::vector<std::pair<std::string, std::string>> SelectClauseParser::SplitTokens
   const std::string AND_DELIM = " and ";
   std::vector<std::pair<std::string, std::string>> ret;
   std::vector<std::string> clauses = SplitTokensByDelimiter(input, AND_DELIM);
-  for (const std::string& clause : clauses) {
+  for (const std::string &clause : clauses) {
     std::vector<std::string> with_clause = SplitTokensByEqualDelim(clause);
     if (with_clause.size() != 2) {
       return {};

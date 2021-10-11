@@ -1,0 +1,84 @@
+1 - Select BOOLEAN without clauses
+
+Select BOOLEAN
+TRUE
+5000
+2 - Select BOOLEAN with Follows true
+
+Select BOOLEAN such that Follows(1, 2)
+TRUE
+5000
+3 - Select BOOLEAN with Follows(*) true
+
+Select BOOLEAN such that Follows*(1, 5)
+TRUE
+5000
+4 - Select BOOLEAN with Follows false
+
+Select BOOLEAN such that Follows(3,3)
+FALSE
+5000
+5 - Select BOOLEAN with Follows* false
+
+Select BOOLEAN such that Follows*(3,1)
+FALSE
+5000
+6 - Select BOOLEAN with Parent true
+
+Select BOOLEAN such that Parent(7, 8)
+TRUE
+5000
+7 - Select BOOLEAN with Parent* true
+
+Select BOOLEAN such that Parent*(7, 12)
+TRUE
+5000
+8 - Select BOOLEAN with Parent false
+
+Select BOOLEAN such that Parent(1, 2)
+FALSE
+5000
+9 - Select BOOLEAN with Parent* false
+
+Select BOOLEAN such that Parent*(1, 4)
+FALSE
+5000
+10 - Select BOOLEAN with UsesS true
+
+Select BOOLEAN such that Uses(10, "v")
+TRUE
+5000
+11 - Select BOOLEAN with UsesS false
+
+Select BOOLEAN such that Uses(10, "x")
+FALSE
+5000
+12 - Select BOOLEAN with UsesP true
+
+Select BOOLEAN such that Uses("Boolean", "a")
+TRUE
+13 - Select BOOLEAN with UsesP false
+
+Select BOOLEAN such that Uses("Boolean", "nothing")
+FALSE
+5000
+14 - Select BOOLEAN with ModifiesS true
+
+Select BOOLEAN such that Modifies(10, "x")
+TRUE
+5000
+15 - Select BOOLEAN with ModifiesS false
+
+Select BOOLEAN such that Modifies(10, "v")
+FALSE
+5000
+16 - Select BOOLEAN with ModifiesP true
+
+Select BOOLEAN such that Modifies("Boolean", "v")
+TRUE
+5000
+17 - Select BOOLEAN with ModifiesP false
+
+Select BOOLEAN such that Modifies("BooleanNope", "v")
+FALSE
+5000

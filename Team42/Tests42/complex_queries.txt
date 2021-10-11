@@ -1,0 +1,65 @@
+1 - Multiple such that and patterns
+assign a; while w; variable v;
+Select a such that Follows*(_,a) and Uses(a, v) and Modifies(a, "procedure") and Uses(a, "procedure") pattern a(_, _"if"_) and a("procedure", _"9903148900000001"_)
+29
+5000
+2 - Multiple such that and patterns different order
+assign a; while w; variable v;
+Select a such that Follows*(_,a) such that Uses(a, v) pattern a(_, _"if"_) such that Modifies(a, "procedure") and Uses(a, "procedure") pattern a("procedure", _"9903148900000001"_)
+29
+5000
+3 - Multiple such that and withs
+assign a; while w; variable v; if ifs;
+Select v such that Parent*(w,ifs) and Uses(ifs, "abc") and Modifies(ifs, v) with ifs.stmt# = 33 and w.stmt# = 32
+x, t, e
+5000
+4 - Multiple such that and withs different order
+assign a; while w; variable v; if ifs;
+Select v such that Parent*(w,ifs) with ifs.stmt# = 33 such that Uses(ifs, "abc") with w.stmt# = 32 such that Modifies(ifs, v)
+x, t, e
+5000
+5 - Multiple patterns and withs
+assign a; while w; variable v; if ifs; read r;
+Select <r.varName, r.stmt#> pattern a(v, _) and ifs(v, _,_) and a(_,"1 + 3") with v.varName = r.varName
+a 89
+5000
+6 - Multiple patterns and withs different order
+assign a; while w; variable v; if ifs; read r;
+Select <r.varName, r.stmt#> pattern a(v, _) and ifs(v, _,_) with v.varName = r.varName pattern a(_,"1 + 3")
+a 89
+5000
+7 - Multiple such that and patterns and withs
+assign a; while w; variable v; if ifs; read r;
+Select v such that Parent*(ifs,w) and Uses(w,v) and Follows(_, w) pattern w(v, _) and ifs("cs3203",_,_) with ifs.stmt# = 72
+oop, is, a, religion
+5000
+8 - Multiple such that and patterns and withs different order
+while w; variable v; if ifs;
+Select v such that Parent*(ifs,w) pattern w(v, _) such that Uses(w,v) pattern ifs("cs3203",_,_) such that Follows(_, w) with ifs.stmt# = 72
+oop, is, a, religion
+5000
+9 - Multiple such that and patterns and withs with no results
+while w; variable v; if ifs;
+Select v such that Parent*(ifs,w) pattern w(v, _) such that Uses(w,v) pattern ifs("cs3203",_,_) such that Follows(_, w) with ifs.stmt# = 71
+
+5000
+10 - Multiple such that and patterns and withs return tuple
+while w; variable v; if ifs;
+Select <w, v>  such that Parent*(ifs,w) pattern w(v, _) such that Uses(w,v) pattern ifs("cs3203",_,_) such that Follows(_, w) with ifs.stmt# = 72
+84 oop,84 is,84 a,84 religion
+5000
+11 - Multiple such that and patterns and withs return tuple same synonym
+while w; variable v; if ifs;
+Select <v.varName, v>  such that Parent*(ifs,w) pattern w(v, _) such that Uses(w,v) pattern ifs("cs3203",_,_) such that Follows(_, w) with ifs.stmt# = 72
+oop oop,is is,a a,religion religion
+5000
+12 - Multiple such that and similar patterns
+assign a1,a2; variable v;
+Select <a2, v> such that Follows*(a1,a2) and Modifies(a1, v) pattern a2(_,_"(2-3)"_)  and a1(_,"1+3") and a2(_,_"b"_) and a2(_,_"c"_)
+98 a, 99 a
+5000
+13 - Multiple such that in a nest
+while w1,w2,w3,w4,w5; variable v;
+Select v such that Parent(w1,w2) and Parent(w2,w3) and Parent(w3, w4) and Parent(w4, w5) and Modifies(w5, v)
+abc, hello
+5000

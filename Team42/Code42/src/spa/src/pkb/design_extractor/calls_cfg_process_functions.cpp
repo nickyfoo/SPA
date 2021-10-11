@@ -242,7 +242,7 @@ void PKB::AddCallStacks() {
   //int for stmt_no, string for call stack.
   std::set<std::pair<int,std::string>> visited;
   std::vector<int> call_stack;
-  for (auto& stmt : stmt_table_.get_statements(NodeType::Assign)) {
+  for (auto& stmt : stmt_table_.get_all_statements()) {
     if (visited.find({ stmt->get_stmt_no(), "" }) != visited.end()) continue;
     ProcessCallStacks(visited, call_stack, stmt->get_stmt_no());
   }

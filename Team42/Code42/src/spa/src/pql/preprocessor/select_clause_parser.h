@@ -7,6 +7,7 @@
 #include <tuple>
 #include <unordered_map>
 #include <vector>
+#include <utility>
 #include "entity_declaration.h"
 #include "such_that_clause.h"
 #include "with_clause.h"
@@ -18,15 +19,20 @@ class SelectClauseParser {
   void set_select_clause(std::unordered_map<std::string,
                                             EntityDeclaration *> *syn_to_ent,
                          std::string select_clause);
-  PQLQuery *get_clauses();
+  std::tuple<std::vector<std::string> *,
+             std::vector<SuchThatClause *> *,
+             std::vector<PatternClause *> *,
+             std::vector<WithClause *> *,
+             std::unordered_map<std::string, EntityDeclaration *> *,
+             bool, bool> *get_clauses();
 
  private:
   static SelectClauseParser *instance;
   std::unordered_map<std::string, EntityDeclaration *> *synonym_to_entity_;
   std::string select_statement_;
   SelectClauseParser();
-  SuchThatRef* MakeSuchThatRefLeft(SuchThatClause *relationship, std::string ref);
-  SuchThatRef* MakeSuchThatRefRight(SuchThatClause *relationship, std::string ref);
+  SuchThatRef *MakeSuchThatRefLeft(SuchThatClause *relationship, std::string ref);
+  SuchThatRef *MakeSuchThatRefRight(SuchThatClause *relationship, std::string ref);
   PatternClause *MakePatternRef(const std::string &synonym,
                                 std::string left_ref,
                                 std::string right_ref);
@@ -46,7 +52,8 @@ class SelectClauseParser {
                     std::vector<std::string>, std::vector<std::string>> SplitTokensByClauses(
       const std::string &input);
   static bool IsValidIdentifier(const std::string &str);
-  std::tuple<std::string, EntityType, AttrValueType> GetWithRefTypeAndAttrValueType(std::string ref);
+  std::tuple<std::string, EntityType, AttrValueType>
+  GetWithRefTypeAndAttrValueType(std::string ref);
   static bool IsInteger(const std::string &str);
   bool IsValidAttr(const std::string &select);
 };

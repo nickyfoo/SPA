@@ -1,4 +1,6 @@
+#include "memory"
 #include "query_preprocessor.h"
+#include "query_optimizer.h"
 
 QueryPreprocessor::QueryPreprocessor(std::string input) {
   std::vector<std::string> *entities;
@@ -48,5 +50,21 @@ PQLQuery *QueryPreprocessor::MakePQLQuery(std::unordered_map<std::string,
                                           const std::string &select_clause) {
   SelectClauseParser *scp = SelectClauseParser::get_instance();
   scp->set_select_clause(entities_map, select_clause);
-  return scp->get_clauses();
+  std::tuple<std::vector<std::string> *,
+             std::vector<SuchThatClause *> *,
+             std::vector<PatternClause *> *,
+             std::vector<WithClause *> *,
+             std::unordered_map<std::string, EntityDeclaration *> *,
+             bool, bool> *clauses_tuple = scp->get_clauses();
+  QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clauses_tuple),
+                                                  std::get<2>(*clauses_tuple),
+                                                  std::get<3>(*clauses_tuple),
+                                                  std::get<0>(*clauses_tuple));
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  PQLQuery *pql_query = new PQLQuery(std::get<0>(*clauses_tuple),
+                                     clause_groups,
+                                     std::get<4>(*clauses_tuple),
+                                     std::get<5>(*clauses_tuple),
+                                     std::get<6>(*clauses_tuple));
+  return pql_query;
 }

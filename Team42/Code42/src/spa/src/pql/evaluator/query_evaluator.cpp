@@ -10,18 +10,19 @@
 
 QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
   if (pql_query != nullptr) {
-    QueryEvaluator::entities_to_return_ = pql_query->get_query_entities();
-    QueryEvaluator::relationships_ = pql_query->get_query_relationships();
-    QueryEvaluator::patterns_ = pql_query->get_query_patterns();
-    QueryEvaluator::synonym_to_entity_dec_ = pql_query->get_synonym_to_entities();
+    this->entities_to_return_ = pql_query->get_query_entities();
+    this->clause_groups_ = pql_query->get_clause_groups();
+    //TODO (Wei Kiat): please remove this, I put this here to silence the errors.
+    this->relationships_ = new std::vector<SuchThatClause *>();
+    this->patterns_ = new std::vector<PatternClause *>();
+
+    this->synonym_to_entity_dec_ = pql_query->get_synonym_to_entities();
     this->pkb_ = pkb;
     this->has_one_repeated_synonym_ = pql_query->has_one_repeated_synonym();
     this->has_two_repeated_synonyms_ = pql_query->has_two_repeated_synonyms();
   } else {
-    QueryEvaluator::entities_to_return_ = nullptr;
-    QueryEvaluator::relationships_ = nullptr;
-    QueryEvaluator::patterns_ = nullptr;
-    QueryEvaluator::synonym_to_entity_dec_ = nullptr;
+    this->entities_to_return_ = nullptr;
+    this->synonym_to_entity_dec_ = nullptr;
     this->pkb_ = nullptr;
     this->has_one_repeated_synonym_ = false;
     this->has_two_repeated_synonyms_ = false;
@@ -148,6 +149,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
 
     relationship_query_manager->EvaluateRelationships();
   }
+
   // Check if any entity vector is empty
   // If it is, return empty result.
   if (IsEmpty(synonym_to_entity_result)) {

@@ -30,7 +30,7 @@ std::vector<Procedure *> ProcTable::get_all_procedures() {
   return ans;
 }
 
-Procedure *ProcTable::get_procedure(const std::string& name) {
+Procedure *ProcTable::get_procedure(const std::string &name) {
   if (name_to_index_.find(name) == name_to_index_.end()) {
     return nullptr;
   }

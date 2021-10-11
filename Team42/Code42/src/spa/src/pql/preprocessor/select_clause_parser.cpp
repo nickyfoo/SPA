@@ -51,8 +51,16 @@ std::tuple<std::vector<ResultClause *> *,
   auto *pattern_ret = new std::vector<PatternClause *>();
   auto *with_ret = new std::vector<WithClause *>();
   std::vector<std::string> select_clauses = SplitSelect(select_clause);
+  auto *false_res = new std::tuple<std::vector<ResultClause *> *,
+                                     std::vector<SuchThatClause *> *,
+                                     std::vector<PatternClause *> *,
+                                     std::vector<WithClause *> *,
+                                     std::unordered_map<std::string, EntityDeclaration *> *,
+                                     bool>(
+      select_ret, such_that_ret,
+      pattern_ret, with_ret, synonym_to_entity_, false);
   if (select_clauses.empty()) {  // invalid select syntax
-    return nullptr;
+    return false_res;
   }
   bool is_select_boolean = false;
   for (const std::string &select : select_clauses) {
@@ -70,25 +78,14 @@ std::tuple<std::vector<ResultClause *> *,
       result_clause = ValidateResultClauseWithAttr(select);
     }
     if (result_clause == nullptr || !result_clause->set_elem()) {
-      return nullptr;
+      return false_res;
     }
     select_ret->push_back(result_clause);
   }
   for (const std::string &such_that_clause : such_that_clauses) {
     std::vector<SuchThatClause *> *relationship = MakeSuchThatClause(such_that_clause);
     if (relationship == nullptr) {
-      if (!is_select_boolean) {
-        return nullptr;
-      } else {
-        return new std::tuple<std::vector<ResultClause *> *,
-                              std::vector<SuchThatClause *> *,
-                              std::vector<PatternClause *> *,
-                              std::vector<WithClause *> *,
-                              std::unordered_map<std::string, EntityDeclaration *> *,
-                              bool>(
-            select_ret, such_that_ret,
-            pattern_ret, with_ret, synonym_to_entity_, false);
-      }
+      return false_res;
     }
     for (SuchThatClause *clause : *relationship) {
       such_that_ret->push_back(clause);
@@ -97,18 +94,7 @@ std::tuple<std::vector<ResultClause *> *,
   for (const std::string &pattern_clause : pattern_clauses) {
     std::vector<PatternClause *> *pattern = MakePatternClause(pattern_clause);
     if (pattern == nullptr) {
-      if (!is_select_boolean) {
-        return nullptr;
-      } else {
-        return new std::tuple<std::vector<ResultClause *> *,
-                              std::vector<SuchThatClause *> *,
-                              std::vector<PatternClause *> *,
-                              std::vector<WithClause *> *,
-                              std::unordered_map<std::string, EntityDeclaration *> *,
-                              bool>(
-            select_ret, such_that_ret,
-            pattern_ret, with_ret, synonym_to_entity_, false);
-      }
+      return false_res;
     }
     for (PatternClause *clause : *pattern) {
       pattern_ret->push_back(clause);
@@ -117,18 +103,7 @@ std::tuple<std::vector<ResultClause *> *,
   for (const std::string &with_clause : with_clauses) {
     std::vector<WithClause *> *with = MakeWithClause(with_clause);
     if (with == nullptr) {
-      if (!is_select_boolean) {
-        return nullptr;
-      } else {
-        return new std::tuple<std::vector<ResultClause *> *,
-                              std::vector<SuchThatClause *> *,
-                              std::vector<PatternClause *> *,
-                              std::vector<WithClause *> *,
-                              std::unordered_map<std::string, EntityDeclaration *> *,
-                              bool>(
-            select_ret, such_that_ret,
-            pattern_ret, with_ret, synonym_to_entity_, false);
-      }
+      return false_res;
     }
     for (WithClause *clause : *with) {
       with_ret->push_back(clause);
@@ -147,7 +122,7 @@ std::tuple<std::vector<ResultClause *> *,
 }
 
 std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
-    const std::string& relationship_statement) {
+    const std::string &relationship_statement) {
   auto *ret = new std::vector<SuchThatClause *>();
   if (relationship_statement.empty()) {
     return nullptr;
@@ -185,7 +160,7 @@ std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
 }
 
 std::vector<PatternClause *> *SelectClauseParser::MakePatternClause(
-    const std::string& pattern_statement) {
+    const std::string &pattern_statement) {
   auto *ret = new std::vector<PatternClause *>();
   if (pattern_statement.empty()) return nullptr;
 
@@ -221,7 +196,7 @@ std::vector<PatternClause *> *SelectClauseParser::MakePatternClause(
 }
 
 std::vector<WithClause *> *SelectClauseParser::MakeWithClause(
-    const std::string& with_statement) {
+    const std::string &with_statement) {
   auto *ret = new std::vector<WithClause *>();
   if (with_statement.empty()) return nullptr;
   std::vector<std::pair<std::string, std::string>> with_clauses =
@@ -254,8 +229,8 @@ std::vector<WithClause *> *SelectClauseParser::MakeWithClause(
 }
 
 PatternClause *SelectClauseParser::MakePatternRef(const std::string &synonym,
-                                                  const std::string& left_ref,
-                                                  const std::string& right_ref) {
+                                                  const std::string &left_ref,
+                                                  const std::string &right_ref) {
   PatternClause *ret;
   auto *ent_ref = new EntRef();
   if ((synonym_to_entity_->find(synonym) != synonym_to_entity_->end())
@@ -283,8 +258,8 @@ PatternClause *SelectClauseParser::MakePatternRef(const std::string &synonym,
   }
 }
 
-WithClause *SelectClauseParser::MakeWithRef(const std::string& left_ref,
-                                            const std::string& right_ref) {
+WithClause *SelectClauseParser::MakeWithRef(const std::string &left_ref,
+                                            const std::string &right_ref) {
   std::string left_str;
   std::string right_str;
   EntityType left_type;
@@ -820,7 +795,7 @@ std::vector<std::vector<std::string>> SelectClauseParser::SplitTokensByBrackets(
   const std::string AND_DELIM = " and ";
   std::vector<std::vector<std::string>> ret;
   std::vector<std::string> clauses = SplitTokensByDelimiter(input, AND_DELIM);
-  for (const std::string& clause : clauses) {
+  for (const std::string &clause : clauses) {
     std::vector<std::string> tokens;
     std::stringstream ss;
 
@@ -865,7 +840,7 @@ std::vector<std::pair<std::string, std::string>> SelectClauseParser::SplitTokens
   const std::string AND_DELIM = " and ";
   std::vector<std::pair<std::string, std::string>> ret;
   std::vector<std::string> clauses = SplitTokensByDelimiter(input, AND_DELIM);
-  for (const std::string& clause : clauses) {
+  for (const std::string &clause : clauses) {
     std::vector<std::string> with_clause = SplitTokensByEqualDelim(clause);
     if (with_clause.size() != 2) {
       return {};
@@ -890,7 +865,6 @@ ResultClause * SelectClauseParser::ValidateResultClauseWithAttr(const std::strin
   }
   EntityType synonym_type = synonym_to_entity_->find(synonym)->second->get_type();
   ReturnType return_type;
-//  AttrValueType attr_value_type = AttrValueType::None;
   switch (synonym_type) {
     case EntityType::Procedure:
       if (attribute == "procName")

@@ -18,7 +18,7 @@ class FollowsParentsHandler {
                 std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec);
   void set_function_pointers(std::set<int> *(Statement::*get_normal)(),
                              std::set<int> *(Statement::*get_reverse)());
-  ResultTable* Evaluate();
+  ResultTable *Evaluate();
 
  private:
   static FollowsParentsHandler *instance_;

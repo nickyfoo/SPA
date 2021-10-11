@@ -38,7 +38,7 @@ void UsesPModifiesPHandler::set_function_pointers(
   this->get_reverse_ = get_reverse;
 }
 
-ResultTable* UsesPModifiesPHandler::Evaluate() {
+ResultTable *UsesPModifiesPHandler::Evaluate() {
   ResultTable *ret = new ResultTable();
   EntRef left_ent = relationship_->get_left_ref()->get_ent_ref();
   EntRef right_ent = relationship_->get_right_ref()->get_ent_ref();

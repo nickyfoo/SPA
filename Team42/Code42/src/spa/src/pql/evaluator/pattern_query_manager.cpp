@@ -10,9 +10,9 @@ PatternQueryManager::PatternQueryManager(PKB *pkb) {
 PatternQueryManager::~PatternQueryManager() = default;
 
 
-ResultTable* PatternQueryManager::EvaluatePattern(std::shared_ptr<PatternClause> pattern,
+ResultTable *PatternQueryManager::EvaluatePattern(std::shared_ptr<PatternClause> pattern,
                                                   const std::unordered_map<std::string,
-                                                  std::vector<Entity *>>& synonym_to_entities_vec) {
+                                                  std::vector<Entity *>> &synonym_to_entities_vec) {
   if (pattern->get_type() == EntityType::Assign) {
     return EvaluateAssignPattern(pattern, synonym_to_entities_vec);
   } else if (pattern->get_type() == EntityType::If || pattern->get_type() == EntityType::While) {
@@ -22,7 +22,7 @@ ResultTable* PatternQueryManager::EvaluatePattern(std::shared_ptr<PatternClause>
   }
 }
 
-ResultTable* PatternQueryManager::EvaluateAssignPattern(
+ResultTable *PatternQueryManager::EvaluateAssignPattern(
     std::shared_ptr<PatternClause> pattern, std::unordered_map<std::string,
     std::vector<Entity *>> synonym_to_entities_vec) {
   auto *ret = new ResultTable();
@@ -80,7 +80,7 @@ ResultTable* PatternQueryManager::EvaluateAssignPattern(
   return ret;
 }
 
-ResultTable* PatternQueryManager::EvaluateIfAndWhilePattern(
+ResultTable *PatternQueryManager::EvaluateIfAndWhilePattern(
     std::shared_ptr<PatternClause> pattern, std::unordered_map<std::string,
     std::vector<Entity *>> synonym_to_entities_vec) {
   auto *ret = new ResultTable();
@@ -99,26 +99,25 @@ ResultTable* PatternQueryManager::EvaluateIfAndWhilePattern(
     auto *stmt = dynamic_cast<Statement *>(entity_vec.at(i));  // for each stmt object
     if (stmt->get_uses()->empty()) {
       continue;
-    } else {
-      if (variable->get_type() == EntRefType::Synonym) {  // pattern if(v, _, _)
-        left_synonym = variable->get_synonym();
-        // getting list of variable objects
-        std::vector<Entity *> variable_vec =
-            synonym_to_entities_vec.at(variable->get_synonym());
-        for (Entity *entity : variable_vec) {
-          auto *variable = dynamic_cast<Variable *>(entity);
-          if (pkb_->TestIfWhilePattern(stmt, variable->get_name())) {
-            stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
-            var_vec.push_back(variable->get_name());
-          }
-        }
-      } else if (variable->get_type() == EntRefType::Argument) {  // pattern if("a", _, _)
-        if (pkb_->TestIfWhilePattern(stmt, variable->get_argument())) {
+    }
+    if (variable->get_type() == EntRefType::Synonym) {  // pattern if(v, _, _)
+      left_synonym = variable->get_synonym();
+      // getting list of variable objects
+      std::vector<Entity *> variable_vec =
+          synonym_to_entities_vec.at(variable->get_synonym());
+      for (Entity *entity : variable_vec) {
+        auto *variable = dynamic_cast<Variable *>(entity);
+        if (pkb_->TestIfWhilePattern(stmt, variable->get_name())) {
           stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
+          var_vec.push_back(variable->get_name());
         }
-      } else if (variable->get_type() == EntRefType::WildCard) {  // pattern if(_, _, _)
+      }
+    } else if (variable->get_type() == EntRefType::Argument) {  // pattern if("a", _, _)
+      if (pkb_->TestIfWhilePattern(stmt, variable->get_argument())) {
         stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
       }
+    } else if (variable->get_type() == EntRefType::WildCard) {  // pattern if(_, _, _)
+      stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
     }
   }
   if (variable->get_type() == EntRefType::Synonym) {

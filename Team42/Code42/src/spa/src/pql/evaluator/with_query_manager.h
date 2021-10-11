@@ -15,7 +15,7 @@ class WithQueryManager {
  public:
   WithQueryManager();
   ~WithQueryManager();
-  ResultTable* EvaluateWith(std::shared_ptr<WithClause> with,
+  ResultTable *EvaluateWith(std::shared_ptr<WithClause> with,
                             std::unordered_map<std::string,
                             std::vector<Entity *>> synonym_to_entities_vec);
  private:

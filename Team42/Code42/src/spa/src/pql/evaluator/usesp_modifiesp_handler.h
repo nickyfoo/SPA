@@ -19,7 +19,7 @@ class UsesPModifiesPHandler {
   void set_function_pointers(
       std::set<std::string> *(Procedure::*get_normal)(),
       std::set<std::string> *(Variable::*get_reverse)());
-  ResultTable* Evaluate();
+  ResultTable *Evaluate();
 
  private:
   static UsesPModifiesPHandler *instance_;

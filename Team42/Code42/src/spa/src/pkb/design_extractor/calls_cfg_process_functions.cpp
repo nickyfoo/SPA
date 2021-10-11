@@ -90,7 +90,7 @@ void PKB::CFGProcessProcedureNode(Node *node) {
       int first_stmt = proc_table_.get_procedure(proc_name)->get_stmt_no();
       // Add edge from call node to start of procedure
       cfg_bip_al_[call_node->get_stmt_no()].insert({ first_stmt, call_node->get_stmt_no() });
-      reverse_cfg_bip_al_[first_stmt].insert({ call_node->get_stmt_no(), first_stmt });
+      reverse_cfg_bip_al_[first_stmt].insert({ call_node->get_stmt_no(), -first_stmt });
     }
   }
 }
@@ -130,7 +130,7 @@ void PKB::CFGProcessIfNode(Node *node) {
       int first_stmt = proc_table_.get_procedure(proc_name)->get_stmt_no();
       // Add edge from call node to start of procedure
       cfg_bip_al_[call_node->get_stmt_no()].insert({ first_stmt, call_node->get_stmt_no() });
-      reverse_cfg_bip_al_[first_stmt].insert({ call_node->get_stmt_no(), first_stmt });
+      reverse_cfg_bip_al_[first_stmt].insert({ call_node->get_stmt_no(), -first_stmt });
     }
   }
 
@@ -166,7 +166,7 @@ void PKB::CFGProcessIfNode(Node *node) {
       int first_stmt = proc_table_.get_procedure(proc_name)->get_stmt_no();
       // Add edge from call node to start of procedure
       cfg_bip_al_[call_node->get_stmt_no()].insert({ first_stmt, call_node->get_stmt_no() });
-      reverse_cfg_bip_al_[first_stmt].insert({ call_node->get_stmt_no(), first_stmt });
+      reverse_cfg_bip_al_[first_stmt].insert({ call_node->get_stmt_no(), -first_stmt });
     }
   }
 }
@@ -218,8 +218,86 @@ void PKB::CFGProcessWhileNode(Node *node) {
       int first_stmt = proc_table_.get_procedure(proc_name)->get_stmt_no();
       // Add edge from call node to start of procedure
       cfg_bip_al_[call_node->get_stmt_no()].insert({ first_stmt, call_node->get_stmt_no() });
-      reverse_cfg_bip_al_[first_stmt].insert({call_node->get_stmt_no(), first_stmt});
+      reverse_cfg_bip_al_[first_stmt].insert({call_node->get_stmt_no(), -first_stmt});
+    }
+  }
+}
+void PKB::LinkProcedures() {
+  for (auto& call_stmt : stmt_table_.get_statements(NodeType::Call)) {
+    int first_stmt_of_proc = proc_table_.get_procedure(call_stmt->get_called_proc_name())->get_stmt_no();
+    std::set<int> visited, ans;
+    LastStmtsOfProcedure(first_stmt_of_proc, visited, ans);
+    for (auto& last_stmt : ans) {
+      for (auto& next_stmt : cfg_al_[call_stmt->get_stmt_no()]) {
+        cfg_bip_al_[last_stmt].insert({ next_stmt, -call_stmt->get_stmt_no() });
+        reverse_cfg_bip_al_[next_stmt].insert({ last_stmt, call_stmt->get_stmt_no() });
+      }
     }
   }
 }
 
+
+void PKB::AddCallStacks() {
+  int n = stmt_table_.get_num_statements() + 1;
+  //int for stmt_no, string for call stack.
+  std::set<std::pair<int,std::string>> visited;
+  std::vector<int> call_stack;
+  for (auto& stmt : stmt_table_.get_statements(NodeType::Assign)) {
+    if (visited.find({ stmt->get_stmt_no(), "" }) != visited.end()) continue;
+    ProcessCallStacks(visited, call_stack, stmt->get_stmt_no());
+  }
+}
+
+void PKB::ProcessCallStacks(std::set<std::pair<int, std::string>>& visited, std::vector<int>& call_stack, int u) { 
+  std::string hash = CallStackToString(&call_stack);
+  if (visited.find({ u, hash }) != visited.end()) return;
+  visited.insert({ u,hash });
+  auto stmt = stmt_table_.get_statement(u);
+  stmt->AddCallStack(&call_stack);
+  int branch;
+  if (call_stack.size() == 0) {
+    branch = kNoBranch;
+  }
+  else {
+    branch = call_stack.back();
+  }
+  for (auto& [v, v_branch] : cfg_bip_al_[u]) {
+    // Was called from another procedure, and this edge is a returning edge that does not return to that procedure
+    if (branch != kNoBranch && v_branch < 0 && v_branch != -branch) {
+      continue;
+    }
+    // Edge goes to a new procedure
+    if (v_branch > 0) {
+      call_stack.push_back(v_branch);
+      ProcessCallStacks(visited, call_stack, v);
+      call_stack.pop_back();
+    }
+    else if (v_branch < 0) {
+      // Call stack not empty and edge goes back
+      if (branch != kNoBranch) {
+        // Edge goes back
+        if (v_branch == -branch) {
+          call_stack.pop_back();
+          ProcessCallStacks(visited, call_stack, v);
+          call_stack.push_back(branch);
+        }
+        // Else checked above
+      }
+      // Call stack empty, go wherever you want
+      else {
+      }
+    }
+    else if (v_branch == 0) {
+      ProcessCallStacks(visited, call_stack, v);
+    }
+  }
+}
+
+std::string PKB::CallStackToString(std::vector<int>* call_stack) {
+  std::string ans = "";
+  for (auto& x : *call_stack) {
+    ans += std::to_string(x);
+    ans += ' ';
+  }
+  return ans;
+}

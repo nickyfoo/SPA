@@ -169,18 +169,8 @@ void PKB::ExtractCFG() {
   };
 
   Visit(root_, functions);
-
-  for (auto& call_stmt : stmt_table_.get_statements(NodeType::Call)) {
-    int first_stmt_of_proc = proc_table_.get_procedure(call_stmt->get_called_proc_name())->get_stmt_no();
-    std::set<int> visited, ans; 
-    LastStmtsOfProcedure(first_stmt_of_proc, visited, ans);
-    for (auto& last_stmt : ans) {
-      for (auto& next_stmt : cfg_al_[call_stmt->get_stmt_no()]) {
-        cfg_bip_al_[last_stmt].insert({ next_stmt, call_stmt->get_stmt_no() });
-        reverse_cfg_bip_al_[next_stmt].insert({ last_stmt, call_stmt->get_stmt_no() });
-      }
-    }
-  }
+  LinkProcedures();
+  AddCallStacks();
 }
 
 void PKB::UpdateVarTableWithProcs() {
@@ -193,3 +183,4 @@ void PKB::UpdateVarTableWithProcs() {
     }
   }
 }
+

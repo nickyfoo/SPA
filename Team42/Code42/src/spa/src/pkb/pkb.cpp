@@ -196,7 +196,7 @@ void PKB::PrintCFGAL() {
   }
 }
 
-void PKB::PrintCFGBIPAL() {
+void PKB::PrintCFGBipAL() {
   for (auto& [u, al] : cfg_bip_al_) {
     std::cout << u << "->";
     for (auto& [v,b] : al) {

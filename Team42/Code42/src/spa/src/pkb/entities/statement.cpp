@@ -91,6 +91,10 @@ std::set<std::string> *Statement::get_modifies() {
   return &modifies_;
 }
 
+std::vector<std::vector<int>>* Statement::get_call_stacks() {
+  return &call_stacks_;
+}
+
 void Statement::set_expr_string(std::string expr_string) {
   this->expr_string_ = expr_string;
 }
@@ -139,6 +143,16 @@ void Statement::AddUses(std::string var_name) {
 
 void Statement::AddModifies(std::string var_name) {
   modifies_.insert(var_name);
+}
+
+bool Statement::AddCallStack(std::vector<int>* stack) {
+  /*
+  for (auto& existing_stack : call_stacks_) {
+    if (existing_stack == *stack) return false;
+  }
+  */
+  call_stacks_.push_back(*stack);
+  return true;
 }
 
 void Statement::FollowsInfo() {

@@ -59,6 +59,8 @@ class Statement : public Entity {
   std::set<int> *get_affected_by();
   // Gets the statements affected star by this.
   std::set<int> *get_affected_by_star();
+  // Gets the call stack.
+  std::vector <std::vector<int>>* get_call_stacks();
 
   // Sets the postfix expression string of this statement.
   void set_expr_string(std::string expr_string);
@@ -85,6 +87,8 @@ class Statement : public Entity {
   void AddUses(std::string var_name);
   // Adds a variable that this statement modifies.
   void AddModifies(std::string var_name);
+  // Adds a call stack, returns true if successfully added.
+  bool AddCallStack(std::vector<int>* stack);
 
   // Prints the follows information for this statement.
   void FollowsInfo();
@@ -118,4 +122,7 @@ class Statement : public Entity {
   std::set<std::string> uses_;
   // for var in modifies_, Modifies(this, var) is true.
   std::set<std::string> modifies_;
+
+  // vector of possible call stacks to keep track of the possible states when encountering this node.
+  std::vector<std::vector<int>> call_stacks_;
 };

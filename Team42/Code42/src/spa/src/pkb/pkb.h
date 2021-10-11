@@ -7,6 +7,7 @@
 #include <map>
 #include <set>
 #include <utility>
+#include <stack>
 #include "tables/proc_table.h"
 #include "tables/stmt_table.h"
 #include "tables/var_table.h"
@@ -24,7 +25,7 @@ class PKB {
   // Value representing wild card.
   inline static const int kWild = 0;
   // Value representing no branch.
-  inline static const int kNoBranch = -1;
+  inline static const int kNoBranch = 0;
 
   // Adds a procedure to the procedures table.
   void AddProcedure(Node *node, std::vector<Node *> ancestor_list);
@@ -65,7 +66,7 @@ class PKB {
   std::map<int, std::set<std::pair<int, int>>>* get_reverse_cfg_bip_al();
 
   // Gets Next(a,b) relation. if a==kWild or b==kWild, it is treated as a wildcard.
-  // Does a check for valid stmt line input, or kWild, and returns nullptr if invalid.
+  // Does a check for valid stmt line input, or kWild, and returns empty set if invalid.
   std::set<std::pair<int, int>> *get_next(int a, int b);
   // Gets Next*(a,b) relation. if a==kWild or b==kWild, it is treated as a wildcard.
   // Does a check for valid stmt line input, or kWild, and returns empty set if invalid.
@@ -78,6 +79,21 @@ class PKB {
   // Does a check for valid stmt line input, or kWild, and returns empty set if invalid.
   std::set<std::pair<int, int>> *get_affects_star(int a, int b);
 
+  // Gets NextBip(a,b) relation. if a==kWild or b==kWild, it is treated as a wildcard.
+  // Does a check for valid stmt line input, or kWild, and returns nullptr if invalid.
+  std::set<std::pair<int, int>>* get_next_bip(int a, int b);
+  // Gets NextBip*(a,b) relation. if a==kWild or b==kWild, it is treated as a wildcard.
+  // Does a check for valid stmt line input, or kWild, and returns empty set if invalid.
+  std::set<std::pair<int, int>>* get_next_bip_star(int a, int b);
+
+  // Gets AffectsBip(a,b) relation. if a==0 or b==0, it is treated as a wildcard.
+  // Does a check for valid stmt line input, or kWild, and returns empty set if invalid.
+  std::set<std::pair<int, int>>* get_affects_bip(int a, int b);
+  // Gets AffectsBip*(a,b) relation. if a==0 or b==0, it is treated as a wildcard.
+  // Does a check for valid stmt line input, or kWild, and returns empty set if invalid.
+  std::set<std::pair<int, int>>* get_affects_bip_star(int a, int b);
+
+
   // Tests the RHS of assignment statement against the given pattern.
   // Returns true if pattern matches.
   bool TestAssignmentPattern(Statement *statement, std::string pattern, bool is_partial_match);
@@ -89,6 +105,10 @@ class PKB {
   void ClearNextAffectsCache();
   // Checks if cache for Next and Affects is empty
   bool NextAffectsCacheIsEmpty();
+  // Clears cache for Next and Affects Bip
+  void ClearNextAffectsBipCache();
+  // Checks if cache for Next and Affects Bip is empty
+  bool NextAffectsBipCacheIsEmpty();
 
   // Prints information of statements in the statement table.
   void PrintStatements();
@@ -99,7 +119,7 @@ class PKB {
   // Prints CFGAL.
   void PrintCFGAL();
   // Prints CFGBIPAL.
-  void PrintCFGBIPAL();
+  void PrintCFGBipAL();
 
  private:
   // Populates the tables with entities and relationships from AST.
@@ -158,6 +178,14 @@ class PKB {
   void CFGProcessIfNode(Node *node);
   // Process and store the AST while node into the CFG.
   void CFGProcessWhileNode(Node *node);
+  // Adds missing links between call stmts and procedures being called
+  void LinkProcedures();
+  // Adds a call stack to each assign stmt, to store the state that it can be in when encountered.
+  void AddCallStacks();
+  // Traverses the CFGBip, keeping track of the call stack
+  void ProcessCallStacks(std::set<std::pair<int, std::string>>& visited, std::vector<int>& call_stack, int u);
+  // Utility to hash a call_stack
+  std::string CallStackToString(std::vector<int>* call_stack);
 
   // DFS to check reachability for Next and Affects* relationship
   void ReachabilityDFS(int start, int u, std::vector<std::vector<int>> &d,
@@ -171,6 +199,21 @@ class PKB {
   // If forward relation is true, this method propagates forward in terms of Affects*(a,b)
   void AffectsStarBFS(int start, int target, std::vector<bool> &visited,
                       bool forward_relation);
+
+  // DFS to check reachability for NextBip and AffectsBip* relationship
+  void PKB::BipReachabilityDFS(std::set<std::pair<int, std::string>>& prev_stmts, int u,
+    std::vector<int>& call_stack, std::string& hash);
+  // DFS to check reachability for AffectsBip relationship.
+  // If target is not kWild, supports fast termination to save on unnecessary computations. 
+  void AffectsBipDFS(int start, std::string& start_hash, int u, std::vector<int>& call_stack, std::string& hash, std::string var_name,
+    std::set<std::pair<int, std::string>>& visited);
+  // Adds a stmt to affects_bip_dfs_cache if affected, else does nothing
+  void PKB::AddStmtIfAffectedBip(int start, std::string& start_hash, int v, std::string v_hash, std::string& var_name);
+  // Returns true if v is an assign stmt that modifies var_name
+  bool ModifiesVarName(int v, std::string var_name);
+  // DFS to check reachability for AffectsBip* relationship
+  void AffectsBipStarDFS(std::set<std::pair<int, std::string>>& prev_stmts, int u, std::string& hash);
+
   // Cache for Next
   std::map<int, std::map<int,
     std::set<std::pair<int, int>>>> next_cache;
@@ -183,6 +226,28 @@ class PKB {
   // Cache for Affects*
   std::map<int, std::map<int,
     std::set<std::pair<int, int>>>> affects_star_cache;
+
+  // Cache for NextBip
+  std::map<int, std::map<int,
+    std::set<std::pair<int, int>>>> next_bip_cache;
+  // Cache for BipReachabilityDfs
+  std::map<int, std::map<std::string,
+    std::set<int>>> bip_reachability_dfs_cache;
+  // Cache for NextBip*
+  std::map<int, std::map<int,
+    std::set<std::pair<int, int>>>> next_bip_star_cache;
+  // Cache for AffectsBip
+  std::map<int, std::map<int,
+    std::set<std::pair<int, int>>>> affects_bip_cache;
+  // Cache for AffectsBipDFS
+  std::map<int, std::map<std::string,
+    std::set<std::pair<int, std::string>>>> affects_bip_dfs_cache;
+  // Cache for AffectsBip*
+  std::map<int, std::map<int,
+    std::set<std::pair<int, int>>>> affects_bip_star_cache;
+  // Cache for AffectsBipStarDFS
+  std::map<int, std::map<std::string,
+    std::set<std::pair<int, std::string>>>> affects_bip_star_dfs_cache;
 
 
   // Root AST node of the program.
@@ -202,7 +267,11 @@ class PKB {
   // Reverse Adjacency List of CFG for Next and Affects.
   std::map<int, std::set<int>> reverse_cfg_al_;
   // Adjacency List of CFG for NextBip and AffectsBip, u -> {v, branch}
+  // branch is positive stmt_no if branching out from u to v
+  // branch is negative stmt_no if branching back from u to v
   std::map<int, std::set<std::pair<int, int>>> cfg_bip_al_;
   // Reverse Adjacency List of CFG for NextBip and AffectsBip.
+  // branch is positive stmt_no if branching out from u to v
+  // branch is negative stmt_no if branching back from u to v
   std::map<int, std::set<std::pair<int, int>>> reverse_cfg_bip_al_;
 };

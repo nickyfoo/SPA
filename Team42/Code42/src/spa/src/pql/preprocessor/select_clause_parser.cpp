@@ -402,15 +402,20 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(
           left_line_ref.set_entity_type(entity_type);
           left_such_that_ref = new SuchThatRef(left_line_ref);
           break;
+        } else if (type != RelRef::Calls && type != RelRef::CallsT) {
+          left_stmt_ref.set_synonym(left_ref);
+          left_stmt_ref.set_entity_type(entity_type);
+          left_such_that_ref = new SuchThatRef(left_stmt_ref);
+          break;
         }
-        left_stmt_ref.set_synonym(left_ref);
-        left_stmt_ref.set_entity_type(entity_type);
-        left_such_that_ref = new SuchThatRef(left_stmt_ref);
-        break;
       }
       case EntityType::Procedure:
         if (type == RelRef::Uses || type == RelRef::Modifies
             || type == RelRef::Calls || type == RelRef::CallsT) {
+          left_ent_ref.set_synonym(left_ref);
+          left_such_that_ref = new SuchThatRef(left_ent_ref);
+          break;
+        } else if (type == RelRef::Calls || type == RelRef::CallsT) {
           left_ent_ref.set_synonym(left_ref);
           left_such_that_ref = new SuchThatRef(left_ent_ref);
           break;
@@ -427,6 +432,10 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(
         return nullptr;
     }
   } else if (IsInteger(left_ref)) {  // statement number
+    int left_ref_int = std::stoi(left_ref);
+    if (left_ref_int < 1) {  // invalid statement number
+      return nullptr;
+    }
     if (type == RelRef::Next || type == RelRef::NextT) {
       left_line_ref.set_line_num(std::stoi(left_ref));
       left_such_that_ref = new SuchThatRef(left_line_ref);
@@ -499,7 +508,8 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefRight(
           right_line_ref.set_entity_type(entity_type);
           right_such_that_ref = new SuchThatRef(right_line_ref);
           break;
-        } else if (type != RelRef::Affects && type != RelRef::AffectsT) {
+        } else if (type != RelRef::Affects && type != RelRef::AffectsT &&
+        type != RelRef::Calls && type != RelRef::CallsT) {
           right_stmt_ref.set_synonym(right_ref);
           right_stmt_ref.set_entity_type(entity_type);
           right_such_that_ref = new SuchThatRef(right_stmt_ref);
@@ -516,11 +526,15 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefRight(
       default:return nullptr;
     }
   } else if (IsInteger(right_ref)) {  // statement number
+    int right_ref_int = std::stoi(right_ref);
+    if (right_ref_int < 1) {  // invalid statement number
+      return nullptr;
+    }
     if (type == RelRef::Next || type == RelRef::NextT) {
-      right_line_ref.set_line_num(std::stoi(right_ref));
+      right_line_ref.set_line_num(right_ref_int);
       right_such_that_ref = new SuchThatRef(right_line_ref);
     } else {
-      right_stmt_ref.set_stmt_num(std::stoi(right_ref));
+      right_stmt_ref.set_stmt_num(right_ref_int);
       right_such_that_ref = new SuchThatRef(right_stmt_ref);
     }
   } else if (right_ref == "_") {  // wild card

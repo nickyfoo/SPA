@@ -39,6 +39,10 @@ ResultTable *NextHandler::evaluate(std::set<std::pair<int, int>> (PKB::*func)(in
     int right_arg = right_ent.get_line_num();
 
     auto res = (pkb_->*func)(left_arg, right_arg);
+    for (auto r : res) {
+      printf("r.first: %d\n", r.first);
+      printf("r.second: %d\n", r.second);
+    }
     if (res.empty()) {
       return nullptr;
     }
@@ -53,6 +57,7 @@ ResultTable *NextHandler::evaluate(std::set<std::pair<int, int>> (PKB::*func)(in
       auto *stmt = dynamic_cast<Statement *>(e);
       assert(stmt != nullptr);
       auto left_arg = stmt->get_stmt_no();
+      printf("left arg is: %d\n", left_arg);
       if (!(pkb_->*func)(left_arg, right_arg).empty()) {
         line_vec.push_back(std::to_string(left_arg));
       }

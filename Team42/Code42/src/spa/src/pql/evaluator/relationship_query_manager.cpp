@@ -1,11 +1,12 @@
+#include "calls_handler.h"
 #include "entity_declaration.h"
 #include "follows_parents_handler.h"
+#include "next_handler.h"
 #include "procedure.h"
 #include "relationship_query_manager.h"
 #include "statement.h"
 #include "usesp_modifiesp_handler.h"
 #include "usess_modifiess_handler.h"
-#include "next_handler.h"
 #include "variable.h"
 
 RelationshipQueryManager::RelationshipQueryManager(PKB *pkb) { this->pkb_ = pkb; }
@@ -84,6 +85,16 @@ ResultTable *RelationshipQueryManager::EvaluateRelationship(
       NextHandler *next_handler = NextHandler::get_instance();
       next_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
       return next_handler->EvaluateNextT();
+    }
+    case RelRef::Calls: {
+      CallsHandler *calls_handler = CallsHandler::get_instance();
+      calls_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
+      return calls_handler->EvaluateCalls();
+    }
+    case RelRef::CallsT: {
+      CallsHandler *calls_handler = CallsHandler::get_instance();
+      calls_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
+      return calls_handler->EvaluateCallsT();
     }
     default:
       break;

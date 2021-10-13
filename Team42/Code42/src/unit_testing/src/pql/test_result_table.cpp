@@ -122,6 +122,7 @@ TEST_CASE("GetCommonSynonyms") {
     other_result_table.AddSingleColumn("b", {"four", "five", "six"});
     other_result_table.AddSingleColumn("a", {"seven", "eight", "nine"});
     std::vector<std::pair<std::string, int>> *result = result_table.GetCommonSynonyms(other_result_table);
+    std::sort(result->begin(), result->end());
     std::vector<std::pair<std::string, int>> *expected = new std::vector<std::pair<std::string, int>>(
         {std::make_pair("a", 2), std::make_pair("b", 1)});
     REQUIRE(result->size() == expected->size());

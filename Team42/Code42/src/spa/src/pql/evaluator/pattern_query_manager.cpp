@@ -1,6 +1,7 @@
 #include "pattern_query_manager.h"
 #include "entity_declaration.h"
 #include "statement.h"
+#include <memory>
 #include <set>
 
 PatternQueryManager::PatternQueryManager(PKB *pkb) {

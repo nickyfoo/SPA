@@ -1,4 +1,6 @@
 #include "result_table.h"
+#include <algorithm>
+#include <stdexcept>
 
 ResultTable::ResultTable() {
   this->table_ = new std::vector<std::vector<std::string>>();

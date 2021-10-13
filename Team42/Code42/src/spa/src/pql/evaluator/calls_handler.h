@@ -21,6 +21,6 @@ class CallsHandler {
   PKB *pkb_;
   std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec_;
   std::shared_ptr<SuchThatClause> relationship_;
-  ResultTable *evaluate(std::set<std::string> (Procedure::*get_normal)(),
-                        std::set<std::string> (Procedure::*get_reverse)());
+  ResultTable *evaluate(std::set<std::string> *(Procedure::*get_normal)(),
+                        std::set<std::string> *(Procedure::*get_reverse)());
 };

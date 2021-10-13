@@ -20,6 +20,14 @@ void CallsHandler::set_args(
   this->synonym_to_entities_vec_ = synonym_to_entities_vec;
 }
 
+ResultTable *CallsHandler::EvaluateCalls() {
+  return evaluate(&Procedure::get_calls, &Procedure::get_callers);
+}
+
+ResultTable *CallsHandler::EvaluateCallsT() {
+  return evaluate(&Procedure::get_calls_star, &Procedure::get_callers_star);
+}
+
 ResultTable *CallsHandler::evaluate(std::set<std::string> *(Procedure::*get_normal)(),
                                     std::set<std::string> *(Procedure::*get_reverse)()) {
   ResultTable *ret = new ResultTable();

@@ -11,8 +11,6 @@
 //  REQUIRE(clause->get_query_entities()->at(0) == "s");
 //  REQUIRE(clause->get_query_relationships()->size() == 0);
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Select_UndefinedEntity_ReturnsNullPtr") {
@@ -48,8 +46,6 @@
 //  REQUIRE(clause->get_query_entities()->at(0) == "s");
 //  REQUIRE(clause->get_query_relationships()->size() == 0);
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("SuchThat_BadSuchThatClauseKeyword_ReturnsNullPtr") {
@@ -88,8 +84,6 @@
 //  REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
 //  REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_stmt_ref().get_synonym() == "s2");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Follows_StmtAndStmtNum_ReturnsCorrect") {
@@ -104,8 +98,6 @@
 //  REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
 //  REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_stmt_ref().get_stmt_num() == 2);
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Follows_StmtNumAndStmt_ReturnsCorrect") {
@@ -120,8 +112,6 @@
 //  REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_stmt_ref().get_stmt_num() == 1);
 //  REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_stmt_ref().get_synonym() == "s2");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Follows_StmtAndVar_ReturnsNullPtr") {
@@ -153,8 +143,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
 //  REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_synonym() == "s2");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("FollowsT_StmtAndStmtNum_ReturnsCorrect") {
@@ -170,8 +158,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
 //  REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_stmt_num() == 2);
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("SuchThat_ExtraSpacesWithinBracket_ReturnsCorrect") {
@@ -187,8 +173,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
 //  REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_synonym() == "s2");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Parent_ArgAndStmt_ReturnsNullPtr") {
@@ -212,8 +196,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
 //  REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_synonym() == "s2");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Parent_StmtAndStmtNum_ReturnsCorrect") {
@@ -229,8 +211,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
 //  REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_stmt_num() == 2);
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Parent_StmtNumAndStmt_ReturnsCorrect") {
@@ -246,8 +226,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_stmt_num() == 1);
 //  REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_synonym() == "s2");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Parent_StmtNumAndVar_ReturnsNullPtr") {
@@ -271,8 +249,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
 //  REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_synonym() == "s2");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("ParentT_StmtAndStmtNum_ReturnsCorrect") {
@@ -288,8 +264,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
 //  REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_stmt_num() == 2);
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Modifies_AssignAndVar_ReturnsCorrect") {
@@ -305,8 +279,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "a");
 //  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Modifies_ReadndVar_ReturnsCorrect") {
@@ -322,8 +294,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "r");
 //  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Modifies_IfAndVar_ReturnsCorrect") {
@@ -339,8 +309,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "ifs");
 //  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Modifies_WhileAndVar_ReturnsCorrect") {
@@ -356,8 +324,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "whiles");
 //  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Modifies_ProcedureAndVar_ReturnsCorrect") {
@@ -373,8 +339,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_ent_ref().get_synonym() == "proc");
 //  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Modifies_CallAndVar_ReturnsCorrect") {
@@ -390,8 +354,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "calls");
 //  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Modifies_StmtAndVar_ReturnsCorrect") {
@@ -407,8 +369,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s");
 //  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Modifies_StmtNumAndVar_ReturnsCorrect") {
@@ -424,8 +384,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_stmt_num() == 2);
 //  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Modifies_AssignAndStmt_ReturnsCorrect") {
@@ -457,8 +415,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "a");
 //  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Uses_PrintAndVar_ReturnsCorrect") {
@@ -474,8 +430,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "pn");
 //  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Uses_IfAndVar_ReturnsCorrect") {
@@ -491,8 +445,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "ifs");
 //  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Uses_WhileAndVar_ReturnsCorrect") {
@@ -508,8 +460,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "whiles");
 //  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Uses_ProcedureAndVar_ReturnsCorrect") {
@@ -525,8 +475,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_ent_ref().get_synonym() == "proc");
 //  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Uses_CallAndVar_ReturnsCorrect") {
@@ -542,8 +490,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "calls");
 //  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Uses_StmtAndVar_ReturnsCorrect") {
@@ -559,8 +505,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s");
 //  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Uses_StmtNumAndVar_ReturnsCorrect") {
@@ -576,8 +520,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_stmt_num() == 2);
 //  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "v");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Uses_AssignAndStmt_ReturnsCorrect") {
@@ -610,8 +552,6 @@
 //  REQUIRE(pattern->get_variable()->get_type() == EntRefType::WildCard);
 //  REQUIRE(pattern->get_exp_spec()->get_expression() == "count+1");
 //  REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == false);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Pattern_AssignWildCardAndPartialPattern_ReturnsCorrect") {
@@ -628,8 +568,6 @@
 //  REQUIRE(pattern->get_variable()->get_type() == EntRefType::WildCard);
 //  REQUIRE(pattern->get_exp_spec()->get_expression() == "count+1");
 //  REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == true);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Pattern_AssignWildCardAndWildCard_ReturnsCorrect") {
@@ -645,8 +583,6 @@
 //  REQUIRE(pattern->get_synonym()->get_synonym() == "a");
 //  REQUIRE(pattern->get_variable()->get_type() == EntRefType::WildCard);
 //  REQUIRE(pattern->get_exp_spec()->IsWildCard() == true);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Pattern_AssignVarAndPartialPattern_ReturnsCorrect") {
@@ -664,8 +600,6 @@
 //  REQUIRE(pattern->get_variable()->get_argument() == "normSq");
 //  REQUIRE(pattern->get_exp_spec()->get_expression() == "cenX*cenX");
 //  REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == true);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Select_OneSuchThatAndPattern_ReturnsCorrect") {
@@ -689,8 +623,6 @@
 //  REQUIRE(pattern->get_exp_spec()->IsWildCard() == true);
 //  REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == false);
 //
-//  REQUIRE(clause->has_one_repeated_synonym() == true);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Select_OnePatternAndSuchThat_ReturnsCorrect") {
@@ -714,8 +646,6 @@
 //  REQUIRE(pattern->get_exp_spec()->IsWildCard() == true);
 //  REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == false);
 //
-//  REQUIRE(clause->has_one_repeated_synonym() == true);
-//  REQUIRE(clause->has_two_repeated_synonyms() == true);
 //}
 //
 //TEST_CASE("Select_UsesRepeatEntity_ReturnsCorrect") {
@@ -738,8 +668,6 @@
 //  REQUIRE(pattern->get_variable()->get_argument() == "x");
 //  REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == false);
 //
-//  REQUIRE(clause->has_one_repeated_synonym() == true);
-//  REQUIRE(clause->has_two_repeated_synonyms() == true);
 //}
 //
 //TEST_CASE("Select_ComplexQueryWithSimilarPatternNaming_ReturnsCorrect") {
@@ -764,8 +692,6 @@
 //  REQUIRE(pattern->get_exp_spec()->IsWildCard() == true);
 //  REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == false);
 //
-//  REQUIRE(clause->has_one_repeated_synonym() == true);
-//  REQUIRE(clause->has_two_repeated_synonyms() == true);
 //}
 //
 //TEST_CASE("Select_ComplexQueryWithSimilarNaming_ReturnsCorrect") {
@@ -790,8 +716,6 @@
 //  REQUIRE(pattern->get_exp_spec()->IsWildCard() == true);
 //  REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == false);
 //
-//  REQUIRE(clause->has_one_repeated_synonym() == true);
-//  REQUIRE(clause->has_two_repeated_synonyms() == true);
 //}
 //
 //TEST_CASE("Select_ExtraSuchThatKeyword_ReturnsNullPtr") {
@@ -844,8 +768,6 @@
 //  REQUIRE(pattern->get_exp_spec()->get_expression() == "pattern");
 //  REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == false);
 //
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Select_InvalidKeywords_ReturnsNullPtr") {
@@ -876,8 +798,6 @@
 //  REQUIRE(pattern->get_variable()->get_synonym() == "v");
 //  REQUIRE(pattern->get_exp_spec()->IsWildCard() == true);
 //
-//  REQUIRE(clause->has_one_repeated_synonym() == true);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("SuchThat_SpacesBetweenSuchThat_ReturnsNullPtr") {
@@ -1602,8 +1522,6 @@
 //  REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_line_ref().get_synonym() == "s1");
 //  REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_line_ref().get_synonym() == "s2");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Next_StmtAndStmtNum_ReturnsCorrect") {
@@ -1618,8 +1536,6 @@
 //  REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_line_ref().get_synonym() == "s1");
 //  REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_line_ref().get_line_num() == 2);
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Next_StmtNumAndStmt_ReturnsCorrect") {
@@ -1634,8 +1550,6 @@
 //  REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_line_ref().get_line_num() == 1);
 //  REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_line_ref().get_synonym() == "s2");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Next_StmtAndVar_ReturnsNullPtr") {
@@ -1667,8 +1581,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_line_ref().get_synonym() == "s1");
 //  REQUIRE(relationship->get_right_ref()->get_line_ref().get_synonym() == "s2");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("NextT_StmtAndStmtNum_ReturnsCorrect") {
@@ -1684,8 +1596,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_line_ref().get_synonym() == "s1");
 //  REQUIRE(relationship->get_right_ref()->get_line_ref().get_line_num() == 2);
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Affects_ArgAndAssign_ReturnsNullPtr") {
@@ -1708,8 +1618,6 @@
 //  REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_stmt_ref().get_synonym() == "a1");
 //  REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_stmt_ref().get_synonym() == "a2");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Affects_AssignAndStmtNum_ReturnsCorrect") {
@@ -1724,8 +1632,6 @@
 //  REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_stmt_ref().get_synonym() == "a");
 //  REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_stmt_ref().get_stmt_num() == 2);
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Affects_StmtNumAndAssign_ReturnsCorrect") {
@@ -1740,8 +1646,6 @@
 //  REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_stmt_ref().get_stmt_num() == 1);
 //  REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_stmt_ref().get_synonym() == "a");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Affects_AssignAndStmt_ReturnsNullPtr") {
@@ -1773,8 +1677,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "a1");
 //  REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_synonym() == "a2");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("AffectsT_AssignAndStmtNum_ReturnsCorrect") {
@@ -1790,8 +1692,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "a1");
 //  REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_stmt_num() == 2);
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Calls_ProcedureAndProcedure_ReturnsCorrect") {
@@ -1807,8 +1707,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_ent_ref().get_synonym() == "proc");
 //  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "proc2");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Calls_ProcedureAndAssign_ReturnsNullPtr") {
@@ -1847,8 +1745,6 @@
 //  REQUIRE(relationship->get_left_ref()->get_ent_ref().get_synonym() == "proc");
 //  REQUIRE(relationship->get_right_ref()->get_ent_ref().get_synonym() == "proc2");
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("CallsT_ProcedureAndAssign_ReturnsNullPtr") {
@@ -1951,8 +1847,6 @@
 //  REQUIRE(clause->get_query_relationships()->at(0)->get_left_ref()->get_stmt_ref().get_synonym() == "s1");
 //  REQUIRE(clause->get_query_relationships()->at(0)->get_right_ref()->get_stmt_ref().get_stmt_num() == 2);
 //  REQUIRE(clause->get_query_patterns()->size() == 0);
-//  REQUIRE(clause->has_one_repeated_synonym() == false);
-//  REQUIRE(clause->has_two_repeated_synonyms() == false);
 //}
 //
 //TEST_CASE("Select_InvalidAttr_ReturnsCorrect") {

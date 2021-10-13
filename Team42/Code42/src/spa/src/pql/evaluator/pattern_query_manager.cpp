@@ -1,34 +1,31 @@
 #include "pattern_query_manager.h"
 #include "entity_declaration.h"
-#include "stmt_table.h"
 #include "statement.h"
 #include <set>
 
-PatternQueryManager::PatternQueryManager(
-    std::unordered_map<std::string, std::vector<Entity *>> *synonym_to_entity_result,
-    std::vector<PatternClause *> *patterns,
-    std::vector<std::string> *entities_to_return,
-    PKB *pkb,
-    bool has_two_repeated_synonyms) {
-  this->synonym_to_entity_result_ = synonym_to_entity_result;
-  this->patterns_ = patterns;
-  this->entities_to_return_ = entities_to_return;
+PatternQueryManager::PatternQueryManager(PKB *pkb) {
   this->pkb_ = pkb;
-  this->vec_results_ = new std::vector<std::pair<int, std::string>>();
-  this->has_two_repeated_synonyms_ = has_two_repeated_synonyms;
 }
 
 PatternQueryManager::~PatternQueryManager() = default;
 
-void PatternQueryManager::EvaluatePatterns() {
-  // Iterating through patterns_ and evaluating one by one.
-  // For basic requirements, there will be only 1 pattern.
-  for (PatternClause *pattern : *patterns_) {
-    ManagePatterns(pattern);
+
+ResultTable *PatternQueryManager::EvaluatePattern(std::shared_ptr<PatternClause> pattern,
+                                                  const std::unordered_map<std::string,
+                                                  std::vector<Entity *>> &synonym_to_entities_vec) {
+  if (pattern->get_type() == EntityType::Assign) {
+    return EvaluateAssignPattern(pattern, synonym_to_entities_vec);
+  } else if (pattern->get_type() == EntityType::If || pattern->get_type() == EntityType::While) {
+    return EvaluateIfAndWhilePattern(pattern, synonym_to_entities_vec);
+  } else {
+    throw std::runtime_error("Unknown pattern type!");
   }
 }
 
-void PatternQueryManager::ManagePatterns(PatternClause *pattern) {
+ResultTable *PatternQueryManager::EvaluateAssignPattern(
+    std::shared_ptr<PatternClause> pattern, std::unordered_map<std::string,
+    std::vector<Entity *>> synonym_to_entities_vec) {
+  auto *ret = new ResultTable();
   EntityDeclaration *synonym = pattern->get_synonym();
   EntRef *left_ent = pattern->get_variable();
   ExpressionSpec *right_ent = pattern->get_exp_spec();
@@ -36,67 +33,102 @@ void PatternQueryManager::ManagePatterns(PatternClause *pattern) {
   bool is_partial_pattern = right_ent->IsPartialPattern();
 
   // list of assignment object
-  std::vector<Entity *> *entity_vec = &synonym_to_entity_result_->at(synonym->get_synonym());
+  std::vector<Entity *> entity_vec = synonym_to_entities_vec.at(synonym->get_synonym());
   std::set<Entity *> var_set;
   std::string left_synonym;
+  std::vector<std::string> stmt_vec;
+  std::vector<std::string> var_vec;
 
-  for (int i = 0; i < entity_vec->size(); i++) {
-    auto *assign = dynamic_cast<Statement *>(entity_vec->at(i));  // for each assign object
-    if ((assign->get_modifies()->size() == 0
-        || !pkb_->TestAssignmentPattern(assign, pattern_to_check, is_partial_pattern))
+  for (int i = 0; i < entity_vec.size(); i++) {
+    auto *stmt = dynamic_cast<Statement *>(entity_vec.at(i));  // for each stmt object
+    if ((stmt->get_modifies()->empty()
+        || !pkb_->TestAssignmentPattern(stmt, pattern_to_check, is_partial_pattern))
         && !right_ent->IsWildCard()) {
-      entity_vec->erase(entity_vec->begin() + i);
-      i--;
+      continue;
     } else {
       if (left_ent->get_type() == EntRefType::Synonym) {  // pattern a(v, "pattern")
         left_synonym = left_ent->get_synonym();
+
         // getting list of variable objects
-        std::vector<Entity *> *variable_vec =
-            &synonym_to_entity_result_->at(left_ent->get_synonym());
-        if (has_two_repeated_synonyms_) {
-          // for each variable object
-          std::set<std::string> *modified_set = assign->get_modifies();
-          for (std::string s :*modified_set) {
-            vec_results_->push_back(make_pair(assign->get_stmt_no(), s));
-          }
-        } else {
-          // for each variable object
-          bool found_variable = false;
-          for (int j = 0; j < variable_vec->size(); j++) {
-            auto *variable = dynamic_cast<Variable *>(variable_vec->at(j));
-            if (assign->get_modifies()->count(variable->get_name())) {
-              found_variable = true;
-              var_set.insert(variable_vec->at(j));
-            }
-          }
-          if (!found_variable) {
-            entity_vec->erase(entity_vec->begin() + i);
-            i--;
-          }
+        std::vector<Entity *> variable_vec =
+            synonym_to_entities_vec.at(left_ent->get_synonym());
+
+        std::set<std::string> *modified_set = stmt->get_modifies();
+        for (const std::string &s : *modified_set) {
+          stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
+          var_vec.push_back(s);
         }
-      } else if (left_ent->get_type() == EntRefType::Argument) {
-        if (!assign->get_modifies()->count(left_ent->get_argument())) {
-          entity_vec->erase(entity_vec->begin() + i);
-          i--;
+      } else if (left_ent->get_type() == EntRefType::Argument) {  // pattern a("x", "pattern")
+        if (stmt->get_modifies()->count(left_ent->get_argument())) {
+          stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
         }
+      } else if (left_ent->get_type() == EntRefType::WildCard) {  // pattern a(_, "pattern")
+        stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
       }
     }
   }
-  if (!var_set.empty()) {
-    std::vector<Entity *> *variable_vec = &synonym_to_entity_result_->at(left_synonym);
-    // getting list of variable objects
-    for (int k = 0; k < variable_vec->size(); k++) {
-      if (!var_set.count(variable_vec->at(k))) {
-        variable_vec->erase(variable_vec->begin() + k);
-        k--;
-      }
-    }
-  } else if (var_set.empty() && left_ent->get_type() == EntRefType::Synonym
-  && !has_two_repeated_synonyms_) {
-    synonym_to_entity_result_->clear();
+  if (left_ent->get_type() == EntRefType::Synonym) {
+    ret->AddDoubleColumns(synonym->get_synonym(), stmt_vec, left_synonym, var_vec);
+  } else if (left_ent->get_type() == EntRefType::Argument ||
+      left_ent->get_type() == EntRefType::WildCard) {
+    ret->AddSingleColumn(synonym->get_synonym(), stmt_vec);
   }
+
+  if (ret->get_table()->empty()) {
+    return nullptr;
+  }
+  return ret;
 }
 
-std::vector<std::pair<int, std::string>> *PatternQueryManager::get_vec_results() {
-  return vec_results_;
+ResultTable *PatternQueryManager::EvaluateIfAndWhilePattern(
+    std::shared_ptr<PatternClause> pattern, std::unordered_map<std::string,
+    std::vector<Entity *>> synonym_to_entities_vec) {
+  auto *ret = new ResultTable();
+  EntityDeclaration *synonym = pattern->get_synonym();
+  EntRef *variable = pattern->get_variable();
+  EntityType type = pattern->get_type();
+
+  // list of assignment object
+  std::vector<Entity *> entity_vec = synonym_to_entities_vec.at(synonym->get_synonym());
+  std::set<Entity *> var_set;
+  std::string left_synonym;
+  std::vector<std::string> stmt_vec;
+  std::vector<std::string> var_vec;
+
+  for (int i = 0; i < entity_vec.size(); i++) {
+    auto *stmt = dynamic_cast<Statement *>(entity_vec.at(i));  // for each stmt object
+    if (stmt->get_uses()->empty()) {
+      continue;
+    }
+    if (variable->get_type() == EntRefType::Synonym) {  // pattern if(v, _, _)
+      left_synonym = variable->get_synonym();
+      // getting list of variable objects
+      std::vector<Entity *> variable_vec =
+          synonym_to_entities_vec.at(variable->get_synonym());
+      for (Entity *entity : variable_vec) {
+        auto *variable = dynamic_cast<Variable *>(entity);
+        if (pkb_->TestIfWhilePattern(stmt, variable->get_name())) {
+          stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
+          var_vec.push_back(variable->get_name());
+        }
+      }
+    } else if (variable->get_type() == EntRefType::Argument) {  // pattern if("a", _, _)
+      if (pkb_->TestIfWhilePattern(stmt, variable->get_argument())) {
+        stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
+      }
+    } else if (variable->get_type() == EntRefType::WildCard) {  // pattern if(_, _, _)
+      stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
+    }
+  }
+  if (variable->get_type() == EntRefType::Synonym) {
+    ret->AddDoubleColumns(synonym->get_synonym(), stmt_vec, left_synonym, var_vec);
+  } else if (variable->get_type() == EntRefType::Argument ||
+      variable->get_type() == EntRefType::WildCard) {
+    ret->AddSingleColumn(synonym->get_synonym(), stmt_vec);
+  }
+
+  if (ret->get_table()->empty()) {
+    return nullptr;
+  }
+  return ret;
 }

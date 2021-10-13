@@ -9,12 +9,12 @@ import glob
 
 def check_compliance(compliance, sub_dir_files, path):
     sub_dirs = {}
-    
+
     # check which category is it in
     for cat, req in compliance.items():
         # Sort out the 3 files
         for f in sub_dir_files:
-    
+
             if type(req)==str and f==req:
                 sub_dirs[cat] = os.path.join(path, f)
             elif type(req)==set and f in req:

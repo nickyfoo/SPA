@@ -4,7 +4,7 @@ int count = 0;
 QueryOptimizer::QueryOptimizer(std::vector<SuchThatClause *> *relationships,
                                std::vector<PatternClause *> *patterns,
                                std::vector<WithClause *> *withs,
-                               std::vector<std::string> *return_entities) {
+                               std::vector<ResultClause *> *return_entities) {
   this->relationships_ = relationships;
   this->patterns_ = patterns;
   this->withs_ = withs;
@@ -250,8 +250,7 @@ std::vector<ClauseVertex> QueryOptimizer::MakeSuchThatVertices(std::vector<SuchT
     if (left_syn != "") {
       synonyms_used.push_back(left_syn);
       // If synonym is part of return synonyms, set has_return_syn to true.
-      if (std::find(return_entities_->begin(), return_entities_->end(), left_syn) !=
-          return_entities_->end()) {
+      if (ReturnEntitiesContainSynonym(left_syn)) {
         has_return_syn = true;
       }
     }
@@ -271,8 +270,7 @@ std::vector<ClauseVertex> QueryOptimizer::MakeSuchThatVertices(std::vector<SuchT
     if (right_syn != "") {
       synonyms_used.push_back(right_syn);
       // If synonym is part of return synonyms, set has_return_syn to true.
-      if (std::find(return_entities_->begin(), return_entities_->end(), right_syn) !=
-          return_entities_->end()) {
+      if (ReturnEntitiesContainSynonym(right_syn)) {
         has_return_syn = true;
       }
     }
@@ -302,8 +300,7 @@ std::vector<ClauseVertex> QueryOptimizer::MakePatternVertices(std::vector<Patter
     std::string left_syn = left_ent->get_synonym();
     synonyms_used.push_back(left_syn);
     // If left synonym is part of return synonyms, set has_return_syn to true.
-    if (std::find(return_entities_->begin(), return_entities_->end(), left_syn) !=
-        return_entities_->end()) {
+    if (ReturnEntitiesContainSynonym(left_syn)) {
       has_return_syn = true;
     }
 
@@ -312,8 +309,7 @@ std::vector<ClauseVertex> QueryOptimizer::MakePatternVertices(std::vector<Patter
       std::string right_syn = right_ent->get_synonym();
       synonyms_used.push_back(right_syn);
       // If right synonym is part of return synonyms, set has_return_syn to true.
-      if (std::find(return_entities_->begin(), return_entities_->end(), right_syn) !=
-          return_entities_->end()) {
+      if (ReturnEntitiesContainSynonym(right_syn)) {
         has_return_syn = true;
       }
     }
@@ -336,25 +332,21 @@ std::vector<ClauseVertex> QueryOptimizer::MakeWithVertices(std::vector<WithClaus
 
     std::vector<std::string> synonyms_used;
     bool has_return_syn = false;
-
     // If left arg is a synonym, add to synonyms_used.
     if (with_clause->get_left_type() != EntityType::None) {
       std::string left_syn = with_clause->get_left_ref();
       synonyms_used.push_back(left_syn);
       // If left synonym is part of return synonyms, set has_return_syn to true.
-      if (std::find(return_entities_->begin(), return_entities_->end(), left_syn) !=
-          return_entities_->end()) {
+      if (ReturnEntitiesContainSynonym(left_syn)) {
         has_return_syn = true;
       }
     }
-
     // If right arg is a synonym, add to synonyms_used.
     if (with_clause->get_right_type() != EntityType::None) {
       std::string right_syn = with_clause->get_right_ref();
       synonyms_used.push_back(right_syn);
       // If left synonym is part of return synonyms, set has_return_syn to true.
-      if (std::find(return_entities_->begin(), return_entities_->end(), right_syn) !=
-          return_entities_->end()) {
+      if (ReturnEntitiesContainSynonym(right_syn)) {
         has_return_syn = true;
       }
     }
@@ -365,7 +357,7 @@ std::vector<ClauseVertex> QueryOptimizer::MakeWithVertices(std::vector<WithClaus
     clause_vertex.set_id(count);
     count++;
     clause_vertices.push_back(clause_vertex);
-  }
+    }
   return clause_vertices;
 }
 
@@ -378,4 +370,13 @@ std::vector<ClauseVertex> QueryOptimizer::CombineAllVertices(std::vector<ClauseV
   all_vertices.insert(all_vertices.end(), pattern_vertices.begin(), pattern_vertices.end());
   all_vertices.insert(all_vertices.end(), with_vertices.begin(), with_vertices.end());
   return all_vertices;
+}
+
+bool QueryOptimizer::ReturnEntitiesContainSynonym(std::string s) {
+  for (ResultClause *result : *return_entities_) {
+    if (result->get_synonym() == s) {
+      return true;
+    }
+  }
+  return false;
 }

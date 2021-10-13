@@ -300,7 +300,6 @@ TEST_CASE("PQL_RelationshipAndPatternDependencies_ReturnsExpected") {
   std::vector<std::string> *ret = evaluator->Evaluate();
 
   std::vector<std::string> expected = {"15", "16", "17", "21", "22"};
-
   REQUIRE(ret->size() == expected.size());
   for (int i = 0; i < expected.size(); i++) {
     REQUIRE(ret->at(i) == expected.at(i));

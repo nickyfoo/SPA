@@ -50,12 +50,19 @@ PQLQuery *QueryPreprocessor::MakePQLQuery(std::unordered_map<std::string,
                                           const std::string &select_clause) {
   SelectClauseParser *scp = SelectClauseParser::get_instance();
   scp->set_select_clause(entities_map, select_clause);
-  std::tuple<std::vector<std::string> *,
+  std::tuple<std::vector<ResultClause *> *,
              std::vector<SuchThatClause *> *,
              std::vector<PatternClause *> *,
              std::vector<WithClause *> *,
              std::unordered_map<std::string, EntityDeclaration *> *,
-             bool, bool> *clauses_tuple = scp->get_clauses();
+             bool> *clauses_tuple = scp->get_clauses();
+  bool is_valid_clause = std::get<5>(*clauses_tuple);
+  if (!is_valid_clause) {
+    return new PQLQuery(std::get<0>(*clauses_tuple),
+                                       std::vector<std::shared_ptr<ClauseGroup>>(),
+                                       std::get<4>(*clauses_tuple),
+                                       false);
+  }
   QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clauses_tuple),
                                                   std::get<2>(*clauses_tuple),
                                                   std::get<3>(*clauses_tuple),
@@ -64,7 +71,6 @@ PQLQuery *QueryPreprocessor::MakePQLQuery(std::unordered_map<std::string,
   PQLQuery *pql_query = new PQLQuery(std::get<0>(*clauses_tuple),
                                      clause_groups,
                                      std::get<4>(*clauses_tuple),
-                                     std::get<5>(*clauses_tuple),
-                                     std::get<6>(*clauses_tuple));
+                                     true);
   return pql_query;
 }

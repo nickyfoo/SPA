@@ -253,13 +253,11 @@ TEST_CASE("Pattern_AssignStmtAndPartialPattern_ReturnsEmpty") {
                    "Select a pattern a(s, _'cenX'_)";
   auto *query = new QueryPreprocessor(ss);
   PQLQuery *clause = query->get_pql_query();
-
   // Parse source
   BufferedLexer lexer(s);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
-
   auto evaluator = new QueryEvaluator(clause, &pkb);
   std::vector<std::string> *ret = evaluator->Evaluate();
 

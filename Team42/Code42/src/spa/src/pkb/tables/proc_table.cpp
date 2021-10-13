@@ -30,7 +30,7 @@ std::vector<Procedure *> ProcTable::get_all_procedures() {
   return ans;
 }
 
-Procedure *ProcTable::get_procedure(const std::string& name) {
+Procedure *ProcTable::get_procedure(const std::string &name) {
   if (name_to_index_.find(name) == name_to_index_.end()) {
     return nullptr;
   }
@@ -99,8 +99,8 @@ void ProcTable::DFS(int u, std::vector<std::vector<int>> &al,
 
 void ProcTable::PropagateUsesModifiesIndirect(int u,
                                               std::vector<std::vector<int>> &al,
-                                              std::set<std::string> &uses,
-                                              std::set<std::string> &modifies) {
+                                              std::set<std::string> uses,
+                                              std::set<std::string> modifies) {
   for (auto &var_name : *(table_[u].get_uses())) {
     uses.insert(var_name);
   }

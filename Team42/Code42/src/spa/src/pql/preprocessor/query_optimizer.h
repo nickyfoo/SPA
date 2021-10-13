@@ -9,21 +9,22 @@
 #include "with_clause.h"
 #include "clause_group.h"
 #include "clause_vertex.h"
+#include "result_clause.h"
 
 class QueryOptimizer {
  public:
   QueryOptimizer(std::vector<SuchThatClause *> *relationships,
                  std::vector<PatternClause *> *patterns,
                  std::vector<WithClause *> *withs,
-                 std::vector<std::string> *return_entities);
+                 std::vector<ResultClause *> *return_entities);
   std::vector<std::shared_ptr<ClauseGroup>> CreateGroupings();
 
  private:
   std::vector<SuchThatClause *> *relationships_;
   std::vector<PatternClause *> *patterns_;
   std::vector<WithClause *> *withs_;
-  std::vector<std::string> *return_entities_;
-  std::vector<ClauseVertex> MakeSuchThatVertices(std::vector<SuchThatClause *> *such_that_clauses);
+  std::vector<ResultClause *> *return_entities_;
+ std::vector<ClauseVertex> MakeSuchThatVertices(std::vector<SuchThatClause *> *such_that_clauses);
   std::vector<ClauseVertex> MakePatternVertices(std::vector<PatternClause *> *pattern_clauses);
   std::vector<ClauseVertex> MakeWithVertices(std::vector<WithClause *> *with_clauses);
   std::vector<ClauseVertex> CombineAllVertices(std::vector<ClauseVertex> such_that_vertices,
@@ -39,4 +40,5 @@ class QueryOptimizer {
                            std::unordered_map<std::string, bool> *has_visited_syn,
                            std::unordered_map<int, bool> *has_visited_clause,
                            std::string curr_syn);
+  bool ReturnEntitiesContainSynonym(std::string s);
 };

@@ -21,11 +21,11 @@ void NextHandler::set_args(
   this->synonym_to_entities_vec_ = synonym_to_entities_vec;
 }
 
-ResultTable *NextHandler::EvaluateNext() { return evaluate(&PKB::get_next); }
+ResultTable *NextHandler::EvaluateNext() { return Evaluate(&PKB::get_next); }
 
-ResultTable *NextHandler::EvaluateNextT() { return evaluate(&PKB::get_next_star); }
+ResultTable *NextHandler::EvaluateNextT() { return Evaluate(&PKB::get_next_star); }
 
-ResultTable *NextHandler::evaluate(std::set<std::pair<int, int>> (PKB::*func)(int, int)) {
+ResultTable *NextHandler::Evaluate(std::set<std::pair<int, int>> (PKB::*func)(int, int)) {
   ResultTable *ret = new ResultTable();
 
   relationship_->get_left_ref()->get_type();

@@ -21,14 +21,14 @@ void CallsHandler::set_args(
 }
 
 ResultTable *CallsHandler::EvaluateCalls() {
-  return evaluate(&Procedure::get_calls, &Procedure::get_callers);
+  return Evaluate(&Procedure::get_calls, &Procedure::get_callers);
 }
 
 ResultTable *CallsHandler::EvaluateCallsT() {
-  return evaluate(&Procedure::get_calls_star, &Procedure::get_callers_star);
+  return Evaluate(&Procedure::get_calls_star, &Procedure::get_callers_star);
 }
 
-ResultTable *CallsHandler::evaluate(std::set<std::string> *(Procedure::*get_normal)(),
+ResultTable *CallsHandler::Evaluate(std::set<std::string> *(Procedure::*get_normal)(),
                                     std::set<std::string> *(Procedure::*get_reverse)()) {
   ResultTable *ret = new ResultTable();
   EntRef left_ent = relationship_->get_left_ref()->get_ent_ref();

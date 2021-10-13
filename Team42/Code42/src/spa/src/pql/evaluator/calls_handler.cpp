@@ -40,19 +40,8 @@ ResultTable *CallsHandler::Evaluate(std::set<std::string> *(Procedure::*get_norm
     auto right_synonym = right_ent.get_synonym();
 
     if (left_synonym == right_synonym) {
-      std::vector<std::string> proc_vec;
-
-      for (auto e : synonym_to_entities_vec_.at(left_synonym)) {
-        auto *proc = dynamic_cast<Procedure *>(e);
-        assert(proc != nullptr);
-
-        auto calls = (proc->*get_normal)();
-        if (calls->find(proc->get_name()) != calls->end()) {
-          proc_vec.push_back(proc->get_name());
-        }
-      }
-
-      ret->AddSingleColumn(left_synonym, proc_vec);
+      // recursive calls not allowed
+      return nullptr;
     } else {
       std::vector<std::string> proc_left_vec;
       std::vector<std::string> proc_right_vec;

@@ -77,12 +77,12 @@ ResultTable *RelationshipQueryManager::EvaluateRelationship(
     }
     case RelRef::Next: {
       NextHandler *next_handler = NextHandler::get_instance();
-      next_handler->set_args(pkb_, relationship);
+      next_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
       return next_handler->EvaluateNext();
     }
     case RelRef::NextT: {
       NextHandler *next_handler = NextHandler::get_instance();
-      next_handler->set_args(pkb_, relationship);
+      next_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
       return next_handler->EvaluateNextT();
     }
     default:

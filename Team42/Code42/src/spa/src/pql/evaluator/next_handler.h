@@ -9,7 +9,8 @@
 class NextHandler {
  public:
   static NextHandler *get_instance();
-  void set_args(PKB *pkb, std::shared_ptr<SuchThatClause> relationship);
+  void set_args(PKB *pkb, std::shared_ptr<SuchThatClause> relationship,
+                std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec);
   ResultTable *EvaluateNext();
   ResultTable *EvaluateNextT();
 
@@ -19,4 +20,5 @@ class NextHandler {
   PKB *pkb_;
   std::shared_ptr<SuchThatClause> relationship_;
   ResultTable *evaluate(std::set<std::pair<int, int>> (PKB::*func)(int, int));
+  std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec_;
 };

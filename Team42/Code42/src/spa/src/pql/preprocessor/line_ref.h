@@ -3,7 +3,7 @@
 #include "entity_declaration.h"
 
 enum class LineRefType {
-  StmtNum,
+  LineNum,
   Synonym,
   WildCard,
   None

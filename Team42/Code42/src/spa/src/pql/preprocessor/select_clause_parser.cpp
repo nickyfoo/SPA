@@ -397,10 +397,6 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(SuchThatClause *relationshi
           left_ent_ref.set_synonym(left_ref);
           left_such_that_ref = new SuchThatRef(left_ent_ref);
           break;
-        } else if (type == RelRef::Calls || type == RelRef::CallsT) {
-          left_ent_ref.set_synonym(left_ref);
-          left_such_that_ref = new SuchThatRef(left_ent_ref);
-          break;
         }
       case EntityType::Variable: {
         if (type != RelRef::Uses && type != RelRef::Modifies) {

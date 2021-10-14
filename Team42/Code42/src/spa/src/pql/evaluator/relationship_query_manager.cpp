@@ -1,12 +1,12 @@
 #include "calls_handler.h"
 #include "entity_declaration.h"
 #include "follows_parents_handler.h"
+#include "next_handler.h"
 #include "procedure.h"
 #include "relationship_query_manager.h"
 #include "statement.h"
 #include "usesp_modifiesp_handler.h"
 #include "usess_modifiess_handler.h"
-#include "next_handler.h"
 #include "variable.h"
 
 RelationshipQueryManager::RelationshipQueryManager(PKB *pkb) { this->pkb_ = pkb; }

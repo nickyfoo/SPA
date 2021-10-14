@@ -1,13 +1,12 @@
 #pragma once
+
 #include <memory>
 #include "entity.hpp"
 #include "pkb.h"
 #include "result_table.h"
 #include "set"
 #include "statement.h"
-#include "string"
 #include "such_that_clause.h"
-#include "unordered_map"
 #include "variable.h"
 #include "vector"
 

@@ -126,7 +126,7 @@ ResultTable *CallsHandler::Evaluate(std::set<std::string> *(Procedure::*get_norm
 
     auto *proc_left = pkb_->get_procedure(left_proc_name);
     if (proc_left == nullptr) {
-      return ret;
+      return nullptr;
     }
 
     auto proc_left_calls = (proc_left->*get_normal)();

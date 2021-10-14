@@ -1,0 +1,34 @@
+procedure one {
+    a = 1;
+    call two;
+}
+
+procedure two {
+    call three;
+    call four;
+    while (i != 5) {
+        i = i - 6;
+    }
+    call seven;
+}
+
+procedure three {
+    a = 8;
+    call nine;
+}
+
+procedure four {
+    print ten;
+}
+
+procedure seven {
+    read eleven;
+}
+
+procedure nine {
+    b = 12*100;
+}
+
+procedure none {
+    sadface = 13;
+}

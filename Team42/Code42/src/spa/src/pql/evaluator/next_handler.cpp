@@ -126,10 +126,6 @@ ResultTable *NextHandler::Evaluate(std::set<std::pair<int, int>> (PKB::*func)(in
     int right_arg = PKB::kWild;
 
     auto res = (pkb_->*func)(left_arg, right_arg);
-    for (auto r : res) {
-      printf("first: %d\n", r.first);
-      printf("second: %d\n", r.second);
-    }
     if (res.empty()) {
       return nullptr;
     }

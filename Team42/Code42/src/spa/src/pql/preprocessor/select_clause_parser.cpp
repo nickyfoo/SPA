@@ -52,12 +52,10 @@ std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
   if (select_clauses.empty()) {  // invalid select syntax
     return false_res;
   }
-  bool is_select_boolean = false;
   for (const std::string &select : select_clauses) {
     ResultClause *result_clause;
     if (select == "BOOLEAN" && select_clauses.size() == 1) {
       result_clause = new ResultClause("", EntityType::None, ReturnType::Boolean);
-      is_select_boolean = true;
     } else if (synonym_to_entity_->find(select) != synonym_to_entity_->end()) {
       result_clause =
           new ResultClause(select, synonym_to_entity_->at(select)->get_type(), ReturnType::Default);
@@ -594,11 +592,8 @@ std::vector<std::string> SelectClauseParser::SplitSelect(std::string select_clau
     select_clause.erase(0, pos + SELECT_DELIM.length());
     break;
   }
-
-  select_clause.erase(remove(select_clause.begin(), select_clause.end(), '\n'),
+  select_clause.erase(std::remove_if(select_clause.begin(), select_clause.end(), ::isspace),
                       select_clause.end());
-  select_clause.erase(remove(select_clause.begin(), select_clause.end(), ' '), select_clause.end());
-
   if (select_clause.empty()) {
     return {};
   } else if (select_clause.at(0) == '<' && select_clause.at(select_clause.length() - 1) == '>') {
@@ -669,11 +664,11 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
       inverted_commas_found = !inverted_commas_found;
       whitespace_found = false;
     } else if (inverted_commas_found) {
-      if (c == ' ') {
+      if (isspace(c)) {
         continue;
       }
       ss << c;
-    } else if (c == ' ') {
+    } else if (isspace(c)) {
       // extra check to account for such that clause without extra spaces
       std::string check_for_such = prev_word_stream.str();
       bool such_clause_found = false;
@@ -810,7 +805,7 @@ std::vector<std::vector<std::string>> SelectClauseParser::SplitTokensByBrackets(
       } else if (c == ',') {
         tokens.push_back(ss.str());
         ss.str("");
-      } else if (c != ' ') {
+      } else if (!isspace(c)) {
         ss << c;
       }
     }

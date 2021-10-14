@@ -1,0 +1,26 @@
+procedure Next {
+    one = 1 + 2;
+    call NextTwo;
+    while (i != 3) {
+        p = 4;
+        while (p < 5) {
+            while (p < 6) {
+                if (p < 7) then {
+                    print eight;
+                } else {
+                    read nine;
+                }
+            }
+            if (x > 10) then {
+                x = 11;
+            } else {
+                p = 12;
+            }
+        }
+        thirteen = 13;
+    }
+}
+
+procedure NextTwo {
+    print fourteen;
+}

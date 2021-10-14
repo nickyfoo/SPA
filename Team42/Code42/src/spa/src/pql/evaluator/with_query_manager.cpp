@@ -13,11 +13,7 @@ ResultTable *WithQueryManager::EvaluateWith(std::shared_ptr<WithClause> with,
   std::vector<std::string> vec;
   if (with->get_left_type() == EntityType::None
   && with->get_right_type() == EntityType::None) {  // 12 = 12
-    printf("AM IN HERE\n");
-    printf("LEFT: %s\n", with->get_left_ref().c_str());
-    printf("RIGHT: %s\n", with->get_right_ref().c_str());
     if (with->get_left_ref() != with->get_right_ref()) {
-      printf("IS HERE\n");
       return nullptr;
     } else {
       return ret;

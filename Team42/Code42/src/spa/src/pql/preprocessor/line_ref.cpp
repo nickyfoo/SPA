@@ -11,7 +11,7 @@ void LineRef::set_synonym(const std::string &syn) {
 }
 
 void LineRef::set_line_num(int line_num) {
-  this->type_ = LineRefType::StmtNum;
+  this->type_ = LineRefType::LineNum;
   this->line_num_ = line_num;
 }
 
@@ -35,7 +35,7 @@ int LineRef::get_line_num() const {
 std::string LineRef::get_value() {
   switch (this->type_) {
     case LineRefType::Synonym:return this->synonym_;
-    case LineRefType::StmtNum:return std::to_string(this->line_num_);
+    case LineRefType::LineNum:return std::to_string(this->line_num_);
     case LineRefType::WildCard:return "_";
     default:return "No value!";
   }

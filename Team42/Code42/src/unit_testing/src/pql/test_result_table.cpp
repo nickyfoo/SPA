@@ -125,6 +125,7 @@ TEST_CASE("GetCommonSynonyms") {
     std::sort(result->begin(), result->end());
     std::vector<std::pair<std::string, int>> *expected = new std::vector<std::pair<std::string, int>>(
         {std::make_pair("a", 2), std::make_pair("b", 1)});
+    std::sort(result->begin(), result->end());
     REQUIRE(result->size() == expected->size());
     REQUIRE(result->at(0).first == expected->at(0).first);
     REQUIRE(result->at(0).second == expected->at(0).second);

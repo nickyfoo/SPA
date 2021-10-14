@@ -1,3 +1,4 @@
+#include "calls_handler.h"
 #include "entity_declaration.h"
 #include "follows_parents_handler.h"
 #include "procedure.h"
@@ -84,6 +85,16 @@ ResultTable *RelationshipQueryManager::EvaluateRelationship(
       NextHandler *next_handler = NextHandler::get_instance();
       next_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
       return next_handler->EvaluateNextT();
+    }
+    case RelRef::Calls: {
+      CallsHandler *calls_handler = CallsHandler::get_instance();
+      calls_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
+      return calls_handler->EvaluateCalls();
+    }
+    case RelRef::CallsT: {
+      CallsHandler *calls_handler = CallsHandler::get_instance();
+      calls_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
+      return calls_handler->EvaluateCallsT();
     }
     default:
       break;

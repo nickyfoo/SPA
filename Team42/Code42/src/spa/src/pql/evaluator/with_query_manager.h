@@ -1,7 +1,6 @@
 #pragma once
 
 #include <pkb.h>
-
 #include <memory>
 #include <tuple>
 #include <utility>

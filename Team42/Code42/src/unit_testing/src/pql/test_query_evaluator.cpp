@@ -909,10 +909,126 @@ TEST_CASE("Test 31: Next Integer, Wildcard") {
   }
 }
 
-TEST_CASE("Test 32: Next Integer, Wildcard") {
+TEST_CASE("Test 24: Calls Synonym, Synonym") {
+  std::string ss =
+      "procedure p1, p2;\n"
+      "Select <p1, p2> such that Calls(p1, p2)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(sourcePQL);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"main computeCentroid", "main printResults",
+                                       "computeCentroid readPoint"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < ret->size(); i++) {
+    REQUIRE(std::find(expected.begin(), expected.end(), ret->at(i)) != expected.end());
+  }
+}
+
+TEST_CASE("Test 25: Calls Synonym, Argument") {
+  std::string ss =
+      "procedure p1;\n"
+      "Select p1 such that Calls(p1, \"readPoint\")";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(sourcePQL);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"computeCentroid"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < ret->size(); i++) {
+    REQUIRE(std::find(expected.begin(), expected.end(), ret->at(i)) != expected.end());
+  }
+}
+
+TEST_CASE("Test 26: Calls Synonym, Wildcard") {
+  std::string ss =
+      "procedure p1;\n"
+      "Select p1 such that Calls(p1, _)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(sourcePQL);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"main", "computeCentroid"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < ret->size(); i++) {
+    REQUIRE(std::find(expected.begin(), expected.end(), ret->at(i)) != expected.end());
+  }
+}
+
+TEST_CASE("Test 27: Calls Argument, Synonym") {
+  std::string ss =
+      "procedure p1;\n"
+      "Select p1 such that Calls(\"main\", p1)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(sourcePQL);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"computeCentroid", "printResults"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < ret->size(); i++) {
+    REQUIRE(std::find(expected.begin(), expected.end(), ret->at(i)) != expected.end());
+  }
+}
+
+TEST_CASE("Test 28: Calls Argument, Argument") {
   std::string ss =
       "variable v;\n"
-      "Select v such that Next(9, _)";
+      "Select v such that Calls(\"main\", \"computeCentroid\")";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(sourcePQL);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"flag", "x", "y", "cenX", "cenY", "normSq", "count"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < ret->size(); i++) {
+    REQUIRE(std::find(expected.begin(), expected.end(), ret->at(i)) != expected.end());
+  }
+}
+
+TEST_CASE("Test 29: Calls Argument, Argument") {
+  std::string ss =
+      "variable v;\n"
+      "Select v such that Calls(\"main\", \"readPoint\")";
   auto *query = new QueryPreprocessor(ss);
   PQLQuery *clause = query->get_pql_query();
 
@@ -927,10 +1043,10 @@ TEST_CASE("Test 32: Next Integer, Wildcard") {
   REQUIRE(ret->size() == 0);
 }
 
-TEST_CASE("Test 32: Next Wildcard, Integer") {
+TEST_CASE("Test 30: Calls Argument, Wildcard") {
   std::string ss =
       "variable v;\n"
-      "Select v such that Next(_, 14)";
+      "Select v such that Calls(\"main\", _)";
   auto *query = new QueryPreprocessor(ss);
   PQLQuery *clause = query->get_pql_query();
 
@@ -950,10 +1066,10 @@ TEST_CASE("Test 32: Next Wildcard, Integer") {
   }
 }
 
-TEST_CASE("Test 33: Next Wilcard, Integer") {
+TEST_CASE("Test 31: Calls Argument, Wildcard") {
   std::string ss =
       "variable v;\n"
-      "Select v such that Next(_, 10)";
+      "Select v such that Calls(\"readPoint\", _)";
   auto *query = new QueryPreprocessor(ss);
   PQLQuery *clause = query->get_pql_query();
 
@@ -968,10 +1084,10 @@ TEST_CASE("Test 33: Next Wilcard, Integer") {
   REQUIRE(ret->size() == 0);
 }
 
-TEST_CASE("Test 34: Next Synonym, Wildcard") {
+TEST_CASE("Test 32: Calls Wildcard, Synonym") {
   std::string ss =
-      "prog_line p;\n"
-      "Select p such that Next(p, _)";
+      "procedure p1;\n"
+      "Select p1 such that Calls(_, p1)";
   auto *query = new QueryPreprocessor(ss);
   PQLQuery *clause = query->get_pql_query();
 
@@ -983,8 +1099,7 @@ TEST_CASE("Test 34: Next Synonym, Wildcard") {
   auto evaluator = new QueryEvaluator(clause, &pkb);
   std::vector<std::string> *ret = evaluator->Evaluate();
 
-  std::vector<std::string> expected = {"1",  "2",  "4",  "6",  "7",  "8",  "10", "11", "12", "13",
-                                       "14", "15", "16", "17", "18", "19", "20", "21", "22"};
+  std::vector<std::string> expected = {"computeCentroid", "printResults", "readPoint"};
 
   REQUIRE(ret->size() == expected.size());
   for (int i = 0; i < ret->size(); i++) {
@@ -992,10 +1107,10 @@ TEST_CASE("Test 34: Next Synonym, Wildcard") {
   }
 }
 
-TEST_CASE("Test 35: Next Wildcard, Synonym") {
+TEST_CASE("Test 33: Calls Wildcard, Argument") {
   std::string ss =
-      "prog_line p;\n"
-      "Select p such that Next(_, p)";
+      "variable v;\n"
+      "Select v such that Calls(_, \"computeCentroid\")";
   auto *query = new QueryPreprocessor(ss);
   PQLQuery *clause = query->get_pql_query();
 
@@ -1007,8 +1122,48 @@ TEST_CASE("Test 35: Next Wildcard, Synonym") {
   auto evaluator = new QueryEvaluator(clause, &pkb);
   std::vector<std::string> *ret = evaluator->Evaluate();
 
-  std::vector<std::string> expected = {"2",  "3",  "5",  "7",  "8",  "9",  "11", "12", "13", "14",
-                                       "15", "16", "17", "18", "19", "20", "21", "22", "23"};
+  std::vector<std::string> expected = {"flag", "x", "y", "cenX", "cenY", "normSq", "count"};
+
+  REQUIRE(ret->size() == expected.size());
+  for (int i = 0; i < ret->size(); i++) {
+    REQUIRE(std::find(expected.begin(), expected.end(), ret->at(i)) != expected.end());
+  }
+}
+
+TEST_CASE("Test 34: Calls Wildcard, Argument") {
+  std::string ss =
+      "variable v;\n"
+      "Select v such that Calls(_, \"main\")";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(sourcePQL);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  REQUIRE(ret->size() == 0);
+}
+
+TEST_CASE("Test 35: Calls Wildcard, Wildcard") {
+  std::string ss =
+      "variable v;\n"
+      "Select v such that Calls(_, _)";
+  auto *query = new QueryPreprocessor(ss);
+  PQLQuery *clause = query->get_pql_query();
+
+  // Parse source
+  BufferedLexer lexer(sourcePQL);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb = PKB(p);
+  auto evaluator = new QueryEvaluator(clause, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  std::vector<std::string> expected = {"flag", "x", "y", "cenX", "cenY", "normSq", "count"};
 
   REQUIRE(ret->size() == expected.size());
   for (int i = 0; i < ret->size(); i++) {

@@ -1,6 +1,7 @@
 #include <algorithm>
 
 #include "query_optimizer.h"
+#include <algorithm>
 
 int count = 0;
 QueryOptimizer::QueryOptimizer(std::vector<SuchThatClause *> *relationships,

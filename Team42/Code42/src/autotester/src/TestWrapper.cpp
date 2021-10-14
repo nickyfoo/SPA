@@ -54,13 +54,13 @@ void TestWrapper::evaluate(std::string query, std::list<std::string> &results) {
   // each result must be a string.
   auto *query_preprocessor = new QueryPreprocessor(query);
   std::tuple<std::vector<ResultClause *> *,
-  std::vector<SuchThatClause *> *,
-  std::vector<PatternClause *> *,
-  std::vector<WithClause *> *,
-  std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clauses = query_preprocessor->get_clauses();
+             std::vector<SuchThatClause *> *,
+             std::vector<PatternClause *> *,
+             std::vector<WithClause *> *,
+             std::unordered_map<std::string, EntityDeclaration *> *,
+             bool> *clauses = query_preprocessor->get_clauses();
   PQLQuery *pql_query;
-  if (clauses == nullptr) {
+  if (!std::get<5>(*clauses)) {
     pql_query = nullptr;
   } else {
     QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clauses),

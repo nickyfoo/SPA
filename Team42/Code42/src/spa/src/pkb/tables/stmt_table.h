@@ -18,11 +18,11 @@ class StmtTable : public Table {
   // Get total number of statements.
   int get_num_statements();
   // Gets all statements.
-  std::vector<Statement *> get_all_statements();
+  virtual std::vector<Statement *> get_all_statements();
   // Gets all statements of the given type.
-  std::vector<Statement *> get_statements(NodeType type);
+  virtual std::vector<Statement *> get_statements(NodeType type);
   // Gets the statement by line number.
-  Statement *get_statement(int line_no);
+  virtual Statement *get_statement(int line_no);
 
   // Passes over table_ to populate type_to_statement_;
   void CategorizeStatements();

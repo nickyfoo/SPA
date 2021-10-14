@@ -45,11 +45,11 @@ class PKB {
   // Gets the total number of statements in the statement table.
   int get_num_statements();
   // Gets all statements in the statement table.
-  std::vector<Statement *> get_all_statements();
+  virtual std::vector<Statement *> get_all_statements();
   // Gets all statements of the given type.
-  std::vector<Statement *> get_statements(NodeType type);
+  virtual std::vector<Statement *> get_statements(NodeType type);
   // Gets a statement by its corresponding line number.
-  Statement *get_statement(int line_no);
+  virtual Statement *get_statement(int line_no);
 
   // Gets all variables in the program.
   std::vector<Variable *> get_all_variables();

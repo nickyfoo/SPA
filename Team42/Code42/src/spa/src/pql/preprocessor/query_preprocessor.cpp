@@ -9,7 +9,19 @@ QueryPreprocessor::QueryPreprocessor(std::string input) {
   std::unordered_map<std::string, EntityDeclaration *> *entities_map;
   entities_map = MakeEntitiesMap(entities);
   if (entities_map == nullptr) {
-    this->clauses_ = nullptr;
+    auto *select_ret = new std::vector<ResultClause *>();
+    auto *such_that_ret = new std::vector<SuchThatClause *>();
+    auto *pattern_ret = new std::vector<PatternClause *>();
+    auto *with_ret = new std::vector<WithClause *>();
+    auto *false_res = new std::tuple<std::vector<ResultClause *> *,
+    std::vector<SuchThatClause *> *,
+    std::vector<PatternClause *> *,
+    std::vector<WithClause *> *,
+    std::unordered_map<std::string, EntityDeclaration *> *,
+    bool>(
+        select_ret, such_that_ret,
+        pattern_ret, with_ret, entities_map, false);
+    this->clauses_ = false_res;
     return;
   }
   std::tuple<std::vector<ResultClause *> *,

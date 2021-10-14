@@ -121,9 +121,9 @@ ResultTable* FollowsParentsHandler::Evaluate() {
         return ret;
       }
     }
-    if (!found_non_empty_vec) {
-      return nullptr;
-    }
+//    if (!found_non_empty_vec) {
+//      return nullptr;
+//    }
   } else if (left_ent.get_type() == StmtRefType::WildCard &&
       right_ent.get_type() == StmtRefType::StmtNum) {  // eg Follows(_, 4)
     int right_arg = right_ent.get_stmt_num();

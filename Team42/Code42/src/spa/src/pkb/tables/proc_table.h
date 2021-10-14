@@ -20,9 +20,9 @@ class ProcTable : public Table {
   // Get total number of procedures.
   int get_num_procedures();
   // Get all procedures.
-  std::vector<Procedure *> get_all_procedures();
+  virtual std::vector<Procedure *> get_all_procedures();
   // Gets a procedure by its procedure name.
-  Procedure *get_procedure(const std::string &name);
+  virtual Procedure *get_procedure(const std::string &name);
 
   // Gets Calls relationship from Procedures in preparation to get
   // transitive closure.

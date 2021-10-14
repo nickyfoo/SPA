@@ -679,6 +679,9 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
       inverted_commas_found = !inverted_commas_found;
       whitespace_found = false;
     } else if (inverted_commas_found) {
+      if (c == ' ') {
+        continue;
+      }
       ss << c;
     } else if (c == ' ') {
       // extra check to account for such that clause without extra spaces

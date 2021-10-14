@@ -1,7 +1,5 @@
 #pragma once
 
-#include <pkb.h>
-
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -9,6 +7,7 @@
 
 #include "entity.hpp"
 #include "entity_declaration.h"
+#include "pkb.h"
 #include "result_table.h"
 #include "string"
 #include "unordered_map"

@@ -11,9 +11,9 @@
 #include "statement.h"
 #include "result_table.h"
 
-class FollowsParentsHandler {
+class FollowsParentHandler {
  public:
-  static FollowsParentsHandler *get_instance();
+  static FollowsParentHandler *get_instance();
   void set_args(PKB *pkb,
                 std::shared_ptr<SuchThatClause> relationship,
                 std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec);
@@ -22,8 +22,8 @@ class FollowsParentsHandler {
   ResultTable *Evaluate();
 
  private:
-  static FollowsParentsHandler *instance_;
-  FollowsParentsHandler();
+  static FollowsParentHandler *instance_;
+  FollowsParentHandler();
   std::set<int> *(Statement::*get_normal_)();
   std::set<int> *(Statement::*get_reverse_)();
   PKB *pkb_;

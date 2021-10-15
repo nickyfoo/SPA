@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-#include "follows_parents_handler.h"
+#include "follows_parent_handler.h"
 #include "pkb.h"
 #include "entities/statement.h"
 
@@ -278,7 +278,7 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
 
     PKBStub *pkb_stub = BuildPKBForStatement();
 
-    FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+    FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, {});
     follows_parents_handler->set_function_pointers(&Statement::get_followers,
                                                    &Statement::get_followees);
@@ -308,7 +308,7 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
     }
     syn_to_entities_vec["s1"] = entities;
 
-    FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+    FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
     follows_parents_handler->set_function_pointers(&Statement::get_followers,
                                                    &Statement::get_followees);
@@ -340,7 +340,7 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
     }
     syn_to_entities_vec["s1"] = entities;
 
-    FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+    FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
     follows_parents_handler->set_function_pointers(&Statement::get_followers,
                                                    &Statement::get_followees);
@@ -373,7 +373,7 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
     syn_to_entities_vec["s1"] = entities;
     syn_to_entities_vec["s2"] = entities;
 
-    FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+    FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
     follows_parents_handler->set_function_pointers(&Statement::get_followers,
                                                    &Statement::get_followees);
@@ -423,7 +423,7 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
 //    }
 //    syn_to_entities_vec["a"] = entities;
 //
-//    FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+//    FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
 //    follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
 //    follows_parents_handler->set_function_pointers(&Statement::get_followers,
 //                                                   &Statement::get_followees);
@@ -458,7 +458,7 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
 //    }
 //    syn_to_entities_vec["a"] = entities;
 //
-//    FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+//    FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
 //    follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
 //    follows_parents_handler->set_function_pointers(&Statement::get_followers,
 //                                                   &Statement::get_followees);
@@ -491,7 +491,7 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
 //    syn_to_entities_vec["a1"] = entities;
 //    syn_to_entities_vec["a2"] = entities;
 //
-//    FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+//    FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
 //    follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
 //    follows_parents_handler->set_function_pointers(&Statement::get_followers,
 //                                                   &Statement::get_followees);
@@ -520,7 +520,7 @@ TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     PKBStub *pkb_stub = BuildPKBForStatement();
 
-    FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+    FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, {});
     follows_parents_handler->set_function_pointers(&Statement::get_followers_star,
                                                    &Statement::get_followees_star);
@@ -550,7 +550,7 @@ TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
     }
     syn_to_entities_vec["s1"] = entities;
 
-    FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+    FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
     follows_parents_handler->set_function_pointers(&Statement::get_followers_star,
                                                    &Statement::get_followees_star);
@@ -584,7 +584,7 @@ TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
     }
     syn_to_entities_vec["s1"] = entities;
 
-    FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+    FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
     follows_parents_handler->set_function_pointers(&Statement::get_followers_star,
                                                    &Statement::get_followees_star);
@@ -619,7 +619,7 @@ TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
     syn_to_entities_vec["s1"] = entities;
     syn_to_entities_vec["s2"] = entities;
 
-    FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+    FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
     follows_parents_handler->set_function_pointers(&Statement::get_followers_star,
                                                    &Statement::get_followees_star);
@@ -643,7 +643,7 @@ TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     PKBStub *pkb_stub = BuildPKBForStatement();
 
-    FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+    FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, {});
     follows_parents_handler->set_function_pointers(&Statement::get_children,
                                                    &Statement::get_parents);
@@ -673,7 +673,7 @@ TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
     }
     syn_to_entities_vec["s1"] = entities;
 
-    FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+    FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
     follows_parents_handler->set_function_pointers(&Statement::get_children,
                                                    &Statement::get_parents);
@@ -705,7 +705,7 @@ TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
     }
     syn_to_entities_vec["s1"] = entities;
 
-    FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+    FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
     follows_parents_handler->set_function_pointers(&Statement::get_children,
                                                    &Statement::get_parents);
@@ -739,7 +739,7 @@ TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
     syn_to_entities_vec["s1"] = entities;
     syn_to_entities_vec["s2"] = entities;
 
-    FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+    FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
     follows_parents_handler->set_function_pointers(&Statement::get_children,
                                                    &Statement::get_parents);
@@ -763,7 +763,7 @@ TEST_CASE("Parent*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     PKBStub *pkb_stub = BuildPKBForStatement();
 
-    FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+    FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, {});
     follows_parents_handler->set_function_pointers(&Statement::get_children_star,
                                                    &Statement::get_parents_star);
@@ -793,7 +793,7 @@ TEST_CASE("Parent*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
     }
     syn_to_entities_vec["s1"] = entities;
 
-    FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+    FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
     follows_parents_handler->set_function_pointers(&Statement::get_children_star,
                                                    &Statement::get_parents_star);
@@ -826,7 +826,7 @@ TEST_CASE("Parent*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
     }
     syn_to_entities_vec["s1"] = entities;
 
-    FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+    FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
     follows_parents_handler->set_function_pointers(&Statement::get_children_star,
                                                    &Statement::get_parents_star);
@@ -865,7 +865,7 @@ TEST_CASE("Parent*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
     syn_to_entities_vec["s1"] = entities;
     syn_to_entities_vec["s2"] = entities;
 
-    FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+    FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
     follows_parents_handler->set_function_pointers(&Statement::get_children_star,
                                                    &Statement::get_parents_star);

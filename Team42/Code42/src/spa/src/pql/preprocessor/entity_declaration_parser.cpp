@@ -30,9 +30,13 @@ std::unordered_map<std::string, EntityDeclaration *>
     // If there are no commas but multiple for the
     // same entity type, or if there's only 1 word, return nullptr. eg stmt s p c;
     std::vector<std::string> tokens = SplitString(entity_str, " ");
-    if (((entity_str.find(",") == -1 &&
-        tokens.size() > 1)) ||
-        index_of_entity == -1) {
+    size_t num_of_comma = std::count(entity_str.begin(), entity_str.end(), ',');
+//    if (((entity_str.find(",") == -1 &&
+//        tokens.size() > 1)) ||
+//        index_of_entity == -1) {
+//      return nullptr;
+//    }
+    if (num_of_comma < tokens.size() - 1 || index_of_entity == -1) {
       return nullptr;
     }
     auto *synonyms = new std::vector<std::string>();

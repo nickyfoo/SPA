@@ -2624,3 +2624,37 @@ TEST_CASE("Select_BOOLEANTrue_ReturnsCorrect") {
   REQUIRE(std::get<2>(*clause)->size() == 0);
   REQUIRE(std::get<3>(*clause)->size() == 0);
 }
+
+TEST_CASE("Select_QueriesWithSuchThatPatternWith_ReturnsCorrect") {
+  std::string ss = "prog_line n; stmt s, s1; if ifs; variable v;"
+                   "Select s such that Follows* (s, s1) with s1.stmt#=n pattern ifs(v, _, _)";
+  auto query = QueryPreprocessor(ss);
+  std::tuple<std::vector<ResultClause *> *,
+  std::vector<SuchThatClause *> *,
+  std::vector<PatternClause *> *,
+  std::vector<WithClause *> *,
+  std::unordered_map<std::string, EntityDeclaration *> *,
+  bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s");
+  REQUIRE(std::get<1>(*clause)->size() == 1);
+  SuchThatClause *relationship = std::get<1>(*clause)->at(0);
+  REQUIRE(relationship->get_type() == RelRef::FollowsT);
+  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "s");
+  REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_synonym() == "s1");
+
+  REQUIRE(std::get<2>(*clause)->size() == 1);
+  PatternClause *pattern = std::get<2>(*clause)->at(0);
+  REQUIRE(pattern->get_synonym()->get_synonym() == "ifs");
+  REQUIRE(pattern->get_type() == EntityType::If);
+  REQUIRE(pattern->get_variable()->get_type() == EntRefType::Synonym);
+  REQUIRE(pattern->get_variable()->get_synonym() == "v");
+
+  REQUIRE(std::get<3>(*clause)->size() == 1);
+  WithClause *with = std::get<3>(*clause)->at(0);
+  REQUIRE(with->get_left_type() == EntityType::Stmt);
+  REQUIRE(with->get_left_attr_value_type() == AttrValueType::Integer);
+  REQUIRE(with->get_right_ref() == "n");
+  REQUIRE(with->get_right_type() == EntityType::ProgLine);
+  REQUIRE(with->get_right_attr_value_type() == AttrValueType::Integer);
+}

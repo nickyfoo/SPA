@@ -17,9 +17,9 @@ class VarTable : public Table {
   // Get total number of variables.
   int get_num_variables();
   // Get all variables.
-  virtual std::vector<Variable *> get_all_variables();
+  std::vector<Variable *> get_all_variables();
   // Get variable by name.
-  virtual Variable *get_variable(std::string var_name);
+  Variable *get_variable(std::string var_name);
 
   // Prints information of all variables.
   void PrintVariables();

@@ -6,7 +6,7 @@
 #include "pkb.h"
 #include "pkb_stub.hpp"
 
-TEST_CASE("UsesClauses_DifferentCases_OutputsResultTable") {
+TEST_CASE("UsesSClauses_DifferentCases_OutputsResultTable") {
   SECTION("Uses with no synonyms") {
     //Uses(7, "x")
     SuchThatClause uses = SuchThatClause("Uses");
@@ -57,6 +57,7 @@ TEST_CASE("UsesClauses_DifferentCases_OutputsResultTable") {
     uses_modifies_handler->set_args(pkb_stub, uses_ptr, syn_to_entities_vec);
     ResultTable *res = uses_modifies_handler->Evaluate();
     REQUIRE(res->get_table()->size() == 10);
+    REQUIRE(res->get_table()->at(0).size() == 1);
     // 4, 5, 6, 7, 8, 9, 10, 12, 13, 14
     REQUIRE(res->get_table()->at(0).at(0) == "4");
     REQUIRE(res->get_table()->at(1).at(0) == "5");
@@ -120,6 +121,7 @@ TEST_CASE("UsesClauses_DifferentCases_OutputsResultTable") {
     uses_modifies_handler->set_args(pkb_stub, uses_ptr, syn_to_entities_vec);
     ResultTable *res = uses_modifies_handler->Evaluate();
     REQUIRE(res->get_table()->size() == 11);
+    REQUIRE(res->get_table()->at(0).size() == 1);
   }
 
   SECTION("Uses with v as right arg") {
@@ -150,6 +152,7 @@ TEST_CASE("UsesClauses_DifferentCases_OutputsResultTable") {
     uses_modifies_handler->set_args(pkb_stub, uses_ptr, syn_to_entities_vec);
     ResultTable *res = uses_modifies_handler->Evaluate();
     REQUIRE(res->get_table()->size() == 3);
+    REQUIRE(res->get_table()->at(0).size() == 1);
   }
 
   SECTION("Uses with s1 and v as left and right args") {
@@ -187,10 +190,11 @@ TEST_CASE("UsesClauses_DifferentCases_OutputsResultTable") {
     uses_modifies_handler->set_args(pkb_stub, uses_ptr, syn_to_entities_vec);
     ResultTable *res = uses_modifies_handler->Evaluate();
     REQUIRE(res->get_table()->size() == 20);
+    REQUIRE(res->get_table()->at(0).size() == 2);
   }
 }
 
-TEST_CASE("ModifiesClauses_DifferentCases_OutputsResultTable") {
+TEST_CASE("ModifiesSClauses_DifferentCases_OutputsResultTable") {
   SECTION("Modifies with no synonyms") {
     //Modifies(11, "i")
     SuchThatClause modifies = SuchThatClause("Modifies");
@@ -241,6 +245,7 @@ TEST_CASE("ModifiesClauses_DifferentCases_OutputsResultTable") {
     uses_modifies_handler->set_args(pkb_stub, modifies_ptr, syn_to_entities_vec);
     ResultTable *res = uses_modifies_handler->Evaluate();
     REQUIRE(res->get_table()->size() == 3);
+    REQUIRE(res->get_table()->at(0).size() == 1);
     REQUIRE(res->get_table()->at(0).at(0) == "4");
     REQUIRE(res->get_table()->at(1).at(0) == "6");
     REQUIRE(res->get_table()->at(2).at(0) == "8");
@@ -296,6 +301,7 @@ TEST_CASE("ModifiesClauses_DifferentCases_OutputsResultTable") {
     uses_modifies_handler->set_args(pkb_stub, modifies_ptr, syn_to_entities_vec);
     ResultTable *res = uses_modifies_handler->Evaluate();
     REQUIRE(res->get_table()->size() == 14);
+    REQUIRE(res->get_table()->at(0).size() == 1);
   }
 
   SECTION("Modifies with v as right arg") {
@@ -326,6 +332,7 @@ TEST_CASE("ModifiesClauses_DifferentCases_OutputsResultTable") {
     uses_modifies_handler->set_args(pkb_stub, modifies_ptr, syn_to_entities_vec);
     ResultTable *res = uses_modifies_handler->Evaluate();
     REQUIRE(res->get_table()->size() == 4);
+    REQUIRE(res->get_table()->at(0).size() == 1);
   }
 
   SECTION("Uses with s1 and v as left and right args") {
@@ -363,5 +370,6 @@ TEST_CASE("ModifiesClauses_DifferentCases_OutputsResultTable") {
     uses_modifies_handler->set_args(pkb_stub, modifies_ptr, syn_to_entities_vec);
     ResultTable *res = uses_modifies_handler->Evaluate();
     REQUIRE(res->get_table()->size() == 20);
+    REQUIRE(res->get_table()->at(0).size() == 2);
   }
 }

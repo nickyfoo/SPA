@@ -41,6 +41,21 @@ class ProcedureTableStub : public ProcTable {
     table_.push_back(proc);
     name_to_index_[proc.get_name()] = pos;
   }
+
+  std::vector<Procedure *> get_all_procs() {
+    std::vector<Procedure *> ans;
+    for (auto &proc : table_) {
+      ans.push_back(&proc);
+    }
+    return ans;
+  }
+
+  Procedure *get_proc(const std::string &name) {
+    if (name_to_index_.find(name) == name_to_index_.end()) {
+      return nullptr;
+    }
+    return &table_[name_to_index_[name]];
+  }
 };
 
 class VarTableStub : public VarTable {
@@ -92,6 +107,14 @@ class PKBStub : public PKB {
 
   std::vector<Variable *> get_all_vars() {
     return var_table_.get_all_vars();
+  }
+
+  std::vector<Procedure *> get_all_procs() {
+    return proc_table_.get_all_procs();
+  }
+
+  Procedure *get_procedure(std::string &name) override {
+    return proc_table_.get_proc(name);
   }
 
   static PKBStub *BuildPKB() {

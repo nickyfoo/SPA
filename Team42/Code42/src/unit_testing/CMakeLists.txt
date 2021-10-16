@@ -5,6 +5,6 @@ file(GLOB headers "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*/*.h")
 
-add_executable(unit_testing ${srcs} src/pql/test_usesS_modifiesS_handler.cpp src/pql/pkb_stub.hpp)
+add_executable(unit_testing ${srcs} src/pql/test_usess_modifiess_handler.cpp src/pql/pkb_stub.hpp src/pql/test_usesp_modifiesp_handler.cpp)
 
 target_link_libraries(unit_testing spa)

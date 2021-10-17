@@ -376,6 +376,13 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(SuchThatClause *relationshi
         }
       case EntityType::Stmt:
       case EntityType::ProgLine:
+        if ((entity_type == EntityType::Stmt || entity_type == EntityType::ProgLine) &&
+        (type == RelRef::Affects || type == RelRef::AffectsT)) {
+          left_stmt_ref.set_synonym(left_ref);
+          left_stmt_ref.set_entity_type(entity_type);
+          left_such_that_ref = new SuchThatRef(left_stmt_ref);
+          break;
+        }
       case EntityType::While: {
         if (type == RelRef::Next || type == RelRef::NextT) {
           left_line_ref.set_synonym(left_ref);
@@ -482,6 +489,13 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefRight(SuchThatClause *relationsh
       case EntityType::Read:
       case EntityType::Stmt:
       case EntityType::ProgLine:
+        if ((entity_type == EntityType::Stmt || entity_type == EntityType::ProgLine) &&
+        (type == RelRef::Affects || type == RelRef::AffectsT)) {
+          right_stmt_ref.set_synonym(right_ref);
+          right_stmt_ref.set_entity_type(entity_type);
+          right_such_that_ref = new SuchThatRef(right_stmt_ref);
+          break;
+        }
       case EntityType::While: {
         if (type == RelRef::Next || type == RelRef::NextT) {
           right_line_ref.set_synonym(right_ref);

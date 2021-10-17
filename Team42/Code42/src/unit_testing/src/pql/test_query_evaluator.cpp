@@ -78,7 +78,7 @@ std::string samplePQL =
     "else {"
     "x = z + x; } }";
 
-TEST_CASE("Test 1: Follows Synonym + Integer") {
+TEST_CASE("Evaluator_FollowsSynInt_ReturnsCorrect") {
   std::string ss =
       "stmt s1;\n"
       "Select s1 such that Follows(s1, 3)";
@@ -99,7 +99,7 @@ TEST_CASE("Test 1: Follows Synonym + Integer") {
   REQUIRE(ret->at(0) == expected.at(0));
 }
 
-TEST_CASE("Test 2: Follows Synonym + Synonym") {
+TEST_CASE("Evaluator_FollowsSynSyn_ReturnsCorrect") {
   std::string ss =
       "stmt s1, s2;\n"
       "Select s1 such that Follows(s1, s2)";
@@ -121,7 +121,7 @@ TEST_CASE("Test 2: Follows Synonym + Synonym") {
   REQUIRE(ret->at(0) == expected.at(0));
 }
 
-TEST_CASE("Test 3: Follows Integer + Synonym") {
+TEST_CASE("Evaluator_FollowsIntSyn_ReturnsCorrect") {
   std::string ss =
       "stmt s1;\n"
       "Select s1 such that Follows(11, s1)";
@@ -142,7 +142,7 @@ TEST_CASE("Test 3: Follows Integer + Synonym") {
   REQUIRE(ret->at(0) == expected.at(0));
 }
 
-TEST_CASE("Test 4: Select") {
+TEST_CASE("Evaluator_Select_ReturnsCorrect") {
   std::string ss =
       "stmt s1;\n"
       "Select s1";
@@ -165,7 +165,7 @@ TEST_CASE("Test 4: Select") {
   REQUIRE(ret->at(0) == expected.at(0));
 }
 
-TEST_CASE("Test 5: Incorrect pql input") {
+TEST_CASE("Evaluator_BadSynonym_ReturnsEmpty") {
   std::string ss =
       "stmt s1;\n"
       "Select s1 HELLO";
@@ -185,7 +185,7 @@ TEST_CASE("Test 5: Incorrect pql input") {
   REQUIRE(ret->size() == expected.size());
 }
 
-TEST_CASE("Test 6: Follows Unused entity declaration") {
+TEST_CASE("Evaluator_UnusedEntity_ReturnsCorrect") {
   std::string ss =
       "stmt s1, s2;\n"
       "Select s1 such that Follows(_, 3)";
@@ -210,7 +210,7 @@ TEST_CASE("Test 6: Follows Unused entity declaration") {
   }
 }
 
-TEST_CASE("Test 7: Follows Integer, Wildcard") {
+TEST_CASE("Evaluator_FollowsIntWC_ReturnsCorrect") {
   std::string ss =
       "stmt s1, s2;\n"
       "Select s1 such that Follows(2, _)";
@@ -235,7 +235,7 @@ TEST_CASE("Test 7: Follows Integer, Wildcard") {
   }
 }
 
-TEST_CASE("Test 8: Follows Wildcard, Integer") {
+TEST_CASE("Evaluator_FollowsIntWC_ReturnsCorrect") {
   std::string ss =
       "stmt s1;\n"
       "Select s1 such that Follows(_, 3)";
@@ -260,7 +260,7 @@ TEST_CASE("Test 8: Follows Wildcard, Integer") {
   }
 }
 
-TEST_CASE("Test 9: Follows Wildcard, Wildcard") {
+TEST_CASE("Evaluator_FollowsWCWC_ReturnsCorrect") {
   std::string ss =
       "stmt s1;\n"
       "Select s1 such that Follows(_, _)";
@@ -285,7 +285,7 @@ TEST_CASE("Test 9: Follows Wildcard, Wildcard") {
   }
 }
 
-TEST_CASE("Test 9: Follows Synonym, Wildcard") {
+TEST_CASE("Evaluator_FollowsSynWC_ReturnsCorrect") {
   std::string ss =
       "stmt s1;\n"
       "Select s1 such that Follows(s1, _)";
@@ -305,16 +305,12 @@ TEST_CASE("Test 9: Follows Synonym, Wildcard") {
   ;
 
   REQUIRE(ret->size() == expected.size());
-  //    for (int i = 0; i < ret->size(); i++) {
-  //        REQUIRE(ret->at(i) == expected.at(i));
-  //    }
   for (int i = 0; i < ret->size(); i++) {
-    //    REQUIRE(ret->at(i) == expected.at(i));
     REQUIRE(std::find(expected.begin(), expected.end(), ret->at(i)) != expected.end());
   }
 }
 
-TEST_CASE("Test 10: Follows* Synonym, Integer") {
+TEST_CASE("Evaluator_FollowsTSynInt_ReturnsCorrect") {
   std::string ss =
       "stmt s1;\n"
       "Select s1 such that Follows*(s1, 3)";
@@ -338,7 +334,7 @@ TEST_CASE("Test 10: Follows* Synonym, Integer") {
   }
 }
 
-TEST_CASE("Test 11: Follows* Integer, Integer") {
+TEST_CASE("Evaluator_FollowsTIntInt_ReturnsCorrect") {
   std::string ss =
       "stmt s1;\n"
       "Select s1 such that Follows*(12, 19)";

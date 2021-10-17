@@ -33,7 +33,6 @@ ResultTable* AffectsHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func
 
   StmtRef left_ent = relationship_->get_left_ref()->get_stmt_ref();
   StmtRef right_ent = relationship_->get_right_ref()->get_stmt_ref();
-
   if (left_ent.get_type() == StmtRefType::StmtNum && right_ent.get_type() == StmtRefType::StmtNum) {
     // 1. Affects(1, 2)
     int left_arg = left_ent.get_stmt_num();

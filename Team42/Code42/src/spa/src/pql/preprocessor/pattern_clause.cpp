@@ -68,7 +68,7 @@ bool PatternClause::IsValidExpSpec(std::string ref) {
         expecting_exp = false;
       } else if (IsChar(c)) {
         expecting_exp = true;
-      } else if (c == '(' || c == ')' || c == ' ') {
+      } else if (c == '(' || c == ')' || isspace(c)) {
         continue;
       } else {
         return false;

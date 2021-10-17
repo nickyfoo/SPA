@@ -43,32 +43,82 @@ assign a;
 Select a pattern a(_, _)
 2,3,4,5,10,12,23
 5000
-10 - Invalid print Pattern with wild card and wild card
+10 - If Pattern with wild card and wild card and wild card
+if ifs;
+Select ifs pattern ifs(_, _, _)
+9,13,15
+5000
+11 - If Pattern with synonym and wild card and wild card
+if ifs; variable v;
+Select ifs pattern ifs(v, _, _)
+9,13,15
+5000
+12 - If Pattern with argument and wild card and wild card
+if ifs;
+Select ifs pattern ifs("b", _, _)
+15
+5000
+13 - While Pattern with wild card and wild card
+while w;
+Select w pattern w (_, _)
+7,11,19,21
+5000
+14 - While Pattern with synonym and wild card
+while w; variable v;
+Select w pattern w (v, _)
+7,11,19,21
+5000
+15 - While Pattern with argument and wild card
+while w;
+Select w pattern w ("g", _)
+7,19
+5000
+16 - Invalid print Pattern with wild card and wild card
 print p;
 Select p pattern p(_, _)
 
 5000
-11 - Invalid if Pattern with wild card and wild card
+17 - Invalid if Pattern with wild card and wild card
 if ifs;
 Select ifs pattern ifs(_, _)
 
 5000
-12 - Invalid while Pattern with wild card and wild card
-while whiles;
-Select whiles pattern whiles(_, _)
+18 - Invalid if Pattern with wild card and synonym and wild card
+if ifs; variable v;
+Select ifs pattern ifs(_, v,_)
 
 5000
-13 - Invalid Pattern with statement number and wild card
+19 - Invalid if Pattern with wild card and wild card and argument
+if ifs;
+Select ifs pattern ifs(_, _, "x")
+
+5000
+20 - Invalid while Pattern with wild card and wild card and wild card
+while whiles;
+Select whiles pattern whiles(_, _, _)
+
+5000
+22 - Invalid while Pattern with wild card and synonym
+while whiles; variable v;
+Select whiles pattern whiles(_, v)
+
+5000
+22 - Invalid while Pattern with wild card and argument
+while whiles;
+Select whiles pattern whiles(_, "x")
+
+5000
+23 - Invalid Pattern with statement number and wild card
 assign a;
 Select a pattern a(5, _)
 
 5000
-14 - Invalid Pattern with wild card and statement number
+24 - Invalid Pattern with wild card and statement number
 assign a;
 Select a pattern a(_, 3)
 
 5000
-15 - Invalid Pattern with wild card and incomplete partial pattern
+25 - Invalid Pattern with wild card and incomplete partial pattern
 assign a;
 Select a pattern a(_, _"x")
 

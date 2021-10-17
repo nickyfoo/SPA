@@ -1,0 +1,105 @@
+1 - Valid Follows and Follows
+stmt s; assign a;
+Select s such that Follows (s, a) and Follows (a, _)
+1,2,3,4,5,6,7,11,12,13,20,25,26,30
+5000
+2 - Valid Follows and Follows*
+stmt s; assign a;
+Select a such that Follows (s, a) and Follows*(a, _)
+2,3,4,5,6,7,8,12,13,14,23,26,27,33
+5000
+3 - Valid Follows and Parent
+stmt s; assign a; if ifs;
+Select s such that Follows (a, s) and Parent(s, ifs)
+28
+5000
+4 - Valid Follows and Parent*
+stmt s; assign a1,a2;
+Select a2 such that Follows (a1, s) and Parent*(s, a2)
+16,17,29,31,32,33,35
+5000
+5 - Valid Follows and UsesS
+stmt s; variable var; print pn;
+Select var such that Follows (s, pn) and Uses(s, var)
+f, y, z, sum, x, i, count, m
+5000
+6 - Valid Follows and UsesP
+stmt s; call c; variable v;
+Select s such that Follows (s, c) and Uses(c, v)
+8
+5000
+7 - Valid Follows and ModifiesS
+assign a; stmt s;
+Select s such that Follows (a, s) and Modifies(a, "z")
+5,15,27,34
+5000
+8 - Valid Follows and ModifiesP
+while w; call c; variable v;
+Select v such that Follows (c, w) and Modifies(c, v)
+x,z,i,y
+5000
+9 - Valid ModifiesS and UsesS
+stmt s; variable v;
+Select s such that Modifies(s, v) and Uses(s, v)
+3,7,9,10,11,18,20,21,22,28,29,30,33,35
+5000
+10 - Valid Parent and UsesS
+stmt s;
+Select s such that Parent(_, s) and Uses(s, "z")
+12,13,30,32,33
+5000
+11 - Valid Follows and UsesS and ModifiesS
+stmt s; assign a; variable v;
+Select a such that Follows(a, s) and Modifies(s, v) and Uses(s, v)
+2,6,8,27,29
+5000
+12 - Valid Follows* and Parent and ModifiesP
+assign a; variable v; if ifs;
+Select a such that Follows(a, ifs) and Uses(a,v) and Modifies("Example", v)
+29
+5000
+13 - Valid Assign Pattern and Assign Pattern
+assign a; variable v;
+Select a pattern a("x", _) and a(_,_"1"_)
+25,29
+5000
+14 - Valid Assign Pattern and If Pattern
+assign a; variable v; if ifs;
+Select a pattern a(v, _) and ifs(v,_,_)
+2,3,7,8,11,18,21,25,29
+5000
+14 - Valid Assign Pattern and While Pattern
+assign a; variable v; while w;
+Select v pattern a(v,_) and w(v,_)
+x,count,i
+5000
+15 - Valid If Pattern and While Pattern
+if ifs; variable v; while w;
+Select v pattern ifs(v,_,_) and w(v,_)
+x,count
+5000
+16 - Valid Assign Pattern and If Pattern and While Pattern
+assign a; if ifs; variable v; while w;
+Select a pattern a(v, _"1"_) and ifs(v,_,_) and w(v,_)
+7,18,25,29,
+5000
+17 - Valid With Attr and With Attr
+print pn; stmt s; variable v;
+Select pn with pn.stmt# = s.stmt# and pn.varName = v.varName
+19,24,36
+5000
+18 - Valid With Attr and With Argument
+read r; stmt s;
+Select r with r.stmt# = s.stmt# and r.varName = "x"
+34
+5000
+19 - Valid With Attr and Progline
+while w; prog_line prog;
+Select prog with w.stmt# = prog and prog = 28
+28
+5000
+20 - Valid With and With and With
+call c; read r; variable v;
+Select c with c.stmt# = 9 and r.varName = v.varName and c.procName = "Example"
+9
+5000

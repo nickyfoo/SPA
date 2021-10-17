@@ -2301,7 +2301,7 @@ TEST_CASE("PKB_AffectsBipStarSample_Correct") {
       "z = x + y; }"
       "procedure John {"
       "if (i > 0) then {"
-      "x = x + z; } }"
+      "x = x + z; }"
       "else {"
       "y = x * y; } }";
 

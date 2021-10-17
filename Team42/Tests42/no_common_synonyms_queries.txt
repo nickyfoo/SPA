@@ -1,0 +1,30 @@
+1 - No synonyms evaluates to True
+print pn;
+Select pn such that Follows(2,3) and Parent(15,16)
+10,11,16,18,20
+5000
+2 - No synonyms evaluates to False
+print pn;
+Select pn such that Follows(3,3) and Parent(15,16)
+
+5000
+3 - No common synonym with return synonym evaluates to True
+read r; assign a;
+Select r such that Follows*(a, 3) and Modifies(a, "a")
+12,13,22
+5000
+4 - No common synonym with return synonym evaluates to False
+read r; assign a;
+Select r such that Follows*(a, 3) and Modifies(a, "c")
+
+5000
+5 - No common synonym with return synonym multiple clauses evaluates to True
+call c; assign a; if ifs; variable v;
+Select c such that Parent*(4, a) pattern ifs(v,_,_) with v.varName = "z"
+9,17,21
+5000
+6 - No common synonym with return synonym multiple clauses evaluates to False
+call c; assign a; if ifs; variable v;
+Select c such that Parent*(4, a) pattern ifs(v,_,_) with v.varName = "z" and a.stmt# = 4
+
+5000

@@ -52,12 +52,10 @@ std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
   if (select_clauses.empty()) {  // invalid select syntax
     return false_res;
   }
-  bool is_select_boolean = false;
   for (const std::string &select : select_clauses) {
     ResultClause *result_clause;
     if (select == "BOOLEAN" && select_clauses.size() == 1) {
       result_clause = new ResultClause("", EntityType::None, ReturnType::Boolean);
-      is_select_boolean = true;
     } else if (synonym_to_entity_->find(select) != synonym_to_entity_->end()) {
       result_clause =
           new ResultClause(select, synonym_to_entity_->at(select)->get_type(), ReturnType::Default);
@@ -413,7 +411,7 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(SuchThatClause *relationshi
     }
   } else if (IsInteger(left_ref)) {  // statement number
     int left_ref_int = std::stoi(left_ref);
-    if (left_ref_int < 1) {
+    if (left_ref_int < 1) {  // invalid statement number
       return nullptr;
     }
     if (type == RelRef::Next || type == RelRef::NextT) {
@@ -488,7 +486,8 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefRight(SuchThatClause *relationsh
           right_line_ref.set_entity_type(entity_type);
           right_such_that_ref = new SuchThatRef(right_line_ref);
           break;
-        } else if (type != RelRef::Affects && type != RelRef::AffectsT) {
+        } else if (type != RelRef::Affects && type != RelRef::AffectsT &&
+        type != RelRef::Calls && type != RelRef::CallsT) {
           right_stmt_ref.set_synonym(right_ref);
           right_stmt_ref.set_entity_type(entity_type);
           right_such_that_ref = new SuchThatRef(right_stmt_ref);
@@ -507,14 +506,14 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefRight(SuchThatClause *relationsh
     }
   } else if (IsInteger(right_ref)) {  // statement number
     int right_ref_int = std::stoi(right_ref);
-    if (right_ref_int < 1) {
+    if (right_ref_int < 1) {  // invalid statement number
       return nullptr;
     }
     if (type == RelRef::Next || type == RelRef::NextT) {
-      right_line_ref.set_line_num(std::stoi(right_ref));
+      right_line_ref.set_line_num(right_ref_int);
       right_such_that_ref = new SuchThatRef(right_line_ref);
     } else {
-      right_stmt_ref.set_stmt_num(std::stoi(right_ref));
+      right_stmt_ref.set_stmt_num(right_ref_int);
       right_such_that_ref = new SuchThatRef(right_stmt_ref);
     }
   } else if (right_ref == "_") {  // wild card
@@ -589,11 +588,8 @@ std::vector<std::string> SelectClauseParser::SplitSelect(std::string select_clau
     select_clause.erase(0, pos + SELECT_DELIM.length());
     break;
   }
-
-  select_clause.erase(remove(select_clause.begin(), select_clause.end(), '\n'),
+  select_clause.erase(std::remove_if(select_clause.begin(), select_clause.end(), ::isspace),
                       select_clause.end());
-  select_clause.erase(remove(select_clause.begin(), select_clause.end(), ' '), select_clause.end());
-
   if (select_clause.empty()) {
     return {};
   } else if (select_clause.at(0) == '<' && select_clause.at(select_clause.length() - 1) == '>') {
@@ -664,11 +660,11 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
       inverted_commas_found = !inverted_commas_found;
       whitespace_found = false;
     } else if (inverted_commas_found) {
-      if (c == ' ') {
+      if (isspace(c)) {
         continue;
       }
       ss << c;
-    } else if (c == ' ') {
+    } else if (isspace(c)) {
       // extra check to account for such that clause without extra spaces
       std::string check_for_such = prev_word_stream.str();
       bool such_clause_found = false;
@@ -805,7 +801,7 @@ std::vector<std::vector<std::string>> SelectClauseParser::SplitTokensByBrackets(
       } else if (c == ',') {
         tokens.push_back(ss.str());
         ss.str("");
-      } else if (c != ' ') {
+      } else if (!isspace(c)) {
         ss << c;
       }
     }

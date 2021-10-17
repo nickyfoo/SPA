@@ -61,7 +61,10 @@ void TestWrapper::evaluate(std::string query, std::list<std::string> &results) {
              bool> *clauses = query_preprocessor->get_clauses();
   PQLQuery *pql_query;
   if (!std::get<5>(*clauses)) {
-    pql_query = nullptr;
+    pql_query = new PQLQuery(std::get<0>(*clauses),
+                 {},
+                 {},
+                 std::get<5>(*clauses));
   } else {
     QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clauses),
                                                     std::get<2>(*clauses),
@@ -73,7 +76,7 @@ void TestWrapper::evaluate(std::string query, std::list<std::string> &results) {
                              std::get<4>(*clauses),
                              std::get<5>(*clauses));
   }
-  QueryEvaluator *query_evaluator = new QueryEvaluator(pql_query, pkb_);
+  auto *query_evaluator = new QueryEvaluator(pql_query, pkb_);
   std::vector<std::string> *res = query_evaluator->Evaluate();
   std::copy(res->begin(), res->end(), std::back_inserter(results));
 }

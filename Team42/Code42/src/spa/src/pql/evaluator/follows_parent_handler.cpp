@@ -1,41 +1,41 @@
-#include "follows_parents_handler.h"
+#include "follows_parent_handler.h"
 #include "ast.h"
 
-FollowsParentsHandler::FollowsParentsHandler() {}
+FollowsParentHandler::FollowsParentHandler() {}
 
-FollowsParentsHandler *FollowsParentsHandler::instance_ = nullptr;
+FollowsParentHandler *FollowsParentHandler::instance_ = nullptr;
 
-FollowsParentsHandler *FollowsParentsHandler::get_instance() {
+FollowsParentHandler *FollowsParentHandler::get_instance() {
   if (!instance_) {
-    instance_ = new FollowsParentsHandler();
+    instance_ = new FollowsParentHandler();
   }
   return instance_;
 }
 
-void FollowsParentsHandler::set_function_pointers(
+void FollowsParentHandler::set_function_pointers(
     std::set<int> *(Statement::*get_normal)(),
     std::set<int> *(Statement::*get_reverse)()) {
   this->get_normal_ = get_normal;
   this->get_reverse_ = get_reverse;
 }
 
-void FollowsParentsHandler::set_args(PKB *pkb,
-                                     std::shared_ptr<SuchThatClause> relationship,
-                                     std::unordered_map<std::string,
+void FollowsParentHandler::set_args(PKB *pkb,
+                                    std::shared_ptr<SuchThatClause> relationship,
+                                    std::unordered_map<std::string,
                                      std::vector<Entity *>> synonym_to_entities_vec) {
   this->pkb_ = pkb;
   this->relationship_ = relationship;
   this->synonym_to_entities_vec_ = synonym_to_entities_vec;
 }
 
-std::set<int> *FollowsParentsHandler::Forwarder(std::set<int> *(Statement::*function)(),
-                                                Statement *stmt) {
+std::set<int> *FollowsParentHandler::Forwarder(std::set<int> *(Statement::*function)(),
+                                               Statement *stmt) {
   return (stmt->*function)();
 }
 
 // if is nullpointer, means False
 // if is empty, means that True with no synonyms
-ResultTable* FollowsParentsHandler::Evaluate() {
+ResultTable* FollowsParentHandler::Evaluate() {
   ResultTable *ret = new ResultTable();
   StmtRef left_ent = relationship_->get_left_ref()->get_stmt_ref();
   StmtRef right_ent = relationship_->get_right_ref()->get_stmt_ref();

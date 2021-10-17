@@ -63,7 +63,8 @@ files1 = [
     "uncommon_invalid",
     "uses_modifies",
     "Uses",
-    "with"
+    "with",
+    "next"
 ]
 
 files2 = [

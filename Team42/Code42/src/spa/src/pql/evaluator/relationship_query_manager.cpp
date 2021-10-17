@@ -1,6 +1,6 @@
 #include "calls_handler.h"
 #include "entity_declaration.h"
-#include "follows_parents_handler.h"
+#include "follows_parent_handler.h"
 #include "next_handler.h"
 #include "procedure.h"
 #include "relationship_query_manager.h"
@@ -22,28 +22,28 @@ ResultTable *RelationshipQueryManager::EvaluateRelationship(
   RelRef relationship_type = relationship->get_type();
   switch (relationship_type) {
     case RelRef::Follows: {
-      FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+      FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
       follows_parents_handler->set_function_pointers(&Statement::get_followers,
                                                      &Statement::get_followees);
       follows_parents_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
       return follows_parents_handler->Evaluate();
     }
     case RelRef::FollowsT: {
-      FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+      FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
       follows_parents_handler->set_function_pointers(&Statement::get_followers_star,
                                                      &Statement::get_followees_star);
       follows_parents_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
       return follows_parents_handler->Evaluate();
     }
     case RelRef::Parent: {
-      FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+      FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
       follows_parents_handler->set_function_pointers(&Statement::get_children,
                                                      &Statement::get_parents);
       follows_parents_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
       return follows_parents_handler->Evaluate();
     }
     case RelRef::ParentT: {
-      FollowsParentsHandler *follows_parents_handler = FollowsParentsHandler::get_instance();
+      FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
       follows_parents_handler->set_function_pointers(&Statement::get_children_star,
                                                      &Statement::get_parents_star);
       follows_parents_handler->set_args(pkb_, relationship, synonym_to_entities_vec);

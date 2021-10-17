@@ -2,6 +2,8 @@ import subprocess
 import sys
 
 files1 = [
+    "affects",
+    "affectss",
     "and_clauses",
     "Basic_BOOLEAN",
     "Basic_Next",

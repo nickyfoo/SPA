@@ -114,16 +114,13 @@ ResultTable* FollowsParentsHandler::Evaluate() {
       right_ent.get_type() == StmtRefType::WildCard) {  // eg Follows(_, _)
     std::vector<Statement *> entity_vec;
     entity_vec = pkb_->get_all_statements();
-    bool found_non_empty_vec = false;
     for (int i = 0; i < entity_vec.size(); i++) {
       Statement *stmt = entity_vec.at(i);
       if (stmt != nullptr && !Forwarder(get_normal_, stmt)->empty()) {
         return ret;
       }
     }
-    if (!found_non_empty_vec) {
-      return nullptr;
-    }
+    return nullptr;
   } else if (left_ent.get_type() == StmtRefType::WildCard &&
       right_ent.get_type() == StmtRefType::StmtNum) {  // eg Follows(_, 4)
     int right_arg = right_ent.get_stmt_num();

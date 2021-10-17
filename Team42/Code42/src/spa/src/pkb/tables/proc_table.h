@@ -20,7 +20,7 @@ class ProcTable : public Table {
   // Get total number of procedures.
   int get_num_procedures();
   // Get all procedures.
-  virtual std::vector<Procedure *> get_all_procedures();
+  std::vector<Procedure *> get_all_procedures();
   // Gets a procedure by its procedure name.
   virtual Procedure *get_procedure(const std::string &name);
 

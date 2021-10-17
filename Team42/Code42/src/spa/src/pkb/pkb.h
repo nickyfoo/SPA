@@ -155,13 +155,11 @@ class PKB {
   void ReachabilityDFS(int start, int u, std::vector<std::vector<int>> &d,
                        std::map<int, std::set<int>> &al);
   // DFS to check reachability for Affects relationship.
-  // If target is not kWild, supports fast termination to save on unnecessary computations.
-  void AffectsDFS(int start, int target, int u, std::string var_name, std::vector<bool> &visited,
+  void AffectsDFS(int start, int u, std::string var_name, std::vector<bool> &visited,
                   std::vector<std::vector<int>> &d, bool &found);
   // DFS to check reachability for Affects* relationship
-  // If target is not kWild, supports fast termination to save on unnecessary computations.
   // If forward relation is true, this method propagates forward in terms of Affects*(a,b)
-  void AffectsStarBFS(int start, int target, std::vector<bool> &visited,
+  void AffectsStarBFS(int start, std::vector<bool> &visited,
                       bool forward_relation);
   // Cache for Next
   std::map<int, std::map<int,

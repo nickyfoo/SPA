@@ -9,7 +9,7 @@ void PKB::UsesModifiesProcessAssignNode(Node *node, std::vector<Node *> &ancesto
   // Adding Modifies and Modifying relations for LHS
   assign_statement->AddModifies(assign_node->get_var()->get_name());
   var_table_.get_variable(assign_node->get_var()->get_name())
-  ->AddStmtModifying(assign_statement->get_stmt_no());
+      ->AddStmtModifying(assign_statement->get_stmt_no());
 
   // Adding Uses for RHS
   for (auto &var : assign_statement->get_vars_from_expr_string()) {
@@ -37,9 +37,9 @@ void PKB::UsesModifiesProcessAssignNode(Node *node, std::vector<Node *> &ancesto
         var_table_.get_variable(var)->AddStmtUsing(statement_node->get_stmt_no());
       }
       stmt_table_.get_statement(statement_node->get_stmt_no())
-      ->AddModifies(assign_node->get_var()->get_name());
+          ->AddModifies(assign_node->get_var()->get_name());
       var_table_.get_variable(assign_node->get_var()->get_name())
-      ->AddStmtModifying(statement_node->get_stmt_no());
+          ->AddStmtModifying(statement_node->get_stmt_no());
     }
   }
 }
@@ -120,20 +120,20 @@ void PKB::UsesModifiesProcessReadNode(Node *node, std::vector<Node *> &ancestorL
     if (n->get_kind() == NodeType::Procedure) {
       auto *procedure_node = dynamic_cast<ProcedureNode *>(n);
       proc_table_.get_procedure(procedure_node->get_name())
-      ->AddModifies(read_node->get_var()->get_name());
+          ->AddModifies(read_node->get_var()->get_name());
       var_table_.get_variable(read_node->get_var()->get_name())
-      ->AddProcModifying(procedure_node->get_name());
+          ->AddProcModifying(procedure_node->get_name());
     }
     if (n->get_kind() == NodeType::If || n->get_kind() == NodeType::While) {
-      auto statement_node = dynamic_cast<StatementNode*>(n);
+      auto statement_node = dynamic_cast<StatementNode *>(n);
       stmt_table_.get_statement(statement_node->get_stmt_no())->AddModifies(read_node->get_var()->get_name());
       var_table_.get_variable(read_node->get_var()->get_name())->AddStmtModifying(statement_node->get_stmt_no());
     }
   }
   stmt_table_.get_statement(read_node->get_stmt_no())
-  ->AddModifies(read_node->get_var()->get_name());
+      ->AddModifies(read_node->get_var()->get_name());
   var_table_.get_variable(read_node->get_var()->get_name())
-  ->AddStmtModifying(read_node->get_stmt_no());
+      ->AddStmtModifying(read_node->get_stmt_no());
 }
 // Process and store Uses relationships for the AST print node.
 void PKB::UsesModifiesProcessPrintNode(Node *node, std::vector<Node *> &ancestorList) {
@@ -142,17 +142,17 @@ void PKB::UsesModifiesProcessPrintNode(Node *node, std::vector<Node *> &ancestor
     if (n->get_kind() == NodeType::Procedure) {
       auto *procedure_node = dynamic_cast<ProcedureNode *>(n);
       proc_table_.get_procedure(procedure_node->get_name())
-      ->AddUses(print_node->get_var()->get_name());
+          ->AddUses(print_node->get_var()->get_name());
       var_table_.get_variable(print_node->get_var()->get_name())
-      ->AddProcUsing(procedure_node->get_name());
+          ->AddProcUsing(procedure_node->get_name());
     }
     if (n->get_kind() == NodeType::If || n->get_kind() == NodeType::While) {
-      auto statement_node = dynamic_cast<StatementNode*>(n);
+      auto statement_node = dynamic_cast<StatementNode *>(n);
       stmt_table_.get_statement(statement_node->get_stmt_no())->AddUses(print_node->get_var()->get_name());
       var_table_.get_variable(print_node->get_var()->get_name())->AddStmtUsing(statement_node->get_stmt_no());
     }
   }
   stmt_table_.get_statement(print_node->get_stmt_no())->AddUses(print_node->get_var()->get_name());
   var_table_.get_variable(print_node->get_var()->get_name())
-  ->AddStmtUsing(print_node->get_stmt_no());
+      ->AddStmtUsing(print_node->get_stmt_no());
 }

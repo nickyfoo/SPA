@@ -123,6 +123,7 @@ TEST_CASE("Test 1: Follows Synonym + Integer") {
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
+
   auto evaluator = QueryEvaluator(pql_query, &pkb);
   std::vector<std::string> *ret = evaluator.Evaluate();
 

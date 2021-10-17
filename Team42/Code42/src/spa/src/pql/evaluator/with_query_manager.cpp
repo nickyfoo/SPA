@@ -15,6 +15,8 @@ ResultTable *WithQueryManager::EvaluateWith(std::shared_ptr<WithClause> with,
   && with->get_right_type() == EntityType::None) {  // 12 = 12
     if (with->get_left_ref() != with->get_right_ref()) {
       return nullptr;
+    } else {
+      return ret;
     }
   } else if (with->get_left_type() == EntityType::None
   && with->get_right_type() != EntityType::None) {  // 12 = s.stmt#

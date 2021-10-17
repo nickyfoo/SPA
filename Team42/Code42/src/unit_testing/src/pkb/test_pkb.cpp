@@ -4,6 +4,7 @@
 #include "entities/statement.h"
 #include "parse.h"
 #include "pkb.h"
+#include <chrono>
 
 TEST_CASE("PKBExtractEntities_SampleProgram_Correct") {
   std::string main_source =
@@ -1280,23 +1281,36 @@ TEST_CASE("PKB_NextSample_Correct") {
       {8, {9}}, {9, {6}}, {10, {11, 12}}, {11, {13}}, {12, {13}}, {13, {14}},
       {14, {15}}, {15, {}}, {16, {17}}, {17, {18}},
   };
-  std::set<std::pair<int, int>> next_wild_wild = pkb.get_next(PKB::PKB::kWild, PKB::kWild);
+
+  // Check Next(_,_)
+  std::set<std::pair<int, int>> *next_wild_wild = pkb.get_next(PKB::PKB::kWild, PKB::kWild);
+  for (auto &[a, nexts] : next_ans) {
+    for (auto &b : nexts) {
+      REQUIRE(next_wild_wild->find({a, b}) != next_wild_wild->end());
+    }
+  }
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+
+  // Check Next(a,_)
   for (auto&[a, nexts] : next_ans) {
-    // Check Next(a,_)
-    std::set<std::pair<int, int>> next_a_wild = pkb.get_next(a, PKB::kWild);
-    REQUIRE(next_ans[a].size() == next_a_wild.size());
+    std::set<std::pair<int, int>> *next_a_wild = pkb.get_next(a, PKB::kWild);
+    REQUIRE(next_ans[a].size() == next_a_wild->size());
     for (auto &b : nexts) {
-      REQUIRE(next_a_wild.find({a, b}) != next_a_wild.end());
+      REQUIRE(next_a_wild->find({a, b}) != next_a_wild->end());
     }
-    // Check Next(a,b)
+    pkb.ClearNextAffectsCache();
+    REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  }
+
+  // Check Next(a,b)
+  for (auto&[a, nexts] : next_ans) {
     for (auto &b : nexts) {
-      std::set<std::pair<int, int>> next_a_b = pkb.get_next(a, b);
-      REQUIRE(next_a_b.size() == 1);
-      REQUIRE(next_a_b.find({a, b}) != next_a_b.end());
-    }
-    // Check Next(_,_)
-    for (auto &b : nexts) {
-      REQUIRE(next_wild_wild.find({a, b}) != next_wild_wild.end());
+      std::set<std::pair<int, int>> *next_a_b = pkb.get_next(a, b);
+      REQUIRE(next_a_b->size() == 1);
+      REQUIRE(next_a_b->find({a, b}) != next_a_b->end());
+      pkb.ClearNextAffectsCache();
+      REQUIRE(pkb.NextAffectsCacheIsEmpty());
     }
   }
 
@@ -1307,24 +1321,34 @@ TEST_CASE("PKB_NextSample_Correct") {
   };
   for (auto&[b, prevs] : prev_ans) {
     // Check Next(_,b)
-    std::set<std::pair<int, int>> next_wild_b = pkb.get_next(PKB::kWild, b);
-    REQUIRE(prev_ans[b].size() == next_wild_b.size());
+    std::set<std::pair<int, int>> *next_wild_b = pkb.get_next(PKB::kWild, b);
+    REQUIRE(prev_ans[b].size() == next_wild_b->size());
     for (auto &a : prevs) {
-      REQUIRE(next_wild_b.find({a, b}) != next_wild_b.end());
+      REQUIRE(next_wild_b->find({a, b}) != next_wild_b->end());
     }
-    // Check Next(_,_)
-    for (auto &a : prevs) {
-      REQUIRE(next_wild_wild.find({a, b}) != next_wild_wild.end());
-    }
+    pkb.ClearNextAffectsCache();
+    REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
 
   // Negative cases
-  REQUIRE(pkb.get_next(1, 3).empty()); // Not directly after
-  REQUIRE(pkb.get_next(3, 4).empty()); // Across procedures
-  REQUIRE(pkb.get_next(9, 7).empty()); // Last line of while loop goes through condition first
-  REQUIRE(pkb.get_next(11, 12).empty()); // Different if branches
-  REQUIRE(pkb.get_next(PKB::kWild, 1).empty()); // First statement of procedure
-  REQUIRE(pkb.get_next(15, PKB::kWild).empty()); // Last statement of procedure
+  REQUIRE(pkb.get_next(1, 3)->empty()); // Not directly after
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_next(3, 4)->empty()); // Across procedures
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_next(9, 7)->empty()); // Last line of while loop goes through condition first
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_next(11, 12)->empty()); // Different if branches
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_next(PKB::kWild, 1)->empty()); // First statement of procedure
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_next(15, PKB::kWild)->empty()); // Last statement of procedure
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }
 
 TEST_CASE("PKB_NextStarSample_Correct") {
@@ -1379,23 +1403,35 @@ TEST_CASE("PKB_NextStarSample_Correct") {
       {17, {18}},
   };
 
-  std::set<std::pair<int, int>> next_star_wild_wild = pkb.get_next_star(PKB::kWild, PKB::kWild);
+  std::set<std::pair<int, int>> *next_star_wild_wild = pkb.get_next_star(PKB::kWild, PKB::kWild);
   for (auto&[a, nexts_star] : next_star_ans) {
-    // Check Next*(a,_)
-    std::set<std::pair<int, int>> next_star_a_wild = pkb.get_next_star(a, PKB::kWild);
-    REQUIRE(next_star_ans[a].size() == next_star_a_wild.size());
-    for (auto &b : nexts_star) {
-      REQUIRE(next_star_a_wild.find({a, b}) != next_star_a_wild.end());
-    }
-    // Check Next*(a,b)
-    for (auto &b : nexts_star) {
-      std::set<std::pair<int, int>> next_star_a_b = pkb.get_next_star(a, b);
-      REQUIRE(next_star_a_b.size() == 1);
-      REQUIRE(next_star_a_b.find({a, b}) != next_star_a_b.end());
-    }
     // Check Next*(_,_)
     for (auto &b : nexts_star) {
-      REQUIRE(next_star_wild_wild.find({a, b}) != next_star_wild_wild.end());
+      REQUIRE(next_star_wild_wild->find({a, b}) != next_star_wild_wild->end());
+    }
+  }
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+
+  // Check Next*(a,_)
+  for (auto&[a, nexts_star] : next_star_ans) {
+    std::set<std::pair<int, int>> *next_star_a_wild = pkb.get_next_star(a, PKB::kWild);
+    REQUIRE(next_star_ans[a].size() == next_star_a_wild->size());
+    for (auto &b : nexts_star) {
+      REQUIRE(next_star_a_wild->find({a, b}) != next_star_a_wild->end());
+    }
+    pkb.ClearNextAffectsCache();
+    REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  }
+
+  // Check Next*(a,b)
+  for (auto&[a, nexts_star] : next_star_ans) {
+    for (auto &b : nexts_star) {
+      std::set<std::pair<int, int>> *next_star_a_b = pkb.get_next_star(a, b);
+      REQUIRE(next_star_a_b->size() == 1);
+      REQUIRE(next_star_a_b->find({a, b}) != next_star_a_b->end());
+      pkb.ClearNextAffectsCache();
+      REQUIRE(pkb.NextAffectsCacheIsEmpty());
     }
   }
 
@@ -1419,21 +1455,33 @@ TEST_CASE("PKB_NextStarSample_Correct") {
       {17, {16}},
       {18, {16, 17}},
   };
+  // Check Next*(_,b)
   for (auto&[b, prevs_star] : prev_star_ans) {
-    // Check Next*(_,b)
-    std::set<std::pair<int, int>> next_star_wild_b = pkb.get_next_star(PKB::kWild, b);
-    REQUIRE(prev_star_ans[b].size() == next_star_wild_b.size());
+    std::set<std::pair<int, int>> *next_star_wild_b = pkb.get_next_star(PKB::kWild, b);
+    REQUIRE(prev_star_ans[b].size() == next_star_wild_b->size());
     for (auto &a : prevs_star) {
-      REQUIRE(next_star_wild_b.find({a, b}) != next_star_wild_b.end());
+      REQUIRE(next_star_wild_b->find({a, b}) != next_star_wild_b->end());
     }
+    pkb.ClearNextAffectsCache();
+    REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
 
   // Negative cases
-  REQUIRE(pkb.get_next_star(2, 1).empty()); // Reverse direction
-  REQUIRE(pkb.get_next_star(3, 4).empty()); // Across procedures
-  REQUIRE(pkb.get_next_star(11, 12).empty()); // Different if branches
-  REQUIRE(pkb.get_next_star(PKB::kWild, 1).empty()); // First statement of procedure
-  REQUIRE(pkb.get_next_star(15, PKB::kWild).empty()); // Last statement of procedure
+  REQUIRE(pkb.get_next_star(2, 1)->empty()); // Reverse direction
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_next_star(3, 4)->empty()); // Across procedures
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_next_star(11, 12)->empty()); // Different if branches
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_next_star(PKB::kWild, 1)->empty()); // First statement of procedure
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_next_star(15, PKB::kWild)->empty()); // Last statement of procedure
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }
 
 TEST_CASE("PKB_NextNestedIf_Correct") {
@@ -1465,23 +1513,35 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
       {1, {2}}, {2, {3, 6}}, {3, {4, 5}}, {4, {9}}, {5, {9}}, {6, {7, 8}}, {7, {9}},
       {8, {9}}, {9, {}}
   };
-  std::set<std::pair<int, int>> next_wild_wild = pkb.get_next(PKB::kWild, PKB::kWild);
+  // Check Next(_,_)
+  std::set<std::pair<int, int>> *next_wild_wild = pkb.get_next(PKB::PKB::kWild, PKB::kWild);
   for (auto&[a, nexts] : next_ans) {
-    // Check Next(a,_)
-    std::set<std::pair<int, int>> next_a_wild = pkb.get_next(a, PKB::kWild);
-    REQUIRE(next_ans[a].size() == next_a_wild.size());
     for (auto &b : nexts) {
-      REQUIRE(next_a_wild.find({a, b}) != next_a_wild.end());
+      REQUIRE(next_wild_wild->find({a, b}) != next_wild_wild->end());
     }
-    // Check Next(a,b)
+  }
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+
+  // Check Next(a,_)
+  for (auto&[a, nexts] : next_ans) {
+    std::set<std::pair<int, int>> *next_a_wild = pkb.get_next(a, PKB::kWild);
+    REQUIRE(next_ans[a].size() == next_a_wild->size());
     for (auto &b : nexts) {
-      std::set<std::pair<int, int>> next_a_b = pkb.get_next(a, b);
-      REQUIRE(next_a_b.size() == 1);
-      REQUIRE(next_a_b.find({a, b}) != next_a_b.end());
+      REQUIRE(next_a_wild->find({a, b}) != next_a_wild->end());
     }
-    // Check Next(_,_)
+    pkb.ClearNextAffectsCache();
+    REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  }
+
+  // Check Next(a,b)
+  for (auto&[a, nexts] : next_ans) {
     for (auto &b : nexts) {
-      REQUIRE(next_wild_wild.find({a, b}) != next_wild_wild.end());
+      std::set<std::pair<int, int>> *next_a_b = pkb.get_next(a, b);
+      REQUIRE(next_a_b->size() == 1);
+      REQUIRE(next_a_b->find({a, b}) != next_a_b->end());
+      pkb.ClearNextAffectsCache();
+      REQUIRE(pkb.NextAffectsCacheIsEmpty());
     }
   }
 
@@ -1489,21 +1549,33 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
       {1, {}}, {2, {1}}, {3, {2}}, {4, {3}}, {5, {3}}, {6, {2}}, {7, {6}}, {8, {6}},
       {9, {4, 5, 7, 8}}
   };
+  // Check Next(_,b)
   for (auto&[b, prevs] : prev_ans) {
-    // Check Next(_,b)
-    std::set<std::pair<int, int>> next_wild_b = pkb.get_next(PKB::kWild, b);
-    REQUIRE(prev_ans[b].size() == next_wild_b.size());
+    std::set<std::pair<int, int>> *next_wild_b = pkb.get_next(PKB::kWild, b);
+    REQUIRE(prev_ans[b].size() == next_wild_b->size());
     for (auto &a : prevs) {
-      REQUIRE(next_wild_b.find({a, b}) != next_wild_b.end());
+      REQUIRE(next_wild_b->find({a, b}) != next_wild_b->end());
     }
+    pkb.ClearNextAffectsCache();
+    REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
 
   // Negative cases
-  REQUIRE(pkb.get_next(1, 9).empty()); // Not directly after
-  REQUIRE(pkb.get_next(1, 3).empty()); // Not directly after
-  REQUIRE(pkb.get_next(4, 5).empty()); // Different if branches
-  REQUIRE(pkb.get_next(PKB::kWild, 1).empty()); // First statement of procedure
-  REQUIRE(pkb.get_next(9, PKB::kWild).empty()); // Last statement of procedure
+  REQUIRE(pkb.get_next(1, 9)->empty()); // Not directly after
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_next(1, 3)->empty()); // Not directly after
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_next(4, 5)->empty()); // Different if branches
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_next(PKB::kWild, 1)->empty()); // First statement of procedure
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_next(9, PKB::kWild)->empty()); // Last statement of procedure
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }
 
 TEST_CASE("PKB_NextStarNestedIf_Correct") {
@@ -1542,23 +1614,36 @@ TEST_CASE("PKB_NextStarNestedIf_Correct") {
       {8, {9}},
       {9, {}}
   };
-  std::set<std::pair<int, int>> next_star_wild_wild = pkb.get_next_star(PKB::kWild, PKB::kWild);
+
+  // Check Next*(_,_)
+  std::set<std::pair<int, int>> *next_star_wild_wild = pkb.get_next_star(PKB::kWild, PKB::kWild);
   for (auto&[a, nexts_star] : next_star_ans) {
-    // Check Next*(a,_)
-    std::set<std::pair<int, int>> next_star_a_wild = pkb.get_next_star(a, PKB::kWild);
-    REQUIRE(next_star_ans[a].size() == next_star_a_wild.size());
     for (auto &b : nexts_star) {
-      REQUIRE(next_star_a_wild.find({a, b}) != next_star_a_wild.end());
+      REQUIRE(next_star_wild_wild->find({a, b}) != next_star_wild_wild->end());
     }
-    // Check Next*(a,b)
+  }
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+
+  // Check Next*(a,_)
+  for (auto&[a, nexts_star] : next_star_ans) {
+    std::set<std::pair<int, int>> *next_star_a_wild = pkb.get_next_star(a, PKB::kWild);
+    REQUIRE(next_star_ans[a].size() == next_star_a_wild->size());
     for (auto &b : nexts_star) {
-      std::set<std::pair<int, int>> next_star_a_b = pkb.get_next_star(a, b);
-      REQUIRE(next_star_a_b.size() == 1);
-      REQUIRE(next_star_a_b.find({a, b}) != next_star_a_b.end());
+      REQUIRE(next_star_a_wild->find({a, b}) != next_star_a_wild->end());
     }
-    // Check Next*(_,_)
+    pkb.ClearNextAffectsCache();
+    REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  }
+
+  // Check Next*(a,b)
+  for (auto&[a, nexts_star] : next_star_ans) {
     for (auto &b : nexts_star) {
-      REQUIRE(next_star_wild_wild.find({a, b}) != next_star_wild_wild.end());
+      std::set<std::pair<int, int>> *next_star_a_b = pkb.get_next_star(a, b);
+      REQUIRE(next_star_a_b->size() == 1);
+      REQUIRE(next_star_a_b->find({a, b}) != next_star_a_b->end());
+      pkb.ClearNextAffectsCache();
+      REQUIRE(pkb.NextAffectsCacheIsEmpty());
     }
   }
 
@@ -1573,20 +1658,31 @@ TEST_CASE("PKB_NextStarNestedIf_Correct") {
       {8, {1, 2, 6}},
       {9, {1, 2, 3, 4, 5, 6, 7, 8}},
   };
+
+  // Check Next*(_,b)
   for (auto&[b, prevs_star] : prev_star_ans) {
-    // Check Next*(_,b)
-    std::set<std::pair<int, int>> next_star_wild_b = pkb.get_next_star(PKB::kWild, b);
-    REQUIRE(prev_star_ans[b].size() == next_star_wild_b.size());
+    std::set<std::pair<int, int>> *next_star_wild_b = pkb.get_next_star(PKB::kWild, b);
+    REQUIRE(prev_star_ans[b].size() == next_star_wild_b->size());
     for (auto &a : prevs_star) {
-      REQUIRE(next_star_wild_b.find({a, b}) != next_star_wild_b.end());
+      REQUIRE(next_star_wild_b->find({a, b}) != next_star_wild_b->end());
     }
+    pkb.ClearNextAffectsCache();
+    REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
 
   // Negative cases
-  REQUIRE(pkb.get_next_star(2, 1).empty()); // Reverse direction
-  REQUIRE(pkb.get_next_star(7, 8).empty()); // Different if branches
-  REQUIRE(pkb.get_next_star(PKB::kWild, 1).empty()); // First statement of procedure
-  REQUIRE(pkb.get_next_star(9, PKB::kWild).empty()); // Last statement of procedure
+  REQUIRE(pkb.get_next_star(2, 1)->empty()); // Reverse direction
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_next_star(7, 8)->empty()); // Different if branches
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_next_star(PKB::kWild, 1)->empty()); // First statement of procedure
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_next_star(9, PKB::kWild)->empty()); // Last statement of procedure
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }
 
 TEST_CASE("PKB_AffectsSample_Correct") {
@@ -1627,23 +1723,36 @@ TEST_CASE("PKB_AffectsSample_Correct") {
       {13, {14, 15}}, {14, {15}}, {15, {}}, {16, {17}}, {17, {}}, {18, {}}, {19, {}},
       {20, {}}, {21, {}}, {22, {}}, {23, {}},
   };
-  std::set<std::pair<int, int>> affects_wild_wild = pkb.get_affects(PKB::kWild, PKB::kWild);
+
+  // Check Affects(_,_)
+  std::set<std::pair<int, int>> *affects_wild_wild = pkb.get_affects(PKB::kWild, PKB::kWild);
   for (auto&[a, affects] : affects_ans) {
-    // Check Affects(a,_)
-    std::set<std::pair<int, int>> affects_a_wild = pkb.get_affects(a, PKB::kWild);
-    REQUIRE(affects_ans[a].size() == affects_a_wild.size());
     for (auto &b : affects) {
-      REQUIRE(affects_a_wild.find({a, b}) != affects_a_wild.end());
+      REQUIRE(affects_wild_wild->find({a, b}) != affects_wild_wild->end());
     }
-    // Check Affects(a,b)
+  }
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+
+  // Check Affects(a,_)
+  for (auto&[a, affects] : affects_ans) {
+    std::set<std::pair<int, int>> *affects_a_wild = pkb.get_affects(a, PKB::kWild);
+    REQUIRE(affects_ans[a].size() == affects_a_wild->size());
     for (auto &b : affects) {
-      std::set<std::pair<int, int>> affects_a_b = pkb.get_affects(a, b);
-      REQUIRE(affects_a_b.size() == 1);
-      REQUIRE(affects_a_b.find({a, b}) != affects_a_b.end());
+      REQUIRE(affects_a_wild->find({a, b}) != affects_a_wild->end());
     }
-    // Check Affects(_,_)
+    pkb.ClearNextAffectsCache();
+    REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  }
+
+  // Check Affects(a,b)
+  for (auto&[a, affects] : affects_ans) {
     for (auto &b : affects) {
-      REQUIRE(affects_wild_wild.find({a, b}) != affects_wild_wild.end());
+      std::set<std::pair<int, int>> *affects_a_b = pkb.get_affects(a, b);
+      REQUIRE(affects_a_b->size() == 1);
+      REQUIRE(affects_a_b->find({a, b}) != affects_a_b->end());
+      pkb.ClearNextAffectsCache();
+      REQUIRE(pkb.NextAffectsCacheIsEmpty());
     }
   }
 
@@ -1653,21 +1762,33 @@ TEST_CASE("PKB_AffectsSample_Correct") {
       {15, {4, 7, 11, 13, 14}}, {16, {}}, {17, {16}}, {18, {}}, {19, {}}, {20, {}}, {21, {}},
       {22, {}}, {23, {}},
   };
+  // Check Affects(_,b)
   for (auto&[b, affected_bys] : affected_by_ans) {
-    // Check Affects(_,b)
-    std::set<std::pair<int, int>> affects_wild_b = pkb.get_affects(PKB::kWild, b);
-    REQUIRE(affected_by_ans[b].size() == affects_wild_b.size());
+    std::set<std::pair<int, int>> *affects_wild_b = pkb.get_affects(PKB::kWild, b);
+    REQUIRE(affected_by_ans[b].size() == affects_wild_b->size());
     for (auto &a : affected_bys) {
-      REQUIRE(affects_wild_b.find({a, b}) != affects_wild_b.end());
+      REQUIRE(affects_wild_b->find({a, b}) != affects_wild_b->end());
     }
+    pkb.ClearNextAffectsCache();
+    REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
 
   // Negative cases
-  REQUIRE(pkb.get_affects(16, 7).empty()); // Different procedures
-  REQUIRE(pkb.get_affects(5, 7).empty()); // 5 is not modifying x or y
-  REQUIRE(pkb.get_affects(5, 8).empty()); // 8 is not an assignment statement
-  REQUIRE(pkb.get_affects(8, 12).empty()); // 8 is not an assignment statement
-  REQUIRE(pkb.get_affects(8, PKB::kWild).empty()); // 8 is not an assignment statement
+  REQUIRE(pkb.get_affects(16, 7)->empty()); // Different procedures
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_affects(5, 7)->empty()); // 5 is not modifying x or y
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_affects(5, 8)->empty()); // 8 is not an assignment statement
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_affects(8, 12)->empty()); // 8 is not an assignment statement
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_affects(8, PKB::kWild)->empty()); // 8 is not an assignment statement
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }
 
 TEST_CASE("PKB_AffectsStarSample_Correct") {
@@ -1708,23 +1829,35 @@ TEST_CASE("PKB_AffectsStarSample_Correct") {
       {12, {13, 14, 15}}, {13, {14, 15}}, {14, {15}}, {15, {}}, {16, {17}}, {17, {}},
       {18, {}}, {19, {}}, {20, {}}, {21, {}}, {22, {}}, {23, {}},
   };
-  std::set<std::pair<int, int>> affects_star_wild_wild = pkb.get_affects_star(PKB::kWild, PKB::kWild);
+  // Check Affects*(_,_)
+  std::set<std::pair<int, int>> *affects_star_wild_wild = pkb.get_affects_star(PKB::kWild, PKB::kWild);
   for (auto&[a, affects_star] : affects_star_ans) {
-    // Check Affects*(a,_)
-    std::set<std::pair<int, int>> affects_star_a_wild = pkb.get_affects_star(a, PKB::kWild);
-    REQUIRE(affects_star_ans[a].size() == affects_star_a_wild.size());
     for (auto &b : affects_star) {
-      REQUIRE(affects_star_a_wild.find({a, b}) != affects_star_a_wild.end());
+      REQUIRE(affects_star_wild_wild->find({a, b}) != affects_star_wild_wild->end());
     }
-    // Check Affects*(a,b)
+  }
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+
+  // Check Affects*(a,_)
+  for (auto&[a, affects_star] : affects_star_ans) {
+    std::set<std::pair<int, int>> *affects_star_a_wild = pkb.get_affects_star(a, PKB::kWild);
+    REQUIRE(affects_star_ans[a].size() == affects_star_a_wild->size());
     for (auto &b : affects_star) {
-      std::set<std::pair<int, int>> affects_star_a_b = pkb.get_affects_star(a, b);
-      REQUIRE(affects_star_a_b.size() == 1);
-      REQUIRE(affects_star_a_b.find({a, b}) != affects_star_a_b.end());
+      REQUIRE(affects_star_a_wild->find({a, b}) != affects_star_a_wild->end());
     }
-    // Check Affects*(_,_)
+    pkb.ClearNextAffectsCache();
+    REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  }
+
+  // Check Affects*(a,b)
+  for (auto&[a, affects_star] : affects_star_ans) {
     for (auto &b : affects_star) {
-      REQUIRE(affects_star_wild_wild.find({a, b}) != affects_star_wild_wild.end());
+      std::set<std::pair<int, int>> *affects_star_a_b = pkb.get_affects_star(a, b);
+      REQUIRE(affects_star_a_b->size() == 1);
+      REQUIRE(affects_star_a_b->find({a, b}) != affects_star_a_b->end());
+      pkb.ClearNextAffectsCache();
+      REQUIRE(pkb.NextAffectsCacheIsEmpty());
     }
   }
 
@@ -1734,21 +1867,34 @@ TEST_CASE("PKB_AffectsStarSample_Correct") {
       {15, {4, 5, 7, 9, 11, 12, 13, 14}}, {16, {}}, {17, {16}}, {18, {}}, {19, {}}, {20, {}},
       {21, {}}, {22, {}}, {23, {}},
   };
+
+  // Check Affects(_,b)
   for (auto&[b, affected_bys_star] : affected_by_star_ans) {
-    // Check Affects(_,b)
-    std::set<std::pair<int, int>> affects_star_wild_b = pkb.get_affects_star(PKB::kWild, b);
-    REQUIRE(affected_by_star_ans[b].size() == affects_star_wild_b.size());
+    std::set<std::pair<int, int>> *affects_star_wild_b = pkb.get_affects_star(PKB::kWild, b);
+    REQUIRE(affected_by_star_ans[b].size() == affects_star_wild_b->size());
     for (auto &a : affected_bys_star) {
-      REQUIRE(affects_star_wild_b.find({a, b}) != affects_star_wild_b.end());
+      REQUIRE(affects_star_wild_b->find({a, b}) != affects_star_wild_b->end());
     }
+    pkb.ClearNextAffectsCache();
+    REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
 
   // Negative cases
-  REQUIRE(pkb.get_affects_star(16, 7).empty()); // Different procedures
-  REQUIRE(pkb.get_affects_star(5, 7).empty()); // 5 is not modifying x or y
-  REQUIRE(pkb.get_affects_star(5, 8).empty()); // 8 is not an assignment statement
-  REQUIRE(pkb.get_affects_star(8, 12).empty()); // 8 is not an assignment statement
-  REQUIRE(pkb.get_affects_star(8, PKB::kWild).empty()); // 8 is not an assignment statement
+  REQUIRE(pkb.get_affects_star(16, 7)->empty()); // Different procedures
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_affects_star(5, 7)->empty()); // 5 is not modifying x or y
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_affects_star(5, 8)->empty()); // 8 is not an assignment statement
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_affects_star(8, 12)->empty()); // 8 is not an assignment statement
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  REQUIRE(pkb.get_affects_star(8, PKB::kWild)->empty()); // 8 is not an assignment statement
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }
 
 TEST_CASE("PKB_AffectsNestedWhileIf_Correct") {
@@ -1794,23 +1940,36 @@ TEST_CASE("PKB_AffectsNestedWhileIf_Correct") {
       {14, {}}, {15, {18, 20}}, {16, {18}}, {17, {18}}, {18, {19, 20}}, {19, {20}}, {20, {}},
       {21, {22}}, {22, {}}, {23, {}}
   };
-  std::set<std::pair<int, int>> affects_wild_wild = pkb.get_affects(PKB::kWild, PKB::kWild);
+
+  // Check Affects(_,_)
+  std::set<std::pair<int, int>> *affects_wild_wild = pkb.get_affects(PKB::kWild, PKB::kWild);
   for (auto&[a, affects] : affects_ans) {
-    // Check Affects(a,_)
-    std::set<std::pair<int, int>> affects_a_wild = pkb.get_affects(a, PKB::kWild);
-    REQUIRE(affects_ans[a].size() == affects_a_wild.size());
     for (auto &b : affects) {
-      REQUIRE(affects_a_wild.find({a, b}) != affects_a_wild.end());
+      REQUIRE(affects_wild_wild->find({a, b}) != affects_wild_wild->end());
     }
-    // Check Affects(a,b)
+  }
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+
+  // Check Affects(a,_)
+  for (auto&[a, affects] : affects_ans) {
+    std::set<std::pair<int, int>> *affects_a_wild = pkb.get_affects(a, PKB::kWild);
+    REQUIRE(affects_ans[a].size() == affects_a_wild->size());
     for (auto &b : affects) {
-      std::set<std::pair<int, int>> affects_a_b = pkb.get_affects(a, b);
-      REQUIRE(affects_a_b.size() == 1);
-      REQUIRE(affects_a_b.find({a, b}) != affects_a_b.end());
+      REQUIRE(affects_a_wild->find({a, b}) != affects_a_wild->end());
     }
-    // Check Affects(_,_)
+    pkb.ClearNextAffectsCache();
+    REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  }
+
+  // Check Affects(a,b)
+  for (auto&[a, affects] : affects_ans) {
     for (auto &b : affects) {
-      REQUIRE(affects_wild_wild.find({a, b}) != affects_wild_wild.end());
+      std::set<std::pair<int, int>> *affects_a_b = pkb.get_affects(a, b);
+      REQUIRE(affects_a_b->size() == 1);
+      REQUIRE(affects_a_b->find({a, b}) != affects_a_b->end());
+      pkb.ClearNextAffectsCache();
+      REQUIRE(pkb.NextAffectsCacheIsEmpty());
     }
   }
 
@@ -1820,12 +1979,353 @@ TEST_CASE("PKB_AffectsNestedWhileIf_Correct") {
       {16, {13}}, {17, {6, 10}}, {18, {5, 6, 8, 10, 15, 16, 17}}, {19, {18}},
       {20, {5, 8, 15, 18, 19}}, {22, {21}}
   };
+
+  // Check Affects(_,b)
   for (auto&[b, affected_bys] : affected_by_ans) {
-    // Check Affects(_,b)
-    std::set<std::pair<int, int>> affects_wild_b = pkb.get_affects(PKB::kWild, b);
-    REQUIRE(affected_by_ans[b].size() == affects_wild_b.size());
+    std::set<std::pair<int, int>> *affects_wild_b = pkb.get_affects(PKB::kWild, b);
+    REQUIRE(affected_by_ans[b].size() == affects_wild_b->size());
     for (auto &a : affected_bys) {
-      REQUIRE(affects_wild_b.find({a, b}) != affects_wild_b.end());
+      REQUIRE(affects_wild_b->find({a, b}) != affects_wild_b->end());
     }
+    pkb.ClearNextAffectsCache();
+    REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
+}
+
+TEST_CASE("PKB_NextCacheTestTime_correct") {
+  std::string source =
+      "procedure main {"
+      "  flag = 0;"
+      "  call computeCentroid;"
+      "  call printResults;"
+      "}"
+      "procedure readPoint {"
+      "  read x;"
+      "  read y;"
+      "}"
+      "procedure printResults {"
+      "  print flag;"
+      "  print cenX;"
+      "  print cenY;"
+      "  print normSq;"
+      "}"
+      "procedure computeCentroid {"
+      "  count = 0;"
+      "  cenX = 0;"
+      "  cenY = 0;"
+      "  call readPoint;"
+      "  while((x != 0) && (y != 0)) {"
+      "    count = count+1;"
+      "    cenX = cenX + x;"
+      "    cenY = cenY + y;"
+      "    call readPoint;"
+      "  }"
+      "  if (count == 0) then {"
+      "    flag = 1;"
+      "  } else {"
+      "    cenX = cenX / count;"
+      "    cenY = cenY / count;"
+      "  }"
+      "  normSq = cenX * cenX + cenY * cenY;"
+      "}";
+  BufferedLexer lexer(source);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb(p);
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  auto empty_cache_start = std::chrono::steady_clock::now();
+  for (int i = 0; i < pkb.get_num_statements(); i++) {
+    for (int j = 0; j < pkb.get_num_statements(); j++) {
+      pkb.get_next(i, j);
+    }
+    pkb.get_next(i, pkb.kWild);
+    pkb.get_next(pkb.kWild, i);
+  }
+  pkb.get_next(pkb.kWild, pkb.kWild);
+  auto empty_cache_end = std::chrono::steady_clock::now();
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+
+  pkb.get_next(pkb.kWild, pkb.kWild);
+  auto full_cache_start = std::chrono::steady_clock::now();
+  for (int i = 0; i < pkb.get_num_statements(); i++) {
+    for (int j = 0; j < pkb.get_num_statements(); j++) {
+      pkb.get_next(i, j);
+    }
+    pkb.get_next(i, pkb.kWild);
+    pkb.get_next(pkb.kWild, i);
+  }
+  pkb.get_next(pkb.kWild, pkb.kWild);
+  auto full_cache_end = std::chrono::steady_clock::now();
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  std::chrono::duration<double> empty_cache_elapsed_seconds = empty_cache_end - empty_cache_start;
+  std::chrono::duration<double> full_cache_elapsed_seconds = full_cache_end - full_cache_start;
+  std::cout << "next empty cache elapsed time: " << empty_cache_elapsed_seconds.count() << "s\n";
+  std::cout << "next full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
+  REQUIRE(full_cache_elapsed_seconds.count() < empty_cache_elapsed_seconds.count());
+}
+TEST_CASE("PKB_NextStarCacheTestTime_correct") {
+  std::string source =
+      "procedure main {"
+      "  flag = 0;"
+      "  call computeCentroid;"
+      "  call printResults;"
+      "}"
+      "procedure readPoint {"
+      "  read x;"
+      "  read y;"
+      "}"
+      "procedure printResults {"
+      "  print flag;"
+      "  print cenX;"
+      "  print cenY;"
+      "  print normSq;"
+      "}"
+      "procedure computeCentroid {"
+      "  count = 0;"
+      "  cenX = 0;"
+      "  cenY = 0;"
+      "  call readPoint;"
+      "  while((x != 0) && (y != 0)) {"
+      "    count = count+1;"
+      "    cenX = cenX + x;"
+      "    cenY = cenY + y;"
+      "    call readPoint;"
+      "  }"
+      "  if (count == 0) then {"
+      "    flag = 1;"
+      "  } else {"
+      "    cenX = cenX / count;"
+      "    cenY = cenY / count;"
+      "  }"
+      "  normSq = cenX * cenX + cenY * cenY;"
+      "}";
+  BufferedLexer lexer(source);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb(p);
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  auto empty_cache_start = std::chrono::steady_clock::now();
+  for (int i = 0; i < pkb.get_num_statements(); i++) {
+    for (int j = 0; j < pkb.get_num_statements(); j++) {
+      pkb.get_next_star(i, j);
+    }
+    pkb.get_next_star(i, pkb.kWild);
+    pkb.get_next_star(pkb.kWild, i);
+  }
+  pkb.get_next_star(pkb.kWild, pkb.kWild);
+  auto empty_cache_end = std::chrono::steady_clock::now();
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+
+  pkb.get_next_star(pkb.kWild, pkb.kWild);
+  auto full_cache_start = std::chrono::steady_clock::now();
+  for (int i = 0; i < pkb.get_num_statements(); i++) {
+    for (int j = 0; j < pkb.get_num_statements(); j++) {
+      pkb.get_next_star(i, j);
+    }
+    pkb.get_next_star(i, pkb.kWild);
+    pkb.get_next_star(pkb.kWild, i);
+  }
+  pkb.get_next_star(pkb.kWild, pkb.kWild);
+  auto full_cache_end = std::chrono::steady_clock::now();
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  std::chrono::duration<double> empty_cache_elapsed_seconds = empty_cache_end - empty_cache_start;
+  std::chrono::duration<double> full_cache_elapsed_seconds = full_cache_end - full_cache_start;
+  std::cout << "next* empty cache elapsed time: " << empty_cache_elapsed_seconds.count() << "s\n";
+  std::cout << "next* full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
+  REQUIRE(full_cache_elapsed_seconds.count() < empty_cache_elapsed_seconds.count());
+}
+
+TEST_CASE("PKB_AffectsCacheTestTime_correct") {
+  std::string source =
+      "procedure main {"
+      "  flag = 0;"
+      "  call computeCentroid;"
+      "  call printResults;"
+      "}"
+      "procedure readPoint {"
+      "  read x;"
+      "  read y;"
+      "}"
+      "procedure printResults {"
+      "  print flag;"
+      "  print cenX;"
+      "  print cenY;"
+      "  print normSq;"
+      "}"
+      "procedure computeCentroid {"
+      "  count = 0;"
+      "  cenX = 0;"
+      "  cenY = 0;"
+      "  call readPoint;"
+      "  while((x != 0) && (y != 0)) {"
+      "    count = count+1;"
+      "    cenX = cenX + x;"
+      "    cenY = cenY + y;"
+      "    call readPoint;"
+      "  }"
+      "  if (count == 0) then {"
+      "    flag = 1;"
+      "  } else {"
+      "    cenX = cenX / count;"
+      "    cenY = cenY / count;"
+      "  }"
+      "  normSq = cenX * cenX + cenY * cenY;"
+      "}";
+  BufferedLexer lexer(source);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb(p);
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  auto empty_cache_start = std::chrono::steady_clock::now();
+  for (auto &a : pkb.get_statements(NodeType::Assign)) {
+    for (auto &b : pkb.get_statements(NodeType::Assign)) {
+      pkb.get_affects(a->get_stmt_no(), b->get_stmt_no());
+    }
+    pkb.get_affects(a->get_stmt_no(), pkb.kWild);
+    pkb.get_affects(pkb.kWild, a->get_stmt_no());
+  }
+  pkb.get_affects(pkb.kWild, pkb.kWild);
+  auto empty_cache_end = std::chrono::steady_clock::now();
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+
+  pkb.get_affects(pkb.kWild, pkb.kWild);
+  auto full_cache_start = std::chrono::steady_clock::now();
+  for (auto &a : pkb.get_statements(NodeType::Assign)) {
+    for (auto &b : pkb.get_statements(NodeType::Assign)) {
+      pkb.get_affects(a->get_stmt_no(), b->get_stmt_no());
+    }
+    pkb.get_affects(a->get_stmt_no(), pkb.kWild);
+    pkb.get_affects(pkb.kWild, a->get_stmt_no());
+  }
+  pkb.get_affects(pkb.kWild, pkb.kWild);
+  auto full_cache_end = std::chrono::steady_clock::now();
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  std::chrono::duration<double> empty_cache_elapsed_seconds = empty_cache_end - empty_cache_start;
+  std::chrono::duration<double> full_cache_elapsed_seconds = full_cache_end - full_cache_start;
+  std::cout << "affects empty cache elapsed time: " << empty_cache_elapsed_seconds.count() << "s\n";
+  std::cout << "affects full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
+  REQUIRE(full_cache_elapsed_seconds.count() < empty_cache_elapsed_seconds.count());
+}
+
+TEST_CASE("PKB_AffectsStarCacheTestTime_correct") {
+  std::string source =
+      "procedure main {"
+      "  flag = 0;"
+      "  call computeCentroid;"
+      "  call printResults;"
+      "}"
+      "procedure readPoint {"
+      "  read x;"
+      "  read y;"
+      "}"
+      "procedure printResults {"
+      "  print flag;"
+      "  print cenX;"
+      "  print cenY;"
+      "  print normSq;"
+      "}"
+      "procedure computeCentroid {"
+      "  count = 0;"
+      "  cenX = 0;"
+      "  cenY = 0;"
+      "  call readPoint;"
+      "  while((x != 0) && (y != 0)) {"
+      "    count = count+1;"
+      "    cenX = cenX + x;"
+      "    cenY = cenY + y;"
+      "    call readPoint;"
+      "  }"
+      "  if (count == 0) then {"
+      "    flag = 1;"
+      "  } else {"
+      "    cenX = cenX / count;"
+      "    cenY = cenY / count;"
+      "  }"
+      "  normSq = cenX * cenX + cenY * cenY;"
+      "}";
+  BufferedLexer lexer(source);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb(p);
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  auto empty_cache_start = std::chrono::steady_clock::now();
+  for (auto &a : pkb.get_statements(NodeType::Assign)) {
+    for (auto &b : pkb.get_statements(NodeType::Assign)) {
+      pkb.get_affects_star(a->get_stmt_no(), b->get_stmt_no());
+    }
+    pkb.get_affects_star(a->get_stmt_no(), pkb.kWild);
+    pkb.get_affects_star(PKB::kWild, a->get_stmt_no());
+  }
+  pkb.get_affects_star(PKB::kWild, pkb.kWild);
+  auto empty_cache_end = std::chrono::steady_clock::now();
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+
+  pkb.get_affects_star(pkb.kWild, pkb.kWild);
+  auto full_cache_start = std::chrono::steady_clock::now();
+  for (auto &a : pkb.get_statements(NodeType::Assign)) {
+    for (auto &b : pkb.get_statements(NodeType::Assign)) {
+      pkb.get_affects_star(a->get_stmt_no(), b->get_stmt_no());
+    }
+    pkb.get_affects_star(a->get_stmt_no(), pkb.kWild);
+    pkb.get_affects_star(pkb.kWild, a->get_stmt_no());
+  }
+  pkb.get_affects_star(pkb.kWild, pkb.kWild);
+  auto full_cache_end = std::chrono::steady_clock::now();
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+  std::chrono::duration<double> empty_cache_elapsed_seconds = empty_cache_end - empty_cache_start;
+  std::chrono::duration<double> full_cache_elapsed_seconds = full_cache_end - full_cache_start;
+  std::cout << "affects* empty cache elapsed time: " << empty_cache_elapsed_seconds.count() << "s\n";
+  std::cout << "affects* full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
+  REQUIRE(full_cache_elapsed_seconds.count() < empty_cache_elapsed_seconds.count());
+}
+
+TEST_CASE("PKB_AffectsBipStarSample_Correct") {
+  std::string source =
+      "procedure Bill {"
+      "x = 5;"
+      "call Mary;"
+      "y = x + 6;"
+      "call John;"
+      "z = x * y + 2; }"
+      "procedure Mary {"
+      "y = x * 3;"
+      "call John;"
+      "z = x + y; }"
+      "procedure John {"
+      "if (i > 0) then {"
+      "x = x + z; }"
+      "else {"
+      "y = x * y; } }";
+
+  BufferedLexer lexer(source);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb(p);
+
+  std::map<int, std::vector<int>> affects_bip_ans = {
+      {1, {3, 5, 6, 8, 10, 11}}, {2, {}}, {3, {5, 11}}, {4, {}}, {5, {}}, {6, {8, 11}},
+      {7, {}}, {8, {10}}, {9, {}}, {10, {3, 5, 8, 10, 11}}, {11, {5, 8}}
+  };
+  std::map<int, std::vector<int>> affected_by_bips_ans = {
+      {1, {}}, {2, {}}, {3, {1, 10}}, {4, {}}, {5, {1, 3, 10, 11}}, {6, {1}}, {7, {}},
+      {8, {1, 6, 10, 11}}, {9, {}}, {10, {1, 8, 10}}, {11, {1, 3, 6, 10}}
+  };
+
+  std::map<int, std::vector<int>> affects_bip_star_ans = {
+      {1, {3, 5, 6, 8, 10, 11}}, {2, {}}, {3, {5, 11}}, {4, {}}, {5, {}}, {6, {5, 8, 10, 11}},
+      {7, {}}, {8, {5, 10}}, {9, {}}, {10, {3, 5, 8, 10, 11}}, {11, {5, 8, 10}}
+  };
+  std::map<int, std::vector<int>> affected_by_bips_star_ans = {
+      {1, {}}, {2, {}}, {3, {1, 10}}, {4, {}}, {5, {1, 3, 6, 8, 10, 11}}, {6, {1}}, {7, {}},
+      {8, {1, 6, 10, 11}}, {9, {}}, {10, {1, 6, 8, 10, 11}}, {11, {1, 3, 6, 10}}
+  };
+
 }

@@ -2,7 +2,7 @@ import subprocess
 import sys
 
 files = [
-    "calls"
+    "follows_parent"
 ]
 
 for file in files:

@@ -1,0 +1,65 @@
+1 - Valid With stmt# and stmt#
+assign a; stmt s;
+Select s with a.stmt# = s.stmt#
+1,2,5,7
+5000
+2 - Valid With stmt# and Integer
+if ifs;
+Select ifs with ifs.stmt# = 3
+3
+5000
+3 - Invalid With stmt# and Name
+if ifs;
+Select ifs with ifs.stmt# = "a"
+
+5000
+4 - Valid With procName and procName
+procedure p; call c;
+Select p with p.procName = c.procName
+With2
+5000
+5 - Invalid With procName and varName
+procedure p; read r;
+Select p with p.procName = r.procName
+
+5000
+6 - Valid With procName and Name
+call c;
+Select c with c.procName = "With2"
+6
+5000
+7 - Valid With varName and varName
+variable v; read r;
+Select v with v.varName = r.varName
+b, y
+5000
+8 - Valid With varName and Name
+print pn;
+Select pn with pn.varName = "r"
+9
+5000
+9 - Valid With varName and Argument
+print pn;
+Select pn with pn.varName = "r"
+9
+5000
+10 - Valid With prog_line and Integer
+prog_line n;
+Select n with n = 10
+10
+5000
+11 - Invalid With statement and Integer
+stmt s;
+Select s with s = 10
+
+5000
+12 - Valid With stmt# and Integer return varName
+read r;
+Select r.varName with r.stmt# = 8
+y
+5000
+13 - Invalid With stmt# and Name of integer
+read r;
+Select r with r.stmt# = "8"
+
+5000

@@ -36,11 +36,9 @@ void TestWrapper::parse(std::string filename) {
   std::stringstream buffer;
   buffer << input_stream.rdbuf();
   std::string source = buffer.str();
-
   BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
-
   this->pkb_ = new PKB(p);
 }
 

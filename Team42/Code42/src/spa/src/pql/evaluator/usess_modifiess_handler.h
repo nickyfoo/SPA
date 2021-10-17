@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-
 #include "entity.hpp"
 #include "pkb.h"
 #include "result_table.h"

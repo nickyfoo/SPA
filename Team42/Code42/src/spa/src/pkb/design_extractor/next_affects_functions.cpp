@@ -90,7 +90,7 @@ std::set<std::pair<int, int>> *PKB::get_next_star(int a, int b) {
 
     for (int i = 0; i < n; i++) {
       for (int j = 0; j < n; j++) {
-        next_star_cache[i][j]= std::set<std::pair<int, int>>();
+        next_star_cache[i][j] = std::set<std::pair<int, int>>();
         if (d[i][j] != 0) {
           next_star_cache[kWild][kWild].insert({i, j});
           next_star_cache[i][kWild].insert({i, j});
@@ -149,15 +149,15 @@ std::set<std::pair<int, int>> *PKB::get_affects(int a, int b) {
   std::vector<std::vector<int>> d(n, std::vector<int>(n, 0));
   if (a == kWild && b == kWild) {
     affects_cache[kWild][kWild] = std::set<std::pair<int, int>>();
-    for(auto &stmt: stmt_table_.get_all_statements()){
+    for (auto &stmt: stmt_table_.get_all_statements()) {
       affects_cache[kWild][stmt->get_stmt_no()] = std::set<std::pair<int, int>>();
       affects_cache[stmt->get_stmt_no()][kWild] = std::set<std::pair<int, int>>();
       if (stmt->get_kind() == NodeType::Assign) {
         if (stmt->get_modifies()->size() != 1) continue;
-          std::vector<bool> visited(n, false);
-          std::string var_name = *(stmt->get_modifies()->begin());
-          bool found = false;
-          AffectsDFS(stmt->get_stmt_no(), stmt->get_stmt_no(), var_name, visited, d, found);
+        std::vector<bool> visited(n, false);
+        std::string var_name = *(stmt->get_modifies()->begin());
+        bool found = false;
+        AffectsDFS(stmt->get_stmt_no(), stmt->get_stmt_no(), var_name, visited, d, found);
       }
     }
 
@@ -202,8 +202,8 @@ std::set<std::pair<int, int>> *PKB::get_affects(int a, int b) {
         if (stmt_checked[i]) {
           affects_cache[i][j] = std::set<std::pair<int, int>>();
           if (d[i][j] != 0) {
-            affects_cache[i][kWild].insert({ i,j });
-            affects_cache[i][j].insert({ i,j });
+            affects_cache[i][kWild].insert({i, j});
+            affects_cache[i][j].insert({i, j});
           }
         }
       }
@@ -282,7 +282,7 @@ std::set<std::pair<int, int>> *PKB::get_affects_star(int a, int b) {
       return &affects_star_cache[a][b];
     }
 
-    affects_star_cache[kWild][b]= std::set<std::pair<int, int>>();
+    affects_star_cache[kWild][b] = std::set<std::pair<int, int>>();
     for (int i = 0; i < n; i++) {
       affects_star_cache[i][b] = std::set<std::pair<int, int>>();
     }
@@ -357,8 +357,8 @@ void PKB::AffectsStarBFS(int start, std::vector<bool> &visited, bool forward_rel
     q.pop();
     if (forward_relation) {
       for (auto&[a, b] : *get_affects(u, kWild)) {
-          affects_star_cache[start][kWild].insert({start, b});
-          affects_star_cache[start][b].insert({start, b});
+        affects_star_cache[start][kWild].insert({start, b});
+        affects_star_cache[start][b].insert({start, b});
 
         if (!visited[b]) {
           visited[b] = true;
@@ -367,8 +367,8 @@ void PKB::AffectsStarBFS(int start, std::vector<bool> &visited, bool forward_rel
       }
     } else {
       for (auto&[a, b] : *get_affects(kWild, u)) {
-          affects_star_cache[kWild][start].insert({a, start});
-          affects_star_cache[a][start].insert({a, start});
+        affects_star_cache[kWild][start].insert({a, start});
+        affects_star_cache[a][start].insert({a, start});
 
         if (!visited[a]) {
           visited[a] = true;

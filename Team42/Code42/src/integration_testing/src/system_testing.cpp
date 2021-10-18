@@ -1,5 +1,6 @@
 #include "query_evaluator.h"
 #include "query_preprocessor.h"
+#include "query_optimizer.h"
 #include "catch.hpp"
 
 #include "parse.h"
@@ -46,8 +47,22 @@ TEST_CASE("PQL_FollowsAndFollows_ReturnsExpected") {
 
   std::string ss = "assign a; variable v;\n"
                    "Select a such that Follows(a,_) and Follows(_, a)";
-  auto *query = new QueryPreprocessor(ss);
-  PQLQuery *clause = query->get_pql_query();
+  auto query = QueryPreprocessor(ss);
+  std::tuple<std::vector<ResultClause *> *,
+             std::vector<SuchThatClause *> *,
+             std::vector<PatternClause *> *,
+             std::vector<WithClause *> *,
+             std::unordered_map<std::string, EntityDeclaration *> *,
+             bool> *clause = query.get_clauses();
+  QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clause),
+                                                  std::get<2>(*clause),
+                                                  std::get<3>(*clause),
+                                                  std::get<0>(*clause));
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
+                                     clause_groups,
+                                     std::get<4>(*clause),
+                                     std::get<5>(*clause));
 
   // Parse source
   BufferedLexer lexer(source);
@@ -55,7 +70,7 @@ TEST_CASE("PQL_FollowsAndFollows_ReturnsExpected") {
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
 
-  auto evaluator = new QueryEvaluator(clause, &pkb);
+  auto evaluator = new QueryEvaluator(pql_query, &pkb);
   std::vector<std::string> *ret = evaluator->Evaluate();
 
   std::vector<std::string> expected = {"11", "12", "16", "17"};
@@ -70,8 +85,22 @@ TEST_CASE("PQL_FollowsAndParent_ReturnsExpected") {
 
   std::string ss = "assign a; variable v;\n"
                    "Select a such that Follows(a,_) and Parent(_, a)";
-  auto *query = new QueryPreprocessor(ss);
-  PQLQuery *clause = query->get_pql_query();
+  auto query = QueryPreprocessor(ss);
+  std::tuple<std::vector<ResultClause *> *,
+             std::vector<SuchThatClause *> *,
+             std::vector<PatternClause *> *,
+             std::vector<WithClause *> *,
+             std::unordered_map<std::string, EntityDeclaration *> *,
+             bool> *clause = query.get_clauses();
+  QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clause),
+                                                  std::get<2>(*clause),
+                                                  std::get<3>(*clause),
+                                                  std::get<0>(*clause));
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
+                                     clause_groups,
+                                     std::get<4>(*clause),
+                                     std::get<5>(*clause));
 
   // Parse source
   BufferedLexer lexer(source);
@@ -79,7 +108,7 @@ TEST_CASE("PQL_FollowsAndParent_ReturnsExpected") {
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
 
-  auto evaluator = new QueryEvaluator(clause, &pkb);
+  auto evaluator = new QueryEvaluator(pql_query, &pkb);
   std::vector<std::string> *ret = evaluator->Evaluate();
 
   std::vector<std::string> expected = {"15", "16", "17", "21"};
@@ -94,8 +123,22 @@ TEST_CASE("PQL_BOOLEAN_ReturnsExpected") {
 
   std::string ss = "assign a; stmt s; while w;\n"
                    "Select BOOLEAN such that Parent(s,a) with s.stmt# = w.stmt#";
-  auto *query = new QueryPreprocessor(ss);
-  PQLQuery *clause = query->get_pql_query();
+  auto query = QueryPreprocessor(ss);
+  std::tuple<std::vector<ResultClause *> *,
+             std::vector<SuchThatClause *> *,
+             std::vector<PatternClause *> *,
+             std::vector<WithClause *> *,
+             std::unordered_map<std::string, EntityDeclaration *> *,
+             bool> *clause = query.get_clauses();
+  QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clause),
+                                                  std::get<2>(*clause),
+                                                  std::get<3>(*clause),
+                                                  std::get<0>(*clause));
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
+                                     clause_groups,
+                                     std::get<4>(*clause),
+                                     std::get<5>(*clause));
 
   // Parse source
   BufferedLexer lexer(source);
@@ -103,7 +146,7 @@ TEST_CASE("PQL_BOOLEAN_ReturnsExpected") {
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
 
-  auto evaluator = new QueryEvaluator(clause, &pkb);
+  auto evaluator = new QueryEvaluator(pql_query, &pkb);
   std::vector<std::string> *ret = evaluator->Evaluate();
 
   std::vector<std::string> expected = {"TRUE"};
@@ -118,8 +161,22 @@ TEST_CASE("PQL_Tuple_ReturnsExpected") {
 
   std::string ss = "call c1, c2;\n"
                    "Select <c1, c2>";
-  auto *query = new QueryPreprocessor(ss);
-  PQLQuery *clause = query->get_pql_query();
+  auto query = QueryPreprocessor(ss);
+  std::tuple<std::vector<ResultClause *> *,
+             std::vector<SuchThatClause *> *,
+             std::vector<PatternClause *> *,
+             std::vector<WithClause *> *,
+             std::unordered_map<std::string, EntityDeclaration *> *,
+             bool> *clause = query.get_clauses();
+  QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clause),
+                                                  std::get<2>(*clause),
+                                                  std::get<3>(*clause),
+                                                  std::get<0>(*clause));
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
+                                     clause_groups,
+                                     std::get<4>(*clause),
+                                     std::get<5>(*clause));
 
   // Parse source
   BufferedLexer lexer(source);
@@ -127,7 +184,7 @@ TEST_CASE("PQL_Tuple_ReturnsExpected") {
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb = PKB(p);
 
-  auto evaluator = new QueryEvaluator(clause, &pkb);
+  auto evaluator = new QueryEvaluator(pql_query, &pkb);
   std::vector<std::string> *ret = evaluator->Evaluate();
 
   std::vector<std::string> expected = {"2 2", "2 3", "2 13", "2 18", "3 2", "3 3", "3 13", "3 18",

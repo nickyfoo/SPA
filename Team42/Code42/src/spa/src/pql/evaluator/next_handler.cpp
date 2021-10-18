@@ -28,8 +28,6 @@ ResultTable *NextHandler::EvaluateNextT() { return Evaluate(&PKB::get_next_star)
 ResultTable *NextHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func)(int, int)) {
   ResultTable *ret = new ResultTable();
 
-  relationship_->get_left_ref()->get_type();
-
   LineRef left_ent = relationship_->get_left_ref()->get_line_ref();
   LineRef right_ent = relationship_->get_right_ref()->get_line_ref();
 
@@ -50,9 +48,9 @@ ResultTable *NextHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func)(i
 
     auto left_synonym = left_ent.get_synonym();
     for (auto e : synonym_to_entities_vec_.at(left_synonym)) {
-      auto *stmt = dynamic_cast<Statement *>(e);
-      assert(stmt != nullptr);
-      auto left_arg = stmt->get_stmt_no();
+      auto *line = dynamic_cast<Statement *>(e);
+      assert(line != nullptr);
+      auto left_arg = line->get_stmt_no();
       if (!(pkb_->*func)(left_arg, right_arg)->empty()) {
         line_vec.push_back(std::to_string(left_arg));
       }
@@ -67,9 +65,9 @@ ResultTable *NextHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func)(i
 
     auto right_synonym = right_ent.get_synonym();
     for (auto e : synonym_to_entities_vec_.at(right_synonym)) {
-      auto *stmt = dynamic_cast<Statement *>(e);
-      assert(stmt != nullptr);
-      auto right_arg = stmt->get_stmt_no();
+      auto *line = dynamic_cast<Statement *>(e);
+      assert(line != nullptr);
+      auto right_arg = line->get_stmt_no();
       if (!(pkb_->*func)(left_arg, right_arg)->empty()) {
         line_vec.push_back(std::to_string(right_arg));
       }
@@ -85,9 +83,9 @@ ResultTable *NextHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func)(i
     if (left_synonym == right_synonym) {
       std::vector<std::string> line_vec;
       for (auto e : synonym_to_entities_vec_.at(left_synonym)) {
-        auto *stmt = dynamic_cast<Statement *>(e);
-        assert(stmt != nullptr);
-        auto arg = stmt->get_stmt_no();
+        auto *line = dynamic_cast<Statement *>(e);
+        assert(line != nullptr);
+        auto arg = line->get_stmt_no();
 
         if (!(pkb_->*func)(arg, arg)->empty()) {
           line_vec.push_back(std::to_string(arg));
@@ -101,14 +99,14 @@ ResultTable *NextHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func)(i
 
       for (auto e_left : synonym_to_entities_vec_.at(left_synonym)) {
         for (auto e_right : synonym_to_entities_vec_.at(right_synonym)) {
-          auto *stmt_left = dynamic_cast<Statement *>(e_left);
-          auto *stmt_right = dynamic_cast<Statement *>(e_right);
+          auto *line_left = dynamic_cast<Statement *>(e_left);
+          auto *line_right = dynamic_cast<Statement *>(e_right);
 
-          assert(stmt_left != nullptr);
-          assert(stmt_right != nullptr);
+          assert(line_left != nullptr);
+          assert(line_right != nullptr);
 
-          auto left_arg = stmt_left->get_stmt_no();
-          auto right_arg = stmt_right->get_stmt_no();
+          auto left_arg = line_left->get_stmt_no();
+          auto right_arg = line_right->get_stmt_no();
 
           if (!(pkb_->*func)(left_arg, right_arg)->empty()) {
             left_line_vec.push_back(std::to_string(left_arg));
@@ -157,9 +155,9 @@ ResultTable *NextHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func)(i
 
     auto left_synonym = left_ent.get_synonym();
     for (auto e : synonym_to_entities_vec_.at(left_synonym)) {
-      auto *stmt = dynamic_cast<Statement *>(e);
-      assert(stmt != nullptr);
-      auto left_arg = stmt->get_stmt_no();
+      auto *line = dynamic_cast<Statement *>(e);
+      assert(line != nullptr);
+      auto left_arg = line->get_stmt_no();
       if (!(pkb_->*func)(left_arg, right_arg)->empty()) {
         line_vec.push_back(std::to_string(left_arg));
       }
@@ -174,9 +172,9 @@ ResultTable *NextHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func)(i
 
     auto right_synonym = right_ent.get_synonym();
     for (auto e : synonym_to_entities_vec_.at(right_synonym)) {
-      auto *stmt = dynamic_cast<Statement *>(e);
-      assert(stmt != nullptr);
-      auto right_arg = stmt->get_stmt_no();
+      auto *line = dynamic_cast<Statement *>(e);
+      assert(line != nullptr);
+      auto right_arg = line->get_stmt_no();
       if (!(pkb_->*func)(left_arg, right_arg)->empty()) {
         line_vec.push_back(std::to_string(right_arg));
       }

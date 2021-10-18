@@ -355,13 +355,6 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(SuchThatClause *relationshi
   if (synonym_to_entity_->find(left_ref) != synonym_to_entity_->end()) {
     EntityType entity_type = synonym_to_entity_->at(left_ref)->get_type();
     switch (entity_type) {
-      case EntityType::Assign:
-        if (type == RelRef::Affects || type == RelRef::AffectsT) {
-          left_stmt_ref.set_synonym(left_ref);
-          left_stmt_ref.set_entity_type(entity_type);
-          left_such_that_ref = new SuchThatRef(left_stmt_ref);
-          break;
-        }
       case EntityType::Call:
       case EntityType::If:
       case EntityType::Print:
@@ -372,8 +365,17 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(SuchThatClause *relationshi
         if (type == RelRef::Uses && entity_type == EntityType::Read) {
           return nullptr;
         }
+      case EntityType::Assign:
       case EntityType::Stmt:
       case EntityType::ProgLine:
+        if ((entity_type == EntityType::Stmt || entity_type == EntityType::ProgLine
+        || entity_type == EntityType::Assign) &&
+        (type == RelRef::Affects || type == RelRef::AffectsT)) {
+          left_stmt_ref.set_synonym(left_ref);
+          left_stmt_ref.set_entity_type(entity_type);
+          left_such_that_ref = new SuchThatRef(left_stmt_ref);
+          break;
+        }
       case EntityType::While: {
         if (type == RelRef::Next || type == RelRef::NextT) {
           left_line_ref.set_synonym(left_ref);
@@ -385,15 +387,13 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(SuchThatClause *relationshi
           left_stmt_ref.set_entity_type(entity_type);
           left_such_that_ref = new SuchThatRef(left_stmt_ref);
           break;
+        } else {
+          return nullptr;
         }
       }
       case EntityType::Procedure:
-        if (type == RelRef::Uses || type == RelRef::Modifies || type == RelRef::Calls ||
-            type == RelRef::CallsT) {
-          left_ent_ref.set_synonym(left_ref);
-          left_such_that_ref = new SuchThatRef(left_ent_ref);
-          break;
-        } else if (type == RelRef::Calls || type == RelRef::CallsT) {
+        if (type == RelRef::Uses || type == RelRef::Modifies ||
+        type == RelRef::Calls || type == RelRef::CallsT) {
           left_ent_ref.set_synonym(left_ref);
           left_such_that_ref = new SuchThatRef(left_ent_ref);
           break;
@@ -467,19 +467,21 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefRight(SuchThatClause *relationsh
           return nullptr;
         }
       }
+      case EntityType::Call:
+      case EntityType::If:
+      case EntityType::Print:
+      case EntityType::Read:
       case EntityType::Assign:
-        if (type == RelRef::Affects || type == RelRef::AffectsT) {
+      case EntityType::Stmt:
+      case EntityType::ProgLine:
+        if ((entity_type == EntityType::Stmt || entity_type == EntityType::ProgLine
+        || entity_type == EntityType::Assign) &&
+        (type == RelRef::Affects || type == RelRef::AffectsT)) {
           right_stmt_ref.set_synonym(right_ref);
           right_stmt_ref.set_entity_type(entity_type);
           right_such_that_ref = new SuchThatRef(right_stmt_ref);
           break;
         }
-      case EntityType::Call:
-      case EntityType::If:
-      case EntityType::Print:
-      case EntityType::Read:
-      case EntityType::Stmt:
-      case EntityType::ProgLine:
       case EntityType::While: {
         if (type == RelRef::Next || type == RelRef::NextT) {
           right_line_ref.set_synonym(right_ref);

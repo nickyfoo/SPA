@@ -2301,7 +2301,7 @@ TEST_CASE("Affects_StmtNumAndAssign_ReturnsCorrect") {
   REQUIRE(std::get<3>(*clause)->size() == 0);
 }
 
-TEST_CASE("Affects_AssignAndStmt_ReturnsNullPtr") {
+TEST_CASE("Affects_AssignAndStmt_ReturnsCorrect") {
   std::string ss = "assign a; stmt s;\n"
                    "Select s such that Affects(a, s)";
   auto query = QueryPreprocessor(ss);
@@ -2311,7 +2311,16 @@ TEST_CASE("Affects_AssignAndStmt_ReturnsNullPtr") {
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
   bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s");
+  REQUIRE(std::get<1>(*clause)->size() == 1);
+  SuchThatClause *relationship = std::get<1>(*clause)->at(0);
+  REQUIRE(relationship->get_type() == RelRef::Affects);
+  REQUIRE(relationship->get_left_ref()->get_stmt_ref().get_synonym() == "a");
+  REQUIRE(relationship->get_right_ref()->get_stmt_ref().get_synonym() == "s");
+
+  REQUIRE(std::get<2>(*clause)->size() == 0);
+  REQUIRE(std::get<3>(*clause)->size() == 0);
 }
 
 TEST_CASE("Affects_AssignAndProcedure_ReturnsNullPtr") {

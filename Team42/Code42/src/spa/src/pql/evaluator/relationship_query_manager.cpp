@@ -8,6 +8,7 @@
 #include "usesp_modifiesp_handler.h"
 #include "usess_modifiess_handler.h"
 #include "variable.h"
+#include "affects_handler.h"
 
 RelationshipQueryManager::RelationshipQueryManager(PKB *pkb) { this->pkb_ = pkb; }
 
@@ -95,6 +96,16 @@ ResultTable *RelationshipQueryManager::EvaluateRelationship(
       CallsHandler *calls_handler = CallsHandler::get_instance();
       calls_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
       return calls_handler->EvaluateCallsT();
+    }
+    case RelRef::Affects: {
+      AffectsHandler *affects_handler = AffectsHandler::get_instance();
+      affects_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
+      return affects_handler->EvaluateAffects();
+    }
+    case RelRef::AffectsT: {
+      AffectsHandler *affects_handler = AffectsHandler::get_instance();
+      affects_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
+      return affects_handler->EvaluateAffectsT();
     }
     default:
       break;

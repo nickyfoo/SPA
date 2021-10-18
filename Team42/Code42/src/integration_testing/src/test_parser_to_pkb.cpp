@@ -1293,22 +1293,22 @@ TEST_CASE("PKB_NextSample_Correct") {
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 
   // Check Next(a,_)
-  for (auto& [a, nexts] : next_ans) {
-    std::set<std::pair<int, int>>* next_a_wild = pkb.get_next(a, PKB::kWild);
+  for (auto&[a, nexts] : next_ans) {
+    std::set<std::pair<int, int>> *next_a_wild = pkb.get_next(a, PKB::kWild);
     REQUIRE(next_ans[a].size() == next_a_wild->size());
-    for (auto& b : nexts) {
-      REQUIRE(next_a_wild->find({ a, b }) != next_a_wild->end());
+    for (auto &b : nexts) {
+      REQUIRE(next_a_wild->find({a, b}) != next_a_wild->end());
     }
     pkb.ClearNextAffectsCache();
     REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
 
   // Check Next(a,b)
-  for (auto& [a, nexts] : next_ans) {
-    for (auto& b : nexts) {
-      std::set<std::pair<int, int>>* next_a_b = pkb.get_next(a, b);
+  for (auto&[a, nexts] : next_ans) {
+    for (auto &b : nexts) {
+      std::set<std::pair<int, int>> *next_a_b = pkb.get_next(a, b);
       REQUIRE(next_a_b->size() == 1);
-      REQUIRE(next_a_b->find({ a, b }) != next_a_b->end());
+      REQUIRE(next_a_b->find({a, b}) != next_a_b->end());
       pkb.ClearNextAffectsCache();
       REQUIRE(pkb.NextAffectsCacheIsEmpty());
     }
@@ -1414,22 +1414,22 @@ TEST_CASE("PKB_NextStarSample_Correct") {
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 
   // Check Next*(a,_)
-  for (auto& [a, nexts_star] : next_star_ans) {
-    std::set<std::pair<int, int>>* next_star_a_wild = pkb.get_next_star(a, PKB::kWild);
+  for (auto&[a, nexts_star] : next_star_ans) {
+    std::set<std::pair<int, int>> *next_star_a_wild = pkb.get_next_star(a, PKB::kWild);
     REQUIRE(next_star_ans[a].size() == next_star_a_wild->size());
-    for (auto& b : nexts_star) {
-      REQUIRE(next_star_a_wild->find({ a, b }) != next_star_a_wild->end());
+    for (auto &b : nexts_star) {
+      REQUIRE(next_star_a_wild->find({a, b}) != next_star_a_wild->end());
     }
     pkb.ClearNextAffectsCache();
     REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  }  
+  }
 
   // Check Next*(a,b)
-  for (auto& [a, nexts_star] : next_star_ans) {
-    for (auto& b : nexts_star) {
-      std::set<std::pair<int, int>>* next_star_a_b = pkb.get_next_star(a, b);
+  for (auto&[a, nexts_star] : next_star_ans) {
+    for (auto &b : nexts_star) {
+      std::set<std::pair<int, int>> *next_star_a_b = pkb.get_next_star(a, b);
       REQUIRE(next_star_a_b->size() == 1);
-      REQUIRE(next_star_a_b->find({ a, b }) != next_star_a_b->end());
+      REQUIRE(next_star_a_b->find({a, b}) != next_star_a_b->end());
       pkb.ClearNextAffectsCache();
       REQUIRE(pkb.NextAffectsCacheIsEmpty());
     }
@@ -1514,32 +1514,32 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
       {8, {9}}, {9, {}}
   };
   // Check Next(_,_)
-  std::set<std::pair<int, int>>* next_wild_wild = pkb.get_next(PKB::kWild, PKB::kWild);
-  for (auto& [a, nexts] : next_ans) {
-    for (auto& b : nexts) {
-      REQUIRE(next_wild_wild->find({ a, b }) != next_wild_wild->end());
+  std::set<std::pair<int, int>> *next_wild_wild = pkb.get_next(PKB::kWild, PKB::kWild);
+  for (auto&[a, nexts] : next_ans) {
+    for (auto &b : nexts) {
+      REQUIRE(next_wild_wild->find({a, b}) != next_wild_wild->end());
     }
   }
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 
   // Check Next(a,_)
-  for (auto& [a, nexts] : next_ans) {
-    std::set<std::pair<int, int>>* next_a_wild = pkb.get_next(a, PKB::kWild);
+  for (auto&[a, nexts] : next_ans) {
+    std::set<std::pair<int, int>> *next_a_wild = pkb.get_next(a, PKB::kWild);
     REQUIRE(next_ans[a].size() == next_a_wild->size());
-    for (auto& b : nexts) {
-      REQUIRE(next_a_wild->find({ a, b }) != next_a_wild->end());
+    for (auto &b : nexts) {
+      REQUIRE(next_a_wild->find({a, b}) != next_a_wild->end());
     }
     pkb.ClearNextAffectsCache();
     REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
 
   // Check Next(a,b)
-  for (auto& [a, nexts] : next_ans) {
-    for (auto& b : nexts) {
-      std::set<std::pair<int, int>>* next_a_b = pkb.get_next(a, b);
+  for (auto&[a, nexts] : next_ans) {
+    for (auto &b : nexts) {
+      std::set<std::pair<int, int>> *next_a_b = pkb.get_next(a, b);
       REQUIRE(next_a_b->size() == 1);
-      REQUIRE(next_a_b->find({ a, b }) != next_a_b->end());
+      REQUIRE(next_a_b->find({a, b}) != next_a_b->end());
       pkb.ClearNextAffectsCache();
       REQUIRE(pkb.NextAffectsCacheIsEmpty());
     }
@@ -1613,35 +1613,35 @@ TEST_CASE("PKB_NextStarNestedIf_Correct") {
       {7, {9}},
       {8, {9}},
       {9, {}}
-  };  
+  };
 
   // Check Next*(_,_)
-  std::set<std::pair<int, int>>* next_star_wild_wild = pkb.get_next_star(PKB::kWild, PKB::kWild);
-  for (auto& [a, nexts_star] : next_star_ans) {
-    for (auto& b : nexts_star) {
-      REQUIRE(next_star_wild_wild->find({ a, b }) != next_star_wild_wild->end());
+  std::set<std::pair<int, int>> *next_star_wild_wild = pkb.get_next_star(PKB::kWild, PKB::kWild);
+  for (auto&[a, nexts_star] : next_star_ans) {
+    for (auto &b : nexts_star) {
+      REQUIRE(next_star_wild_wild->find({a, b}) != next_star_wild_wild->end());
     }
   }
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 
   // Check Next*(a,_)
-  for (auto& [a, nexts_star] : next_star_ans) {
-    std::set<std::pair<int, int>>* next_star_a_wild = pkb.get_next_star(a, PKB::kWild);
+  for (auto&[a, nexts_star] : next_star_ans) {
+    std::set<std::pair<int, int>> *next_star_a_wild = pkb.get_next_star(a, PKB::kWild);
     REQUIRE(next_star_ans[a].size() == next_star_a_wild->size());
-    for (auto& b : nexts_star) {
-      REQUIRE(next_star_a_wild->find({ a, b }) != next_star_a_wild->end());
+    for (auto &b : nexts_star) {
+      REQUIRE(next_star_a_wild->find({a, b}) != next_star_a_wild->end());
     }
     pkb.ClearNextAffectsCache();
     REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
 
   // Check Next*(a,b)
-  for (auto& [a, nexts_star] : next_star_ans) {
-    for (auto& b : nexts_star) {
-      std::set<std::pair<int, int>>* next_star_a_b = pkb.get_next_star(a, b);
+  for (auto&[a, nexts_star] : next_star_ans) {
+    for (auto &b : nexts_star) {
+      std::set<std::pair<int, int>> *next_star_a_b = pkb.get_next_star(a, b);
       REQUIRE(next_star_a_b->size() == 1);
-      REQUIRE(next_star_a_b->find({ a, b }) != next_star_a_b->end());
+      REQUIRE(next_star_a_b->find({a, b}) != next_star_a_b->end());
       pkb.ClearNextAffectsCache();
       REQUIRE(pkb.NextAffectsCacheIsEmpty());
     }
@@ -1735,27 +1735,26 @@ TEST_CASE("PKB_AffectsSample_Correct") {
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 
   // Check Affects(a,_)
-  for (auto& [a, affects] : affects_ans) {
-    std::set<std::pair<int, int>>* affects_a_wild = pkb.get_affects(a, PKB::kWild);
+  for (auto&[a, affects] : affects_ans) {
+    std::set<std::pair<int, int>> *affects_a_wild = pkb.get_affects(a, PKB::kWild);
     REQUIRE(affects_ans[a].size() == affects_a_wild->size());
-    for (auto& b : affects) {
-      REQUIRE(affects_a_wild->find({ a, b }) != affects_a_wild->end());
+    for (auto &b : affects) {
+      REQUIRE(affects_a_wild->find({a, b}) != affects_a_wild->end());
     }
     pkb.ClearNextAffectsCache();
     REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
 
   // Check Affects(a,b)
-  for (auto& [a, affects] : affects_ans) {
-    for (auto& b : affects) {
-      std::set<std::pair<int, int>>* affects_a_b = pkb.get_affects(a, b);
+  for (auto&[a, affects] : affects_ans) {
+    for (auto &b : affects) {
+      std::set<std::pair<int, int>> *affects_a_b = pkb.get_affects(a, b);
       REQUIRE(affects_a_b->size() == 1);
-      REQUIRE(affects_a_b->find({ a, b }) != affects_a_b->end());
+      REQUIRE(affects_a_b->find({a, b}) != affects_a_b->end());
       pkb.ClearNextAffectsCache();
       REQUIRE(pkb.NextAffectsCacheIsEmpty());
     }
   }
-
 
   std::map<int, std::vector<int>> affected_by_ans = {
       {1, {}}, {2, {}}, {3, {}}, {4, {}}, {5, {}}, {6, {}}, {7, {4, 7}}, {8, {}}, {9, {5, 9}},
@@ -1841,22 +1840,22 @@ TEST_CASE("PKB_AffectsStarSample_Correct") {
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 
   // Check Affects*(a,_)
-  for (auto& [a, affects_star] : affects_star_ans) {
-    std::set<std::pair<int, int>>* affects_star_a_wild = pkb.get_affects_star(a, PKB::kWild);
+  for (auto&[a, affects_star] : affects_star_ans) {
+    std::set<std::pair<int, int>> *affects_star_a_wild = pkb.get_affects_star(a, PKB::kWild);
     REQUIRE(affects_star_ans[a].size() == affects_star_a_wild->size());
-    for (auto& b : affects_star) {
-      REQUIRE(affects_star_a_wild->find({ a, b }) != affects_star_a_wild->end());
+    for (auto &b : affects_star) {
+      REQUIRE(affects_star_a_wild->find({a, b}) != affects_star_a_wild->end());
     }
     pkb.ClearNextAffectsCache();
     REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
 
   // Check Affects*(a,b)
-  for (auto& [a, affects_star] : affects_star_ans) {
-    for (auto& b : affects_star) {
-      std::set<std::pair<int, int>>* affects_star_a_b = pkb.get_affects_star(a, b);
+  for (auto&[a, affects_star] : affects_star_ans) {
+    for (auto &b : affects_star) {
+      std::set<std::pair<int, int>> *affects_star_a_b = pkb.get_affects_star(a, b);
       REQUIRE(affects_star_a_b->size() == 1);
-      REQUIRE(affects_star_a_b->find({ a, b }) != affects_star_a_b->end());
+      REQUIRE(affects_star_a_b->find({a, b}) != affects_star_a_b->end());
       pkb.ClearNextAffectsCache();
       REQUIRE(pkb.NextAffectsCacheIsEmpty());
     }
@@ -1953,22 +1952,22 @@ TEST_CASE("PKB_AffectsNestedWhileIf_Correct") {
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 
   // Check Affects(a,_)
-  for (auto& [a, affects] : affects_ans) {
-    std::set<std::pair<int, int>>* affects_a_wild = pkb.get_affects(a, PKB::kWild);
+  for (auto&[a, affects] : affects_ans) {
+    std::set<std::pair<int, int>> *affects_a_wild = pkb.get_affects(a, PKB::kWild);
     REQUIRE(affects_ans[a].size() == affects_a_wild->size());
-    for (auto& b : affects) {
-      REQUIRE(affects_a_wild->find({ a, b }) != affects_a_wild->end());
+    for (auto &b : affects) {
+      REQUIRE(affects_a_wild->find({a, b}) != affects_a_wild->end());
     }
     pkb.ClearNextAffectsCache();
     REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
 
   // Check Affects(a,b)
-  for (auto& [a, affects] : affects_ans) {
-    for (auto& b : affects) {
-      std::set<std::pair<int, int>>* affects_a_b = pkb.get_affects(a, b);
+  for (auto&[a, affects] : affects_ans) {
+    for (auto &b : affects) {
+      std::set<std::pair<int, int>> *affects_a_b = pkb.get_affects(a, b);
       REQUIRE(affects_a_b->size() == 1);
-      REQUIRE(affects_a_b->find({ a, b }) != affects_a_b->end());
+      REQUIRE(affects_a_b->find({a, b}) != affects_a_b->end());
       pkb.ClearNextAffectsCache();
       REQUIRE(pkb.NextAffectsCacheIsEmpty());
     }
@@ -1995,43 +1994,43 @@ TEST_CASE("PKB_AffectsNestedWhileIf_Correct") {
 
 TEST_CASE("PKB_NextCacheTestTime_correct") {
   std::string source =
-    "procedure main {"
-    "  flag = 0;"
-    "  call computeCentroid;"
-    "  call printResults;"
-    "}"
-    "procedure readPoint {"
-    "  read x;"
-    "  read y;"
-    "}"
-    "procedure printResults {"
-    "  print flag;"
-    "  print cenX;"
-    "  print cenY;"
-    "  print normSq;"
-    "}"
-    "procedure computeCentroid {"
-    "  count = 0;"
-    "  cenX = 0;"
-    "  cenY = 0;"
-    "  call readPoint;"
-    "  while((x != 0) && (y != 0)) {"
-    "    count = count+1;"
-    "    cenX = cenX + x;"
-    "    cenY = cenY + y;"
-    "    call readPoint;"
-    "  }"
-    "  if (count == 0) then {"
-    "    flag = 1;"
-    "  } else {"
-    "    cenX = cenX / count;"
-    "    cenY = cenY / count;"
-    "  }"
-    "  normSq = cenX * cenX + cenY * cenY;"
-    "}";
+      "procedure main {"
+      "  flag = 0;"
+      "  call computeCentroid;"
+      "  call printResults;"
+      "}"
+      "procedure readPoint {"
+      "  read x;"
+      "  read y;"
+      "}"
+      "procedure printResults {"
+      "  print flag;"
+      "  print cenX;"
+      "  print cenY;"
+      "  print normSq;"
+      "}"
+      "procedure computeCentroid {"
+      "  count = 0;"
+      "  cenX = 0;"
+      "  cenY = 0;"
+      "  call readPoint;"
+      "  while((x != 0) && (y != 0)) {"
+      "    count = count+1;"
+      "    cenX = cenX + x;"
+      "    cenY = cenY + y;"
+      "    call readPoint;"
+      "  }"
+      "  if (count == 0) then {"
+      "    flag = 1;"
+      "  } else {"
+      "    cenX = cenX / count;"
+      "    cenY = cenY / count;"
+      "  }"
+      "  normSq = cenX * cenX + cenY * cenY;"
+      "}";
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode* p = ParseProgram(&lexer, &s);
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
@@ -2068,43 +2067,43 @@ TEST_CASE("PKB_NextCacheTestTime_correct") {
 
 TEST_CASE("PKB_NextStarCacheTestTime_correct") {
   std::string source =
-    "procedure main {"
-    "  flag = 0;"
-    "  call computeCentroid;"
-    "  call printResults;"
-    "}"
-    "procedure readPoint {"
-    "  read x;"
-    "  read y;"
-    "}"
-    "procedure printResults {"
-    "  print flag;"
-    "  print cenX;"
-    "  print cenY;"
-    "  print normSq;"
-    "}"
-    "procedure computeCentroid {"
-    "  count = 0;"
-    "  cenX = 0;"
-    "  cenY = 0;"
-    "  call readPoint;"
-    "  while((x != 0) && (y != 0)) {"
-    "    count = count+1;"
-    "    cenX = cenX + x;"
-    "    cenY = cenY + y;"
-    "    call readPoint;"
-    "  }"
-    "  if (count == 0) then {"
-    "    flag = 1;"
-    "  } else {"
-    "    cenX = cenX / count;"
-    "    cenY = cenY / count;"
-    "  }"
-    "  normSq = cenX * cenX + cenY * cenY;"
-    "}";
+      "procedure main {"
+      "  flag = 0;"
+      "  call computeCentroid;"
+      "  call printResults;"
+      "}"
+      "procedure readPoint {"
+      "  read x;"
+      "  read y;"
+      "}"
+      "procedure printResults {"
+      "  print flag;"
+      "  print cenX;"
+      "  print cenY;"
+      "  print normSq;"
+      "}"
+      "procedure computeCentroid {"
+      "  count = 0;"
+      "  cenX = 0;"
+      "  cenY = 0;"
+      "  call readPoint;"
+      "  while((x != 0) && (y != 0)) {"
+      "    count = count+1;"
+      "    cenX = cenX + x;"
+      "    cenY = cenY + y;"
+      "    call readPoint;"
+      "  }"
+      "  if (count == 0) then {"
+      "    flag = 1;"
+      "  } else {"
+      "    cenX = cenX / count;"
+      "    cenY = cenY / count;"
+      "  }"
+      "  normSq = cenX * cenX + cenY * cenY;"
+      "}";
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode* p = ParseProgram(&lexer, &s);
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
@@ -2141,48 +2140,48 @@ TEST_CASE("PKB_NextStarCacheTestTime_correct") {
 
 TEST_CASE("PKB_AffectsCacheTestTime_correct") {
   std::string source =
-    "procedure main {"
-    "  flag = 0;"
-    "  call computeCentroid;"
-    "  call printResults;"
-    "}"
-    "procedure readPoint {"
-    "  read x;"
-    "  read y;"
-    "}"
-    "procedure printResults {"
-    "  print flag;"
-    "  print cenX;"
-    "  print cenY;"
-    "  print normSq;"
-    "}"
-    "procedure computeCentroid {"
-    "  count = 0;"
-    "  cenX = 0;"
-    "  cenY = 0;"
-    "  call readPoint;"
-    "  while((x != 0) && (y != 0)) {"
-    "    count = count+1;"
-    "    cenX = cenX + x;"
-    "    cenY = cenY + y;"
-    "    call readPoint;"
-    "  }"
-    "  if (count == 0) then {"
-    "    flag = 1;"
-    "  } else {"
-    "    cenX = cenX / count;"
-    "    cenY = cenY / count;"
-    "  }"
-    "  normSq = cenX * cenX + cenY * cenY;"
-    "}";
+      "procedure main {"
+      "  flag = 0;"
+      "  call computeCentroid;"
+      "  call printResults;"
+      "}"
+      "procedure readPoint {"
+      "  read x;"
+      "  read y;"
+      "}"
+      "procedure printResults {"
+      "  print flag;"
+      "  print cenX;"
+      "  print cenY;"
+      "  print normSq;"
+      "}"
+      "procedure computeCentroid {"
+      "  count = 0;"
+      "  cenX = 0;"
+      "  cenY = 0;"
+      "  call readPoint;"
+      "  while((x != 0) && (y != 0)) {"
+      "    count = count+1;"
+      "    cenX = cenX + x;"
+      "    cenY = cenY + y;"
+      "    call readPoint;"
+      "  }"
+      "  if (count == 0) then {"
+      "    flag = 1;"
+      "  } else {"
+      "    cenX = cenX / count;"
+      "    cenY = cenY / count;"
+      "  }"
+      "  normSq = cenX * cenX + cenY * cenY;"
+      "}";
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode* p = ParseProgram(&lexer, &s);
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
-  for (auto& a : pkb.get_statements(NodeType::Assign)) {
-    for (auto& b : pkb.get_statements(NodeType::Assign)) {
+  for (auto &a : pkb.get_statements(NodeType::Assign)) {
+    for (auto &b : pkb.get_statements(NodeType::Assign)) {
       pkb.get_affects(a->get_stmt_no(), b->get_stmt_no());
     }
     pkb.get_affects(a->get_stmt_no(), PKB::kWild);
@@ -2195,8 +2194,8 @@ TEST_CASE("PKB_AffectsCacheTestTime_correct") {
 
   pkb.get_affects(PKB::kWild, PKB::kWild);
   auto full_cache_start = std::chrono::steady_clock::now();
-  for (auto& a : pkb.get_statements(NodeType::Assign)) {
-    for (auto& b : pkb.get_statements(NodeType::Assign)) {
+  for (auto &a : pkb.get_statements(NodeType::Assign)) {
+    for (auto &b : pkb.get_statements(NodeType::Assign)) {
       pkb.get_affects(a->get_stmt_no(), b->get_stmt_no());
     }
     pkb.get_affects(a->get_stmt_no(), PKB::kWild);
@@ -2214,48 +2213,48 @@ TEST_CASE("PKB_AffectsCacheTestTime_correct") {
 
 TEST_CASE("PKB_AffectsStarCacheTestTime_correct") {
   std::string source =
-    "procedure main {"
-    "  flag = 0;"
-    "  call computeCentroid;"
-    "  call printResults;"
-    "}"
-    "procedure readPoint {"
-    "  read x;"
-    "  read y;"
-    "}"
-    "procedure printResults {"
-    "  print flag;"
-    "  print cenX;"
-    "  print cenY;"
-    "  print normSq;"
-    "}"
-    "procedure computeCentroid {"
-    "  count = 0;"
-    "  cenX = 0;"
-    "  cenY = 0;"
-    "  call readPoint;"
-    "  while((x != 0) && (y != 0)) {"
-    "    count = count+1;"
-    "    cenX = cenX + x;"
-    "    cenY = cenY + y;"
-    "    call readPoint;"
-    "  }"
-    "  if (count == 0) then {"
-    "    flag = 1;"
-    "  } else {"
-    "    cenX = cenX / count;"
-    "    cenY = cenY / count;"
-    "  }"
-    "  normSq = cenX * cenX + cenY * cenY;"
-    "}";
+      "procedure main {"
+      "  flag = 0;"
+      "  call computeCentroid;"
+      "  call printResults;"
+      "}"
+      "procedure readPoint {"
+      "  read x;"
+      "  read y;"
+      "}"
+      "procedure printResults {"
+      "  print flag;"
+      "  print cenX;"
+      "  print cenY;"
+      "  print normSq;"
+      "}"
+      "procedure computeCentroid {"
+      "  count = 0;"
+      "  cenX = 0;"
+      "  cenY = 0;"
+      "  call readPoint;"
+      "  while((x != 0) && (y != 0)) {"
+      "    count = count+1;"
+      "    cenX = cenX + x;"
+      "    cenY = cenY + y;"
+      "    call readPoint;"
+      "  }"
+      "  if (count == 0) then {"
+      "    flag = 1;"
+      "  } else {"
+      "    cenX = cenX / count;"
+      "    cenY = cenY / count;"
+      "  }"
+      "  normSq = cenX * cenX + cenY * cenY;"
+      "}";
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode* p = ParseProgram(&lexer, &s);
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
-  for (auto& a : pkb.get_statements(NodeType::Assign)) {
-    for (auto& b : pkb.get_statements(NodeType::Assign)) {
+  for (auto &a : pkb.get_statements(NodeType::Assign)) {
+    for (auto &b : pkb.get_statements(NodeType::Assign)) {
       pkb.get_affects_star(a->get_stmt_no(), b->get_stmt_no());
     }
     pkb.get_affects_star(a->get_stmt_no(), PKB::kWild);
@@ -2268,8 +2267,8 @@ TEST_CASE("PKB_AffectsStarCacheTestTime_correct") {
 
   pkb.get_affects_star(PKB::kWild, PKB::kWild);
   auto full_cache_start = std::chrono::steady_clock::now();
-  for (auto& a : pkb.get_statements(NodeType::Assign)) {
-    for (auto& b : pkb.get_statements(NodeType::Assign)) {
+  for (auto &a : pkb.get_statements(NodeType::Assign)) {
+    for (auto &b : pkb.get_statements(NodeType::Assign)) {
       pkb.get_affects_star(a->get_stmt_no(), b->get_stmt_no());
     }
     pkb.get_affects_star(a->get_stmt_no(), PKB::kWild);
@@ -2285,54 +2284,52 @@ TEST_CASE("PKB_AffectsStarCacheTestTime_correct") {
   std::cout << "Affects* full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
 }
 
-
 TEST_CASE("PKB_CFGBipSample_Correct") {
   std::string source =
-    "procedure Bill {"
-    "  x = 5;"
-    "  call Mary;"
-    "  y = x + 6;"
-    "  call John;"
-    "  z = x * y + 2;"
-    "}"
-    "procedure Mary {"
-    "  y = x * 3;"
-    "  call John;"
-    "  z = x + y;"
-    "}"
-    "procedure John {"
-    "  if (i > 0) then {"
-    "    x = x + z;"
-    "  } else {"
-    "    y = x * y;"
-    "  }"
-    "}";
-
+      "procedure Bill {"
+      "  x = 5;"
+      "  call Mary;"
+      "  y = x + 6;"
+      "  call John;"
+      "  z = x * y + 2;"
+      "}"
+      "procedure Mary {"
+      "  y = x * 3;"
+      "  call John;"
+      "  z = x + y;"
+      "}"
+      "procedure John {"
+      "  if (i > 0) then {"
+      "    x = x + z;"
+      "  } else {"
+      "    y = x * y;"
+      "  }"
+      "}";
 
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode* p = ParseProgram(&lexer, &s);
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   std::map<int, std::vector<std::pair<int, int>>> ans = {
-    {1, {{2,pkb.kNoBranch}}},
-    {2, {{6,2}}},
-    {3, {{4,pkb.kNoBranch}}},
-    {4, {{9,4}}},
-    {5, {}},
-    {6, {{7,pkb.kNoBranch}}},
-    {7, {{9,7}}},
-    {8, {{3,-2}}},
-    {9, {{10,pkb.kNoBranch},{11,pkb.kNoBranch}}},
-    {10, {{8,-7},{5,-4}}},
-    {11, {{8,-7},{5,-4}}}
+      {1, {{2, pkb.kNoBranch}}},
+      {2, {{6, 2}}},
+      {3, {{4, pkb.kNoBranch}}},
+      {4, {{9, 4}}},
+      {5, {}},
+      {6, {{7, pkb.kNoBranch}}},
+      {7, {{9, 7}}},
+      {8, {{3, -2}}},
+      {9, {{10, pkb.kNoBranch}, {11, pkb.kNoBranch}}},
+      {10, {{8, -7}, {5, -4}}},
+      {11, {{8, -7}, {5, -4}}}
   };
 
   std::map<int, std::set<std::pair<int, int>>> cfg_bip_al = *pkb.get_cfg_bip_al();
   REQUIRE(cfg_bip_al.size() == ans.size());
-  for (auto& [u, vals] : ans) {
+  for (auto&[u, vals] : ans) {
     REQUIRE(cfg_bip_al.find(u) != cfg_bip_al.end());
     REQUIRE(cfg_bip_al[u].size() == vals.size());
-    for (auto&v: vals) {
+    for (auto &v: vals) {
       REQUIRE(cfg_bip_al[u].find(v) != cfg_bip_al[u].end());
     }
   }
@@ -2340,237 +2337,236 @@ TEST_CASE("PKB_CFGBipSample_Correct") {
 
 TEST_CASE("PKB_CFGBipSample2_Correct") {
   std::string source =
-    "procedure B {"
-    "  call C;"
-    "  call C;"
-    "  call C;"
-    "}"
-    "procedure C {"
-    "d = a;"
-    "a = b;"
-    "b = c;"
-    "c = d;"
-    "}";
+      "procedure B {"
+      "  call C;"
+      "  call C;"
+      "  call C;"
+      "}"
+      "procedure C {"
+      "d = a;"
+      "a = b;"
+      "b = c;"
+      "c = d;"
+      "}";
 
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode* p = ParseProgram(&lexer, &s);
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   std::map<int, std::vector<std::pair<int, int>>> ans = {
-    {1, {{4,1}}},
-    {2, {{4,2}}},
-    {3, {{4,3}}}, 
-    {4, {{5,pkb.kNoBranch}}}, 
-    {5, {{6,pkb.kNoBranch}}}, 
-    {6, {{7,pkb.kNoBranch}}}, 
-    {7, {{2,-1},{3,-2}}},
+      {1, {{4, 1}}},
+      {2, {{4, 2}}},
+      {3, {{4, 3}}},
+      {4, {{5, pkb.kNoBranch}}},
+      {5, {{6, pkb.kNoBranch}}},
+      {6, {{7, pkb.kNoBranch}}},
+      {7, {{2, -1}, {3, -2}}},
   };
   std::map<int, std::set<std::pair<int, int>>> cfg_bip_al = *pkb.get_cfg_bip_al();
   REQUIRE(cfg_bip_al.size() == ans.size());
-  for (auto& [u, vals] : ans) {
+  for (auto&[u, vals] : ans) {
     REQUIRE(cfg_bip_al.find(u) != cfg_bip_al.end());
     REQUIRE(cfg_bip_al[u].size() == vals.size());
-    for (auto& v : vals) {
+    for (auto &v : vals) {
       REQUIRE(cfg_bip_al[u].find(v) != cfg_bip_al[u].end());
     }
   }
 }
 
-
 TEST_CASE("PKB_NextBipSample_Correct") {
   std::string source =
-    "procedure Bill {"
-    "  x = 5;"
-    "  call Mary;"
-    "  y = x + 6;"
-    "  call John;"
-    "  z = x * y + 2;"
-    "}"
-    "procedure Mary {"
-    "  y = x * 3;"
-    "  call John;"
-    "  z = x + y;"
-    "}"
-    "procedure John {"
-    "  if (i > 0) then {"
-    "    x = x + z;"
-    "  } else {"
-    "    y = x * y;"
-    "  }"
-    "}";
-
-    BufferedLexer lexer(source);
-    ParseState s{};
-    ProgramNode* p = ParseProgram(&lexer, &s);
-    PKB pkb(p);
-    std::map<int, std::vector<int>> next_bip_ans = {
-        {1, {2}}, {2, {6}}, {3, {4}}, {4, {9}}, {5, {}}, {6, {7}}, {7, {9}},
-        {8, {3}}, {9, {10, 11}}, {10, {5, 8}}, {11, {5, 8}},
-    };
-
-    // Check NextBip(_,_)
-    std::set<std::pair<int, int>>* next_bip_wild_wild = pkb.get_next_bip(PKB::kWild, PKB::kWild);
-
-    for (auto& [a, nexts] : next_bip_ans) {
-      for (auto& b : nexts) {
-        REQUIRE(next_bip_wild_wild->find({ a, b }) != next_bip_wild_wild->end());
-      }
-    }
-    pkb.ClearNextAffectsBipCache();
-    REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
-
-    // Check NextBip(a,_)
-    for (auto& [a, nexts] : next_bip_ans) {
-      std::set<std::pair<int, int>>* next_bip_a_wild = pkb.get_next_bip(a, PKB::kWild);
-      REQUIRE(next_bip_ans[a].size() == next_bip_a_wild->size());
-      for (auto& b : nexts) {
-        REQUIRE(next_bip_a_wild->find({ a, b }) != next_bip_a_wild->end());
-      }
-      pkb.ClearNextAffectsBipCache();
-      REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
-    }
-
-    // Check NextBip(a,b)
-    for (auto& [a, nexts] : next_bip_ans) {
-      for (auto& b : nexts) {
-        std::set<std::pair<int, int>>* next_bip_a_b = pkb.get_next_bip(a, b);
-        REQUIRE(next_bip_a_b->size() == 1);
-        REQUIRE(next_bip_a_b->find({ a, b }) != next_bip_a_b->end());
-        pkb.ClearNextAffectsBipCache();
-        REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
-      }
-    }
-
-    std::map<int, std::vector<int>> prev_bip_ans = {
-        {1, {}}, {2, {1}}, {3, {8}}, {4, {3}}, {5, {10, 11}}, {6, {2}}, {7, {6}}, {8, {10, 11}}, {9, {4, 7}},
-        {10, {9}}, {11, {9}},
-    };
-    for (auto& [b, prevs] : prev_bip_ans) {
-      // Check NextBip(_,b)
-      std::set<std::pair<int, int>>* next_bip_wild_b = pkb.get_next_bip(PKB::kWild, b);
-      REQUIRE(prev_bip_ans[b].size() == next_bip_wild_b->size());
-      for (auto& a : prevs) {
-        REQUIRE(next_bip_wild_b->find({ a, b }) != next_bip_wild_b->end());
-      }
-      pkb.ClearNextAffectsBipCache();
-      REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
-    }
-
-    // Negative cases
-    REQUIRE(pkb.get_next_bip(1, 3)->empty()); // Not directly after
-    pkb.ClearNextAffectsBipCache();
-    REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
-    REQUIRE(pkb.get_next_bip(2, 7)->empty()); // Not directly across procedures
-    pkb.ClearNextAffectsBipCache();
-    REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
-    REQUIRE(pkb.get_next_bip(10, 11)->empty()); // Different if branches
-    pkb.ClearNextAffectsBipCache();
-    REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
-    REQUIRE(pkb.get_next_bip(PKB::kWild, 1)->empty()); // First statement of first procedure
-    pkb.ClearNextAffectsBipCache();
-    REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
-    REQUIRE(pkb.get_next_bip(5, PKB::kWild)->empty()); // Last statement of last procedure
-    pkb.ClearNextAffectsBipCache();
-    REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
-  }
-
-TEST_CASE("PKB_NextBipStarSample_Correct") {
-  std::string source =
-    "procedure Bill {"
-    "  x = 5;"
-    "  call Mary;"
-    "  y = x + 6;"
-    "  call John;"
-    "  z = x * y + 2;"
-    "}"
-    "procedure Mary {"
-    "  y = x * 3;"
-    "  call John;"
-    "  z = x + y;"
-    "}"
-    "procedure John {"
-    "  if (i > 0) then {"
-    "    x = x + z;"
-    "  } else {"
-    "    y = x * y;"
-    "  }"
-    "}";
+      "procedure Bill {"
+      "  x = 5;"
+      "  call Mary;"
+      "  y = x + 6;"
+      "  call John;"
+      "  z = x * y + 2;"
+      "}"
+      "procedure Mary {"
+      "  y = x * 3;"
+      "  call John;"
+      "  z = x + y;"
+      "}"
+      "procedure John {"
+      "  if (i > 0) then {"
+      "    x = x + z;"
+      "  } else {"
+      "    y = x * y;"
+      "  }"
+      "}";
 
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode* p = ParseProgram(&lexer, &s);
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
-  std::map<int, std::vector<int>> next_bip_star_ans = {
-    {1, {2,3,4,5,6,7,8,9,10,11}}, 
-    {2, {3,4,5,6,7,8,9,10,11}}, 
-    {3, {4,5,9,10,11}}, 
-    {4, {5,9,10,11}}, 
-    {5, {}}, 
-    {6, {3,4,5,7,8,9,10,11}}, 
-    {7, {3,4,5,8,9,10,11}},
-    {8, {3,4,5,9,10,11}}, 
-    {9, {3,4,5,8,9,10,11}}, 
-    {10, {3,4,5,8,9,10,11}}, 
-    {11, {3,4,5,8,9,10,11}},
+  std::map<int, std::vector<int>> next_bip_ans = {
+      {1, {2}}, {2, {6}}, {3, {4}}, {4, {9}}, {5, {}}, {6, {7}}, {7, {9}},
+      {8, {3}}, {9, {10, 11}}, {10, {5, 8}}, {11, {5, 8}},
   };
 
-  // Check NextBip*(_,_)
-  std::set<std::pair<int, int>>* next_bip_star_wild_wild = pkb.get_next_bip_star(PKB::kWild, PKB::kWild);
-  for (auto& [a, nexts] : next_bip_star_ans) {
-    for (auto& b : nexts) {
-      REQUIRE(next_bip_star_wild_wild->find({ a, b }) != next_bip_star_wild_wild->end());
+  // Check NextBip(_,_)
+  std::set<std::pair<int, int>> *next_bip_wild_wild = pkb.get_next_bip(PKB::kWild, PKB::kWild);
+
+  for (auto&[a, nexts] : next_bip_ans) {
+    for (auto &b : nexts) {
+      REQUIRE(next_bip_wild_wild->find({a, b}) != next_bip_wild_wild->end());
     }
   }
   pkb.ClearNextAffectsBipCache();
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
 
-  // Check NextBip*(a,_)
-  for (auto& [a, nexts] : next_bip_star_ans) {
-    std::set<std::pair<int, int>>* next_bip_star_a_wild = pkb.get_next_bip_star(a, PKB::kWild);
-    REQUIRE(next_bip_star_ans[a].size() == next_bip_star_a_wild->size());
-    for (auto& b : nexts) {
-      REQUIRE(next_bip_star_a_wild->find({ a, b }) != next_bip_star_a_wild->end());
+  // Check NextBip(a,_)
+  for (auto&[a, nexts] : next_bip_ans) {
+    std::set<std::pair<int, int>> *next_bip_a_wild = pkb.get_next_bip(a, PKB::kWild);
+    REQUIRE(next_bip_ans[a].size() == next_bip_a_wild->size());
+    for (auto &b : nexts) {
+      REQUIRE(next_bip_a_wild->find({a, b}) != next_bip_a_wild->end());
     }
     pkb.ClearNextAffectsBipCache();
     REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
   }
 
-  // Check NextBip*(a,b)
-  for (auto& [a, nexts] : next_bip_star_ans) {
-    for (auto& b : nexts) {
-      std::set<std::pair<int, int>>* next_bip_star_a_b = pkb.get_next_bip_star(a, b);
-      REQUIRE(next_bip_star_a_b->size() == 1);
-      REQUIRE(next_bip_star_a_b->find({ a, b }) != next_bip_star_a_b->end());
+  // Check NextBip(a,b)
+  for (auto&[a, nexts] : next_bip_ans) {
+    for (auto &b : nexts) {
+      std::set<std::pair<int, int>> *next_bip_a_b = pkb.get_next_bip(a, b);
+      REQUIRE(next_bip_a_b->size() == 1);
+      REQUIRE(next_bip_a_b->find({a, b}) != next_bip_a_b->end());
       pkb.ClearNextAffectsBipCache();
       REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
     }
   }
-  std::map<int, std::vector<int>> prev_bip_star_ans = {
-    {1, {}}, 
-    {2, {1}}, 
-    {3, {1,2,6,7,8,9,10,11}}, 
-    {4, {1,2,3,6,7,8,9,10,11}}, 
-    {5, {1,2,3,4,6,7,8,9,10,11}}, 
-    {6, {1,2}}, 
-    {7, {1,2,6}}, 
-    {8, {1,2,6,7,9,10,11}}, 
-    {9, {1,2,3,4,6,7,8,9,10,11}},
-    {10, {1,2,3,4,6,7,8,9,10,11}}, 
-    {11, {1,2,3,4,6,7,8,9,10,11}},
+
+  std::map<int, std::vector<int>> prev_bip_ans = {
+      {1, {}}, {2, {1}}, {3, {8}}, {4, {3}}, {5, {10, 11}}, {6, {2}}, {7, {6}}, {8, {10, 11}}, {9, {4, 7}},
+      {10, {9}}, {11, {9}},
   };
-  for (auto& [b, prevs] : prev_bip_star_ans) {
+  for (auto&[b, prevs] : prev_bip_ans) {
     // Check NextBip(_,b)
-    std::set<std::pair<int, int>>* next_bip_star_wild_b = pkb.get_next_bip_star(PKB::kWild, b);
-    REQUIRE(prev_bip_star_ans[b].size() == next_bip_star_wild_b->size());
-    for (auto& a : prevs) {
-      REQUIRE(next_bip_star_wild_b->find({ a, b }) != next_bip_star_wild_b->end());
+    std::set<std::pair<int, int>> *next_bip_wild_b = pkb.get_next_bip(PKB::kWild, b);
+    REQUIRE(prev_bip_ans[b].size() == next_bip_wild_b->size());
+    for (auto &a : prevs) {
+      REQUIRE(next_bip_wild_b->find({a, b}) != next_bip_wild_b->end());
     }
     pkb.ClearNextAffectsBipCache();
     REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
   }
 
   // Negative cases
-  REQUIRE(pkb.get_next_bip_star(2,1)->empty()); // Reverse direction
+  REQUIRE(pkb.get_next_bip(1, 3)->empty()); // Not directly after
+  pkb.ClearNextAffectsBipCache();
+  REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
+  REQUIRE(pkb.get_next_bip(2, 7)->empty()); // Not directly across procedures
+  pkb.ClearNextAffectsBipCache();
+  REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
+  REQUIRE(pkb.get_next_bip(10, 11)->empty()); // Different if branches
+  pkb.ClearNextAffectsBipCache();
+  REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
+  REQUIRE(pkb.get_next_bip(PKB::kWild, 1)->empty()); // First statement of first procedure
+  pkb.ClearNextAffectsBipCache();
+  REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
+  REQUIRE(pkb.get_next_bip(5, PKB::kWild)->empty()); // Last statement of last procedure
+  pkb.ClearNextAffectsBipCache();
+  REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
+}
+
+TEST_CASE("PKB_NextBipStarSample_Correct") {
+  std::string source =
+      "procedure Bill {"
+      "  x = 5;"
+      "  call Mary;"
+      "  y = x + 6;"
+      "  call John;"
+      "  z = x * y + 2;"
+      "}"
+      "procedure Mary {"
+      "  y = x * 3;"
+      "  call John;"
+      "  z = x + y;"
+      "}"
+      "procedure John {"
+      "  if (i > 0) then {"
+      "    x = x + z;"
+      "  } else {"
+      "    y = x * y;"
+      "  }"
+      "}";
+
+  BufferedLexer lexer(source);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+  PKB pkb(p);
+  std::map<int, std::vector<int>> next_bip_star_ans = {
+      {1, {2, 3, 4, 5, 6, 7, 8, 9, 10, 11}},
+      {2, {3, 4, 5, 6, 7, 8, 9, 10, 11}},
+      {3, {4, 5, 9, 10, 11}},
+      {4, {5, 9, 10, 11}},
+      {5, {}},
+      {6, {3, 4, 5, 7, 8, 9, 10, 11}},
+      {7, {3, 4, 5, 8, 9, 10, 11}},
+      {8, {3, 4, 5, 9, 10, 11}},
+      {9, {3, 4, 5, 8, 9, 10, 11}},
+      {10, {3, 4, 5, 8, 9, 10, 11}},
+      {11, {3, 4, 5, 8, 9, 10, 11}},
+  };
+
+  // Check NextBip*(_,_)
+  std::set<std::pair<int, int>> *next_bip_star_wild_wild = pkb.get_next_bip_star(PKB::kWild, PKB::kWild);
+  for (auto&[a, nexts] : next_bip_star_ans) {
+    for (auto &b : nexts) {
+      REQUIRE(next_bip_star_wild_wild->find({a, b}) != next_bip_star_wild_wild->end());
+    }
+  }
+  pkb.ClearNextAffectsBipCache();
+  REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
+
+  // Check NextBip*(a,_)
+  for (auto&[a, nexts] : next_bip_star_ans) {
+    std::set<std::pair<int, int>> *next_bip_star_a_wild = pkb.get_next_bip_star(a, PKB::kWild);
+    REQUIRE(next_bip_star_ans[a].size() == next_bip_star_a_wild->size());
+    for (auto &b : nexts) {
+      REQUIRE(next_bip_star_a_wild->find({a, b}) != next_bip_star_a_wild->end());
+    }
+    pkb.ClearNextAffectsBipCache();
+    REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
+  }
+
+  // Check NextBip*(a,b)
+  for (auto&[a, nexts] : next_bip_star_ans) {
+    for (auto &b : nexts) {
+      std::set<std::pair<int, int>> *next_bip_star_a_b = pkb.get_next_bip_star(a, b);
+      REQUIRE(next_bip_star_a_b->size() == 1);
+      REQUIRE(next_bip_star_a_b->find({a, b}) != next_bip_star_a_b->end());
+      pkb.ClearNextAffectsBipCache();
+      REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
+    }
+  }
+  std::map<int, std::vector<int>> prev_bip_star_ans = {
+      {1, {}},
+      {2, {1}},
+      {3, {1, 2, 6, 7, 8, 9, 10, 11}},
+      {4, {1, 2, 3, 6, 7, 8, 9, 10, 11}},
+      {5, {1, 2, 3, 4, 6, 7, 8, 9, 10, 11}},
+      {6, {1, 2}},
+      {7, {1, 2, 6}},
+      {8, {1, 2, 6, 7, 9, 10, 11}},
+      {9, {1, 2, 3, 4, 6, 7, 8, 9, 10, 11}},
+      {10, {1, 2, 3, 4, 6, 7, 8, 9, 10, 11}},
+      {11, {1, 2, 3, 4, 6, 7, 8, 9, 10, 11}},
+  };
+  for (auto&[b, prevs] : prev_bip_star_ans) {
+    // Check NextBip(_,b)
+    std::set<std::pair<int, int>> *next_bip_star_wild_b = pkb.get_next_bip_star(PKB::kWild, b);
+    REQUIRE(prev_bip_star_ans[b].size() == next_bip_star_wild_b->size());
+    for (auto &a : prevs) {
+      REQUIRE(next_bip_star_wild_b->find({a, b}) != next_bip_star_wild_b->end());
+    }
+    pkb.ClearNextAffectsBipCache();
+    REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
+  }
+
+  // Negative cases
+  REQUIRE(pkb.get_next_bip_star(2, 1)->empty()); // Reverse direction
   pkb.ClearNextAffectsBipCache();
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
   REQUIRE(pkb.get_next_bip_star(PKB::kWild, 1)->empty()); // First statement of first procedure
@@ -2583,99 +2579,99 @@ TEST_CASE("PKB_NextBipStarSample_Correct") {
 
 TEST_CASE("PKB_AffectsBipSample_Correct") {
   std::string source =
-    "procedure Bill {"
-    "  x = 5;"
-    "  call Mary;"
-    "  y = x + 6;"
-    "  call John;"
-    "  z = x * y + 2;"
-    "}"
-    "procedure Mary {"
-    "  y = x * 3;"
-    "  call John;"
-    "  z = x + y;"
-    "}"
-    "procedure John {"
-    "  if (i > 0) then {"
-    "    x = x + z;"
-    "  } else {"
-    "    y = x * y;"
-    "  }"
-    "}";
+      "procedure Bill {"
+      "  x = 5;"
+      "  call Mary;"
+      "  y = x + 6;"
+      "  call John;"
+      "  z = x * y + 2;"
+      "}"
+      "procedure Mary {"
+      "  y = x * 3;"
+      "  call John;"
+      "  z = x + y;"
+      "}"
+      "procedure John {"
+      "  if (i > 0) then {"
+      "    x = x + z;"
+      "  } else {"
+      "    y = x * y;"
+      "  }"
+      "}";
 
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode* p = ParseProgram(&lexer, &s);
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
 
   std::map<int, std::vector<int>> affects_bip_ans = {
-    {1, {3,5,6,8,10,11}},
-    {2, {}},
-    {3, {5,11}},
-    {4, {}},
-    {5, {}},
-    {6, {8,11}},
-    {7, {}},
-    {8, {10}},
-    {9, {}},
-    {10, {3,5,8,10,11}},
-    {11, {5,8}},
+      {1, {3, 5, 6, 8, 10, 11}},
+      {2, {}},
+      {3, {5, 11}},
+      {4, {}},
+      {5, {}},
+      {6, {8, 11}},
+      {7, {}},
+      {8, {10}},
+      {9, {}},
+      {10, {3, 5, 8, 10, 11}},
+      {11, {5, 8}},
   };
 
   // Check Affects(_,_)
-  std::set<std::pair<int, int>>* affects_bip_wild_wild = pkb.get_affects_bip(PKB::kWild, PKB::kWild);
-  for (auto& [a, b] : *affects_bip_wild_wild) {
+  std::set<std::pair<int, int>> *affects_bip_wild_wild = pkb.get_affects_bip(PKB::kWild, PKB::kWild);
+  for (auto&[a, b] : *affects_bip_wild_wild) {
   }
-  for (auto& [a, affects] : affects_bip_ans) {
-    for (auto& b : affects) {
-      REQUIRE(affects_bip_wild_wild->find({ a, b }) != affects_bip_wild_wild->end());
+  for (auto&[a, affects] : affects_bip_ans) {
+    for (auto &b : affects) {
+      REQUIRE(affects_bip_wild_wild->find({a, b}) != affects_bip_wild_wild->end());
     }
   }
   pkb.ClearNextAffectsBipCache();
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
 
   // Check Affects(a,_)
-  for (auto& [a, affects] : affects_bip_ans) {
-    std::set<std::pair<int, int>>* affects_bip_a_wild = pkb.get_affects_bip(a, PKB::kWild);
+  for (auto&[a, affects] : affects_bip_ans) {
+    std::set<std::pair<int, int>> *affects_bip_a_wild = pkb.get_affects_bip(a, PKB::kWild);
     REQUIRE(affects_bip_ans[a].size() == affects_bip_a_wild->size());
-    for (auto& b : affects) {
-      REQUIRE(affects_bip_a_wild->find({ a, b }) != affects_bip_a_wild->end());
+    for (auto &b : affects) {
+      REQUIRE(affects_bip_a_wild->find({a, b}) != affects_bip_a_wild->end());
     }
     pkb.ClearNextAffectsBipCache();
     REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
   }
 
   // Check Affects(a,b)
-  for (auto& [a, affects] : affects_bip_ans) {
-    for (auto& b : affects) {
-      std::set<std::pair<int, int>>* affects_bip_a_b = pkb.get_affects_bip(a, b);
+  for (auto&[a, affects] : affects_bip_ans) {
+    for (auto &b : affects) {
+      std::set<std::pair<int, int>> *affects_bip_a_b = pkb.get_affects_bip(a, b);
       REQUIRE(affects_bip_a_b->size() == 1);
-      REQUIRE(affects_bip_a_b->find({ a, b }) != affects_bip_a_b->end());
+      REQUIRE(affects_bip_a_b->find({a, b}) != affects_bip_a_b->end());
       pkb.ClearNextAffectsBipCache();
       REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
     }
   }
 
   std::map<int, std::vector<int>> affected_by_bip_ans = {
-    {1, {}},
-    {2, {}},
-    {3, {1,10}},
-    {4, {}},
-    {5, {1,3,10,11}},
-    {6, {1}},
-    {7, {}},
-    {8, {1,6,10,11}},
-    {9, {}},
-    {10, {1,8,10}},
-    {11, {1,3,6,10}},
+      {1, {}},
+      {2, {}},
+      {3, {1, 10}},
+      {4, {}},
+      {5, {1, 3, 10, 11}},
+      {6, {1}},
+      {7, {}},
+      {8, {1, 6, 10, 11}},
+      {9, {}},
+      {10, {1, 8, 10}},
+      {11, {1, 3, 6, 10}},
   };
 
   // Check Affects(_,b)
-  for (auto& [b, affected_bys] : affected_by_bip_ans) {
-    std::set<std::pair<int, int>>* affects_bip_wild_b = pkb.get_affects_bip(PKB::kWild, b);
+  for (auto&[b, affected_bys] : affected_by_bip_ans) {
+    std::set<std::pair<int, int>> *affects_bip_wild_b = pkb.get_affects_bip(PKB::kWild, b);
     REQUIRE(affected_by_bip_ans[b].size() == affects_bip_wild_b->size());
-    for (auto& a : affected_bys) {
-      REQUIRE(affects_bip_wild_b->find({ a, b }) != affects_bip_wild_b->end());
+    for (auto &a : affected_bys) {
+      REQUIRE(affects_bip_wild_b->find({a, b}) != affects_bip_wild_b->end());
     }
     pkb.ClearNextAffectsBipCache();
     REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
@@ -2684,79 +2680,79 @@ TEST_CASE("PKB_AffectsBipSample_Correct") {
 
 TEST_CASE("PKB_AffectsBipStarSample_Correct") {
   std::string source =
-    "procedure Bill {"
-    "  x = 5;"
-    "  call Mary;"
-    "  y = x + 6;"
-    "  call John;"
-    "  z = x * y + 2;"
-    "}"
-    "procedure Mary {"
-    "  y = x * 3;"
-    "  call John;"
-    "  z = x + y;"
-    "}"
-    "procedure John {"
-    "  if (i > 0) then {"
-    "    x = x + z;"
-    "  } else {"
-    "    y = x * y;"
-    "  }"
-    "}";
+      "procedure Bill {"
+      "  x = 5;"
+      "  call Mary;"
+      "  y = x + 6;"
+      "  call John;"
+      "  z = x * y + 2;"
+      "}"
+      "procedure Mary {"
+      "  y = x * 3;"
+      "  call John;"
+      "  z = x + y;"
+      "}"
+      "procedure John {"
+      "  if (i > 0) then {"
+      "    x = x + z;"
+      "  } else {"
+      "    y = x * y;"
+      "  }"
+      "}";
 
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode* p = ParseProgram(&lexer, &s);
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
 
   std::map<int, std::vector<int>> affects_bip_star_ans = {
-    {1, {3, 5, 6, 8, 10, 11}}, {2, {}}, {3, {5, 11}}, {4, {}}, {5, {}}, {6, {5, 8, 10, 11}},
-    {7, {}}, {8, {5, 10}}, {9, {}}, {10, {3, 5, 8, 10, 11}}, {11, {5, 8, 10}}
+      {1, {3, 5, 6, 8, 10, 11}}, {2, {}}, {3, {5, 11}}, {4, {}}, {5, {}}, {6, {5, 8, 10, 11}},
+      {7, {}}, {8, {5, 10}}, {9, {}}, {10, {3, 5, 8, 10, 11}}, {11, {5, 8, 10}}
   };
 
   // Check AffectsBip*(_,_)
-  std::set<std::pair<int, int>>* affects_bip_star_wild_wild = pkb.get_affects_bip_star(PKB::kWild, PKB::kWild);
-  for (auto& [a, affects_star] : affects_bip_star_ans) {
-    for (auto& b : affects_star) {
-      REQUIRE(affects_bip_star_wild_wild->find({ a, b }) != affects_bip_star_wild_wild->end());
+  std::set<std::pair<int, int>> *affects_bip_star_wild_wild = pkb.get_affects_bip_star(PKB::kWild, PKB::kWild);
+  for (auto&[a, affects_star] : affects_bip_star_ans) {
+    for (auto &b : affects_star) {
+      REQUIRE(affects_bip_star_wild_wild->find({a, b}) != affects_bip_star_wild_wild->end());
     }
   }
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 
   // Check AffectsBip*(a,_)
-  for (auto& [a, affects_star] : affects_bip_star_ans) {
-    std::set<std::pair<int, int>>* affects_bip_star_a_wild = pkb.get_affects_bip_star(a, PKB::kWild);
+  for (auto&[a, affects_star] : affects_bip_star_ans) {
+    std::set<std::pair<int, int>> *affects_bip_star_a_wild = pkb.get_affects_bip_star(a, PKB::kWild);
     REQUIRE(affects_bip_star_ans[a].size() == affects_bip_star_a_wild->size());
-    for (auto& b : affects_star) {
-      REQUIRE(affects_bip_star_a_wild->find({ a, b }) != affects_bip_star_a_wild->end());
+    for (auto &b : affects_star) {
+      REQUIRE(affects_bip_star_a_wild->find({a, b}) != affects_bip_star_a_wild->end());
     }
     pkb.ClearNextAffectsCache();
     REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
 
   // Check AffectsBip*(a,b)
-  for (auto& [a, affects_star] : affects_bip_star_ans) {
-    for (auto& b : affects_star) {
-      std::set<std::pair<int, int>>* affects_bip_star_a_b = pkb.get_affects_bip_star(a, b);
+  for (auto&[a, affects_star] : affects_bip_star_ans) {
+    for (auto &b : affects_star) {
+      std::set<std::pair<int, int>> *affects_bip_star_a_b = pkb.get_affects_bip_star(a, b);
       REQUIRE(affects_bip_star_a_b->size() == 1);
-      REQUIRE(affects_bip_star_a_b->find({ a, b }) != affects_bip_star_a_b->end());
+      REQUIRE(affects_bip_star_a_b->find({a, b}) != affects_bip_star_a_b->end());
       pkb.ClearNextAffectsCache();
       REQUIRE(pkb.NextAffectsCacheIsEmpty());
     }
   }
 
   std::map<int, std::vector<int>> affected_by_bip_star_ans = {
-    {1, {}}, {2, {}}, {3, {1, 10}}, {4, {}}, {5, {1, 3, 6, 8, 10, 11}}, {6, {1}}, {7, {}},
-    {8, {1, 6, 10, 11}}, {9, {}}, {10, {1, 6, 8, 10, 11}}, {11, {1, 3, 6, 10}}
+      {1, {}}, {2, {}}, {3, {1, 10}}, {4, {}}, {5, {1, 3, 6, 8, 10, 11}}, {6, {1}}, {7, {}},
+      {8, {1, 6, 10, 11}}, {9, {}}, {10, {1, 6, 8, 10, 11}}, {11, {1, 3, 6, 10}}
   };
 
   // Check AffectsBip*(_,b)
-  for (auto& [b, affected_bys_star] : affected_by_bip_star_ans) {
-    std::set<std::pair<int, int>>* affects_bip_star_wild_b = pkb.get_affects_bip_star(PKB::kWild, b);
+  for (auto&[b, affected_bys_star] : affected_by_bip_star_ans) {
+    std::set<std::pair<int, int>> *affects_bip_star_wild_b = pkb.get_affects_bip_star(PKB::kWild, b);
     REQUIRE(affected_by_bip_star_ans[b].size() == affects_bip_star_wild_b->size());
-    for (auto& a : affected_bys_star) {
-      REQUIRE(affects_bip_star_wild_b->find({ a, b }) != affects_bip_star_wild_b->end());
+    for (auto &a : affected_bys_star) {
+      REQUIRE(affects_bip_star_wild_b->find({a, b}) != affects_bip_star_wild_b->end());
     }
     pkb.ClearNextAffectsCache();
     REQUIRE(pkb.NextAffectsCacheIsEmpty());
@@ -2782,57 +2778,57 @@ TEST_CASE("PKB_AffectsBipStarSample_Correct") {
 
 TEST_CASE("PKB_CFGBipCallStackSample_Correct") {
   std::string source =
-    "procedure Bill {"
-    "  x = 5;"
-    "  call Mary;"
-    "  y = x + 6;"
-    "  call John;"
-    "  z = x * y + 2;"
-    "}"
-    "procedure Mary {"
-    "  y = x * 3;"
-    "  call John;"
-    "  z = x + y;"
-    "}"
-    "procedure John {"
-    "  if (i > 0) then {"
-    "    x = x + z;"
-    "  } else {"
-    "    y = x * y;"
-    "  }"
-    "}";
+      "procedure Bill {"
+      "  x = 5;"
+      "  call Mary;"
+      "  y = x + 6;"
+      "  call John;"
+      "  z = x * y + 2;"
+      "}"
+      "procedure Mary {"
+      "  y = x * 3;"
+      "  call John;"
+      "  z = x + y;"
+      "}"
+      "procedure John {"
+      "  if (i > 0) then {"
+      "    x = x + z;"
+      "  } else {"
+      "    y = x * y;"
+      "  }"
+      "}";
 
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode* p = ParseProgram(&lexer, &s);
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
 }
 
 TEST_CASE("PKB_NextBipCacheTestTime_correct") {
   std::string source =
-    "procedure Bill {"
-    "  x = 5;"
-    "  call Mary;"
-    "  y = x + 6;"
-    "  call John;"
-    "  z = x * y + 2;"
-    "}"
-    "procedure Mary {"
-    "  y = x * 3;"
-    "  call John;"
-    "  z = x + y;"
-    "}"
-    "procedure John {"
-    "  if (i > 0) then {"
-    "    x = x + z;"
-    "  } else {"
-    "    y = x * y;"
-    "  }"
-    "}";
+      "procedure Bill {"
+      "  x = 5;"
+      "  call Mary;"
+      "  y = x + 6;"
+      "  call John;"
+      "  z = x * y + 2;"
+      "}"
+      "procedure Mary {"
+      "  y = x * 3;"
+      "  call John;"
+      "  z = x + y;"
+      "}"
+      "procedure John {"
+      "  if (i > 0) then {"
+      "    x = x + z;"
+      "  } else {"
+      "    y = x * y;"
+      "  }"
+      "}";
 
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode* p = ParseProgram(&lexer, &s);
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
@@ -2869,29 +2865,29 @@ TEST_CASE("PKB_NextBipCacheTestTime_correct") {
 
 TEST_CASE("PKB_NextBipStarCacheTestTime_correct") {
   std::string source =
-    "procedure Bill {"
-    "  x = 5;"
-    "  call Mary;"
-    "  y = x + 6;"
-    "  call John;"
-    "  z = x * y + 2;"
-    "}"
-    "procedure Mary {"
-    "  y = x * 3;"
-    "  call John;"
-    "  z = x + y;"
-    "}"
-    "procedure John {"
-    "  if (i > 0) then {"
-    "    x = x + z;"
-    "  } else {"
-    "    y = x * y;"
-    "  }"
-    "}";
+      "procedure Bill {"
+      "  x = 5;"
+      "  call Mary;"
+      "  y = x + 6;"
+      "  call John;"
+      "  z = x * y + 2;"
+      "}"
+      "procedure Mary {"
+      "  y = x * 3;"
+      "  call John;"
+      "  z = x + y;"
+      "}"
+      "procedure John {"
+      "  if (i > 0) then {"
+      "    x = x + z;"
+      "  } else {"
+      "    y = x * y;"
+      "  }"
+      "}";
 
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode* p = ParseProgram(&lexer, &s);
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
@@ -2928,34 +2924,34 @@ TEST_CASE("PKB_NextBipStarCacheTestTime_correct") {
 
 TEST_CASE("PKB_AffectsBipCacheTestTime_correct") {
   std::string source =
-    "procedure Bill {"
-    "  x = 5;"
-    "  call Mary;"
-    "  y = x + 6;"
-    "  call John;"
-    "  z = x * y + 2;"
-    "}"
-    "procedure Mary {"
-    "  y = x * 3;"
-    "  call John;"
-    "  z = x + y;"
-    "}"
-    "procedure John {"
-    "  if (i > 0) then {"
-    "    x = x + z;"
-    "  } else {"
-    "    y = x * y;"
-    "  }"
-    "}";
+      "procedure Bill {"
+      "  x = 5;"
+      "  call Mary;"
+      "  y = x + 6;"
+      "  call John;"
+      "  z = x * y + 2;"
+      "}"
+      "procedure Mary {"
+      "  y = x * 3;"
+      "  call John;"
+      "  z = x + y;"
+      "}"
+      "procedure John {"
+      "  if (i > 0) then {"
+      "    x = x + z;"
+      "  } else {"
+      "    y = x * y;"
+      "  }"
+      "}";
 
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode* p = ParseProgram(&lexer, &s);
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
-  for (auto& a : pkb.get_statements(NodeType::Assign)) {
-    for (auto& b : pkb.get_statements(NodeType::Assign)) {
+  for (auto &a : pkb.get_statements(NodeType::Assign)) {
+    for (auto &b : pkb.get_statements(NodeType::Assign)) {
       pkb.get_affects_bip(a->get_stmt_no(), b->get_stmt_no());
     }
     pkb.get_affects_bip(a->get_stmt_no(), PKB::kWild);
@@ -2968,8 +2964,8 @@ TEST_CASE("PKB_AffectsBipCacheTestTime_correct") {
 
   pkb.get_affects_bip(PKB::kWild, PKB::kWild);
   auto full_cache_start = std::chrono::steady_clock::now();
-  for (auto& a : pkb.get_statements(NodeType::Assign)) {
-    for (auto& b : pkb.get_statements(NodeType::Assign)) {
+  for (auto &a : pkb.get_statements(NodeType::Assign)) {
+    for (auto &b : pkb.get_statements(NodeType::Assign)) {
       pkb.get_affects_bip(a->get_stmt_no(), b->get_stmt_no());
     }
     pkb.get_affects_bip(a->get_stmt_no(), PKB::kWild);
@@ -2987,34 +2983,34 @@ TEST_CASE("PKB_AffectsBipCacheTestTime_correct") {
 
 TEST_CASE("PKB_AffectsBipStarCacheTestTime_correct") {
   std::string source =
-    "procedure Bill {"
-    "  x = 5;"
-    "  call Mary;"
-    "  y = x + 6;"
-    "  call John;"
-    "  z = x * y + 2;"
-    "}"
-    "procedure Mary {"
-    "  y = x * 3;"
-    "  call John;"
-    "  z = x + y;"
-    "}"
-    "procedure John {"
-    "  if (i > 0) then {"
-    "    x = x + z;"
-    "  } else {"
-    "    y = x * y;"
-    "  }"
-    "}";
+      "procedure Bill {"
+      "  x = 5;"
+      "  call Mary;"
+      "  y = x + 6;"
+      "  call John;"
+      "  z = x * y + 2;"
+      "}"
+      "procedure Mary {"
+      "  y = x * 3;"
+      "  call John;"
+      "  z = x + y;"
+      "}"
+      "procedure John {"
+      "  if (i > 0) then {"
+      "    x = x + z;"
+      "  } else {"
+      "    y = x * y;"
+      "  }"
+      "}";
 
   BufferedLexer lexer(source);
   ParseState s{};
-  ProgramNode* p = ParseProgram(&lexer, &s);
+  ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
-  for (auto& a : pkb.get_statements(NodeType::Assign)) {
-    for (auto& b : pkb.get_statements(NodeType::Assign)) {
+  for (auto &a : pkb.get_statements(NodeType::Assign)) {
+    for (auto &b : pkb.get_statements(NodeType::Assign)) {
       pkb.get_affects_bip_star(a->get_stmt_no(), b->get_stmt_no());
     }
     pkb.get_affects_bip_star(a->get_stmt_no(), PKB::kWild);
@@ -3027,8 +3023,8 @@ TEST_CASE("PKB_AffectsBipStarCacheTestTime_correct") {
 
   pkb.get_affects_bip_star(PKB::kWild, PKB::kWild);
   auto full_cache_start = std::chrono::steady_clock::now();
-  for (auto& a : pkb.get_statements(NodeType::Assign)) {
-    for (auto& b : pkb.get_statements(NodeType::Assign)) {
+  for (auto &a : pkb.get_statements(NodeType::Assign)) {
+    for (auto &b : pkb.get_statements(NodeType::Assign)) {
       pkb.get_affects_bip_star(a->get_stmt_no(), b->get_stmt_no());
     }
     pkb.get_affects_bip_star(a->get_stmt_no(), PKB::kWild);

@@ -1,225 +1,530 @@
-1 - UsesS and Pattern clause with common a
-assign a; variable v;
-Select a such that Uses(a,_) pattern a(v, _"sum"_)
-3,11,23
-5000
-2 - UsesS and Pattern clause with no common synonym but returns true
-assign a; variable v; print pn; if ifs;
-Select ifs such that Uses(ifs, "x") pattern a(v, _"y"_)
-20,30
-5000
-3 - UsesS and Pattern clause with no common synonym but pattern returns false
-assign a; variable v; print pn; if ifs;
-Select pn such that Uses(pn, _) pattern a(v, "x + y")
-
-5000
-4 - ModifiesP and Pattern clause with no common synonym but relationship returns false
-assign a; variable v;
-Select v such that Modifies("Example", "count") pattern a(v, _)
-
-5000
-5 - ModifiesS and Pattern clause with a and v as common synonym
-assign a; variable v;
-Select v such that Modifies(a, v) pattern a(v, "count + 1")
-count
-5000
-6 - Follows and Pattern clause with common synonym
-assign a; variable v; if ifs;
-Select ifs such that Follows(ifs, a) pattern a(v, _"z"_)
-20,30
-5000
-7 - Follows* and Pattern clause with common synonym
-assign assign; variable v; call c;
-Select assign pattern assign(v, "y") such that Follows*(assign, c) 
-2
-5000
-8 - Follows* and Pattern clause with common synonym and pattern returns false
-assign a; stmt stmt;
-Select stmt such that Follows*(stmt, a) pattern a("f", "23")
-
-5000
-9 - Parent and Pattern clause with a common synonym
-assign a; variable v; while w;
-Select w such that Parent(w, a) pattern a(v, "y + z")
-10
-5000
-10 - Parent* and Pattern clause with a common synonym
-assign a; stmt s;
-Select s such that Parent*(s,a) pattern a(_, _"z"_)
-10,28,30
-5000
-11 - Invalid Follows with a variable as arg
+1 - Invalid Follows with a variable as arg
 variable select; stmt stmt;
 Select stmt such that Follows(stmt, select)
 
 5000
-12 - Valid Follows with a call and while as arg
+2 - Invalid Follows with a procedure as arg
+procedure proc; while while;
+Select while such that Follows(proc, while)
+
+5000
+3 - Invalid Follows with a constant as arg
+constant con; read read;
+Select read such that Follows(con, read)
+
+5000
+4 - Valid Follows with 2 numbers
+print p1;
+Select p1 such that Follows(27, 28)
+19,24,36
+5000
+5 - Valid Follows with 2 numbers, returns false
+assign a
+Select a such that Follows(10, 11)
+
+5000
+6 - Valid Follows with a print as arg
+print p1;
+Select p1 such that Follows(23, p1)
+24
+5000
+7 - Valid Follows with a read as arg
+read r;
+Select r such that Follows(r, 35)
+34
+5000
+8 - Valid Follows with a call as arg
+call c;
+Select c such that Follows(c, 10)
+9
+5000
+9 - Valid Follows with a call and while as arg
 while       while;      call call;
 Select call such that Follows(call, while)
 9
 5000
-13 - Valid Follows with false result
+10 - Valid Follows with assign and read as arg
+assign a; read r;
+Select a such that Follows(r, a)
+2,35
+5000
+11 - Valid Follows with print and if as arg
+if ifs; print pr;
+Select pr such that Follows(pr, ifs)
+19
+5000
+12 - Valid Follows with print and if as arg, returns read
+if ifs; print pr; read r;
+Select r such that Follows(pr, ifs)
+1,34
+5000
+13 - Valid Follows with 2 read, returns false
 read r,r2;
 Select r such that Follows(r, r2)
 
 5000
-14 - Valid Follows with repeated synonym
+14 - Valid Follows with while and if, returns false
+if ifs; while w;
+Select w such that Follows(ifs, w)
+
+5000
+15 - Valid Follows with repeated synonym
 assign a;
 Select a such that Follows(a,a)
 
 5000
-15 - Invalid Follows* with procedure as arg
+16 - Invalid Follows* with procedure as arg
 stmt s; procedure proc;
 Select s such that Follows*(s, proc)
 
 5000
-16 - Valid Follows* for while
+17 - Invalid Follows* with variable as arg
+assign a; variable var;
+Select a such that Follows*(var, s)
+
+5000
+18 - Valid Follows* with while as arg
+while w;
+Select w such that Follows*(w, 20)
+10
+5000
+19 - Valid Follows* with read as arg
+read re;
+Select re such that Follows*(29, re)
+34
+5000
+20 - Valid Follows* with assign as arg
+assign a;
+Select a such that Follows*(1, a)
+2,3,4,5,6,7,8,23
+5000
+21 - Valid Follows* with while and stmt as arg
 stmt s; while w;
 Select s such that Follows*(w, s)
 19,20,23,24,36
 5000
-17 - Valid Follows* with wildcard on LHS and if on RHS
+22 - Valid Follows* with while and call as arg, returns FALSE
+while w; call c; assign a;
+Select a such that Follows*(w, c)
+
+5000
+23 - Valid Follows* with wildcard on LHS and if on RHS
 if ifs; 
 Select ifs such that Follows*(_, ifs)
 15,20,30
 5000
-18 - Invalid Parents with constant as arg
+24 - Invalid Parent with constant as arg
 constant con; read r;
 Select s such that Parent(con, r)
 
 5000
-19 - Valid Parents with 2 assignment statements returning false
+25 - Invalid Parent with procedure as arg
+procedure p; read r;
+Select r such that Parent(p, r)
+
+5000
+26 - Valid Parent with while as arg
+while w;
+Select w such that Parent(w, 15)
+10
+5000
+27 - Valid Parent with stmt as arg and wildcard
+stmt s;
+Select s such that Parent(s, _)
+10,15,20,28,30
+5000
+28 - Valid Parent with 2 assignment statements, returns FALSE
 assign a, a1;
 Select a such that Parent(a, a1)
 
 5000
-20 - Valid Parents with while and if
+29 - Valid Parent with read and while returning FALSE
+read r; while w;
+Select r such that Parent(r, w)
+
+5000
+30 - Valid Parent with print and if returning FALSE
+print pr; if ifs;
+Select ifs such that Parent(pr, ifs)
+
+5000
+31 - Valid Parent with while and if
 while w; if ifs;
 Select w such that Parent(w, ifs)
 10,28
 5000
-21 - Invalid Parents* with invalid syntax
-while w; if ifs;
-Select w such that Parents*(w, ifs)
+32 - Valid Parent with 2 stmts
+stmt s1, s2;
+Select s1 such that Parent(s1, s2)
+10,15,20,28,30
+5000
+33 - Invalid Parent* with procedure as arg
+procedure p;
+Select p such that Parent*(w, p)
 
 5000
-22 - Valid Parents* with assign on RHS
-assign a;
-Select a such that Parent*(10, a)
-11,12,13,14,16,17,18
-5000
-23 - Invalid Parents with wildcard and string
+34 - Invalid Parent with wildcard and string
 while w;
 Select w such that Parent*(_, "hi")
 
 5000
-24 - Invalid ModifiesS with wildcard on LHS
-variable v;
-Select v such that Modifies(_, v)
-
+35 - Valid Parent* with assign on RHS
+assign a;
+Select a such that Parent*(10, a)
+11,12,13,14,16,17,18
 5000
-25 - Valid ModifiesS with stmt
-stmt s;
-Select s such that Modifies(s, "z")
-4,9,10,14,26,28,30,31,33
-5000
-26 - Valid ModifiesP with proc and arg
-procedure proc;
-Select proc such that Modifies(proc, "count")
-Test
-5000
-27 - Invalid UsesS with constant
-stmt s; constant c;
-Select s such that Uses(s, c)
-
-5000
-28 - Valid UsesS with stmt and variable
-stmt pattern; variable v;
-Select s such that Uses(pattern, v)
-
-5000
-29 - Valid UsesP for Test
-variable v;
-Select v such that Uses("Test", v)
-y,sum,f,x,count,z,i,m,a
-5000
-30 - Follows clause only
-stmt s;
-Select s such that Follows(s, _)
-1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,19,20,23,25,26,27,28,29,30,33,34
-5000
-31 - Follows clause for if and assign statement
-if ifs; assign a;
-Select ifs such that Follows(a, ifs)
-15,30
-5000
-32 - Follows clause only
-stmt s;
-Select s such that Follows(10, s)
-19
-5000
-33 - Follows clause for call statement
-call c;
-Select c such that Follows(10, 11)
-
-5000
-34 - FollowsS clause only
-stmt stmt;
-Select stmt such that Follows*(1, stmt)
-2,3,4,5,6,7,8,9,10,19,20,23,24
-5000
-35 - FollowsS clause for statement and while statement
-stmt s; while while;
-Select s such that Follows*(s, while)
-1,2,3,4,5,6,7,8,9,25,26,27
-5000
-36 - FollowsS clause for print and call statement
-print Print; call c;
-Select Print such that Follows*(c, Print)
-19,24
-5000
-37 - Parent clause only
-stmt s;
-Select s such that Parent(_, s)
-11,12,13,14,15,16,17,18,21,22,29,30,31,32,33,34,35
-5000
-38 - Parent clause for assign and ifs
-assign a; if ifs;
-Select a such that Parent(ifs, a)
-16,17,21,22,31,32
-5000
-39 - Parent clause only
-while w;
-Select w such that Parent(10,16)
-
-5000
-40 - ParentT clause only
-while w;
-Select w such that Parent*(10,16)
-10,28
-5000
-41 - ParentT clause for assign statements
+36 - Valid Parent* with wildcard and assign as arg
 assign a;
 Select a such that Parent*(_, a)
 11,12,13,14,16,17,18,21,22,29,31,32,33,35
 5000
-42 - ParentT clause only
-read r;
-Select r such that Parent*(_, r)
-34
+37 - Invalid Modifies with wildcard on LHS
+variable v;
+Select v such that Modifies(_, v)
+
 5000
-43 - Pattern clause only / Partial Matching
+38 - Invalid Modifies with stmt on RHS
+stmt s;
+Select s such that Modifies(2, s)
+
+5000
+39 - Valid Modifies with stmt as arg
+stmt s;
+Select s such that Modifies(s, "z")
+4,9,10,14,26,28,30,31,33
+5000
+40 - Valid Modifies with call as arg
+call c;
+Select c such that Modifies(c, "z")
+9
+5000
+41 - Valid Modifies with wildcard on RHS, returns read
+stmt s; read r;
+Select r such that Modifies(s, _)
+1,34
+5000
+42 - Valid Modifies with proc and arg
+procedure proc;
+Select proc such that Modifies(proc, "count")
+Test
+5000
+43 - Valid Modifies with variable as arg
+variable v;
+Select v such that Modifies("Test", v)
+y,x,sum,z,f,count,i,m,a
+5000
+44 - Invalid Uses with constant
+stmt s; constant c;
+Select s such that Uses(s, c)
+
+5000
+45 - Valid Uses with variable as arg
+variable v;
+Select v such that Uses(10, v)
+sum,y,z,m,count,x
+5000
+46 - Valid Uses with while as arg
+while w;
+Select w such that Uses(w, "count")
+10
+5000
+47 - Valid Uses with stmt and variable
+stmt pattern; variable v;
+Select s such that Uses(pattern, v)
+
+5000
+48 - Valid Uses with variable as arg
+variable v;
+Select v such that Uses("Test", v)
+y,sum,f,x,count,z,i,m,a
+5000
+49 - Valid Uses with procedure and variable as arg, returns if
+if ifs; procedure p; variable v;
+Select ifs such that Uses(p, v)
+15,20,30
+5000
+50 - Invalid Next with variable as arg
+variable v;
+Select v such that Next(12, v)
+
+5000
+51 - Valid Next with 2 numbers
+call c;
+Select c such that Next(11, 12)
+9
+5000
+52 - Valid Next with 2 numbers, returns FALSE
+stmt s;
+Select s such that Next(3, 6)
+
+5000
+53 - Valid Next with while as arg
+while w;
+Select w such that Next(w, 19)
+10
+5000
+54 - Valid Next with assign as arg
+assign a;
+Select a such that Next(15, a)
+16,17
+5000
+55 - Valid Next with wildcard and if
+if ifs;
+Select ifs such that Next(_, ifs)
+15,20,30
+5000
+56 - Valid Next with assign and wildcard
+assign a;
+Select a such that Next(a, _)
+2,3,4,5,6,7,8,11,12,13,14,16,17,18,21,22,23,25,26,27,29,31,32,33,35
+5000
+57 - Valid Next with read and assign
+assign a; read r;
+Select a such that Next(r, a)
+2,35
+5000
+58 - Invalid Next* with string as arg
+assign a;
+Select a such that Next*(a, "count")
+
+5000
+59 - Invalid Next* with procedure as arg
+assign a; procedure p;
+Select a such that Next*(p, a)
+
+5000
+60 - Valid Next* with 2 numbers, returns FALSE
+assign a; 
+Select a such that Next*(3, 33)
+
+5000
+61 - Valid Next* with 2 numbers, returns print
+print p; 
+Select p such that Next*(2, 15)
+19,24,36
+5000
+62 - Valid Next* with print as arg
+print p;
+Select p such that Next*(p, 23)
+19
+5000
+63 - Valid Next* with while as arg
+while w;
+Select w such that Next*(1, w)
+10
+5000
+64 - Valid Next* with assign and wildcard, returns call
+assign a; call c;
+Select c such that Next*(a, _)
+9
+5000
+65 - Valid Next* with wildcard and if
+if ifs;
+Select ifs such that Next*(_, ifs)
+15,20,30
+5000
+66 - Valid Next* with assign and while
+assign assign; while while;
+Select assign such that Next*(assign, while)
+2,3,4,5,6,7,8,11,12,13,14,16,17,18,25,26,27,29,31,32,33,35
+5000
+67 - Invalid Calls with number as arg
+procedure p;
+Select p such that Calls(p, 4)
+
+5000
+68 - Invalid Calls with read as arg
+procedure p; read r;
+Select p such that Calls(r, p)
+
+5000
+69 - Valid Calls with 2 strings, returns FALSE
+procedure p;
+Select p such that Calls("Example", "Test")
+
+5000
+70 - Valid Calls with 2 strings, returns FALSE
+procedure p;
+Select p such that Calls("Test1", "Test")
+
+5000
+71 - Valid Calls with procedure as argument
+procedure p;
+Select p such that Calls(p, "Example")
+Test
+5000
+72 - Valid Calls with procedure as argument, returns FALSE
+procedure p;
+Select p such that Calls(p, "Test")
+
+5000
+73 - Invalid Calls* with number as arg
+procedure p;
+Select p such that Calls*(p, 34)
+
+5000
+74 - Invalid Calls* with assign as arg
+procedure p; assign a;
+Select p such that Calls*(a, p)
+
+5000
+75 - Valid Calls* with 2 strings, returns FALSE
+procedure p;
+Select p such that Calls*("Example", "Test")
+
+5000
+76 - Valid Calls* with 2 strings, returns FALSE
+procedure p;
+Select p such that Calls*("What", "Test")
+
+5000
+77 - Valid Calls* with procedure as argument
+procedure p;
+Select p such that Calls*(p, "Example")
+Test
+5000
+78 - Valid Calls* with procedure as argument, returns FALSE
+procedure p;
+Select p such that Calls*(p, "Test")
+
+5000
+79 - Invalid With clause with different return type, returns FALSE
+procedure p; stmt s; call c;
+Select p with s.stmt# = c.procName
+
+5000
+80 - Invalid With clause with different return type, returns FALSE
+variable v; stmt s;
+Select s with 3 = v.varName
+
+5000
+81 - Valid With clause with integers on both sides
+variable v; stmt s;
+Select v with 4 = 4
+y,x,sum,f,z,count,m,a,i
+5000
+82 - Valid With clause with stmt and integer
+stmt s;
+Select s with s.stmt# = 5
+5
+5000
+83 - Valid With clause with call and string
+call call;
+Select call with call.procName = "Example"
+9
+5000
+84 - Pattern clause only / Partial Matching
 assign a;
 Select a pattern a(_, _"1"_)
 4,6,7,16,18,22,25,29,31,35
 5000
-44 - Pattern clause only / Non Partial Matching
+85 - Pattern clause only / Non Partial Matching
 assign a;
 Select a pattern a(_, "1")
 4,6,16
 5000
-45 - Pattern clause only / Partial Matching
+86 - Pattern clause only / Partial Matching
 assign a;
 Select a pattern a(_, _"sum*sum"_)
 3,23
+5000
+87 - Pattern clause only (if) selecting if
+if ifs;
+Select ifs pattern ifs("sum", _, _)
+15
+5000
+88 - Pattern clause only (if) selecting variable
+if ifs; variable v;
+Select v pattern ifs(v, _, _)
+sum,count,x
+5000
+89 - Pattern clause only (while) selecting while
+while w; 
+Select w pattern w("count", _)
+10
+5000
+90 - Pattern clause only (while) selecting variable
+while w; variable v;
+Select v pattern w(v, _)
+count,x,i
+5000
+91 - Invalid Pattern clause with integer(while)
+while w;
+Select w pattern w(4, _)
+
+5000
+92 - UsesS and Pattern clause with common a
+assign a; variable v;
+Select a such that Uses(a,_) pattern a(v, _"sum"_)
+3,11,23
+5000
+93 - UsesS and Pattern clause with no common synonym but returns true
+assign a; variable v; print pn; if ifs;
+Select ifs such that Uses(ifs, "x") pattern a(v, _"y"_)
+20,30
+5000
+94 - UsesS and Pattern clause with no common synonym but pattern returns false
+assign a; variable v; print pn; if ifs;
+Select pn such that Uses(pn, _) pattern a(v, "x + y")
+
+5000
+95 - ModifiesP and Pattern clause with no common synonym but relationship returns false
+assign a; variable v;
+Select v such that Modifies("Example", "count") pattern a(v, _)
+
+5000
+96 - ModifiesS and Pattern clause with a and v as common synonym
+assign a; variable v;
+Select v such that Modifies(a, v) pattern a(v, "count + 1")
+count
+5000
+97 - Follows and Pattern clause with common synonym
+assign a; variable v; if ifs;
+Select ifs such that Follows(ifs, a) pattern a(v, _"z"_)
+20,30
+5000
+98 - Follows* and Pattern clause with common synonym
+assign assign; variable v; call c;
+Select assign pattern assign(v, "y") such that Follows*(assign, c) 
+2
+5000
+99 - Follows* and Pattern clause with common synonym and pattern returns false
+assign a; stmt stmt;
+Select stmt such that Follows*(stmt, a) pattern a("f", "23")
+
+5000
+100 - Parent and Pattern clause with a common synonym
+assign a; variable v; while w;
+Select w such that Parent(w, a) pattern a(v, "y + z")
+10
+5000
+101 - Parent* and Pattern clause with a common synonym
+assign a; stmt s;
+Select s such that Parent*(s,a) pattern a(_, _"z"_)
+10,28,30
+5000
+102 - Select BOOLEAN, returns FALSE
+assign a; stmt s; call c;
+Select BOOLEAN such that Next(1, 8) and Follows(a, c) with s.stmt# = 20
+FALSE
+5000
+103 - Select BOOLEAN, returns TRUE
+assign a; stmt s; call c; procedure p; if ifs;
+Select BOOLEAN such that Calls(p, "Example") pattern ifs("x", _, _)
+TRUE
+5000
+104 - Select tuple pattern and such that
+while w; if ifs;
+Select <w, ifs> pattern ifs("x",_, _) such that Parent(w, ifs)
+28 30
+5000
+105 - Select tuple such that and with
+assign a; variable v; call c;
+Select <a, c.procName, v.varName> such that Uses(a, v) and Follows*(c, a) with v.varName = "sum"
+23 Example sum
+5000
+106 - Select tuple such that, with and pattern
+procedure p; variable v; while w;
+Select <p, v, w> such that Calls(p, "Example") and Modifies(p, v) pattern w(v, _) with w.stmt# = 10
+Test count 10, Test x 10
 5000

@@ -1,7 +1,6 @@
 #include "pkb.h"
 #include <algorithm>
 #include <vector>
-#include <queue>
 #include "ast_utils.hpp"
 
 void PKB::ExtractEntities() {

@@ -201,14 +201,14 @@ class PKB {
                       bool forward_relation);
 
   // DFS to check reachability for NextBip and AffectsBip* relationship
-  void PKB::BipReachabilityDFS(std::set<std::pair<int, std::string>>& prev_stmts, int u,
+  void BipReachabilityDFS(std::set<std::pair<int, std::string>>& prev_stmts, int u,
     std::vector<int>& call_stack, std::string& hash);
   // DFS to check reachability for AffectsBip relationship.
   // If target is not kWild, supports fast termination to save on unnecessary computations. 
   void AffectsBipDFS(int start, std::string& start_hash, int u, std::vector<int>& call_stack, std::string& hash, std::string var_name,
     std::set<std::pair<int, std::string>>& visited);
   // Adds a stmt to affects_bip_dfs_cache if affected, else does nothing
-  void PKB::AddStmtIfAffectedBip(int start, std::string& start_hash, int v, std::string v_hash, std::string& var_name);
+  void AddStmtIfAffectedBip(int start, std::string& start_hash, int v, std::string v_hash, std::string& var_name);
   // Returns true if v is an assign stmt that modifies var_name
   bool ModifiesVarName(int v, std::string var_name);
   // DFS to check reachability for AffectsBip* relationship

@@ -1283,7 +1283,7 @@ TEST_CASE("PKB_NextSample_Correct") {
   };
 
   // Check Next(_,_)
-  std::set<std::pair<int, int>> *next_wild_wild = pkb.get_next(PKB::PKB::kWild, PKB::kWild);
+  std::set<std::pair<int, int>> *next_wild_wild = pkb.get_next(PKB::kWild, PKB::kWild);
   for (auto &[a, nexts] : next_ans) {
     for (auto &b : nexts) {
       REQUIRE(next_wild_wild->find({a, b}) != next_wild_wild->end());
@@ -1514,7 +1514,7 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
       {8, {9}}, {9, {}}
   };
   // Check Next(_,_)
-  std::set<std::pair<int, int>>* next_wild_wild = pkb.get_next(PKB::PKB::kWild, PKB::kWild);
+  std::set<std::pair<int, int>>* next_wild_wild = pkb.get_next(PKB::kWild, PKB::kWild);
   for (auto& [a, nexts] : next_ans) {
     for (auto& b : nexts) {
       REQUIRE(next_wild_wild->find({ a, b }) != next_wild_wild->end());
@@ -2039,24 +2039,24 @@ TEST_CASE("PKB_NextCacheTestTime_correct") {
     for (int j = 0; j < pkb.get_num_statements(); j++) {
       pkb.get_next(i, j);
     }
-    pkb.get_next(i, pkb.kWild);
-    pkb.get_next(pkb.kWild, i);
+    pkb.get_next(i, PKB::kWild);
+    pkb.get_next(PKB::kWild, i);
   }
-  pkb.get_next(pkb.kWild, pkb.kWild);
+  pkb.get_next(PKB::kWild, PKB::kWild);
   auto empty_cache_end = std::chrono::steady_clock::now();
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 
-  pkb.get_next(pkb.kWild, pkb.kWild);
+  pkb.get_next(PKB::kWild, PKB::kWild);
   auto full_cache_start = std::chrono::steady_clock::now();
   for (int i = 0; i < pkb.get_num_statements(); i++) {
     for (int j = 0; j < pkb.get_num_statements(); j++) {
       pkb.get_next(i, j);
     }
-    pkb.get_next(i, pkb.kWild);
-    pkb.get_next(pkb.kWild, i);
+    pkb.get_next(i, PKB::kWild);
+    pkb.get_next(PKB::kWild, i);
   }
-  pkb.get_next(pkb.kWild, pkb.kWild);
+  pkb.get_next(PKB::kWild, PKB::kWild);
   auto full_cache_end = std::chrono::steady_clock::now();
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
@@ -2112,24 +2112,24 @@ TEST_CASE("PKB_NextStarCacheTestTime_correct") {
     for (int j = 0; j < pkb.get_num_statements(); j++) {
       pkb.get_next_star(i, j);
     }
-    pkb.get_next_star(i, pkb.kWild);
-    pkb.get_next_star(pkb.kWild, i);
+    pkb.get_next_star(i, PKB::kWild);
+    pkb.get_next_star(PKB::kWild, i);
   }
-  pkb.get_next_star(pkb.kWild, pkb.kWild);
+  pkb.get_next_star(PKB::kWild, PKB::kWild);
   auto empty_cache_end = std::chrono::steady_clock::now();
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 
-  pkb.get_next_star(pkb.kWild, pkb.kWild);
+  pkb.get_next_star(PKB::kWild, PKB::kWild);
   auto full_cache_start = std::chrono::steady_clock::now();
   for (int i = 0; i < pkb.get_num_statements(); i++) {
     for (int j = 0; j < pkb.get_num_statements(); j++) {
       pkb.get_next_star(i, j);
     }
-    pkb.get_next_star(i, pkb.kWild);
-    pkb.get_next_star(pkb.kWild, i);
+    pkb.get_next_star(i, PKB::kWild);
+    pkb.get_next_star(PKB::kWild, i);
   }
-  pkb.get_next_star(pkb.kWild, pkb.kWild);
+  pkb.get_next_star(PKB::kWild, PKB::kWild);
   auto full_cache_end = std::chrono::steady_clock::now();
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
@@ -2185,24 +2185,24 @@ TEST_CASE("PKB_AffectsCacheTestTime_correct") {
     for (auto& b : pkb.get_statements(NodeType::Assign)) {
       pkb.get_affects(a->get_stmt_no(), b->get_stmt_no());
     }
-    pkb.get_affects(a->get_stmt_no(), pkb.kWild);
-    pkb.get_affects(pkb.kWild, a->get_stmt_no());
+    pkb.get_affects(a->get_stmt_no(), PKB::kWild);
+    pkb.get_affects(PKB::kWild, a->get_stmt_no());
   }
-  pkb.get_affects(pkb.kWild, pkb.kWild);
+  pkb.get_affects(PKB::kWild, PKB::kWild);
   auto empty_cache_end = std::chrono::steady_clock::now();
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 
-  pkb.get_affects(pkb.kWild, pkb.kWild);
+  pkb.get_affects(PKB::kWild, PKB::kWild);
   auto full_cache_start = std::chrono::steady_clock::now();
   for (auto& a : pkb.get_statements(NodeType::Assign)) {
     for (auto& b : pkb.get_statements(NodeType::Assign)) {
       pkb.get_affects(a->get_stmt_no(), b->get_stmt_no());
     }
-    pkb.get_affects(a->get_stmt_no(), pkb.kWild);
-    pkb.get_affects(pkb.kWild, a->get_stmt_no());
+    pkb.get_affects(a->get_stmt_no(), PKB::kWild);
+    pkb.get_affects(PKB::kWild, a->get_stmt_no());
   }
-  pkb.get_affects(pkb.kWild, pkb.kWild);
+  pkb.get_affects(PKB::kWild, PKB::kWild);
   auto full_cache_end = std::chrono::steady_clock::now();
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
@@ -2258,24 +2258,24 @@ TEST_CASE("PKB_AffectsStarCacheTestTime_correct") {
     for (auto& b : pkb.get_statements(NodeType::Assign)) {
       pkb.get_affects_star(a->get_stmt_no(), b->get_stmt_no());
     }
-    pkb.get_affects_star(a->get_stmt_no(), pkb.kWild);
-    pkb.get_affects_star(pkb.kWild, a->get_stmt_no());
+    pkb.get_affects_star(a->get_stmt_no(), PKB::kWild);
+    pkb.get_affects_star(PKB::kWild, a->get_stmt_no());
   }
-  pkb.get_affects_star(pkb.kWild, pkb.kWild);
+  pkb.get_affects_star(PKB::kWild, PKB::kWild);
   auto empty_cache_end = std::chrono::steady_clock::now();
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 
-  pkb.get_affects_star(pkb.kWild, pkb.kWild);
+  pkb.get_affects_star(PKB::kWild, PKB::kWild);
   auto full_cache_start = std::chrono::steady_clock::now();
   for (auto& a : pkb.get_statements(NodeType::Assign)) {
     for (auto& b : pkb.get_statements(NodeType::Assign)) {
       pkb.get_affects_star(a->get_stmt_no(), b->get_stmt_no());
     }
-    pkb.get_affects_star(a->get_stmt_no(), pkb.kWild);
-    pkb.get_affects_star(pkb.kWild, a->get_stmt_no());
+    pkb.get_affects_star(a->get_stmt_no(), PKB::kWild);
+    pkb.get_affects_star(PKB::kWild, a->get_stmt_no());
   }
-  pkb.get_affects_star(pkb.kWild, pkb.kWild);
+  pkb.get_affects_star(PKB::kWild, PKB::kWild);
   auto full_cache_end = std::chrono::steady_clock::now();
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
@@ -2409,7 +2409,7 @@ TEST_CASE("PKB_NextBipSample_Correct") {
     };
 
     // Check NextBip(_,_)
-    std::set<std::pair<int, int>>* next_bip_wild_wild = pkb.get_next_bip(PKB::PKB::kWild, PKB::kWild);
+    std::set<std::pair<int, int>>* next_bip_wild_wild = pkb.get_next_bip(PKB::kWild, PKB::kWild);
 
     for (auto& [a, nexts] : next_bip_ans) {
       for (auto& b : nexts) {
@@ -2515,7 +2515,7 @@ TEST_CASE("PKB_NextBipStarSample_Correct") {
   };
 
   // Check NextBip*(_,_)
-  std::set<std::pair<int, int>>* next_bip_star_wild_wild = pkb.get_next_bip_star(PKB::PKB::kWild, PKB::kWild);
+  std::set<std::pair<int, int>>* next_bip_star_wild_wild = pkb.get_next_bip_star(PKB::kWild, PKB::kWild);
   for (auto& [a, nexts] : next_bip_star_ans) {
     for (auto& b : nexts) {
       REQUIRE(next_bip_star_wild_wild->find({ a, b }) != next_bip_star_wild_wild->end());
@@ -2840,24 +2840,24 @@ TEST_CASE("PKB_NextBipCacheTestTime_correct") {
     for (int j = 0; j < pkb.get_num_statements(); j++) {
       pkb.get_next_bip(i, j);
     }
-    pkb.get_next_bip(i, pkb.kWild);
-    pkb.get_next_bip(pkb.kWild, i);
+    pkb.get_next_bip(i, PKB::kWild);
+    pkb.get_next_bip(PKB::kWild, i);
   }
-  pkb.get_next_bip(pkb.kWild, pkb.kWild);
+  pkb.get_next_bip(PKB::kWild, PKB::kWild);
   auto empty_cache_end = std::chrono::steady_clock::now();
   pkb.ClearNextAffectsBipCache();
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
 
-  pkb.get_next_bip(pkb.kWild, pkb.kWild);
+  pkb.get_next_bip(PKB::kWild, PKB::kWild);
   auto full_cache_start = std::chrono::steady_clock::now();
   for (int i = 0; i < pkb.get_num_statements(); i++) {
     for (int j = 0; j < pkb.get_num_statements(); j++) {
       pkb.get_next_bip(i, j);
     }
-    pkb.get_next_bip(i, pkb.kWild);
-    pkb.get_next_bip(pkb.kWild, i);
+    pkb.get_next_bip(i, PKB::kWild);
+    pkb.get_next_bip(PKB::kWild, i);
   }
-  pkb.get_next_bip(pkb.kWild, pkb.kWild);
+  pkb.get_next_bip(PKB::kWild, PKB::kWild);
   auto full_cache_end = std::chrono::steady_clock::now();
   pkb.ClearNextAffectsBipCache();
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
@@ -2899,24 +2899,24 @@ TEST_CASE("PKB_NextBipStarCacheTestTime_correct") {
     for (int j = 0; j < pkb.get_num_statements(); j++) {
       pkb.get_next_bip_star(i, j);
     }
-    pkb.get_next_bip_star(i, pkb.kWild);
-    pkb.get_next_bip_star(pkb.kWild, i);
+    pkb.get_next_bip_star(i, PKB::kWild);
+    pkb.get_next_bip_star(PKB::kWild, i);
   }
-  pkb.get_next_bip_star(pkb.kWild, pkb.kWild);
+  pkb.get_next_bip_star(PKB::kWild, PKB::kWild);
   auto empty_cache_end = std::chrono::steady_clock::now();
   pkb.ClearNextAffectsBipCache();
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
 
-  pkb.get_next_bip_star(pkb.kWild, pkb.kWild);
+  pkb.get_next_bip_star(PKB::kWild, PKB::kWild);
   auto full_cache_start = std::chrono::steady_clock::now();
   for (int i = 0; i < pkb.get_num_statements(); i++) {
     for (int j = 0; j < pkb.get_num_statements(); j++) {
       pkb.get_next_bip_star(i, j);
     }
-    pkb.get_next_bip_star(i, pkb.kWild);
-    pkb.get_next_bip_star(pkb.kWild, i);
+    pkb.get_next_bip_star(i, PKB::kWild);
+    pkb.get_next_bip_star(PKB::kWild, i);
   }
-  pkb.get_next_bip_star(pkb.kWild, pkb.kWild);
+  pkb.get_next_bip_star(PKB::kWild, PKB::kWild);
   auto full_cache_end = std::chrono::steady_clock::now();
   pkb.ClearNextAffectsBipCache();
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
@@ -2958,24 +2958,24 @@ TEST_CASE("PKB_AffectsBipCacheTestTime_correct") {
     for (auto& b : pkb.get_statements(NodeType::Assign)) {
       pkb.get_affects_bip(a->get_stmt_no(), b->get_stmt_no());
     }
-    pkb.get_affects_bip(a->get_stmt_no(), pkb.kWild);
-    pkb.get_affects_bip(pkb.kWild, a->get_stmt_no());
+    pkb.get_affects_bip(a->get_stmt_no(), PKB::kWild);
+    pkb.get_affects_bip(PKB::kWild, a->get_stmt_no());
   }
-  pkb.get_affects_bip(pkb.kWild, pkb.kWild);
+  pkb.get_affects_bip(PKB::kWild, PKB::kWild);
   auto empty_cache_end = std::chrono::steady_clock::now();
   pkb.ClearNextAffectsBipCache();
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
 
-  pkb.get_affects_bip(pkb.kWild, pkb.kWild);
+  pkb.get_affects_bip(PKB::kWild, PKB::kWild);
   auto full_cache_start = std::chrono::steady_clock::now();
   for (auto& a : pkb.get_statements(NodeType::Assign)) {
     for (auto& b : pkb.get_statements(NodeType::Assign)) {
       pkb.get_affects_bip(a->get_stmt_no(), b->get_stmt_no());
     }
-    pkb.get_affects_bip(a->get_stmt_no(), pkb.kWild);
-    pkb.get_affects_bip(pkb.kWild, a->get_stmt_no());
+    pkb.get_affects_bip(a->get_stmt_no(), PKB::kWild);
+    pkb.get_affects_bip(PKB::kWild, a->get_stmt_no());
   }
-  pkb.get_affects_bip(pkb.kWild, pkb.kWild);
+  pkb.get_affects_bip(PKB::kWild, PKB::kWild);
   auto full_cache_end = std::chrono::steady_clock::now();
   pkb.ClearNextAffectsBipCache();
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
@@ -3017,24 +3017,24 @@ TEST_CASE("PKB_AffectsBipStarCacheTestTime_correct") {
     for (auto& b : pkb.get_statements(NodeType::Assign)) {
       pkb.get_affects_bip_star(a->get_stmt_no(), b->get_stmt_no());
     }
-    pkb.get_affects_bip_star(a->get_stmt_no(), pkb.kWild);
-    pkb.get_affects_bip_star(pkb.kWild, a->get_stmt_no());
+    pkb.get_affects_bip_star(a->get_stmt_no(), PKB::kWild);
+    pkb.get_affects_bip_star(PKB::kWild, a->get_stmt_no());
   }
-  pkb.get_affects_bip_star(pkb.kWild, pkb.kWild);
+  pkb.get_affects_bip_star(PKB::kWild, PKB::kWild);
   auto empty_cache_end = std::chrono::steady_clock::now();
   pkb.ClearNextAffectsBipCache();
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
 
-  pkb.get_affects_bip_star(pkb.kWild, pkb.kWild);
+  pkb.get_affects_bip_star(PKB::kWild, PKB::kWild);
   auto full_cache_start = std::chrono::steady_clock::now();
   for (auto& a : pkb.get_statements(NodeType::Assign)) {
     for (auto& b : pkb.get_statements(NodeType::Assign)) {
       pkb.get_affects_bip_star(a->get_stmt_no(), b->get_stmt_no());
     }
-    pkb.get_affects_bip_star(a->get_stmt_no(), pkb.kWild);
-    pkb.get_affects_bip_star(pkb.kWild, a->get_stmt_no());
+    pkb.get_affects_bip_star(a->get_stmt_no(), PKB::kWild);
+    pkb.get_affects_bip_star(PKB::kWild, a->get_stmt_no());
   }
-  pkb.get_affects_star(pkb.kWild, pkb.kWild);
+  pkb.get_affects_star(PKB::kWild, PKB::kWild);
   auto full_cache_end = std::chrono::steady_clock::now();
   pkb.ClearNextAffectsBipCache();
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());

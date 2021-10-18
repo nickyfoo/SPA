@@ -492,6 +492,8 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefRight(SuchThatClause *relationsh
           right_stmt_ref.set_entity_type(entity_type);
           right_such_that_ref = new SuchThatRef(right_stmt_ref);
           break;
+        } else {
+          return nullptr;
         }
       }
       case EntityType::Procedure:

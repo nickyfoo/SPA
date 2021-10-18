@@ -4,7 +4,7 @@
 
 using namespace std;
 
-TEST_CASE("Test 1: Correctly adding entities to entities_map") {
+TEST_CASE("AddingEntitiesToMap_StatementEntities_ReturnsEntitiesMap") {
   EntityDeclarationParser *entity_parser =
       EntityDeclarationParser::get_instance();
   vector<string> *entities = new vector<string>({"stmt s1", "stmt s2"});
@@ -25,7 +25,7 @@ TEST_CASE("Test 1: Correctly adding entities to entities_map") {
   REQUIRE(entities_map->at("s2")->get_type() == EntityType::Stmt);
 }
 
-TEST_CASE("Test 2: Correctly adding entities to entities_map") {
+TEST_CASE("AddingEntitiesToMap_OtherEntityTypes_ReturnsEntitiesMap") {
   EntityDeclarationParser *entity_parser =
       EntityDeclarationParser::get_instance();
   vector<string> *entities = new vector<string>(
@@ -49,7 +49,7 @@ TEST_CASE("Test 2: Correctly adding entities to entities_map") {
   REQUIRE(entities_map->at("procedure")->get_type() == EntityType::Procedure);
 }
 
-TEST_CASE("Test 3: Having multiple synonyms for 1 entity type_") {
+TEST_CASE("AddingEntitiesToMap_MultipleSynonymsForOneEntityType_ReturnsEntitiesMap") {
   EntityDeclarationParser *entity_parser =
       EntityDeclarationParser::get_instance();
   vector<string> *entities =
@@ -75,7 +75,7 @@ TEST_CASE("Test 3: Having multiple synonyms for 1 entity type_") {
   REQUIRE(entities_map->at("s2")->get_type() == EntityType::Stmt);
 }
 
-TEST_CASE("Test 4: Invalid test: invalid entity") {
+TEST_CASE("InvalidEntityDeclaration_WrongEntityType_ReturnsNullptr") {
   EntityDeclarationParser *entity_parser =
       EntityDeclarationParser::get_instance();
   vector<string> *entities = new vector<string>({"stmts s", "procedure p"});
@@ -86,7 +86,7 @@ TEST_CASE("Test 4: Invalid test: invalid entity") {
   REQUIRE(entities_map == nullptr);
 }
 
-TEST_CASE("Test 5: Invalid test: invalid synonym") {
+TEST_CASE("InvalidEntityDeclaration_InvalidSynonym_ReturnsNullptr") {
   EntityDeclarationParser *entity_parser =
       EntityDeclarationParser::get_instance();
   vector<string> *entities = new vector<string>({"stmt s?", "procedure p"});
@@ -97,7 +97,7 @@ TEST_CASE("Test 5: Invalid test: invalid synonym") {
   REQUIRE(entities_map == nullptr);
 }
 
-TEST_CASE("Invalid test: repeat synonym name") {
+TEST_CASE("InvalidEntityDeclaration_RepeatSynonym_ReturnsNullptr") {
   EntityDeclarationParser *entity_parser =
       EntityDeclarationParser::get_instance();
   vector<string> *entities =
@@ -109,7 +109,7 @@ TEST_CASE("Invalid test: repeat synonym name") {
   REQUIRE(entities_map == nullptr);
 }
 
-TEST_CASE("Missing entity declaration") {
+TEST_CASE("InvalidEntityDeclaration_MissingSynonym_ReturnsNullptr") {
   EntityDeclarationParser *entity_parser =
       EntityDeclarationParser::get_instance();
   vector<string> *entities =
@@ -120,7 +120,7 @@ TEST_CASE("Missing entity declaration") {
   REQUIRE(entities_map == nullptr);
 }
 
-TEST_CASE("Extra space entity declaration") {
+TEST_CASE("AddingEntitiesToMap_ExtraSpaceInEntityDeclaration_ReturnsEntitiesMap") {
   EntityDeclarationParser *entity_parser =
       EntityDeclarationParser::get_instance();
   vector<string> *entities =
@@ -129,4 +129,15 @@ TEST_CASE("Extra space entity declaration") {
   unordered_map<string, EntityDeclaration *> *entities_map =
       entity_parser->get_entities_map();
   REQUIRE(entities_map != nullptr);
+}
+
+TEST_CASE("InvalidSynonym_MissingCommaBetweenMultipleDeclaration_ReturnsNullptr") {
+  EntityDeclarationParser *entity_parser =
+      EntityDeclarationParser::get_instance();
+  vector<string> *entities =
+      new vector<string>({"stmt s, stmt s1", "call call"});
+  entity_parser->set_entities(entities);
+  unordered_map<string, EntityDeclaration *> *entities_map =
+      entity_parser->get_entities_map();
+  REQUIRE(entities_map == nullptr);
 }

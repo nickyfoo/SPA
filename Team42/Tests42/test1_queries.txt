@@ -163,4 +163,173 @@ assign Select; variable pattern;
 Select Select such that Uses(Select,pattern) pattern Select(pattern,_)
 5,7
 5000
+34 - Calls with synonym and synonym
+procedure p1,p2;
+Select <p1, p2> such that Calls(p1, p2)
+Example f,f g,g h
+5000
+35 - Calls with argument and synonym
+procedure p;
+Select p such that Calls("f", p)
+g
+5000
+36 - Calls with synonym and argument
+procedure p;
+Select p such that Calls(p, "h")
+g
+5000
+37 - Calls with argument and argument
+variable v;
+Select v such that Calls("Example", "f")
+a,b,c,x,y,z,v,t
+5000
+38 - Calls with wildcard and synonym
+procedure p;
+Select p such that Calls(_, p)
+f,g,h
+5000
+39 - Calls with synonym and integer (invalid)
+procedure p;
+Select p such that Calls(p, 2)
 
+5000
+40 - Calls with assign and procedure (invalid)
+assign a; procedure p;
+Select p such that Calls(a, p)
+
+5000
+41 - Calls with procedure and stmt (invalid)
+stmt s; procedure p;
+Select s such that Calls(p, s)
+
+5000
+42 - Calls* with synonym and synonym
+procedure p1,p2;
+Select <p1, p2> such that Calls*(p1, p2)
+Example f,Example g, Example h,f g,f h,g h
+5000
+43 - Calls* with argument and synonym
+procedure p;
+Select p such that Calls*("f", p)
+g,h
+5000
+44 - Calls* with synonym and argument
+procedure p;
+Select p such that Calls*(p, "h")
+Example,f,g
+5000
+45 - Calls* with argument and argument
+variable v;
+Select v such that Calls*("Example", "h")
+a,b,c,x,y,z,v,t
+5000
+46 - Calls* with wildcard and synonym
+procedure p;
+Select p such that Calls*(_, p)
+f,g,h
+5000
+47 - Calls* with synonym and integer (invalid)
+procedure p;
+Select p such that Calls*(p, 2)
+
+5000
+48 - Calls* with assign and procedure (invalid)
+assign a; procedure p;
+Select p such that Calls*(a, p)
+
+5000
+49 - Calls* with procedure and stmt (invalid)
+stmt s; procedure p;
+Select s such that Calls*(p, s)
+
+5000
+50 - Next with synonym and synonym
+stmt s; assign a;
+Select <s, a> such that Next(s,a)
+1 2,2 3,4 5,6 7,6 8,13 14
+5000
+51 - Next with synonym and integer
+stmt s;
+Select s such that Next(s,4)
+3,9
+5000
+52 - Next with synonym and wildcard
+print pn;
+Select pn such that Next(pn,_)
+10,16,20
+5000
+53 - Next with integer and synonym
+stmt s;
+Select s such that Next(4,s)
+5,10
+5000
+54 - Next with integer and integer
+read r;
+Select r such that Next(15,17)
+12,13,22
+5000
+54 - Next with integer and wildcard
+stmt s;
+Select s such that Next(18,_)
+
+5000
+55 - Next with wildcard and synonym
+assign a;
+Select a such that Next(_,a)
+2,3,5,7,8,14
+5000
+56 - Next with wildcard and integer
+print pn;
+Select pn such that Next(_,17)
+10,11,16,18,20
+5000
+57 - Next with wildcard and wildcard
+call c;
+Select c such that Next(_,_)
+9,17,21
+5000
+58 - Next* with synonym and synonym
+stmt s; call c;
+Select <s,c> such that Next*(c,s)
+4 9,5 9,6 9,7 9,8 9,9 9,10 9,11 9,18 17
+5000
+59 - Next* with synonym and integer
+stmt s;
+Select s such that Next*(s,4)
+1,2,3,4,5,6,7,8,9
+5000
+60 - Next* with synonym and wildcard
+print pn;
+Select pn such that Next*(pn,_)
+10,16,20
+5000
+61 - Next* with integer and synonym
+stmt s;
+Select s such that Next*(4,s)
+4,5,6,7,8,9,10,11
+5000
+62 - Next* with integer and integer
+read r;
+Select r such that Next*(12,18)
+12,13,22
+5000
+63 - Next* with integer and wildcard
+stmt s;
+Select s such that Next*(18,_)
+
+5000
+64 - Next* with wildcard and synonym
+assign a;
+Select a such that Next*(_,a)
+2,3,5,7,8,14
+5000
+65 - Next* with wildcard and integer
+print pn;
+Select pn such that Next*(_,4)
+10,11,16,18,20
+5000
+66 - Next* with wildcard and wildcard
+call c;
+Select c such that Next*(_,_)
+9,17,21
+5000

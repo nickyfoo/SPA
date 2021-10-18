@@ -9,175 +9,52 @@
 #include "query_evaluator.h"
 #include "query_preprocessor.h"
 
-//std::string sourcePQL = "procedure main {"
-//                        "flag = 0;"
-//                        "call computeCentroid;"
-//                        "call printResults;"
-//                        "}"
-//                        "procedure readPoint {"
-//                        "read x;"
-//                        "read y;"
-//                        "}"
-//                        "procedure printResults {"
-//                        "print flag;"
-//                        "print cenX;"
-//                        "print cenY;"
-//                        "print normSq;"
-//                        "}"
-//                        "procedure computeCentroid {"
-//                        "count = 0;"
-//                        "cenX = 0;"
-//                        "cenY = 0;"
-//                        "call readPoint;"
-//                        "while((x != 0) && (y != 0)) {"
-//                        "count = count+1;"
-//                        "cenX = cenX + x;"
-//                        "cenY = cenY + y;"
-//                        "call readPoint;"
-//                        "}"
-//                        "if (count == 0) then {"
-//                        "flag = 1;"
-//                        "} else {"
-//                        "cenX = cenX / count;"
-//                        "cenY = cenY / count;"
-//                        "}"
-//                        "normSq = cenX * cenX + cenY * cenY;"
-//                        "}";
-//
-//std::string samplePQL =
-//    "procedure Example {"
-//    "x = 2;"
-//    "z = 3;"
-//    "i = 5;"
-//    "while (i!=0) {"
-//    "x = x - 1;"
-//    "if (x==1) then {"
-//    "z = x + 1; }"
-//    "else {"
-//    "y = z + x; }"
-//    "z = z + x + i;"
-//    "call q;"
-//    "i = i - 1; }"
-//    "call p; }"
-//
-//    "procedure p {"
-//    "if (x<0) then {"
-//    "while (i>0) {"
-//    "x = z * 3 + 2 * y;"
-//    "call q;"
-//    "i = i - 1; }"
-//    "x = x + 1;"
-//    "z = x + z; }"
-//    "else {"
-//    "z = 1; }"
-//    " z = z + x + i; }"
-//
-//    "procedure q {"
-//    "if (x==1) then {"
-//    "z = x + 1; }"
-//    "else {"
-//    "x = z + x; } }";
+TEST_CASE("SingleClause_SuchThatClause_OutputsVectorOfStrings") {
+  SECTION("Follows with one left syn") {
+    std::string ss = "stmt s1;\n"
+                     "Select s1 such that Follows(s1, 3)";
+    auto query = QueryPreprocessor(ss);
+    std::tuple<std::vector<ResultClause *> *,
+    std::vector<SuchThatClause *> *,
+    std::vector<PatternClause *> *,
+    std::vector<WithClause *> *,
+    std::unordered_map<std::string, EntityDeclaration *> *,
+    bool> *clause = query.get_clauses();
+    QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clause),
+                                                    std::get<2>(*clause),
+                                                    std::get<3>(*clause),
+                                                    std::get<0>(*clause));
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
+                                       clause_groups,
+                                       std::get<4>(*clause),
+                                       std::get<5>(*clause));
 
-std::string samplePQL = "procedure Example {"
-                        "x = 2;"
-                        "z = 3;"
-                        "i = 5;"
-                        "while (i!=0) {"
-                        "x = x - 1;"
-                        "if (x==1) then {"
-                        "z = x + 1; }"
-                        "else {"
-                        "y = z + x; }"
-                        "z = z + x + i;"
-                        "call q;"
-                        "i = i - 1; } }"
-
-                        "procedure q {"
-                        "if (x==1) then {"
-                        "z = x + 1; }"
-                        "else {"
-                        "x = z + x; } }";
-
-TEST_CASE("Test 1: Follows Synonym + Integer") {
-  std::string ss = "stmt s1;\n"
-                   "Select s1 such that Follows(s1, 3)";
-  auto query = QueryPreprocessor(ss);
-  std::tuple<std::vector<ResultClause *> *,
-  std::vector<SuchThatClause *> *,
-  std::vector<PatternClause *> *,
-  std::vector<WithClause *> *,
-  std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clause),
-                                                  std::get<2>(*clause),
-                                                  std::get<3>(*clause),
-                                                  std::get<0>(*clause));
-  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
-  PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
-                           clause_groups,
-                           std::get<4>(*clause),
-                           std::get<5>(*clause));
-
-  // Parse source
-  BufferedLexer lexer(samplePQL);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
-
-  auto evaluator = QueryEvaluator(pql_query, &pkb);
-  std::vector<std::string> *ret = evaluator.Evaluate();
-
-  // printing statements
-  for (Statement *stmt : pkb.get_all_statements()) {
-    stmt->FollowsInfo();
-    stmt->ParentInfo();
-    stmt->ModifiesInfo();
-    stmt->UsesInfo();
+    std::vector<std::string> expected = {"2"};
   }
 
-  // printing procedures
-  for (Procedure *proc : pkb.get_all_procedures()) {
-    proc->UsesInfo();
-    proc->ModifiesInfo();
-    proc->CallsInfo();
+  SECTION("Follows with 1 right syn") {
+    std::string ss = "stmt s1, s2;\n"
+                     "Select s1 such that Follows(1, s1)";
+    auto query = QueryPreprocessor(ss);
+    std::tuple<std::vector<ResultClause *> *,
+    std::vector<SuchThatClause *> *,
+    std::vector<PatternClause *> *,
+    std::vector<WithClause *> *,
+    std::unordered_map<std::string, EntityDeclaration *> *,
+    bool> *clause = query.get_clauses();
+    QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clause),
+                                                    std::get<2>(*clause),
+                                                    std::get<3>(*clause),
+                                                    std::get<0>(*clause));
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
+                                       clause_groups,
+                                       std::get<4>(*clause),
+                                       std::get<5>(*clause));
+
+    std::vector<std::string> expected = {"2"};
   }
-
-  // printing variables
-  for (Variable *var : pkb.get_all_variables()) {
-    std::cout << "Variable index" << var->get_index() << " \n";
-    var->ModifiesInfo();
-    var->UsesInfo();
-  }
-
-  for (Constant *cons : pkb.get_all_constants()) {
-    std::cout << "Constant value " << cons->get_value() << "\n";
-  }
-}
-
-TEST_CASE("Test 2: Follows Synonym + Synonym") {
-  std::string ss = "stmt s1, s2;\n"
-                   "Select s1 such that Follows(1, s1)";
-  auto query = QueryPreprocessor(ss);
-  std::tuple<std::vector<ResultClause *> *,
-  std::vector<SuchThatClause *> *,
-  std::vector<PatternClause *> *,
-  std::vector<WithClause *> *,
-  std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clause),
-                                                  std::get<2>(*clause),
-                                                  std::get<3>(*clause),
-                                                  std::get<0>(*clause));
-  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
-  PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
-                                     clause_groups,
-                                     std::get<4>(*clause),
-                                     std::get<5>(*clause));
-
-  std::vector<std::string> expected = {"2"};
-
-//  REQUIRE(ret->size() == expected.size());
-//  REQUIRE(ret->at(0) == expected.at(0));
 }
 
 //TEST_CASE("Test 3: Follows Integer + Synonym") {

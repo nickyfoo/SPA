@@ -4,6 +4,8 @@
 #include <vector>
 
 #include "pkb.h"
+#include <lexer.h>
+#include <parse.h>
 
 class StatementTableStub : public StmtTable {
  protected:
@@ -115,6 +117,60 @@ class PKBStub : public PKB {
 
   Procedure *get_procedure(std::string &name) override {
     return proc_table_.get_proc(name);
+  }
+
+  static void PrintPKB() {
+    // SIMPLE source we are populating the PKB based on.
+    std::string samplePQL = "procedure Example {"
+                            "x = 2;"
+                            "z = 3;"
+                            "i = 5;"
+                            "while (i!=0) {"
+                            "x = x - 1;"
+                            "if (x==1) then {"
+                            "z = x + 1; }"
+                            "else {"
+                            "y = z + x; }"
+                            "z = z + x + i;"
+                            "call q;"
+                            "i = i - 1; } }"
+
+                            "procedure q {"
+                            "if (x==1) then {"
+                            "z = x + 1; }"
+                            "else {"
+                            "x = z + x; } }";
+    //Parsing source
+    BufferedLexer lexer(samplePQL);
+    ParseState s{};
+    ProgramNode *p = ParseProgram(&lexer, &s);
+    PKB pkb = PKB(p);
+
+    // printing statements
+    for (Statement *stmt : pkb.get_all_statements()) {
+      stmt->FollowsInfo();
+      stmt->ParentInfo();
+      stmt->ModifiesInfo();
+      stmt->UsesInfo();
+    }
+
+    // printing procedures
+    for (Procedure *proc : pkb.get_all_procedures()) {
+      proc->UsesInfo();
+      proc->ModifiesInfo();
+      proc->CallsInfo();
+    }
+
+    // printing variables
+    for (Variable *var : pkb.get_all_variables()) {
+      std::cout << "Variable index" << var->get_index() << " \n";
+      var->ModifiesInfo();
+      var->UsesInfo();
+    }
+
+    for (Constant *cons : pkb.get_all_constants()) {
+      std::cout << "Constant value " << cons->get_value() << "\n";
+    }
   }
 
   static PKBStub *BuildPKB() {

@@ -2667,3 +2667,16 @@ TEST_CASE("Select_QueriesWithSuchThatPatternWith_ReturnsCorrect") {
   REQUIRE(with->get_right_type() == EntityType::ProgLine);
   REQUIRE(with->get_right_attr_value_type() == AttrValueType::Integer);
 }
+
+TEST_CASE("Calls_ProcedureAndRead_ReturnsNullPtr") {
+  std::string ss = "procedure p; read r;"
+                   "Select p such that Calls(r, p)";
+  auto query = QueryPreprocessor(ss);
+  std::tuple<std::vector<ResultClause *> *,
+  std::vector<SuchThatClause *> *,
+  std::vector<PatternClause *> *,
+  std::vector<WithClause *> *,
+  std::unordered_map<std::string, EntityDeclaration *> *,
+  bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == false);
+}

@@ -6,6 +6,11 @@ Procedure::Procedure(std::string name, int stmt_no) {
   this->first_statement_ = stmt_no;
 }
 
+
+Procedure::Procedure(std::string name) {
+  this->name_ = name;
+}
+
 Procedure::~Procedure() = default;
 
 std::string Procedure::get_name() {

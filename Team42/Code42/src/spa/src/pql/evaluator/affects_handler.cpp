@@ -1,5 +1,6 @@
 #include "affects_handler.h"
 #include "ast.h"
+#include <assert.h>
 
 AffectsHandler::AffectsHandler() {}
 

@@ -27,10 +27,18 @@ std::set<std::pair<int, int>>* PKB::get_next_bip(int a, int b) {
   int n = stmt_table_.get_num_statements() + 1;
   // Invalid line nums
   if (a < 0 || a >= n || b < 0 || b >= n) {
-    affects_bip_cache[a][b] = std::set<std::pair<int, int>>();
+    next_bip_cache[a][b] = std::set<std::pair<int, int>>();
     return &next_bip_cache[a][b];
   }
   if (a == kWild && b == kWild) {
+    next_bip_cache[kWild][kWild] = std::set<std::pair<int, int>>();
+    for (int i = 0; i < n; i++) {
+      next_bip_cache[i][kWild] = std::set<std::pair<int, int>>();
+      next_bip_cache[kWild][i] = std::set<std::pair<int, int>>();
+      for (int j = 0; j < n; j++) {
+        next_bip_cache[i][j] = std::set<std::pair<int, int>>();
+      }
+    }
     for (auto& [u, al_u] : cfg_bip_al_) {
       for (auto& [v,branch] : al_u) {
         next_bip_cache[kWild][kWild].insert({ u, v });
@@ -41,18 +49,27 @@ std::set<std::pair<int, int>>* PKB::get_next_bip(int a, int b) {
     }
   }
   else if (a == kWild && b != kWild) {
+    next_bip_cache[kWild][b] = std::set<std::pair<int, int>>();
+    for (int i = 0; i < n; i++) {
+      next_bip_cache[i][b] = std::set<std::pair<int, int>>();
+    }
     for (auto& [v, branch] : reverse_cfg_bip_al_[b]) {
       next_bip_cache[kWild][b].insert({ v, b });
       next_bip_cache[v][b].insert({ v, b });
     }
   }
   else if (a != kWild && b == kWild) {
+    next_bip_cache[a][kWild] = std::set<std::pair<int, int>>();
+    for (int i = 0; i < n; i++) {
+      next_bip_cache[a][i] = std::set<std::pair<int, int>>();
+    }
     for (auto& [v, branch] : cfg_bip_al_[a]) {
       next_bip_cache[a][kWild].insert({ a, v });
       next_bip_cache[a][v].insert({ a, v });
     }
   }
   else {
+    next_bip_cache[a][b] = std::set<std::pair<int, int>>();
     if (cfg_bip_al_[a].lower_bound({ b,INT_MIN }) != cfg_bip_al_[a].end()) {
       next_bip_cache[a][b].insert({ a, b });
     }
@@ -75,6 +92,15 @@ std::set<std::pair<int, int>>* PKB::get_next_bip_star(int a, int b) {
   std::set<std::pair<int, std::string>> prev_stmts;
   std::string hash = "";
   if (a == kWild) {
+    next_bip_star_cache[kWild][kWild] = std::set<std::pair<int, int>>();
+    for (int i = 0; i < n; i++) {
+      next_bip_star_cache[i][kWild] = std::set<std::pair<int, int>>();
+      next_bip_star_cache[kWild][i] = std::set<std::pair<int, int>>();
+      for (int j = 0; j < n; j++) {
+        next_bip_star_cache[i][j] = std::set<std::pair<int, int>>();
+      }
+    }
+
     for (auto& stmt : stmt_table_.get_all_statements()) {
       int stmt_no = stmt->get_stmt_no();
       for (auto call_stack : *stmt->get_call_stacks()) {
@@ -96,6 +122,11 @@ std::set<std::pair<int, int>>* PKB::get_next_bip_star(int a, int b) {
     }
   }
   else if (a != kWild) {
+    next_bip_star_cache[a][kWild] = std::set<std::pair<int, int>>();
+    for (int i = 0; i < n; i++) {
+      next_bip_star_cache[a][i] = std::set<std::pair<int, int>>();
+    }
+
     for (auto call_stack : *stmt_table_.get_statement(a)->get_call_stacks()) {
       hash = CallStackToString(&call_stack);
       if (bip_reachability_dfs_cache.find(a) == bip_reachability_dfs_cache.end()
@@ -137,6 +168,16 @@ std::set<std::pair<int, int>>* PKB::get_affects_bip(int a, int b) {
         return &affects_bip_cache[a][b];
       }
     }
+
+    affects_bip_cache[kWild][kWild] = std::set<std::pair<int, int>>();
+    for (int i = 0; i < n; i++) {
+      affects_bip_cache[i][kWild] = std::set<std::pair<int, int>>();
+      affects_bip_cache[kWild][i] = std::set<std::pair<int, int>>();
+      for (int j = 0; j < n; j++) {
+        affects_bip_cache[i][j] = std::set<std::pair<int, int>>();
+      }
+    }
+
     for (auto& stmt : stmt_table_.get_statements(NodeType::Assign)) {
       int stmt_no = stmt->get_stmt_no();
       if (stmt->get_modifies()->size() != 1) continue;
@@ -175,6 +216,11 @@ std::set<std::pair<int, int>>* PKB::get_affects_bip(int a, int b) {
         affects_bip_cache[a][b] = std::set<std::pair<int, int>>();
         return &affects_bip_cache[a][b];
       }
+    }
+
+    affects_bip_cache[a][kWild] = std::set<std::pair<int, int>>();
+    for (int i = 0; i < n; i++) {
+      affects_bip_cache[a][i] = std::set<std::pair<int, int>>();
     }
 
     std::string start_hash;
@@ -222,6 +268,15 @@ std::set<std::pair<int, int>>* PKB::get_affects_bip_star(int a, int b) {
       }
     }
 
+    affects_bip_star_cache[kWild][kWild] = std::set<std::pair<int, int>>();
+    for (int i = 0; i < n; i++) {
+      affects_bip_star_cache[i][kWild] = std::set<std::pair<int, int>>();
+      affects_bip_star_cache[kWild][i] = std::set<std::pair<int, int>>();
+      for (int j = 0; j < n; j++) {
+        affects_bip_star_cache[i][j] = std::set<std::pair<int, int>>();
+      }
+    }
+
     for (auto& stmt : stmt_table_.get_statements(NodeType::Assign)) {
       int stmt_no = stmt->get_stmt_no();
       for (auto call_stack : *stmt->get_call_stacks()) {
@@ -258,6 +313,11 @@ std::set<std::pair<int, int>>* PKB::get_affects_bip_star(int a, int b) {
         affects_bip_star_cache[a][b] = std::set<std::pair<int, int>>();
         return &affects_bip_star_cache[a][b];
       }
+    }
+
+    affects_bip_star_cache[a][kWild] = std::set<std::pair<int, int>>();
+    for (int i = 0; i < n; i++) {
+      affects_bip_star_cache[a][i] = std::set<std::pair<int, int>>();
     }
 
     int stmt_no = stmt->get_stmt_no();

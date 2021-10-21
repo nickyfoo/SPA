@@ -7,6 +7,8 @@ class Procedure : public Entity {
  public:
   explicit Procedure(std::string name, int stmt_no);
 
+  explicit Procedure(std::string name);
+
   ~Procedure();
 
   // Gets the name of procedure.

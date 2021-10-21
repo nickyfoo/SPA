@@ -1,0 +1,167 @@
+procedure main {
+	ad035csdqxd = 12453851579105185712372310598797061;
+	read ad035csdqxd;
+	print ad035csdqxd;
+
+	ifwhile = callprint + ad035csdqxd;
+	read = 3 + while + if + call;
+	call = while;
+
+	call TestKeywords;
+	call TestDeepNesting;
+	call testexpressionast;
+}
+
+procedure TestKeywords {
+	read if;
+	read while;
+	read print;
+	read call;
+	read read;
+	read procedure;
+
+	print if;
+	print while;
+	print print;
+	print call;
+	print read;
+	print procedure;
+
+	if (if > while) then {
+		if = while + call;
+		print = read % procedure;
+	} else {
+		call = 12497513570175917510535151351147366471831941340135569;
+	}
+
+	while (read != call) {
+		while = print - read * call;
+		read = call - read + if;
+		procedure = procedure / if % 9903148900000001;
+	}
+}
+
+procedure TestDeepNesting {
+	if (x > procedure) then {
+		while(!(call - 3 <= 294085)) {
+			while ((5 == print)) {
+				if (!(10 < abc) && !(foo != bar) || ((3 * 7) == (21 + 0))) then {
+					x = 3;
+				} else {
+					t = TestDeepNesting;
+					while (1 == 1) {
+						e = TestDeepNesting;
+					}
+				}
+			}
+		}
+
+		if (!((101010101010 * l01010l >= 3999) || !((call > test) && !(x % 1 == 3)))) then {
+			l0l0l0l0l0l = 101010101010;
+		} else {
+			while ((600+1) % read != (foobar)) {
+				print hi;
+			}
+		}
+	} else {
+		if (4 > then) then {
+			if (then > 4) then {
+			    then = 4;
+			} else {
+				if (then > 5) then {
+					if (!(then == then)) then {
+					    bye = bye * 2;
+					} else {
+					    x = x + 1;
+					}
+				} else {
+				    then = x - then;
+				}
+			}
+		} else {
+            call TestKeywords;
+		}
+
+		while (4 > then) {
+			while(!(then == then)) {
+				while(abc * 3 % 1 == xdg) {
+					while(295715212851-2501810825 == 423*1) {
+						while (testtest - test == test) {
+						    abc = test*2359;
+						    read hello;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	while (a > 1) {
+		print assign;
+		if (a > 2) then {
+			print if;
+			while (a > 3) {
+				call testexpressionast;
+				if (a > 4) then {
+						a = a + 3;
+					while(a > 5) {
+						foo = bar;
+					}
+				} else {
+					p = r + l * g / t - m;
+				}
+				read assign;
+			}
+			read if;
+		} else {
+			print i;
+			if (cs3203 > life) then {
+				print love;
+			} else {
+				while(x % 2 == 1) {
+					print cs3203;
+					if (0 == 0) then {
+						print akdafj214214afjvbsfd;
+						if (!(1 == 1)) then {
+							while (0 == 1) {
+								jkkjkjkjkjjkkjkjkjj = 1;
+							}
+						} else {
+							while (3 > 2) {
+								print false;
+							}
+						}
+					} else {
+						b = 1245375759873159875397195739869816916;
+						while ((oop > is) && (a <= religion)) {
+							print true;
+						}
+					}
+					read b;
+					read c;
+					read d;
+				}
+
+				read a;
+			}
+		}
+
+		while ((k != l) || (i == j) && (g <= h) || (e >= f) && (c < d) || (a > b)) {
+		    print mamamia;
+		}
+	}
+
+
+
+}
+
+procedure testexpressionast {
+	a = 1 + 3;
+	b= fdaf-34+adf * 4;
+	c=(5 -2)*(3+1);
+	d=5 -2*3+1;
+	e = 1 + (1 + (1 + (1 + (1 + 1))));
+	f = 5 % 2 + 3 / 4;
+	g = (2 - 3) * a + b + c;
+	h = (2 - 3) * (a + b) + c;
+}

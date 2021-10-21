@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <utility>
 #include <vector>
 #include <pkb.h>
@@ -8,27 +9,22 @@
 #include "entity_declaration.h"
 #include "pattern_clause.h"
 #include "entity.hpp"
+#include "result_table.h"
 
 class PatternQueryManager {
  public:
-  PatternQueryManager(
-      std::unordered_map<std::string, std::vector<Entity *>>
-      *synonym_to_entity_result,
-      std::vector<PatternClause *> *patterns,
-      std::vector<std::string> *entities_to_return,
-      PKB *pkb,
-      bool has_two_repeated_synonyms);
+  explicit PatternQueryManager(PKB *pkb);
   ~PatternQueryManager();
-  void EvaluatePatterns();
-  std::vector<std::pair<int, std::string>> *get_vec_results();
+  ResultTable *EvaluatePattern(std::shared_ptr<PatternClause> pattern,
+                               const std::unordered_map<std::string,
+                               std::vector<Entity *>>& synonym_to_entities_vec);
+  ResultTable *EvaluateAssignPattern(std::shared_ptr<PatternClause> pattern,
+                                     std::unordered_map<std::string,
+                                     std::vector<Entity *>> synonym_to_entities_vec);
+  ResultTable *EvaluateIfAndWhilePattern(std::shared_ptr<PatternClause> pattern,
+                                         std::unordered_map<std::string,
+                                         std::vector<Entity *>> synonym_to_entities_vec);
 
  private:
-  std::unordered_map<std::string, std::vector<Entity *>>
-      *synonym_to_entity_result_;
-  std::vector<PatternClause *> *patterns_;
-  std::vector<std::string> *entities_to_return_;
   PKB *pkb_;
-  std::vector<std::pair<int, std::string>> *vec_results_;
-  bool has_two_repeated_synonyms_;
-  void ManagePatterns(PatternClause *pattern);
 };

@@ -43,7 +43,7 @@ class PKB {
   // Gets all procedures in the program.
   std::vector<Procedure *> get_all_procedures();
   // Gets a procedure by its procedure name.
-  Procedure *get_procedure(std::string &name);
+  virtual Procedure *get_procedure(std::string &name);
 
   // Gets the total number of statements in the statement table.
   int get_num_statements();
@@ -52,7 +52,7 @@ class PKB {
   // Gets all statements of the given type.
   std::vector<Statement *> get_statements(NodeType type);
   // Gets a statement by its corresponding line number.
-  Statement *get_statement(int line_no);
+  virtual Statement *get_statement(int line_no);
 
   // Gets all variables in the program.
   std::vector<Variable *> get_all_variables();
@@ -191,13 +191,11 @@ class PKB {
   void ReachabilityDFS(int start, int u, std::vector<std::vector<int>> &d,
                        std::map<int, std::set<int>> &al);
   // DFS to check reachability for Affects relationship.
-  // If target is not kWild, supports fast termination to save on unnecessary computations.
-  void AffectsDFS(int start, int target, int u, std::string var_name, std::vector<bool> &visited,
+  void AffectsDFS(int start, int u, std::string var_name, std::vector<bool> &visited,
                   std::vector<std::vector<int>> &d, bool &found);
   // DFS to check reachability for Affects* relationship
-  // If target is not kWild, supports fast termination to save on unnecessary computations.
   // If forward relation is true, this method propagates forward in terms of Affects*(a,b)
-  void AffectsStarBFS(int start, int target, std::vector<bool> &visited,
+  void AffectsStarBFS(int start, std::vector<bool> &visited,
                       bool forward_relation);
 
   // DFS to check reachability for NextBip and AffectsBip* relationship
@@ -216,16 +214,16 @@ class PKB {
 
   // Cache for Next
   std::map<int, std::map<int,
-    std::set<std::pair<int, int>>>> next_cache;
+                         std::set<std::pair<int, int>>>> next_cache;
   // Cache for Next*
   std::map<int, std::map<int,
-    std::set<std::pair<int, int>>>> next_star_cache;
+                         std::set<std::pair<int, int>>>> next_star_cache;
   // Cache for Affects
   std::map<int, std::map<int,
-    std::set<std::pair<int, int>>>> affects_cache;
+                         std::set<std::pair<int, int>>>> affects_cache;
   // Cache for Affects*
   std::map<int, std::map<int,
-    std::set<std::pair<int, int>>>> affects_star_cache;
+                         std::set<std::pair<int, int>>>> affects_star_cache;
 
   // Cache for NextBip
   std::map<int, std::map<int,

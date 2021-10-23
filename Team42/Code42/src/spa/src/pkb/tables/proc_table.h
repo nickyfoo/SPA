@@ -51,9 +51,7 @@ class ProcTable : public Table {
 
   // for <p1, p2> in calls_, Calls(v1, v2) is true. Stored as ints for
   // transitive closure.
-  std::map<int, std::set<int>> calls_int_, calls_star_int_;
-  // for <p1, p2> in calls_, Calls(v1, v2) is true. Stored as strings.
-  std::set<std::pair<std::string, std::string>> calls_, calls_star_;
+  std::map<int, std::set<int>> calls_;
 
   // Sets up adjacency list for procedure calls graph, where al[u] has v iff u
   // is called by v

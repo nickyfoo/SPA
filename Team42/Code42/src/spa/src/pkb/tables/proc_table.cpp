@@ -40,14 +40,14 @@ Procedure *ProcTable::get_procedure(const std::string& name) {
 void ProcTable::ProcessCalls() {
   for (Procedure &p : table_) {
     for (auto &proc_name : *p.get_calls()) {
-      calls_int_[name_to_index_[p.get_name()]].insert(name_to_index_[proc_name]);
+      calls_[name_to_index_[p.get_name()]].insert(name_to_index_[proc_name]);
     }
   }
 }
 
 void ProcTable::ProcessCallsStar() {
   int n = table_.size();
-  std::vector<std::vector<int>> d = GetTransitiveClosure(calls_int_, n);
+  std::vector<std::vector<int>> d = GetTransitiveClosure(calls_, n);
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < n; j++) {
       if (d[i][j] == 0) continue;

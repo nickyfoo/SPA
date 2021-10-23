@@ -85,15 +85,15 @@ std::vector<std::vector<int>> ProcTable::SetupAL() {
 
 void ProcTable::DFS(int u, std::vector<std::vector<int>> &al,
                     std::vector<int> &status, std::vector<int> &ans) {
-  status[u] = VISITED;
+  status[u] = kVisited;
   for (auto &v : al[u]) {
-    if (status[v] == UNVISITED) {
+    if (status[v] == kUnvisited) {
       DFS(v, al, status, ans);
-    } else if (status[v] == VISITED) {
+    } else if (status[v] == kVisited) {
       throw PKBException("Cyclic procedure calls detected");
     }
   }
-  status[u] = EXPLORED;
+  status[u] = kExplored;
   ans.push_back(u);
 }
 
@@ -124,7 +124,7 @@ void ProcTable::ProcessUsesModifiesIndirect() {
   std::vector<int> ans_int;
   std::vector<int> status(table_.size(), 0);
   for (int i = 0; i < table_.size(); i++) {
-    if (status[i] == UNVISITED) {
+    if (status[i] == kUnvisited) {
       DFS(i, adj_list, status, ans_int);
     }
   }

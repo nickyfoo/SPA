@@ -38,10 +38,10 @@ class ProcTable : public Table {
   void PrintProcedureDetails();
 
  private:
-  enum DFS_Status {
-    UNVISITED,  // Node has not been visited.
-    VISITED,    // Node has been visited, but has not fully explored children.
-    EXPLORED,   // Node has been fully explored, and returning.
+  enum DfsStatus {
+    kUnvisited,  // Node has not been visited.
+    kVisited,    // Node has been visited, but has not fully explored children.
+    kExplored,   // Node has been fully explored, and returning.
   };
 
   // Table of all procedures.

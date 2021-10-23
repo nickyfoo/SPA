@@ -2311,15 +2311,15 @@ TEST_CASE("PKB_CFGBipSample_Correct") {
   ProgramNode *p = ParseProgram(&lexer, &s);
   PKB pkb(p);
   std::map<int, std::vector<std::pair<int, int>>> ans = {
-      {1, {{2, pkb.kNoBranch}}},
+      {1, {{2, PKB::kNoBranch}}},
       {2, {{6, 2}}},
-      {3, {{4, pkb.kNoBranch}}},
+      {3, {{4, PKB::kNoBranch}}},
       {4, {{9, 4}}},
       {5, {}},
-      {6, {{7, pkb.kNoBranch}}},
+      {6, {{7, PKB::kNoBranch}}},
       {7, {{9, 7}}},
       {8, {{3, -2}}},
-      {9, {{10, pkb.kNoBranch}, {11, pkb.kNoBranch}}},
+      {9, {{10, PKB::kNoBranch}, {11, PKB::kNoBranch}}},
       {10, {{8, -7}, {5, -4}}},
       {11, {{8, -7}, {5, -4}}}
   };
@@ -2357,9 +2357,9 @@ TEST_CASE("PKB_CFGBipSample2_Correct") {
       {1, {{4, 1}}},
       {2, {{4, 2}}},
       {3, {{4, 3}}},
-      {4, {{5, pkb.kNoBranch}}},
-      {5, {{6, pkb.kNoBranch}}},
-      {6, {{7, pkb.kNoBranch}}},
+      {4, {{5, PKB::kNoBranch}}},
+      {5, {{6, PKB::kNoBranch}}},
+      {6, {{7, PKB::kNoBranch}}},
       {7, {{2, -1}, {3, -2}}},
   };
   std::map<int, std::set<std::pair<int, int>>> cfg_bip_al = *pkb.get_cfg_bip_al();

@@ -441,7 +441,7 @@ void PKB::AddStmtIfAffectedBip(int start, std::string &start_hash, int v, std::s
   if (stmt_v->get_kind() == NodeType::Assign && uses->find(var_name) != uses->end()) {
     affects_bip_dfs_cache[start][start_hash].insert({ v,v_hash });
   }
-};
+}
 
 bool PKB::ModifiesVarName(int v, std::string var_name) {
   Statement* stmt_v = stmt_table_.get_statement(v);

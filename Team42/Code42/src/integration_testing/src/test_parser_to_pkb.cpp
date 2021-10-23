@@ -6,8 +6,21 @@
 #include "pkb.h"
 #include <chrono>
 
-TEST_CASE("PKBExtractEntities_SampleProgram_Correct") {
-  std::string main_source =
+enum ProgramSource {
+  kSampleSource,
+  kNestedSource,
+  kSimpleContainer,
+  kUndefinedProc,
+  kCyclicProcs,
+  kAdvancedSample,
+  kNestedIf,
+  kNestedWhileIf,
+  kCfgBipSample,
+  kCfgBipSecondSample
+};
+
+ProgramNode *BuildProgAst(ProgramSource source_name) {
+  std::string sample_source =
       "procedure main {"
       "  flag = 0;"
       "  call computeCentroid;"
@@ -43,10 +56,213 @@ TEST_CASE("PKBExtractEntities_SampleProgram_Correct") {
       "  normSq = cenX * cenX + cenY * cenY;"
       "}";
 
-  BufferedLexer lexer(main_source);
+  std::string nested_source =
+      "procedure nestedproc{"
+      "  i = 0;"
+      "  j = 0;"
+      "  k = 0;"
+      "  while(j < n){"
+      "    j = j + 1;"
+      "    while(k < n){"
+      "      if(i <= k) then {"
+      "        d = d + 1;"
+      "      } else {"
+      "        e = e + 1;"
+      "      }"
+      "    }"
+      "  }"
+      "  while(j < n){"
+      "    j = i + k;"
+      "    if (j < n) then {"
+      "      if(i <= k) then {"
+      "        d = d + 1;"
+      "      } else {"
+      "        e = e + 1;"
+      "      }"
+      "    } else {"
+      "      f = f + 1;"
+      "    }"
+      "  }"
+      "}";
+
+  std::string simple_container =
+      "procedure main {"
+      "  if((x==0) && (y==0) ) then {"
+      "    a = b + c;"
+      "  } else {"
+      "    d = e + f;}"
+      "}";
+
+  std::string undefined_proc =
+      "procedure main {"
+      "  call undefinedproc;"
+      "}";
+
+  std::string cyclic_procs =
+      "procedure proc1 {"
+      "  call proc2;"
+      "}"
+      "procedure proc2 {"
+      "  call proc3;"
+      "}"
+      "procedure proc3 {"
+      "  call proc1;"
+      "}";
+
+  std::string cfg_sample =
+      "procedure First {"
+      "  read x;"
+      "  read y;"
+      "  call Second; }"
+      "procedure Second {"
+      "  x = 0;"
+      "  i = 5;"
+      "  while (i != 0) {"
+      "    x = x + 2 * y;"
+      "    call Third;"
+      "    i = i - 1; "
+      "  }"
+      "  if (x == 1) then {"
+      "    x = x + 1; }"
+      "  else {"
+      "    z = 1;"
+      "  }"
+      "  z = z + x + i;"
+      "  y = z + 2;"
+      "  x = x * y + z; }"
+      "procedure Third {"
+      "  z = 5;"
+      "  v = z;"
+      "  print v; }";
+
+  std::string nested_if =
+      "procedure main {"
+      "  zero = 1;"
+      "  if(a==1) then {"
+      "    if(b==1) then {"
+      "      first = 1;"
+      "    }else{"
+      "      second = 1;"
+      "    }"
+      "  } else {"
+      "    if(c==1) then {"
+      "      third = 1;"
+      "    } else {"
+      "      fourth = 1;"
+      "    }"
+      "  }"
+      "  fifth = 1;"
+      "}";
+
+  std::string nested_if_while =
+      "procedure main {"
+      "  x = 0;"
+      "  read y;"
+      "  call Second;"
+      "  x = x + 1; }"
+      "procedure Second {"
+      "  x = 0;"
+      "  i = 5;"
+      "  while (i != 0) {"
+      "    x = x + 2 * y;"
+      "    call Third;"
+      "    i = i - 1;"
+      "    if (z == y) then {"
+      "      j = 8;"
+      "    } else {"
+      "      y = j;"
+      "    }}"
+      "  if (x == 1) then {"
+      "    x = x + 1;"
+      "    z = y + c + v;"
+      "  } else {"
+      "    z = z + i;}"
+      "  z = z + x + i;"
+      "  y = z + 2;"
+      "  x = x * y + z; }"
+      "procedure Third {"
+      "  z = 5;"
+      "  v = z;"
+      "  print v;}";
+
+  std::string cfg_bip_sample =
+      "procedure Bill {"
+      "  x = 5;"
+      "  call Mary;"
+      "  y = x + 6;"
+      "  call John;"
+      "  z = x * y + 2;"
+      "}"
+      "procedure Mary {"
+      "  y = x * 3;"
+      "  call John;"
+      "  z = x + y;"
+      "}"
+      "procedure John {"
+      "  if (i > 0) then {"
+      "    x = x + z;"
+      "  } else {"
+      "    y = x * y;"
+      "  }"
+      "}";
+
+  std::string cfg_bip_second_sample =
+      "procedure B {"
+      "  call C;"
+      "  call C;"
+      "  call C;"
+      "}"
+      "procedure C {"
+      "d = a;"
+      "a = b;"
+      "b = c;"
+      "c = d;"
+      "}";
+
+  std::string program;
+  switch (source_name) {
+    case kSampleSource:
+      program = sample_source;
+      break;
+    case kNestedSource:
+      program = nested_source;
+      break;
+    case kSimpleContainer:
+      program = simple_container;
+      break;
+    case kUndefinedProc:
+      program = undefined_proc;
+      break;
+    case kCyclicProcs:
+      program = cyclic_procs;
+      break;
+    case kAdvancedSample:
+      program = cfg_sample;
+      break;
+    case kNestedIf:
+      program = nested_if;
+      break;
+    case kNestedWhileIf:
+      program = nested_if_while;
+      break;
+    case kCfgBipSample:
+      program = cfg_bip_sample;
+      break;
+    case kCfgBipSecondSample:
+      program = cfg_bip_second_sample;
+      break;
+    default:
+      break;
+  }
+
+  BufferedLexer lexer(program);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
+  return p;
+}
+
+TEST_CASE("PkbExtractEntities_SampleProgram_Correct") {
+  PKB pkb(BuildProgAst(kSampleSource));
 
   SECTION("Test procedures") {
     std::set<std::string> correct_procedures =
@@ -86,47 +302,8 @@ TEST_CASE("PKBExtractEntities_SampleProgram_Correct") {
   }
 }
 
-TEST_CASE("PKB_FollowsSampleProgram_Correct") {
-  std::string main_source =
-      "procedure main {"
-      "  flag = 0;"
-      "  call computeCentroid;"
-      "  call printResults;"
-      "}"
-      "procedure readPoint {"
-      "  read x;"
-      "  read y;"
-      "}"
-      "procedure printResults {"
-      "  print flag;"
-      "  print cenX;"
-      "  print cenY;"
-      "  print normSq;"
-      "}"
-      "procedure computeCentroid {"
-      "  count = 0;"
-      "  cenX = 0;"
-      "  cenY = 0;"
-      "  call readPoint;"
-      "  while((x != 0) && (y != 0)) {"
-      "    count = count+1;"
-      "    cenX = cenX + x;"
-      "    cenY = cenY + y;"
-      "    call readPoint;"
-      "  }"
-      "  if (count == 0) then {"
-      "    flag = 1;"
-      "  } else {"
-      "    cenX = cenX / count;"
-      "    cenY = cenY / count;"
-      "  }"
-      "  normSq = cenX * cenX + cenY * cenY;"
-      "}";
-
-  BufferedLexer lexer(main_source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
+TEST_CASE("PkbFollows_SampleProgram_Correct") {
+  PKB pkb(BuildProgAst(kSampleSource));
 
   std::map<int, std::vector<int>> follows_ans = {
       {1, {2}}, {2, {3}}, {3, {}}, {4, {5}}, {5, {}}, {6, {7}}, {7, {8}}, {8, {9}}, {9, {}},
@@ -157,47 +334,8 @@ TEST_CASE("PKB_FollowsSampleProgram_Correct") {
   }
 }
 
-TEST_CASE("PKB_FollowsStarSampleProgram_Correct") {
-  std::string main_source =
-      "procedure main {"
-      "  flag = 0;"
-      "  call computeCentroid;"
-      "  call printResults;"
-      "}"
-      "procedure readPoint {"
-      "  read x;"
-      "  read y;"
-      "}"
-      "procedure printResults {"
-      "  print flag;"
-      "  print cenX;"
-      "  print cenY;"
-      "  print normSq;"
-      "}"
-      "procedure computeCentroid {"
-      "  count = 0;"
-      "  cenX = 0;"
-      "  cenY = 0;"
-      "  call readPoint;"
-      "  while((x != 0) && (y != 0)) {"
-      "    count = count+1;"
-      "    cenX = cenX + x;"
-      "    cenY = cenY + y;"
-      "    call readPoint;"
-      "  }"
-      "  if (count == 0) then {"
-      "    flag = 1;"
-      "  } else {"
-      "    cenX = cenX / count;"
-      "    cenY = cenY / count;"
-      "  }"
-      "  normSq = cenX * cenX + cenY * cenY;"
-      "}";
-
-  BufferedLexer lexer(main_source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
+TEST_CASE("PkbFollowsStar_SampleProgram_Correct") {
+  PKB pkb(BuildProgAst(kSampleSource));
 
   std::map<int, std::vector<int>> follows_star_ans = {
       {1, {2, 3}}, {2, {3}}, {3, {}}, {4, {5}}, {5, {}}, {6, {7, 8, 9}}, {7, {8, 9}}, {8, {9}},
@@ -231,40 +369,8 @@ TEST_CASE("PKB_FollowsStarSampleProgram_Correct") {
   }
 }
 
-TEST_CASE("PKB_FollowsNested_Correct") {
-  std::string nested_source =
-      "procedure nestedproc{"
-      "  i = 0;"
-      "  j = 0;"
-      "  k = 0;"
-      "  while(j < n){"
-      "    j = j + 1;"
-      "    while(k < n){"
-      "      if(i <= k) then {"
-      "        d = d + 1;"
-      "      } else {"
-      "        e = e + 1;"
-      "      }"
-      "    }"
-      "  }"
-      "  while(j < n){"
-      "    j = i + k;"
-      "    if (j < n) then {"
-      "      if(i <= k) then {"
-      "        d = d + 1;"
-      "      } else {"
-      "        e = e + 1;"
-      "      }"
-      "    } else {"
-      "      f = f + 1;"
-      "    }"
-      "  }"
-      "}";
-
-  BufferedLexer lexer(nested_source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
+TEST_CASE("PkbFollows_NestedSource_Correct") {
+  PKB pkb(BuildProgAst(kNestedSource));
 
   std::map<int, std::vector<int>> follows_ans = {
       {1, {2}}, {2, {3}}, {3, {4}}, {4, {10}}, {5, {6}}, {6, {}}, {7, {}}, {8, {}}, {9, {}},
@@ -295,40 +401,8 @@ TEST_CASE("PKB_FollowsNested_Correct") {
   }
 }
 
-TEST_CASE("PKB_FollowsStarNested_Correct") {
-  std::string nested_source =
-      "procedure nestedproc{"
-      "  i = 0;"
-      "  j = 0;"
-      "  k = 0;"
-      "  while(j < n){"
-      "    j = j + 1;"
-      "    while(k < n){"
-      "      if(i <= k) then {"
-      "        d = d + 1;"
-      "      } else {"
-      "        e = e + 1;"
-      "      }"
-      "    }"
-      "  }"
-      "  while(j < n){"
-      "    j = i + k;"
-      "    if (j < n) then {"
-      "      if(i <= k) then {"
-      "        d = d + 1;"
-      "      } else {"
-      "        e = e + 1;"
-      "      }"
-      "    } else {"
-      "      f = f + 1;"
-      "    }"
-      "  }"
-      "}";
-
-  BufferedLexer lexer(nested_source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
+TEST_CASE("PkbFollowsStar_Nested_Correct") {
+  PKB pkb(BuildProgAst(kNestedSource));
 
   std::map<int, std::vector<int>> follows_star_ans = {
       {1, {2, 3, 4, 10}}, {2, {3, 4, 10}}, {3, {4, 10}}, {4, {10}}, {5, {6}}, {6, {}}, {7, {}},
@@ -358,47 +432,8 @@ TEST_CASE("PKB_FollowsStarNested_Correct") {
   }
 }
 
-TEST_CASE("PKB_ParentSampleProgram_Correct") {
-  std::string main_source =
-      "procedure main {"
-      "  flag = 0;"
-      "  call computeCentroid;"
-      "  call printResults;"
-      "}"
-      "procedure readPoint {"
-      "  read x;"
-      "  read y;"
-      "}"
-      "procedure printResults {"
-      "  print flag;"
-      "  print cenX;"
-      "  print cenY;"
-      "  print normSq;"
-      "}"
-      "procedure computeCentroid {"
-      "  count = 0;"
-      "  cenX = 0;"
-      "  cenY = 0;"
-      "  call readPoint;"
-      "  while((x != 0) && (y != 0)) {"
-      "    count = count+1;"
-      "    cenX = cenX + x;"
-      "    cenY = cenY + y;"
-      "    call readPoint;"
-      "  }"
-      "  if (count == 0) then {"
-      "    flag = 1;"
-      "  } else {"
-      "    cenX = cenX / count;"
-      "    cenY = cenY / count;"
-      "  }"
-      "  normSq = cenX * cenX + cenY * cenY;"
-      "}";
-
-  BufferedLexer lexer(main_source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
+TEST_CASE("PkbParent_SampleProgram_Correct") {
+  PKB pkb(BuildProgAst(kSampleSource));
 
   std::map<int, std::vector<int>> children_ans = {
       {1, {}}, {2, {}}, {3, {}}, {4, {}}, {5, {}}, {6, {}}, {7, {}}, {8, {}}, {9, {}},
@@ -429,47 +464,8 @@ TEST_CASE("PKB_ParentSampleProgram_Correct") {
   }
 }
 
-TEST_CASE("PKB_ParentStarSampleProgram_Correct") {
-  std::string main_source =
-      "procedure main {"
-      "  flag = 0;"
-      "  call computeCentroid;"
-      "  call printResults;"
-      "}"
-      "procedure readPoint {"
-      "  read x;"
-      "  read y;"
-      "}"
-      "procedure printResults {"
-      "  print flag;"
-      "  print cenX;"
-      "  print cenY;"
-      "  print normSq;"
-      "}"
-      "procedure computeCentroid {"
-      "  count = 0;"
-      "  cenX = 0;"
-      "  cenY = 0;"
-      "  call readPoint;"
-      "  while((x != 0) && (y != 0)) {"
-      "    count = count+1;"
-      "    cenX = cenX + x;"
-      "    cenY = cenY + y;"
-      "    call readPoint;"
-      "  }"
-      "  if (count == 0) then {"
-      "    flag = 1;"
-      "  } else {"
-      "    cenX = cenX / count;"
-      "    cenY = cenY / count;"
-      "  }"
-      "  normSq = cenX * cenX + cenY * cenY;"
-      "}";
-
-  BufferedLexer lexer(main_source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
+TEST_CASE("PkbParentStar_SampleProgram_Correct") {
+  PKB pkb(BuildProgAst(kSampleSource));
 
   std::map<int, std::vector<int>> children_star_ans = {
       {1, {}}, {2, {}}, {3, {}}, {4, {}}, {5, {}}, {6, {}}, {7, {}}, {8, {}}, {9, {}},
@@ -500,40 +496,8 @@ TEST_CASE("PKB_ParentStarSampleProgram_Correct") {
   }
 }
 
-TEST_CASE("PKB_ParentNested_Correct") {
-  std::string source =
-      "procedure nestedproc{"
-      "  i = 0;"
-      "  j = 0;"
-      "  k = 0;"
-      "  while(j < n){"
-      "    j = j + 1;"
-      "    while(k < n){"
-      "      if(i <= k) then {"
-      "        d = d + 1;"
-      "      } else {"
-      "        e = e + 1;"
-      "      }"
-      "    }"
-      "  }"
-      "  while(j < n){"
-      "    j = i + k;"
-      "    if (j < n) then {"
-      "      if(i <= k) then {"
-      "        d = d + 1;"
-      "      } else {"
-      "        e = e + 1;"
-      "      }"
-      "    } else {"
-      "      f = f + 1;"
-      "    }"
-      "  }"
-      "}";
-
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
+TEST_CASE("PkbParent_Nested_Correct") {
+  PKB pkb(BuildProgAst(kNestedSource));
 
   std::map<int, std::vector<int>> children_ans = {
       {1, {}}, {2, {}}, {3, {}}, {4, {5, 6}}, {5, {}}, {6, {7}}, {7, {8, 9}}, {8, {}}, {9, {}},
@@ -562,40 +526,8 @@ TEST_CASE("PKB_ParentNested_Correct") {
   }
 }
 
-TEST_CASE("PKB_ParentStarNested_Correct") {
-  std::string source =
-      "procedure nestedproc{"
-      "  i = 0;"
-      "  j = 0;"
-      "  k = 0;"
-      "  while(j < n){"
-      "    j = j + 1;"
-      "    while(k < n){"
-      "      if(i <= k) then {"
-      "        d = d + 1;"
-      "      } else {"
-      "        e = e + 1;"
-      "      }"
-      "    }"
-      "  }"
-      "  while(j < n){"
-      "    j = i + k;"
-      "    if (j < n) then {"
-      "      if(i <= k) then {"
-      "        d = d + 1;"
-      "      } else {"
-      "        e = e + 1;"
-      "      }"
-      "    } else {"
-      "      f = f + 1;"
-      "    }"
-      "  }"
-      "}";
-
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
+TEST_CASE("PkbParentStar_Nested_Correct") {
+  PKB pkb(BuildProgAst(kNestedSource));
 
   std::map<int, std::vector<int>> children_star_ans = {
       {1, {}}, {2, {}}, {3, {}}, {4, {5, 6, 7, 8, 9}}, {5, {}}, {6, {7, 8, 9}}, {7, {8, 9}},
@@ -626,47 +558,8 @@ TEST_CASE("PKB_ParentStarNested_Correct") {
   }
 }
 
-TEST_CASE("PKB_CallsSampleProgram_Correct") {
-  std::string main_source =
-      "procedure main {"
-      "  flag = 0;"
-      "  call computeCentroid;"
-      "  call printResults;"
-      "}"
-      "procedure readPoint {"
-      "  read x;"
-      "  read y;"
-      "}"
-      "procedure printResults {"
-      "  print flag;"
-      "  print cenX;"
-      "  print cenY;"
-      "  print normSq;"
-      "}"
-      "procedure computeCentroid {"
-      "  count = 0;"
-      "  cenX = 0;"
-      "  cenY = 0;"
-      "  call readPoint;"
-      "  while((x != 0) && (y != 0)) {"
-      "    count = count+1;"
-      "    cenX = cenX + x;"
-      "    cenY = cenY + y;"
-      "    call readPoint;"
-      "  }"
-      "  if (count == 0) then {"
-      "    flag = 1;"
-      "  } else {"
-      "    cenX = cenX / count;"
-      "    cenY = cenY / count;"
-      "  }"
-      "  normSq = cenX * cenX + cenY * cenY;"
-      "}";
-
-  BufferedLexer lexer(main_source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
+TEST_CASE("PkbCalls_SampleProgram_Correct") {
+  PKB pkb(BuildProgAst(kSampleSource));
 
   std::map<std::string, std::vector<std::string>> calls_ans = {
       {"main", {"computeCentroid", "printResults"}},
@@ -699,47 +592,8 @@ TEST_CASE("PKB_CallsSampleProgram_Correct") {
   }
 }
 
-TEST_CASE("PKB_CallsStarSampleProgram_Correct") {
-  std::string main_source =
-      "procedure main {"
-      "  flag = 0;"
-      "  call computeCentroid;"
-      "  call printResults;"
-      "}"
-      "procedure readPoint {"
-      "  read x;"
-      "  read y;"
-      "}"
-      "procedure printResults {"
-      "  print flag;"
-      "  print cenX;"
-      "  print cenY;"
-      "  print normSq;"
-      "}"
-      "procedure computeCentroid {"
-      "  count = 0;"
-      "  cenX = 0;"
-      "  cenY = 0;"
-      "  call readPoint;"
-      "  while((x != 0) && (y != 0)) {"
-      "    count = count+1;"
-      "    cenX = cenX + x;"
-      "    cenY = cenY + y;"
-      "    call readPoint;"
-      "  }"
-      "  if (count == 0) then {"
-      "    flag = 1;"
-      "  } else {"
-      "    cenX = cenX / count;"
-      "    cenY = cenY / count;"
-      "  }"
-      "  normSq = cenX * cenX + cenY * cenY;"
-      "}";
-
-  BufferedLexer lexer(main_source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
+TEST_CASE("PkbCallsStar_SampleProgram_Correct") {
+  PKB pkb(BuildProgAst(kSampleSource));
 
   std::map<std::string, std::vector<std::string>> calls_star_ans = {
       {"main", {"computeCentroid", "printResults", "readPoint"}},
@@ -772,47 +626,8 @@ TEST_CASE("PKB_CallsStarSampleProgram_Correct") {
   }
 }
 
-TEST_CASE("PKB_UsesSampleProgram_Correct") {
-  std::string main_source =
-      "procedure main {"
-      "  flag = 0;"
-      "  call computeCentroid;"
-      "  call printResults;"
-      "}"
-      "procedure readPoint {"
-      "  read x;"
-      "  read y;"
-      "}"
-      "procedure printResults {"
-      "  print flag;"
-      "  print cenX;"
-      "  print cenY;"
-      "  print normSq;"
-      "}"
-      "procedure computeCentroid {"
-      "  count = 0;"
-      "  cenX = 0;"
-      "  cenY = 0;"
-      "  call readPoint;"
-      "  while((x != 0) && (y != 0)) {"
-      "    count = count+1;"
-      "    cenX = cenX + x;"
-      "    cenY = cenY + y;"
-      "    call readPoint;"
-      "  }"
-      "  if (count == 0) then {"
-      "    flag = 1;"
-      "  } else {"
-      "    cenX = cenX / count;"
-      "    cenY = cenY / count;"
-      "  }"
-      "  normSq = cenX * cenX + cenY * cenY;"
-      "}";
-
-  BufferedLexer lexer(main_source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
+TEST_CASE("PkbUses_SampleProgram_Correct") {
+  PKB pkb(BuildProgAst(kSampleSource));
 
   std::map<int, std::vector<std::string>> stmt_uses_ans = {
       {1, {}}, {2, {"x", "y", "count", "cenX", "cenY"}}, {3, {"flag", "cenX", "cenY", "normSq"}},
@@ -882,47 +697,8 @@ TEST_CASE("PKB_UsesSampleProgram_Correct") {
   }
 }
 
-TEST_CASE("PKB_ModifiesSampleProgram_Correct") {
-  std::string main_source =
-      "procedure main {"
-      "  flag = 0;"
-      "  call computeCentroid;"
-      "  call printResults;"
-      "}"
-      "procedure readPoint {"
-      "  read x;"
-      "  read y;"
-      "}"
-      "procedure printResults {"
-      "  print flag;"
-      "  print cenX;"
-      "  print cenY;"
-      "  print normSq;"
-      "}"
-      "procedure computeCentroid {"
-      "  count = 0;"
-      "  cenX = 0;"
-      "  cenY = 0;"
-      "  call readPoint;"
-      "  while((x != 0) && (y != 0)) {"
-      "    count = count+1;"
-      "    cenX = cenX + x;"
-      "    cenY = cenY + y;"
-      "    call readPoint;"
-      "  }"
-      "  if (count == 0) then {"
-      "    flag = 1;"
-      "  } else {"
-      "    cenX = cenX / count;"
-      "    cenY = cenY / count;"
-      "  }"
-      "  normSq = cenX * cenX + cenY * cenY;"
-      "}";
-
-  BufferedLexer lexer(main_source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
+TEST_CASE("PkbModifies_SampleProgram_Correct") {
+  PKB pkb(BuildProgAst(kSampleSource));
 
   std::map<int, std::vector<std::string>> stmt_modifies_ans = {
       {1, {{"flag"}}}, {2, {"count", "cenX", "cenY", "x", "y", "flag", "normSq"}}, {3, {}},
@@ -992,19 +768,8 @@ TEST_CASE("PKB_ModifiesSampleProgram_Correct") {
   }
 }
 
-TEST_CASE("PKB_UsesContainerStmt_Correct") {
-  std::string source =
-      "procedure main {"
-      "  if((x==0) && (y==0) ) then {"
-      "    a = b + c;"
-      "  } else {"
-      "    d = e + f;}"
-      "}";
-
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
+TEST_CASE("PkbUses_ContainerStmt_Correct") {
+  PKB pkb(BuildProgAst(kSimpleContainer));
 
   std::map<int, std::vector<std::string>> stmt_uses_ans = {
       {1, {"x", "y", "b", "c", "e", "f"}},
@@ -1059,19 +824,8 @@ TEST_CASE("PKB_UsesContainerStmt_Correct") {
   }
 }
 
-TEST_CASE("PKB_ModifiesContainerStmt_Correct") {
-  std::string source =
-      "procedure main {"
-      "  if((x==0) && (y==0) ) then {"
-      "    a = b + c;"
-      "  } else {"
-      "    d = e + f;}"
-      "}";
-
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb = PKB(p);
+TEST_CASE("PkbModifies_ContainerStmt_Correct") {
+  PKB pkb(BuildProgAst(kSimpleContainer));
 
   std::map<int, std::vector<std::string>> stmt_modifies_ans = {
       {1, {"a", "d"}},
@@ -1126,69 +880,18 @@ TEST_CASE("PKB_ModifiesContainerStmt_Correct") {
   }
 }
 
-TEST_CASE("PKB_UndefinedProcCalled_ThrowsException") {
-  std::string source =
-      "procedure main {"
-      "  call undefinedproc;"
-      "}";
-
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb;
-  REQUIRE_THROWS_AS(pkb = PKB(p), PKBException);
+TEST_CASE("PkbInitialisation_UndefinedProcCalled_ThrowsException") {
+  ProgramNode *p = BuildProgAst(kUndefinedProc);
+  REQUIRE_THROWS_AS(PKB(p), PKBException);
 }
 
-TEST_CASE("PKB_CyclicProcCalls_ThrowsException") {
-  std::string source =
-      "procedure proc1 {"
-      "  call proc2;"
-      "}"
-      "procedure proc2 {"
-      "  call proc3;"
-      "}"
-      "procedure proc3 {"
-      "  call proc1;"
-      "}";
-
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb;
-  REQUIRE_THROWS_AS(pkb = PKB(p), PKBException);
+TEST_CASE("PkbInitialisation_CyclicProcCalls_ThrowsException") {
+  ProgramNode *p = BuildProgAst(kCyclicProcs);
+  REQUIRE_THROWS_AS(PKB(p), PKBException);
 }
 
-TEST_CASE("PKB_CFGSample_Correct") {
-  std::string source =
-      "procedure First {"
-      "  read x;"
-      "  read y;"
-      "  call Second; }"
-      "procedure Second {"
-      "  x = 0;"
-      "  i = 5;"
-      "  while (i != 0) {"
-      "    x = x + 2 * y;"
-      "    call Third;"
-      "    i = i - 1; "
-      "  }"
-      "  if (x == 1) then {"
-      "    x = x + 1; }"
-      "  else {"
-      "    z = 1;"
-      "  }"
-      "  z = z + x + i;"
-      "  y = z + 2;"
-      "  x = x * y + z; }"
-      "procedure Third {"
-      "  z = 5;"
-      "  v = z;"
-      "  print v; }";
-
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
+TEST_CASE("PkbCfg_AdvancedSample_Correct") {
+  PKB pkb(BuildProgAst(kAdvancedSample));
 
   std::map<int, std::vector<int>> ans = {
       {1, {2}}, {2, {3}}, {3, {}}, {4, {5}}, {5, {6}}, {6, {7, 10}}, {7, {8}}, {8, {9}}, {9, {6}},
@@ -1205,30 +908,8 @@ TEST_CASE("PKB_CFGSample_Correct") {
   }
 }
 
-TEST_CASE("PKB_CFGNestedIf_Correct") {
-  std::string source =
-      "procedure main {"
-      "  zero = 1;"
-      "  if(a==1) then {"
-      "    if(b==1) then {"
-      "      first = 1;"
-      "    }else{"
-      "      second = 1;"
-      "    }"
-      "  } else {"
-      "    if(c==1) then {"
-      "      third = 1;"
-      "    } else {"
-      "      fourth = 1;"
-      "    }"
-      "  }"
-      "  fifth = 1;"
-      "}";
-
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
+TEST_CASE("PkbCfg_NestedIf_Correct") {
+  PKB pkb(BuildProgAst(kNestedIf));
 
   std::map<int, std::vector<int>> ans = {
       {1, {2}}, {2, {3, 6}}, {3, {4, 5}}, {4, {9}}, {5, {9}}, {6, {7, 8}}, {7, {9}}, {8, {9}}
@@ -1244,37 +925,8 @@ TEST_CASE("PKB_CFGNestedIf_Correct") {
   }
 }
 
-TEST_CASE("PKB_NextSample_Correct") {
-  std::string source =
-      "procedure First {"
-      "  read x;"
-      "  read y;"
-      "  call Second; }"
-      "procedure Second {"
-      "  x = 0;"
-      "  i = 5;"
-      "  while (i != 0) {"
-      "    x = x + 2 * y;"
-      "    call Third;"
-      "    i = i - 1; "
-      "  }"
-      "  if (x == 1) then {"
-      "    x = x + 1; }"
-      "  else {"
-      "    z = 1;"
-      "  }"
-      "  z = z + x + i;"
-      "  y = z + 2;"
-      "  x = x * y + z; }"
-      "procedure Third {"
-      "  z = 5;"
-      "  v = z;"
-      "  print v; }";
-
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
+TEST_CASE("PkbNext_AdvancedSample_Correct") {
+  PKB pkb(BuildProgAst(kAdvancedSample));
 
   std::map<int, std::vector<int>> next_ans = {
       {1, {2}}, {2, {3}}, {3, {}}, {4, {5}}, {5, {6}}, {6, {7, 10}}, {7, {8}},
@@ -1351,37 +1003,8 @@ TEST_CASE("PKB_NextSample_Correct") {
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }
 
-TEST_CASE("PKB_NextStarSample_Correct") {
-  std::string source =
-      "procedure First {"
-      "  read x;"
-      "  read y;"
-      "  call Second; }"
-      "procedure Second {"
-      "  x = 0;"
-      "  i = 5;"
-      "  while (i != 0) {"
-      "    x = x + 2 * y;"
-      "    call Third;"
-      "    i = i - 1; "
-      "  }"
-      "  if (x == 1) then {"
-      "    x = x + 1; }"
-      "  else {"
-      "    z = 1;"
-      "  }"
-      "  z = z + x + i;"
-      "  y = z + 2;"
-      "  x = x * y + z; }"
-      "procedure Third {"
-      "  z = 5;"
-      "  v = z;"
-      "  print v; }";
-
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
+TEST_CASE("PkbNextStar_AdvancedSample_Correct") {
+  PKB pkb(BuildProgAst(kAdvancedSample));
 
   std::map<int, std::vector<int>> next_star_ans = {
       {1, {2, 3}},
@@ -1484,30 +1107,8 @@ TEST_CASE("PKB_NextStarSample_Correct") {
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }
 
-TEST_CASE("PKB_NextNestedIf_Correct") {
-  std::string source =
-      "procedure main {"
-      "  zero = 1;"
-      "  if(a==1) then {"
-      "    if(b==1) then {"
-      "      first = 1;"
-      "    }else{"
-      "      second = 1;"
-      "    }"
-      "  } else {"
-      "    if(c==1) then {"
-      "      third = 1;"
-      "    } else {"
-      "      fourth = 1;"
-      "    }"
-      "  }"
-      "  fifth = 1;"
-      "}";
-
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
+TEST_CASE("PkbNext_NestedIf_Correct") {
+  PKB pkb(BuildProgAst(kNestedIf));
 
   std::map<int, std::vector<int>> next_ans = {
       {1, {2}}, {2, {3, 6}}, {3, {4, 5}}, {4, {9}}, {5, {9}}, {6, {7, 8}}, {7, {9}},
@@ -1578,30 +1179,8 @@ TEST_CASE("PKB_NextNestedIf_Correct") {
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }
 
-TEST_CASE("PKB_NextStarNestedIf_Correct") {
-  std::string source =
-      "procedure main {"
-      "  zero = 1;"
-      "  if(a==1) then {"
-      "    if(b==1) then {"
-      "      first = 1;"
-      "    }else{"
-      "      second = 1;"
-      "    }"
-      "  } else {"
-      "    if(c==1) then {"
-      "      third = 1;"
-      "    } else {"
-      "      fourth = 1;"
-      "    }"
-      "  }"
-      "  fifth = 1;"
-      "}";
-
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
+TEST_CASE("PkbNextStar_NestedIf_Correct") {
+  PKB pkb(BuildProgAst(kNestedIf));
 
   std::map<int, std::vector<int>> next_star_ans = {
       {1, {2, 3, 4, 5, 6, 7, 8, 9}},
@@ -1685,37 +1264,8 @@ TEST_CASE("PKB_NextStarNestedIf_Correct") {
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }
 
-TEST_CASE("PKB_AffectsSample_Correct") {
-  std::string source =
-      "procedure First {"
-      "  read x;"
-      "  read y;"
-      "  call Second; }"
-      "procedure Second {"
-      "  x = 0;"
-      "  i = 5;"
-      "  while (i != 0) {"
-      "    x = x + 2 * y;"
-      "    call Third;"
-      "    i = i - 1; "
-      "  }"
-      "  if (x == 1) then {"
-      "    x = x + 1; }"
-      "  else {"
-      "    z = 1;"
-      "  }"
-      "  z = z + x + i;"
-      "  y = z + 2;"
-      "  x = x * y + z; }"
-      "procedure Third {"
-      "  z = 5;"
-      "  v = z;"
-      "  print v; }";
-
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
+TEST_CASE("PkbAffects_AdvancedSample_Correct") {
+  PKB pkb(BuildProgAst(kAdvancedSample));
 
   std::map<int, std::vector<int>> affects_ans = {
       {1, {}}, {2, {}}, {3, {}}, {4, {7, 11, 13, 15}}, {5, {9, 13}}, {6, {}},
@@ -1791,37 +1341,8 @@ TEST_CASE("PKB_AffectsSample_Correct") {
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }
 
-TEST_CASE("PKB_AffectsStarSample_Correct") {
-  std::string source =
-      "procedure First {"
-      "  read x;"
-      "  read y;"
-      "  call Second; }"
-      "procedure Second {"
-      "  x = 0;"
-      "  i = 5;"
-      "  while (i != 0) {"
-      "    x = x + 2 * y;"
-      "    call Third;"
-      "    i = i - 1; "
-      "  }"
-      "  if (x == 1) then {"
-      "    x = x + 1; }"
-      "  else {"
-      "    z = 1;"
-      "  }"
-      "  z = z + x + i;"
-      "  y = z + 2;"
-      "  x = x * y + z; }"
-      "procedure Third {"
-      "  z = 5;"
-      "  v = z;"
-      "  print v; }";
-
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
+TEST_CASE("PkbAffectsStar_AdvancedSample_Correct") {
+  PKB pkb(BuildProgAst(kAdvancedSample));
 
   std::map<int, std::vector<int>> affects_star_ans = {
       {1, {}}, {2, {}}, {3, {}}, {4, {7, 11, 13, 14, 15}}, {5, {9, 13, 14, 15}}, {6, {}},
@@ -1897,42 +1418,8 @@ TEST_CASE("PKB_AffectsStarSample_Correct") {
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }
 
-TEST_CASE("PKB_AffectsNestedWhileIf_Correct") {
-  std::string source =
-      "procedure main {"
-      "  x = 0;"
-      "  read y;"
-      "  call Second;"
-      "  x = x + 1; }"
-      "procedure Second {"
-      "  x = 0;"
-      "  i = 5;"
-      "  while (i != 0) {"
-      "    x = x + 2 * y;"
-      "    call Third;"
-      "    i = i - 1;"
-      "    if (z == y) then {"
-      "      j = 8;"
-      "    } else {"
-      "      y = j;"
-      "    }}"
-      "  if (x == 1) then {"
-      "    x = x + 1;"
-      "    z = y + c + v;"
-      "  } else {"
-      "    z = z + i;}"
-      "  z = z + x + i;"
-      "  y = z + 2;"
-      "  x = x * y + z; }"
-      "procedure Third {"
-      "  z = 5;"
-      "  v = z;"
-      "  print v;}";
-
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
+TEST_CASE("PkbAffects_NestedWhileIf_Correct") {
+  PKB pkb(BuildProgAst(kNestedWhileIf));
 
   std::map<int, std::vector<int>> affects_ans = {
       {1, {}}, {2, {}}, {3, {}}, {4, {}}, {5, {8, 15, 18, 20}}, {6, {10, 17, 18}}, {7, {}},
@@ -1992,46 +1479,9 @@ TEST_CASE("PKB_AffectsNestedWhileIf_Correct") {
   }
 }
 
-TEST_CASE("PKB_NextCacheTestTime_correct") {
-  std::string source =
-      "procedure main {"
-      "  flag = 0;"
-      "  call computeCentroid;"
-      "  call printResults;"
-      "}"
-      "procedure readPoint {"
-      "  read x;"
-      "  read y;"
-      "}"
-      "procedure printResults {"
-      "  print flag;"
-      "  print cenX;"
-      "  print cenY;"
-      "  print normSq;"
-      "}"
-      "procedure computeCentroid {"
-      "  count = 0;"
-      "  cenX = 0;"
-      "  cenY = 0;"
-      "  call readPoint;"
-      "  while((x != 0) && (y != 0)) {"
-      "    count = count+1;"
-      "    cenX = cenX + x;"
-      "    cenY = cenY + y;"
-      "    call readPoint;"
-      "  }"
-      "  if (count == 0) then {"
-      "    flag = 1;"
-      "  } else {"
-      "    cenX = cenX / count;"
-      "    cenY = cenY / count;"
-      "  }"
-      "  normSq = cenX * cenX + cenY * cenY;"
-      "}";
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
+TEST_CASE("PkbNext_CacheTestTime_correct") {
+  PKB pkb(BuildProgAst(kSampleSource));
+
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
   for (int i = 0; i < pkb.get_num_statements(); i++) {
@@ -2065,46 +1515,9 @@ TEST_CASE("PKB_NextCacheTestTime_correct") {
   std::cout << "Next full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
 }
 
-TEST_CASE("PKB_NextStarCacheTestTime_correct") {
-  std::string source =
-      "procedure main {"
-      "  flag = 0;"
-      "  call computeCentroid;"
-      "  call printResults;"
-      "}"
-      "procedure readPoint {"
-      "  read x;"
-      "  read y;"
-      "}"
-      "procedure printResults {"
-      "  print flag;"
-      "  print cenX;"
-      "  print cenY;"
-      "  print normSq;"
-      "}"
-      "procedure computeCentroid {"
-      "  count = 0;"
-      "  cenX = 0;"
-      "  cenY = 0;"
-      "  call readPoint;"
-      "  while((x != 0) && (y != 0)) {"
-      "    count = count+1;"
-      "    cenX = cenX + x;"
-      "    cenY = cenY + y;"
-      "    call readPoint;"
-      "  }"
-      "  if (count == 0) then {"
-      "    flag = 1;"
-      "  } else {"
-      "    cenX = cenX / count;"
-      "    cenY = cenY / count;"
-      "  }"
-      "  normSq = cenX * cenX + cenY * cenY;"
-      "}";
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
+TEST_CASE("Pkb_NextStarCacheTestTime_correct") {
+  PKB pkb(BuildProgAst(kSampleSource));
+
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
   for (int i = 0; i < pkb.get_num_statements(); i++) {
@@ -2138,46 +1551,9 @@ TEST_CASE("PKB_NextStarCacheTestTime_correct") {
   std::cout << "Next* full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
 }
 
-TEST_CASE("PKB_AffectsCacheTestTime_correct") {
-  std::string source =
-      "procedure main {"
-      "  flag = 0;"
-      "  call computeCentroid;"
-      "  call printResults;"
-      "}"
-      "procedure readPoint {"
-      "  read x;"
-      "  read y;"
-      "}"
-      "procedure printResults {"
-      "  print flag;"
-      "  print cenX;"
-      "  print cenY;"
-      "  print normSq;"
-      "}"
-      "procedure computeCentroid {"
-      "  count = 0;"
-      "  cenX = 0;"
-      "  cenY = 0;"
-      "  call readPoint;"
-      "  while((x != 0) && (y != 0)) {"
-      "    count = count+1;"
-      "    cenX = cenX + x;"
-      "    cenY = cenY + y;"
-      "    call readPoint;"
-      "  }"
-      "  if (count == 0) then {"
-      "    flag = 1;"
-      "  } else {"
-      "    cenX = cenX / count;"
-      "    cenY = cenY / count;"
-      "  }"
-      "  normSq = cenX * cenX + cenY * cenY;"
-      "}";
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
+TEST_CASE("PkbAffects_CacheTestTime_correct") {
+  PKB pkb(BuildProgAst(kSampleSource));
+
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
   for (auto &a : pkb.get_statements(NodeType::Assign)) {
@@ -2211,46 +1587,9 @@ TEST_CASE("PKB_AffectsCacheTestTime_correct") {
   std::cout << "Affects full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
 }
 
-TEST_CASE("PKB_AffectsStarCacheTestTime_correct") {
-  std::string source =
-      "procedure main {"
-      "  flag = 0;"
-      "  call computeCentroid;"
-      "  call printResults;"
-      "}"
-      "procedure readPoint {"
-      "  read x;"
-      "  read y;"
-      "}"
-      "procedure printResults {"
-      "  print flag;"
-      "  print cenX;"
-      "  print cenY;"
-      "  print normSq;"
-      "}"
-      "procedure computeCentroid {"
-      "  count = 0;"
-      "  cenX = 0;"
-      "  cenY = 0;"
-      "  call readPoint;"
-      "  while((x != 0) && (y != 0)) {"
-      "    count = count+1;"
-      "    cenX = cenX + x;"
-      "    cenY = cenY + y;"
-      "    call readPoint;"
-      "  }"
-      "  if (count == 0) then {"
-      "    flag = 1;"
-      "  } else {"
-      "    cenX = cenX / count;"
-      "    cenY = cenY / count;"
-      "  }"
-      "  normSq = cenX * cenX + cenY * cenY;"
-      "}";
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
+TEST_CASE("PkbAffectsStar_CacheTestTime_correct") {
+  PKB pkb(BuildProgAst(kSampleSource));
+
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
   for (auto &a : pkb.get_statements(NodeType::Assign)) {
@@ -2284,32 +1623,9 @@ TEST_CASE("PKB_AffectsStarCacheTestTime_correct") {
   std::cout << "Affects* full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
 }
 
-TEST_CASE("PKB_CFGBipSample_Correct") {
-  std::string source =
-      "procedure Bill {"
-      "  x = 5;"
-      "  call Mary;"
-      "  y = x + 6;"
-      "  call John;"
-      "  z = x * y + 2;"
-      "}"
-      "procedure Mary {"
-      "  y = x * 3;"
-      "  call John;"
-      "  z = x + y;"
-      "}"
-      "procedure John {"
-      "  if (i > 0) then {"
-      "    x = x + z;"
-      "  } else {"
-      "    y = x * y;"
-      "  }"
-      "}";
+TEST_CASE("PkbCfgBip_SampleProgram_Correct") {
+  PKB pkb(BuildProgAst(kCfgBipSample));
 
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
   std::map<int, std::vector<std::pair<int, int>>> ans = {
       {1, {{2, PKB::kNoBranch}}},
       {2, {{6, 2}}},
@@ -2335,24 +1651,9 @@ TEST_CASE("PKB_CFGBipSample_Correct") {
   }
 }
 
-TEST_CASE("PKB_CFGBipSample2_Correct") {
-  std::string source =
-      "procedure B {"
-      "  call C;"
-      "  call C;"
-      "  call C;"
-      "}"
-      "procedure C {"
-      "d = a;"
-      "a = b;"
-      "b = c;"
-      "c = d;"
-      "}";
+TEST_CASE("PkbCFGBip_SecondSampleProgram_Correct") {
+  PKB pkb(BuildProgAst(kCfgBipSecondSample));
 
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
   std::map<int, std::vector<std::pair<int, int>>> ans = {
       {1, {{4, 1}}},
       {2, {{4, 2}}},
@@ -2373,32 +1674,9 @@ TEST_CASE("PKB_CFGBipSample2_Correct") {
   }
 }
 
-TEST_CASE("PKB_NextBipSample_Correct") {
-  std::string source =
-      "procedure Bill {"
-      "  x = 5;"
-      "  call Mary;"
-      "  y = x + 6;"
-      "  call John;"
-      "  z = x * y + 2;"
-      "}"
-      "procedure Mary {"
-      "  y = x * 3;"
-      "  call John;"
-      "  z = x + y;"
-      "}"
-      "procedure John {"
-      "  if (i > 0) then {"
-      "    x = x + z;"
-      "  } else {"
-      "    y = x * y;"
-      "  }"
-      "}";
+TEST_CASE("PkbNextBip_SampleProgram_Correct") {
+  PKB pkb(BuildProgAst(kCfgBipSample));
 
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
   std::map<int, std::vector<int>> next_bip_ans = {
       {1, {2}}, {2, {6}}, {3, {4}}, {4, {9}}, {5, {}}, {6, {7}}, {7, {9}},
       {8, {3}}, {9, {10, 11}}, {10, {5, 8}}, {11, {5, 8}},
@@ -2470,32 +1748,9 @@ TEST_CASE("PKB_NextBipSample_Correct") {
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
 }
 
-TEST_CASE("PKB_NextBipStarSample_Correct") {
-  std::string source =
-      "procedure Bill {"
-      "  x = 5;"
-      "  call Mary;"
-      "  y = x + 6;"
-      "  call John;"
-      "  z = x * y + 2;"
-      "}"
-      "procedure Mary {"
-      "  y = x * 3;"
-      "  call John;"
-      "  z = x + y;"
-      "}"
-      "procedure John {"
-      "  if (i > 0) then {"
-      "    x = x + z;"
-      "  } else {"
-      "    y = x * y;"
-      "  }"
-      "}";
+TEST_CASE("PkbNextBipStar_SampleProgram_Correct") {
+  PKB pkb(BuildProgAst(kCfgBipSample));
 
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
   std::map<int, std::vector<int>> next_bip_star_ans = {
       {1, {2, 3, 4, 5, 6, 7, 8, 9, 10, 11}},
       {2, {3, 4, 5, 6, 7, 8, 9, 10, 11}},
@@ -2577,32 +1832,8 @@ TEST_CASE("PKB_NextBipStarSample_Correct") {
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
 }
 
-TEST_CASE("PKB_AffectsBipSample_Correct") {
-  std::string source =
-      "procedure Bill {"
-      "  x = 5;"
-      "  call Mary;"
-      "  y = x + 6;"
-      "  call John;"
-      "  z = x * y + 2;"
-      "}"
-      "procedure Mary {"
-      "  y = x * 3;"
-      "  call John;"
-      "  z = x + y;"
-      "}"
-      "procedure John {"
-      "  if (i > 0) then {"
-      "    x = x + z;"
-      "  } else {"
-      "    y = x * y;"
-      "  }"
-      "}";
-
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
+TEST_CASE("PkbAffectsBip_SampleProgram_Correct") {
+  PKB pkb(BuildProgAst(kCfgBipSample));
 
   std::map<int, std::vector<int>> affects_bip_ans = {
       {1, {3, 5, 6, 8, 10, 11}},
@@ -2678,32 +1909,8 @@ TEST_CASE("PKB_AffectsBipSample_Correct") {
   }
 }
 
-TEST_CASE("PKB_AffectsBipStarSample_Correct") {
-  std::string source =
-      "procedure Bill {"
-      "  x = 5;"
-      "  call Mary;"
-      "  y = x + 6;"
-      "  call John;"
-      "  z = x * y + 2;"
-      "}"
-      "procedure Mary {"
-      "  y = x * 3;"
-      "  call John;"
-      "  z = x + y;"
-      "}"
-      "procedure John {"
-      "  if (i > 0) then {"
-      "    x = x + z;"
-      "  } else {"
-      "    y = x * y;"
-      "  }"
-      "}";
-
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
+TEST_CASE("PkbAffectsBipStar_SampleProgram_Correct") {
+  PKB pkb(BuildProgAst(kCfgBipSample));
 
   std::map<int, std::vector<int>> affects_bip_star_ans = {
       {1, {3, 5, 6, 8, 10, 11}}, {2, {}}, {3, {5, 11}}, {4, {}}, {5, {}}, {6, {5, 8, 10, 11}},
@@ -2776,60 +1983,9 @@ TEST_CASE("PKB_AffectsBipStarSample_Correct") {
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }
 
-TEST_CASE("PKB_CFGBipCallStackSample_Correct") {
-  std::string source =
-      "procedure Bill {"
-      "  x = 5;"
-      "  call Mary;"
-      "  y = x + 6;"
-      "  call John;"
-      "  z = x * y + 2;"
-      "}"
-      "procedure Mary {"
-      "  y = x * 3;"
-      "  call John;"
-      "  z = x + y;"
-      "}"
-      "procedure John {"
-      "  if (i > 0) then {"
-      "    x = x + z;"
-      "  } else {"
-      "    y = x * y;"
-      "  }"
-      "}";
+TEST_CASE("PkbNextBip_CacheTestTime_correct") {
+  PKB pkb(BuildProgAst(kCfgBipSample));
 
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
-}
-
-TEST_CASE("PKB_NextBipCacheTestTime_correct") {
-  std::string source =
-      "procedure Bill {"
-      "  x = 5;"
-      "  call Mary;"
-      "  y = x + 6;"
-      "  call John;"
-      "  z = x * y + 2;"
-      "}"
-      "procedure Mary {"
-      "  y = x * 3;"
-      "  call John;"
-      "  z = x + y;"
-      "}"
-      "procedure John {"
-      "  if (i > 0) then {"
-      "    x = x + z;"
-      "  } else {"
-      "    y = x * y;"
-      "  }"
-      "}";
-
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
   for (int i = 0; i < pkb.get_num_statements(); i++) {
@@ -2863,32 +2019,9 @@ TEST_CASE("PKB_NextBipCacheTestTime_correct") {
   std::cout << "NextBip full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
 }
 
-TEST_CASE("PKB_NextBipStarCacheTestTime_correct") {
-  std::string source =
-      "procedure Bill {"
-      "  x = 5;"
-      "  call Mary;"
-      "  y = x + 6;"
-      "  call John;"
-      "  z = x * y + 2;"
-      "}"
-      "procedure Mary {"
-      "  y = x * 3;"
-      "  call John;"
-      "  z = x + y;"
-      "}"
-      "procedure John {"
-      "  if (i > 0) then {"
-      "    x = x + z;"
-      "  } else {"
-      "    y = x * y;"
-      "  }"
-      "}";
+TEST_CASE("PkbNextBipStar_CacheTestTime_correct") {
+  PKB pkb(BuildProgAst(kCfgBipSample));
 
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
   for (int i = 0; i < pkb.get_num_statements(); i++) {
@@ -2922,32 +2055,9 @@ TEST_CASE("PKB_NextBipStarCacheTestTime_correct") {
   std::cout << "NextBip* full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
 }
 
-TEST_CASE("PKB_AffectsBipCacheTestTime_correct") {
-  std::string source =
-      "procedure Bill {"
-      "  x = 5;"
-      "  call Mary;"
-      "  y = x + 6;"
-      "  call John;"
-      "  z = x * y + 2;"
-      "}"
-      "procedure Mary {"
-      "  y = x * 3;"
-      "  call John;"
-      "  z = x + y;"
-      "}"
-      "procedure John {"
-      "  if (i > 0) then {"
-      "    x = x + z;"
-      "  } else {"
-      "    y = x * y;"
-      "  }"
-      "}";
+TEST_CASE("PkbAffectsBip_CacheTestTime_correct") {
+  PKB pkb(BuildProgAst(kCfgBipSample));
 
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
   for (auto &a : pkb.get_statements(NodeType::Assign)) {
@@ -2981,32 +2091,9 @@ TEST_CASE("PKB_AffectsBipCacheTestTime_correct") {
   std::cout << "AffectsBip full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
 }
 
-TEST_CASE("PKB_AffectsBipStarCacheTestTime_correct") {
-  std::string source =
-      "procedure Bill {"
-      "  x = 5;"
-      "  call Mary;"
-      "  y = x + 6;"
-      "  call John;"
-      "  z = x * y + 2;"
-      "}"
-      "procedure Mary {"
-      "  y = x * 3;"
-      "  call John;"
-      "  z = x + y;"
-      "}"
-      "procedure John {"
-      "  if (i > 0) then {"
-      "    x = x + z;"
-      "  } else {"
-      "    y = x * y;"
-      "  }"
-      "}";
+TEST_CASE("PkbAffectsBipStar_CacheTestTime_correct") {
+  PKB pkb(BuildProgAst(kCfgBipSample));
 
-  BufferedLexer lexer(source);
-  ParseState s{};
-  ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb(p);
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
   for (auto &a : pkb.get_statements(NodeType::Assign)) {

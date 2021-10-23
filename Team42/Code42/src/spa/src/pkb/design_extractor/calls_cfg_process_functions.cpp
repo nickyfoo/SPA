@@ -62,7 +62,6 @@ void PKB::LastStmtsOfProcedure(int u, std::set<int>&visited, std::set<int>&ans) 
   for (auto& v : cfg_al_[u]) {
     LastStmtsOfProcedure(v, visited, ans);
   }
-  return;
 }
 
 void PKB::CFGProcessProcedureNode(Node *node) {

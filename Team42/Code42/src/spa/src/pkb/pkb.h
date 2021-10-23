@@ -136,8 +136,6 @@ class PKB {
   void ExtractCalls();
   // Stores adjacency list into cfg_al_
   void ExtractCFG();
-  // Extracts Affects/Affects* relationships in the CFG.
-  void ExtractAffects();
 
   // Updates procs_using_ and procs_modifying_ in var_table_.
   void UpdateVarTableWithProcs();
@@ -214,42 +212,6 @@ class PKB {
   // DFS to check reachability for AffectsBip* relationship
   void AffectsBipStarDFS(std::set<std::pair<int, std::string>>& prev_stmts, int u, std::string& hash);
 
-  // Cache for Next
-  std::map<int, std::map<int,
-    std::set<std::pair<int, int>>>> next_cache;
-  // Cache for Next*
-  std::map<int, std::map<int,
-    std::set<std::pair<int, int>>>> next_star_cache;
-  // Cache for Affects
-  std::map<int, std::map<int,
-    std::set<std::pair<int, int>>>> affects_cache;
-  // Cache for Affects*
-  std::map<int, std::map<int,
-    std::set<std::pair<int, int>>>> affects_star_cache;
-
-  // Cache for NextBip
-  std::map<int, std::map<int,
-    std::set<std::pair<int, int>>>> next_bip_cache;
-  // Cache for BipReachabilityDfs
-  std::map<int, std::map<std::string,
-    std::set<int>>> bip_reachability_dfs_cache;
-  // Cache for NextBip*
-  std::map<int, std::map<int,
-    std::set<std::pair<int, int>>>> next_bip_star_cache;
-  // Cache for AffectsBip
-  std::map<int, std::map<int,
-    std::set<std::pair<int, int>>>> affects_bip_cache;
-  // Cache for AffectsBipDFS
-  std::map<int, std::map<std::string,
-    std::set<std::pair<int, std::string>>>> affects_bip_dfs_cache;
-  // Cache for AffectsBip*
-  std::map<int, std::map<int,
-    std::set<std::pair<int, int>>>> affects_bip_star_cache;
-  // Cache for AffectsBipStarDFS
-  std::map<int, std::map<std::string,
-    std::set<std::pair<int, std::string>>>> affects_bip_star_dfs_cache;
-
-
   // Root AST node of the program.
   Node *root_;
   // Root AST node of the program.
@@ -262,6 +224,7 @@ class PKB {
   VarTable var_table_;
   // Table of constants in the program.
   ConstTable const_table_;
+
   // Adjacency List of CFG for Next and Affects
   std::map<int, std::set<int>> cfg_al_;
   // Reverse Adjacency List of CFG for Next and Affects.
@@ -274,4 +237,39 @@ class PKB {
   // branch is positive stmt_no if branching out from u to v
   // branch is negative stmt_no if branching back from u to v
   std::map<int, std::set<std::pair<int, int>>> reverse_cfg_bip_al_;
+
+  // Cache for Next
+  std::map<int, std::map<int,
+  std::set<std::pair<int, int>>>> next_cache;
+  // Cache for Next*
+  std::map<int, std::map<int,
+  std::set<std::pair<int, int>>>> next_star_cache;
+  // Cache for Affects
+  std::map<int, std::map<int,
+  std::set<std::pair<int, int>>>> affects_cache;
+  // Cache for Affects*
+  std::map<int, std::map<int,
+  std::set<std::pair<int, int>>>> affects_star_cache;
+
+  // Cache for NextBip
+  std::map<int, std::map<int,
+  std::set<std::pair<int, int>>>> next_bip_cache;
+  // Cache for BipReachabilityDfs
+  std::map<int, std::map<std::string,
+  std::set<int>>> bip_reachability_dfs_cache;
+  // Cache for NextBip*
+  std::map<int, std::map<int,
+  std::set<std::pair<int, int>>>> next_bip_star_cache;
+  // Cache for AffectsBip
+  std::map<int, std::map<int,
+  std::set<std::pair<int, int>>>> affects_bip_cache;
+  // Cache for AffectsBipDFS
+  std::map<int, std::map<std::string,
+  std::set<std::pair<int, std::string>>>> affects_bip_dfs_cache;
+  // Cache for AffectsBip*
+  std::map<int, std::map<int,
+  std::set<std::pair<int, int>>>> affects_bip_star_cache;
+  // Cache for AffectsBipStarDFS
+  std::map<int, std::map<std::string,
+  std::set<std::pair<int, std::string>>>> affects_bip_star_dfs_cache;
 };

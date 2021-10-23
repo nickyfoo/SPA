@@ -24,6 +24,7 @@ class PatternManager {
       kOpsMap = {{'(', 1}, {')', 1},
                  {'*', 2}, {'/', 2}, {'%', 2},
                  {'+', 3}, {'-', 3}};
+
   // Gets the postfix expression from an infix expression string.
   std::string GetPostfixExpr(std::string infix_expr);
 };

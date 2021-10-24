@@ -8,7 +8,7 @@ StmtTable::StmtTable() {
 StmtTable::~StmtTable() = default;
 
 void StmtTable::AddStatement(Node *node) {
-  StatementNode *stmt_node = dynamic_cast<StatementNode *>(node);
+  auto *stmt_node = dynamic_cast<StatementNode *>(node);
   int stmt_no = stmt_node->get_stmt_no();
   // Return if statement number is invalid
   if (stmt_no == 0) return;

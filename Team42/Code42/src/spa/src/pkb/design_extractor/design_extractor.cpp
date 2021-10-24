@@ -1,30 +1,33 @@
 #include "pkb.h"
 #include <algorithm>
+#include <utility>
 #include <vector>
 #include "ast_utils.hpp"
 
 void PKB::ExtractEntities() {
+  // Extract entity from node functions
   auto extract_variable =
       [this](Node *node, std::vector<Node *> ancestor_list) {
-        PKB::AddVariable(node, ancestor_list);
+        PKB::AddVariable(node, std::move(ancestor_list));
       };
   auto extract_constant =
       [this](Node *node, std::vector<Node *> ancestor_list) {
-        PKB::AddConstant(node, ancestor_list);
+        PKB::AddConstant(node, std::move(ancestor_list));
       };
   auto extract_statement =
       [this](Node *node, std::vector<Node *> ancestor_list) {
-        PKB::AddStatement(node, ancestor_list);
+        PKB::AddStatement(node, std::move(ancestor_list));
       };
   auto extract_expr_string =
       [this](Node *node, std::vector<Node *> ancestor_list) {
-        PKB::AddExprString(node, ancestor_list);
+        PKB::AddExprString(node, std::move(ancestor_list));
       };
   auto extract_procedure =
       [this](Node *node, std::vector<Node *> ancestor_list) {
-        PKB::AddProcedure(node, ancestor_list);
+        PKB::AddProcedure(node, std::move(ancestor_list));
       };
 
+  // Map from node type to processing functions
   std::map<NodeType, std::vector<std::function<void(Node *, std::vector<Node *>)>>> functions = {
       {NodeType::Identifier, {extract_variable}},
       {NodeType::Constant, {extract_constant}},
@@ -37,12 +40,14 @@ void PKB::ExtractEntities() {
       {NodeType::Procedure, {extract_procedure}},
   };
 
+  // Visits and traverse root node
   std::vector<Node *> ancestors;
   VisitWithAncestors(root_, ancestors, functions);
-  stmt_table_.CategorizeStatements();
+  stmt_table_.CategorizeStatements(); // Add statements to its corresponding kind table
 }
 
 void PKB::ExtractFollows() {
+  // Extract follows relationship from node functions
   auto extract_follows_for_if_node =
       [this](Node *node) { PKB::FollowsProcessIfNode(node); };
   auto extract_follows_for_while_node =
@@ -50,43 +55,47 @@ void PKB::ExtractFollows() {
   auto extract_follows_for_procedure_node =
       [this](Node *node) { PKB::FollowsProcessProcedureNode(node); };
 
+  // Map from node type to processing functions
   std::map<NodeType, std::vector<std::function<void(Node *)>>> functions = {
       {NodeType::If, {extract_follows_for_if_node}},
       {NodeType::While, {extract_follows_for_while_node}},
       {NodeType::Procedure, {extract_follows_for_procedure_node}},
   };
+
+  // Visits and traverse root node
   Visit(root_, functions);
   stmt_table_.ProcessFollows();
   stmt_table_.ProcessFollowsStar();
 }
 
 void PKB::ExtractParent() {
+  // Extract parents relationship from node functions
   auto extract_parents_for_if_node =
       [this](Node *node) { PKB::ParentProcessIfNode(node); };
   auto extract_parents_for_while_node =
       [this](Node *node) { PKB::ParentProcessWhileNode(node); };
 
+  // Map from node type to processing functions
   std::map<NodeType, std::vector<std::function<void(Node *)>>> functions = {
       {NodeType::If, {extract_parents_for_if_node}},
       {NodeType::While, {extract_parents_for_while_node}},
   };
+
+  // Visits and traverse root node
   Visit(root_, functions);
   stmt_table_.ProcessParent();
   stmt_table_.ProcessParentStar();
 }
 
 void PKB::ExtractUsesModifies() {
+  // Extract uses/modifies relationship from node functions
   auto extract_uses_modifies_for_assign_node =
       [this](Node *node, std::vector<Node *> ancestor_list) {
         PKB::UsesModifiesProcessAssignNode(node, ancestor_list);
       };
-  auto extract_uses_modifies_for_if_node =
+  auto extract_uses_modifies_for_container_node =
       [this](Node *node, std::vector<Node *> ancestor_list) {
-        PKB::UsesModifiesProcessIfNode(node, ancestor_list);
-      };
-  auto extract_uses_modifies_for_while_node =
-      [this](Node *node, std::vector<Node *> ancestor_list) {
-        PKB::UsesModifiesProcessWhileNode(node, ancestor_list);
+        PKB::UsesModifiesProcessContainerNode(node, ancestor_list);
       };
   auto extract_uses_modifies_for_read_node =
       [this](Node *node, std::vector<Node *> ancestor_list) {
@@ -97,15 +106,19 @@ void PKB::ExtractUsesModifies() {
         PKB::UsesModifiesProcessPrintNode(node, ancestor_list);
       };
 
+  // Map from node type to processing functions
   std::map<NodeType, std::vector<std::function<void(Node *, std::vector<Node *>)>>> functions = {
       {NodeType::Assign, {extract_uses_modifies_for_assign_node}},
-      {NodeType::If, {extract_uses_modifies_for_if_node}},
-      {NodeType::While, {extract_uses_modifies_for_while_node}},
+      {NodeType::If, {extract_uses_modifies_for_container_node}},
+      {NodeType::While, {extract_uses_modifies_for_container_node}},
       {NodeType::Read, {extract_uses_modifies_for_read_node}},
       {NodeType::Print, {extract_uses_modifies_for_print_node}},
   };
+
+  // Visits and traverse root node
   std::vector<Node *> ancestors;
   VisitWithAncestors(root_, ancestors, functions);
+
   proc_table_.ProcessUsesModifiesIndirect();
   UpdateVarTableWithProcs();
   for (auto &call_statement : get_statements(NodeType::Call)) {
@@ -138,14 +151,18 @@ void PKB::ExtractUsesModifies() {
 }
 
 void PKB::ExtractCalls() {
+  // Extract calls relationship from node functions
   auto extract_calls_for_call_node = [this](Node *node, std::vector<Node *> ancestor_list) {
     PKB::CallsProcessCallNode(node, ancestor_list);
   };
 
+  // Map from node type to processing functions
   std::map<NodeType, std::vector<std::function<void(Node *, std::vector<Node *>)>>>
       functions = {
       {NodeType::Call, {extract_calls_for_call_node}},
   };
+
+  // Visits and traverse root node
   std::vector<Node *> ancestors;
   VisitWithAncestors(root_, ancestors, functions);
 
@@ -154,6 +171,7 @@ void PKB::ExtractCalls() {
 }
 
 void PKB::ExtractCFG() {
+  // Extract cfg relationship from node functions
   auto extract_cfg_for_if_node =
       [this](Node *node) { PKB::CFGProcessIfNode(node); };
   auto extract_cfg_for_while_node =
@@ -161,12 +179,14 @@ void PKB::ExtractCFG() {
   auto extract_cfg_for_procedure_node =
       [this](Node *node) { PKB::CFGProcessProcedureNode(node); };
 
+  // Map from node type to processing functions
   std::map<NodeType, std::vector<std::function<void(Node *)>>> functions = {
       {NodeType::If, {extract_cfg_for_if_node}},
       {NodeType::While, {extract_cfg_for_while_node}},
       {NodeType::Procedure, {extract_cfg_for_procedure_node}},
   };
 
+  // Visits and traverse root node
   Visit(root_, functions);
   LinkProcedures();
   AddCallStacks();

@@ -11,7 +11,7 @@ void PKB::FollowsProcessProcedureNode(Node *node) {
   for (StatementNode *n : procedure_node->get_stmt_lst()) {
     line_no.push_back(n->get_stmt_no());
   }
-  sort(line_no.begin(), line_no.end());
+  std::sort(line_no.begin(), line_no.end());
   for (int i = 1; i < line_no.size(); i++) {
     stmt_table_.get_statement(line_no[i - 1])->AddFollower(line_no[i]);
     stmt_table_.get_statement(line_no[i])->AddFollowee(line_no[i - 1]);
@@ -44,10 +44,11 @@ void PKB::FollowsProcessIfNode(Node *node) {
 void PKB::FollowsProcessWhileNode(Node *node) {
   auto *while_node = dynamic_cast<WhileNode *>(node);
   std::vector<int> line_nos;
+
   for (StatementNode *n : while_node->get_stmt_list()) {
     line_nos.push_back(n->get_stmt_no());
   }
-  sort(line_nos.begin(), line_nos.end());
+  std::sort(line_nos.begin(), line_nos.end());
   for (int i = 1; i < line_nos.size(); i++) {
     stmt_table_.get_statement(line_nos[i - 1])->AddFollower(line_nos[i]);
     stmt_table_.get_statement(line_nos[i])->AddFollowee(line_nos[i - 1]);

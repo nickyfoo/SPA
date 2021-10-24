@@ -154,10 +154,8 @@ class PKB {
 
   // Process and store Uses/Modifies relationships for the AST assign node.
   void UsesModifiesProcessAssignNode(Node *node, std::vector<Node *> &ancestorList);
-  // Process and store Uses/Modifies relationships for the AST if node.
-  void UsesModifiesProcessIfNode(Node *node, std::vector<Node *> &ancestorList);
-  // Process and store Uses/Modifies relationships for the AST while node.
-  void UsesModifiesProcessWhileNode(Node *node, std::vector<Node *> &ancestorList);
+  // Process and store Uses/Modifies relationships for the AST if/while node.
+  void UsesModifiesProcessContainerNode(Node *node, std::vector<Node *> &ancestorList);
   // Process and store Uses/Modifies relationships for the AST read node.
   void UsesModifiesProcessReadNode(Node *node, std::vector<Node *> &ancestorList);
   // Process and store Uses/Modifies relationships for the AST print node.
@@ -167,7 +165,7 @@ class PKB {
   void CallsProcessCallNode(Node *node, std::vector<Node *> &ancestorList);
 
   // Recursively gets the last stmts of a statement.
-  std::set<int> LastStmts(StatementNode* node);
+  std::set<int> GetLastStmts(StatementNode* node);
     // Recursively gets the last stmts of a procedure starting at first_stmt.
   void LastStmtsOfProcedure(int u, std::set<int>& visited, std::set<int>& ans);
   // Process and store the AST procedure node into the CFG.
@@ -190,7 +188,7 @@ class PKB {
                        std::map<int, std::set<int>> &al);
   // DFS to check reachability for Affects relationship.
   // If target is not kWild, supports fast termination to save on unnecessary computations.
-  void AffectsDFS(int start, int target, int u, std::string var_name, std::vector<bool> &visited,
+  void AffectsDFS(int start, int target, int u, const std::string& var_name, std::vector<bool> &visited,
                   std::vector<std::vector<int>> &d, bool &found);
   // DFS to check reachability for Affects* relationship
   // If target is not kWild, supports fast termination to save on unnecessary computations.
@@ -206,9 +204,9 @@ class PKB {
   void AffectsBipDFS(int start, std::string& start_hash, int u, std::vector<int>& call_stack, std::string& hash, std::string var_name,
     std::set<std::pair<int, std::string>>& visited);
   // Adds a stmt to affects_bip_dfs_cache if affected, else does nothing
-  void AddStmtIfAffectedBip(int start, std::string& start_hash, int v, std::string v_hash, std::string& var_name);
+  void AddStmtIfAffectedBip(int start, std::string& start_hash, int v, const std::string& v_hash, std::string& var_name);
   // Returns true if v is an assign stmt that modifies var_name
-  bool ModifiesVarName(int v, std::string var_name);
+  bool ModifiesVarName(int v, const std::string& var_name);
   // DFS to check reachability for AffectsBip* relationship
   void AffectsBipStarDFS(std::set<std::pair<int, std::string>>& prev_stmts, int u, std::string& hash);
 

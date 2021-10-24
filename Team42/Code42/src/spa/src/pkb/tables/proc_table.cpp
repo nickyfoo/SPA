@@ -83,12 +83,12 @@ std::vector<std::vector<int>> ProcTable::SetupAL() {
   return al;
 }
 
-void ProcTable::DFS(int u, std::vector<std::vector<int>> &al,
+void ProcTable::ToposortProcsDFS(int u, std::vector<std::vector<int>> &al,
                     std::vector<int> &status, std::vector<int> &ans) {
   status[u] = kVisited;
   for (auto &v : al[u]) {
     if (status[v] == kUnvisited) {
-      DFS(v, al, status, ans);
+      ToposortProcsDFS(v, al, status, ans);
     } else if (status[v] == kVisited) {
       throw PKBException("Cyclic procedure calls detected");
     }
@@ -125,7 +125,7 @@ void ProcTable::ProcessUsesModifiesIndirect() {
   std::vector<int> status(table_.size(), 0);
   for (int i = 0; i < table_.size(); i++) {
     if (status[i] == kUnvisited) {
-      DFS(i, adj_list, status, ans_int);
+      ToposortProcsDFS(i, adj_list, status, ans_int);
     }
   }
   reverse(ans_int.begin(), ans_int.end());

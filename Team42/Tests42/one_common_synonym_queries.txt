@@ -1,0 +1,20 @@
+1 - One common synonym evaluates to True
+print pn; assign a;
+Select <a,pn> such that Follows(a,3) and Parent(15,16)
+2 10,2 11,2 16,2 18,2 20
+5000
+2 - One common synonym evaluates to False
+print pn; assign a;
+Select <pn,a> such that Follows(3,a) and Parent(15,16)
+
+5000
+3 - One common synonym in multiple clauses evaluates to True
+read r; if ifs;
+Select <r,ifs> such that Follows*(5,ifs) and Uses(ifs, "a")
+12 6,13 6,22 6
+5000
+4 - One common synonym in multiple clauses evaluates to False
+read r; if ifs;
+Select <r,ifs> such that Follows*(5,ifs) and Uses(ifs, "d")
+
+5000

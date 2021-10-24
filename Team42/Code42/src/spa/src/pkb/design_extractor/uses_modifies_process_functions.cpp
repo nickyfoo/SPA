@@ -108,7 +108,6 @@ void PKB::UsesModifiesProcessReadNode(Node *node, std::vector<Node *> &ancestorL
       var_table_.get_variable(read_var)->AddProcModifying(proc_name);
     }
     if (n->get_kind() == NodeType::If || n->get_kind() == NodeType::While) {
-      // Save read variable in parent if/while node and vice versa
       auto parent_stmt = dynamic_cast<StatementNode *>(n);
       int parent_stmt_no = parent_stmt->get_stmt_no();
 
@@ -116,7 +115,6 @@ void PKB::UsesModifiesProcessReadNode(Node *node, std::vector<Node *> &ancestorL
       var_table_.get_variable(read_var)->AddStmtModifying(parent_stmt_no);
     }
   }
-
   stmt_table_.get_statement(read_stmt_no)->AddModifies(read_var);
   var_table_.get_variable(read_var)->AddStmtModifying(read_stmt_no);
 }

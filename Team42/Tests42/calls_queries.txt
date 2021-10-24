@@ -1,0 +1,55 @@
+1 - Calls from main
+procedure p;
+Select p such that Calls("one", p)
+two
+5000
+2 - Call pairs
+procedure p1,p2;
+Select <p1,p2> such that Calls(p1,p2)
+one two, two three, two four, two seven, three nine
+5000
+3 - Call to procedure
+procedure p;
+Select p such that Calls(p, "nine")
+three
+5000
+4 - Call none
+procedure p;
+Select p such that Calls("none", p)
+
+5000
+5 - Call* from main
+procedure p;
+Select p such that Calls*("one", p)
+two, three, four, seven, nine
+5000
+6 - Call* from procedure
+procedure p;
+Select p such that Calls*("three", p)
+nine
+5000
+7 - Call* to procedure
+procedure p;
+Select p such that Calls*(p, "nine")
+one, two, three
+5000
+8 - Call* to none
+procedure p;
+Select p such that Calls*(p, "none")
+
+5000
+9 - Call* pairings
+procedure p1,p2;
+Select <p1,p2> such that Calls*(p1,p2)
+one two, one three, one four, one seven, one nine, two three, two four, two seven, two nine, three nine
+5000
+10 - Call BOOLEAN between two procedures
+
+Select BOOLEAN such that Calls("one", "two")
+TRUE
+5000
+11 - Call* BOOLEAN between two procedures
+
+Select BOOLEAN such that Calls*("one", "none")
+FALSE
+5000

@@ -51,6 +51,7 @@ std::string PatternManager::GetPostfixExpr(std::string infix_expr) {
             output << ops.top() << ' ';
             ops.pop();
           }
+          ops.pop(); // pop the '('
           break;
         case '+':
         case '-':
@@ -107,7 +108,7 @@ std::string PatternManager::GetPostfixExpr(std::string infix_expr) {
 }
 
 bool PatternManager::TestAssignmentPattern(Statement *assignment_stmt, std::string pattern, bool is_partial_match) {
-  if (pattern.size() == 0) return false;
+  if (pattern.empty()) return false;
   std::string postfix_pattern = GetPostfixExpr(pattern);
   std::stringstream assign_expr_ss;
   assign_expr_ss << " " << assignment_stmt->get_expr_string() << " ";

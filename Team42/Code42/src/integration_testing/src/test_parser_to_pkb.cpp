@@ -1596,10 +1596,10 @@ TEST_CASE("PkbAffectsStar_CacheTestTime_correct") {
     for (auto &b : pkb.get_statements(NodeType::Assign)) {
       pkb.get_affects_star(a->get_stmt_no(), b->get_stmt_no());
     }
-    pkb.get_affects_star(a->get_stmt_no(), PKB::kWild);
+    pkb.get_affects_star(a->get_stmt_no(), pkb.kWild);
     pkb.get_affects_star(PKB::kWild, a->get_stmt_no());
   }
-  pkb.get_affects_star(PKB::kWild, PKB::kWild);
+  pkb.get_affects_star(PKB::kWild, pkb.kWild);
   auto empty_cache_end = std::chrono::steady_clock::now();
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());

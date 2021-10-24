@@ -43,7 +43,7 @@ class PKB {
   // Gets all procedures in the program.
   std::vector<Procedure *> get_all_procedures();
   // Gets a procedure by its procedure name.
-  Procedure *get_procedure(std::string &name);
+  virtual Procedure *get_procedure(std::string &name);
 
   // Gets the total number of statements in the statement table.
   int get_num_statements();
@@ -52,7 +52,7 @@ class PKB {
   // Gets all statements of the given type.
   std::vector<Statement *> get_statements(NodeType type);
   // Gets a statement by its corresponding line number.
-  Statement *get_statement(int line_no);
+  virtual Statement *get_statement(int line_no);
 
   // Gets all variables in the program.
   std::vector<Variable *> get_all_variables();
@@ -62,8 +62,8 @@ class PKB {
 
   std::map<int, std::set<int>> *get_cfg_al();
   std::map<int, std::set<int>> *get_reverse_cfg_al();
-  std::map<int, std::set<std::pair<int, int>>>* get_cfg_bip_al();
-  std::map<int, std::set<std::pair<int, int>>>* get_reverse_cfg_bip_al();
+  std::map<int, std::set<std::pair<int, int>>> *get_cfg_bip_al();
+  std::map<int, std::set<std::pair<int, int>>> *get_reverse_cfg_bip_al();
 
   // Gets Next(a,b) relation. if a==kWild or b==kWild, it is treated as a wildcard.
   // Does a check for valid stmt line input, or kWild, and returns empty set if invalid.
@@ -81,18 +81,17 @@ class PKB {
 
   // Gets NextBip(a,b) relation. if a==kWild or b==kWild, it is treated as a wildcard.
   // Does a check for valid stmt line input, or kWild, and returns nullptr if invalid.
-  std::set<std::pair<int, int>>* get_next_bip(int a, int b);
+  std::set<std::pair<int, int>> *get_next_bip(int a, int b);
   // Gets NextBip*(a,b) relation. if a==kWild or b==kWild, it is treated as a wildcard.
   // Does a check for valid stmt line input, or kWild, and returns empty set if invalid.
-  std::set<std::pair<int, int>>* get_next_bip_star(int a, int b);
+  std::set<std::pair<int, int>> *get_next_bip_star(int a, int b);
 
   // Gets AffectsBip(a,b) relation. if a==0 or b==0, it is treated as a wildcard.
   // Does a check for valid stmt line input, or kWild, and returns empty set if invalid.
-  std::set<std::pair<int, int>>* get_affects_bip(int a, int b);
+  std::set<std::pair<int, int>> *get_affects_bip(int a, int b);
   // Gets AffectsBip*(a,b) relation. if a==0 or b==0, it is treated as a wildcard.
   // Does a check for valid stmt line input, or kWild, and returns empty set if invalid.
-  std::set<std::pair<int, int>>* get_affects_bip_star(int a, int b);
-
+  std::set<std::pair<int, int>> *get_affects_bip_star(int a, int b);
 
   // Tests the RHS of assignment statement against the given pattern.
   // Returns true if pattern matches.
@@ -165,9 +164,9 @@ class PKB {
   void CallsProcessCallNode(Node *node, std::vector<Node *> &ancestorList);
 
   // Recursively gets the last stmts of a statement.
-  std::set<int> GetLastStmts(StatementNode* node);
-    // Recursively gets the last stmts of a procedure starting at first_stmt.
-  void LastStmtsOfProcedure(int u, std::set<int>& visited, std::set<int>& ans);
+  std::set<int> GetLastStmts(StatementNode *node);
+  // Recursively gets the last stmts of a procedure starting at first_stmt.
+  void LastStmtsOfProcedure(int u, std::set<int> &visited, std::set<int> &ans);
   // Process and store the AST procedure node into the CFG.
   void CFGProcessProcedureNode(Node *node);
   // Process and store the AST if node into the CFG.
@@ -179,39 +178,48 @@ class PKB {
   // Adds a call stack to each assign stmt, to store the state that it can be in when encountered.
   void AddCallStacks();
   // Traverses the CFGBip, keeping track of the call stack
-  void ProcessCallStacks(std::set<std::pair<int, std::string>>& visited, std::vector<int>& call_stack, int u);
+  void ProcessCallStacks(std::set<std::pair<int, std::string>> &visited, std::vector<int> &call_stack, int u);
   // Utility to hash a call_stack
-  std::string CallStackToString(std::vector<int>* call_stack);
+  std::string CallStackToString(std::vector<int> *call_stack);
 
   // DFS to check reachability for Next and Affects* relationship
   void ReachabilityDFS(int start, int u, std::vector<std::vector<int>> &d,
                        std::map<int, std::set<int>> &al);
   // DFS to check reachability for Affects relationship.
-  // If target is not kWild, supports fast termination to save on unnecessary computations.
-  void AffectsDFS(int start, int target, int u, const std::string& var_name, std::vector<bool> &visited,
+  void AffectsDFS(int start, int u, std::string var_name, std::vector<bool> &visited,
                   std::vector<std::vector<int>> &d, bool &found);
   // DFS to check reachability for Affects* relationship
-  // If target is not kWild, supports fast termination to save on unnecessary computations.
   // If forward relation is true, this method propagates forward in terms of Affects*(a,b)
-  void AffectsStarBFS(int start, int target, std::vector<bool> &visited,
+  void AffectsStarBFS(int start, std::vector<bool> &visited,
                       bool forward_relation);
 
   // DFS to check reachability for NextBip and AffectsBip* relationship
-  void BipReachabilityDFS(std::set<std::pair<int, std::string>>& prev_stmts, int u,
-    std::vector<int>& call_stack, std::string& hash);
+  void BipReachabilityDFS(std::set<std::pair<int, std::string>> &prev_stmts, int u,
+                          std::vector<int> &call_stack, std::string &hash);
   // DFS to check reachability for AffectsBip relationship.
   // If target is not kWild, supports fast termination to save on unnecessary computations. 
-  void AffectsBipDFS(int start, std::string& start_hash, int u, std::vector<int>& call_stack, std::string& hash, std::string var_name,
-    std::set<std::pair<int, std::string>>& visited);
+  void AffectsBipDFS(int start,
+                     std::string &start_hash,
+                     int u,
+                     std::vector<int> &call_stack,
+                     std::string &hash,
+                     std::string var_name,
+                     std::set<std::pair<int, std::string>> &visited);
   // Adds a stmt to affects_bip_dfs_cache if affected, else does nothing
-  void AddStmtIfAffectedBip(int start, std::string& start_hash, int v, const std::string& v_hash, std::string& var_name);
+  void AddStmtIfAffectedBip(int start,
+                            std::string &start_hash,
+                            int v,
+                            const std::string &v_hash,
+                            std::string &var_name);
   // Returns true if v is an assign stmt that modifies var_name
-  bool ModifiesVarName(int v, const std::string& var_name);
+  bool ModifiesVarName(int v, const std::string &var_name);
   // DFS to check reachability for AffectsBip* relationship
-  void AffectsBipStarDFS(std::set<std::pair<int, std::string>>& prev_stmts, int u, std::string& hash);
+  void AffectsBipStarDFS(std::set<std::pair<int, std::string>> &prev_stmts, int u, std::string &hash);
 
   // Root AST node of the program.
-  Node *root_;
+  Node
+      *
+      root_;
   // Root AST node of the program.
   PatternManager pattern_manager_;
   // Table of procedures in the program.
@@ -238,36 +246,36 @@ class PKB {
 
   // Cache for Next
   std::map<int, std::map<int,
-  std::set<std::pair<int, int>>>> next_cache;
+                         std::set<std::pair<int, int>>>> next_cache;
   // Cache for Next*
   std::map<int, std::map<int,
-  std::set<std::pair<int, int>>>> next_star_cache;
+                         std::set<std::pair<int, int>>>> next_star_cache;
   // Cache for Affects
   std::map<int, std::map<int,
-  std::set<std::pair<int, int>>>> affects_cache;
+                         std::set<std::pair<int, int>>>> affects_cache;
   // Cache for Affects*
   std::map<int, std::map<int,
-  std::set<std::pair<int, int>>>> affects_star_cache;
+                         std::set<std::pair<int, int>>>> affects_star_cache;
 
   // Cache for NextBip
   std::map<int, std::map<int,
-  std::set<std::pair<int, int>>>> next_bip_cache;
+                         std::set<std::pair<int, int>>>> next_bip_cache;
   // Cache for BipReachabilityDfs
   std::map<int, std::map<std::string,
-  std::set<int>>> bip_reachability_dfs_cache;
+                         std::set<int>>> bip_reachability_dfs_cache;
   // Cache for NextBip*
   std::map<int, std::map<int,
-  std::set<std::pair<int, int>>>> next_bip_star_cache;
+                         std::set<std::pair<int, int>>>> next_bip_star_cache;
   // Cache for AffectsBip
   std::map<int, std::map<int,
-  std::set<std::pair<int, int>>>> affects_bip_cache;
+                         std::set<std::pair<int, int>>>> affects_bip_cache;
   // Cache for AffectsBipDFS
   std::map<int, std::map<std::string,
-  std::set<std::pair<int, std::string>>>> affects_bip_dfs_cache;
+                         std::set<std::pair<int, std::string>>>> affects_bip_dfs_cache;
   // Cache for AffectsBip*
   std::map<int, std::map<int,
-  std::set<std::pair<int, int>>>> affects_bip_star_cache;
+                         std::set<std::pair<int, int>>>> affects_bip_star_cache;
   // Cache for AffectsBipStarDFS
   std::map<int, std::map<std::string,
-  std::set<std::pair<int, std::string>>>> affects_bip_star_dfs_cache;
+                         std::set<std::pair<int, std::string>>>> affects_bip_star_dfs_cache;
 };

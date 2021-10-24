@@ -41,6 +41,8 @@ bool PatternClause::IsValidExpSpec(std::string ref) {
     exp_spec->set_wild_card();
     this->exp_spec_ = exp_spec;
     return true;
+  } else if (ref == "") {
+    return false;
   }
 
   if (ref.at(0) == '_' && ref.at(ref.length() - 1) == '_') {
@@ -66,6 +68,8 @@ bool PatternClause::IsValidExpSpec(std::string ref) {
         expecting_exp = false;
       } else if (IsChar(c)) {
         expecting_exp = true;
+      } else if (c == '(' || c == ')' || isspace(c)) {
+        continue;
       } else {
         return false;
       }

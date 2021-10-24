@@ -107,6 +107,26 @@ ResultTable *RelationshipQueryManager::EvaluateRelationship(
       affects_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
       return affects_handler->EvaluateAffectsT();
     }
+    case RelRef::NextBip: {
+      NextHandler *next_handler = NextHandler::get_instance();
+      next_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
+      return next_handler->EvaluateNextBip();
+    }
+    case RelRef::NextTBip: {
+      NextHandler *next_handler = NextHandler::get_instance();
+      next_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
+      return next_handler->EvaluateNextTBip();
+    }
+    case RelRef::AffectsBip: {
+      AffectsHandler *affects_handler = AffectsHandler::get_instance();
+      affects_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
+      return affects_handler->EvaluateAffectsBip();
+    }
+    case RelRef::AffectsTBip: {
+      AffectsHandler *affects_handler = AffectsHandler::get_instance();
+      affects_handler->set_args(pkb_, relationship, synonym_to_entities_vec);
+      return affects_handler->EvaluateAffectsTBip();
+    }
     default:
       break;
   }

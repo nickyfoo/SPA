@@ -25,6 +25,10 @@ ResultTable *AffectsHandler::EvaluateAffects() { return Evaluate(&PKB::get_affec
 
 ResultTable *AffectsHandler::EvaluateAffectsT() { return Evaluate(&PKB::get_affects_star); }
 
+ResultTable *AffectsHandler::EvaluateAffectsBip() { return Evaluate(&PKB::get_affects_bip); }
+
+ResultTable *AffectsHandler::EvaluateAffectsTBip() { return Evaluate(&PKB::get_affects_bip_star); }
+
 // if is nullpointer, means False
 // if is empty, means that True with no synonyms
 ResultTable* AffectsHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func)(int, int)) {

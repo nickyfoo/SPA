@@ -26,6 +26,14 @@ SuchThatClause::SuchThatClause(const std::string &type) {
     this->type_ = RelRef::Affects;
   } else if (type == "Affects*") {
     this->type_ = RelRef::AffectsT;
+  } else if (type == "NextBip") {
+    this->type_ = RelRef::NextBip;
+  } else if (type == "NextBip*") {
+    this->type_ = RelRef::NextTBip;
+  } else if (type == "AffectsBip") {
+    this->type_ = RelRef::AffectsBip;
+  } else if (type == "AffectsBip*") {
+    this->type_ = RelRef::AffectsTBip;
   } else {
     this->type_ = RelRef::None;
   }
@@ -44,6 +52,8 @@ bool SuchThatClause::set_ref(SuchThatRef *left, SuchThatRef *right) {
     case RelRef::ParentT:
     case RelRef::Affects:
     case RelRef::AffectsT:
+    case RelRef::AffectsBip:
+    case RelRef::AffectsTBip:
       if (left->get_type() == SuchThatRefType::Statement
           && right->get_type() == SuchThatRefType::Statement) {
         this->left_ref_ = left;
@@ -90,7 +100,7 @@ bool SuchThatClause::set_ref(SuchThatRef *left, SuchThatRef *right) {
     case RelRef::Calls:
     case RelRef::CallsT:
       if (left->get_type() == SuchThatRefType::Entity
-      && right->get_type() == SuchThatRefType::Entity) {
+          && right->get_type() == SuchThatRefType::Entity) {
         this->left_ref_ = left;
         this->right_ref_ = right;
         return true;
@@ -98,8 +108,10 @@ bool SuchThatClause::set_ref(SuchThatRef *left, SuchThatRef *right) {
       return false;
     case RelRef::Next:
     case RelRef::NextT:
+    case RelRef::NextBip:
+    case RelRef::NextTBip:
       if (left->get_type() == SuchThatRefType::Line
-      && right->get_type() == SuchThatRefType::Line) {
+          && right->get_type() == SuchThatRefType::Line) {
         this->left_ref_ = left;
         this->right_ref_ = right;
         return true;
@@ -136,6 +148,10 @@ std::string SuchThatClause::get_type_str() {
     case RelRef::AffectsT:return "Affects*";
     case RelRef::Calls:return "Calls";
     case RelRef::CallsT:return "Calls*";
+    case RelRef::NextBip:return "NextBip";
+    case RelRef::NextTBip:return "NextBip*";
+    case RelRef::AffectsBip:return "AffectsBip";
+    case RelRef::AffectsTBip:return "AffectsBip*";
     default:return "Unknown Type";
   }
 }

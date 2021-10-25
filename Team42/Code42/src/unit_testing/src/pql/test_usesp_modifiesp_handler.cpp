@@ -43,7 +43,7 @@ TEST_CASE("UsesPClauses_DifferentCases_OutputsResultTable") {
 
     PKBStub *pkb_stub = PKBStub::BuildPKB();
     std::unordered_map<std::string, std::vector<Entity *>> syn_to_entities_vec;
-    std::vector<Procedure *> entities_proc = pkb_stub->get_all_procs();
+    std::vector<Procedure *> entities_proc = pkb_stub->get_all_procedures();
     std::vector<Entity *> entities;
     for (Procedure *proc : entities_proc) {
       auto *entity = static_cast<Entity *>(proc);
@@ -98,7 +98,7 @@ TEST_CASE("UsesPClauses_DifferentCases_OutputsResultTable") {
 
     PKBStub *pkb_stub = PKBStub::BuildPKB();
     std::unordered_map<std::string, std::vector<Entity *>> syn_to_entities_vec;
-    std::vector<Procedure *> entities_proc = pkb_stub->get_all_procs();
+    std::vector<Procedure *> entities_proc = pkb_stub->get_all_procedures();
     std::vector<Entity *> entities;
     for (Procedure *proc : entities_proc) {
       auto *entity = static_cast<Entity *>(proc);
@@ -167,7 +167,7 @@ TEST_CASE("UsesPClauses_DifferentCases_OutputsResultTable") {
       entities_v.push_back(entity);
     }
     syn_to_entities_vec["v"] = entities_v;
-    std::vector<Procedure *> entities_proc = pkb_stub->get_all_procs();
+    std::vector<Procedure *> entities_proc = pkb_stub->get_all_procedures();
     std::vector<Entity *> entities_p;
     for (Procedure *proc : entities_proc) {
       auto *entity = static_cast<Entity *>(proc);
@@ -222,7 +222,7 @@ TEST_CASE("ModifiesPClauses_DifferentCases_OutputsResultTable") {
 
     PKBStub *pkb_stub = PKBStub::BuildPKB();
     std::unordered_map<std::string, std::vector<Entity *>> syn_to_entities_vec;
-    std::vector<Procedure *> entities_proc = pkb_stub->get_all_procs();
+    std::vector<Procedure *> entities_proc = pkb_stub->get_all_procedures();
     std::vector<Entity *> entities;
     for (Procedure *proc : entities_proc) {
       auto *entity = static_cast<Entity *>(proc);
@@ -276,7 +276,7 @@ TEST_CASE("ModifiesPClauses_DifferentCases_OutputsResultTable") {
 
     PKBStub *pkb_stub = PKBStub::BuildPKB();
     std::unordered_map<std::string, std::vector<Entity *>> syn_to_entities_vec;
-    std::vector<Procedure *> entities_proc = pkb_stub->get_all_procs();
+    std::vector<Procedure *> entities_proc = pkb_stub->get_all_procedures();
     std::vector<Entity *> entities;
     for (Procedure *proc : entities_proc) {
       auto *entity = static_cast<Entity *>(proc);
@@ -345,7 +345,7 @@ TEST_CASE("ModifiesPClauses_DifferentCases_OutputsResultTable") {
       entities_v.push_back(entity);
     }
     syn_to_entities_vec["v"] = entities_v;
-    std::vector<Procedure *> entities_proc = pkb_stub->get_all_procs();
+    std::vector<Procedure *> entities_proc = pkb_stub->get_all_procedures();
     std::vector<Entity *> entities_p;
     for (Procedure *proc : entities_proc) {
       auto *entity = static_cast<Entity *>(proc);

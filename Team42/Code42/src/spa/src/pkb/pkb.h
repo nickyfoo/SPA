@@ -41,14 +41,14 @@ class PKB {
   // Gets the total number of procedures in the procedure table
   int get_num_procedures();
   // Gets all procedures in the program.
-  std::vector<Procedure *> get_all_procedures();
+  virtual std::vector<Procedure *> get_all_procedures();
   // Gets a procedure by its procedure name.
   virtual Procedure *get_procedure(std::string &name);
 
   // Gets the total number of statements in the statement table.
   int get_num_statements();
   // Gets all statements in the statement table.
-  std::vector<Statement *> get_all_statements();
+  virtual std::vector<Statement *> get_all_statements();
   // Gets all statements of the given type.
   std::vector<Statement *> get_statements(NodeType type);
   // Gets a statement by its corresponding line number.
@@ -199,14 +199,14 @@ class PKB {
                       bool forward_relation);
 
   // DFS to check reachability for NextBip and AffectsBip* relationship
-  void PKB::BipReachabilityDFS(std::set<std::pair<int, std::string>>& prev_stmts, int u,
+  void BipReachabilityDFS(std::set<std::pair<int, std::string>>& prev_stmts, int u,
     std::vector<int>& call_stack, std::string& hash);
   // DFS to check reachability for AffectsBip relationship.
   // If target is not kWild, supports fast termination to save on unnecessary computations. 
   void AffectsBipDFS(int start, std::string& start_hash, int u, std::vector<int>& call_stack, std::string& hash, std::string var_name,
     std::set<std::pair<int, std::string>>& visited);
   // Adds a stmt to affects_bip_dfs_cache if affected, else does nothing
-  void PKB::AddStmtIfAffectedBip(int start, std::string& start_hash, int v, std::string v_hash, std::string& var_name);
+  void AddStmtIfAffectedBip(int start, std::string& start_hash, int v, std::string v_hash, std::string& var_name);
   // Returns true if v is an assign stmt that modifies var_name
   bool ModifiesVarName(int v, std::string var_name);
   // DFS to check reachability for AffectsBip* relationship

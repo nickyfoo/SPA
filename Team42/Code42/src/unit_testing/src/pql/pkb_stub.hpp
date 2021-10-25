@@ -111,7 +111,7 @@ class PKBStub : public PKB {
     return var_table_.get_all_vars();
   }
 
-  std::vector<Procedure *> get_all_procs() {
+  std::vector<Procedure *> get_all_procedures() override {
     return proc_table_.get_all_procs();
   }
 

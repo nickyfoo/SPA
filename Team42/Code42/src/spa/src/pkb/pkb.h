@@ -178,7 +178,8 @@ class PKB {
   // Adds a call stack to each assign stmt, to store the state that it can be in when encountered.
   void AddCallStacks();
   // Traverses the CFGBip, keeping track of the call stack
-  void ProcessCallStacks(std::set<std::pair<int, std::string>> &visited, std::vector<int> &call_stack, int u);
+  void ProcessCallStacks(std::set<std::pair<int, std::string>> &visited,
+                         std::vector<int> &call_stack, int u);
   // Utility to hash a call_stack
   std::string CallStackToString(std::vector<int> *call_stack);
 
@@ -217,9 +218,7 @@ class PKB {
   void AffectsBipStarDFS(std::set<std::pair<int, std::string>> &prev_stmts, int u, std::string &hash);
 
   // Root AST node of the program.
-  Node
-      *
-      root_;
+  Node *root_;
   // Root AST node of the program.
   PatternManager pattern_manager_;
   // Table of procedures in the program.
@@ -245,30 +244,22 @@ class PKB {
   std::map<int, std::set<std::pair<int, int>>> reverse_cfg_bip_al_;
 
   // Cache for Next
-  std::map<int, std::map<int,
-                         std::set<std::pair<int, int>>>> next_cache;
+  std::map<int, std::map<int, std::set<std::pair<int, int>>>> next_cache;
   // Cache for Next*
-  std::map<int, std::map<int,
-                         std::set<std::pair<int, int>>>> next_star_cache;
+  std::map<int, std::map<int, std::set<std::pair<int, int>>>> next_star_cache;
   // Cache for Affects
-  std::map<int, std::map<int,
-                         std::set<std::pair<int, int>>>> affects_cache;
+  std::map<int, std::map<int, std::set<std::pair<int, int>>>> affects_cache;
   // Cache for Affects*
-  std::map<int, std::map<int,
-                         std::set<std::pair<int, int>>>> affects_star_cache;
+  std::map<int, std::map<int, std::set<std::pair<int, int>>>> affects_star_cache;
 
   // Cache for NextBip
-  std::map<int, std::map<int,
-                         std::set<std::pair<int, int>>>> next_bip_cache;
+  std::map<int, std::map<int, std::set<std::pair<int, int>>>> next_bip_cache;
   // Cache for BipReachabilityDfs
-  std::map<int, std::map<std::string,
-                         std::set<int>>> bip_reachability_dfs_cache;
+  std::map<int, std::map<std::string, std::set<int>>> bip_reachability_dfs_cache;
   // Cache for NextBip*
-  std::map<int, std::map<int,
-                         std::set<std::pair<int, int>>>> next_bip_star_cache;
+  std::map<int, std::map<int, std::set<std::pair<int, int>>>> next_bip_star_cache;
   // Cache for AffectsBip
-  std::map<int, std::map<int,
-                         std::set<std::pair<int, int>>>> affects_bip_cache;
+  std::map<int, std::map<int, std::set<std::pair<int, int>>>> affects_bip_cache;
   // Cache for AffectsBipDFS
   std::map<int, std::map<std::string,
                          std::set<std::pair<int, std::string>>>> affects_bip_dfs_cache;

@@ -89,12 +89,13 @@ void ResultTable::NaturalJoin(ResultTable &other_result_table) {
     for (int k = index_to_erase.size()-1; k >= 0; --k) {
       table_->erase(table_->begin()+index_to_erase.at(k));
     }
-  } else if (common_synonyms->size() == 0) {
-    CrossJoin(other_result_table);
+  } else if (common_synonyms->size() == 0) {  // happens for cases when no used synonyms in clause group
+    CrossJoin(other_result_table, {});
   }
 }
 
-void ResultTable::CrossJoin(ResultTable &other_result_table) {
+void ResultTable::CrossJoin(ResultTable &other_result_table,
+                            std::unordered_set<std::string> used_synonyms) {
   table *new_table = new std::vector<std::vector<std::string>>();
   table *other_table = other_result_table.get_table();
   if (other_table->empty()) {
@@ -105,17 +106,29 @@ void ResultTable::CrossJoin(ResultTable &other_result_table) {
 
   std::unordered_map<int, std::string> *other_index_to_synonym;
   other_index_to_synonym = other_result_table.get_index_to_synonym();
+  std::vector<int> indexes_of_used_synonyms;
   for (int i = 0; i < other_index_to_synonym->size(); ++i) {
     std::string synonym = other_index_to_synonym->at(i);
-    synonym_to_index_->insert({synonym, synonym_to_index_->size()});
-    index_to_synonym_->insert({index_to_synonym_->size(), synonym});
-    synonyms_->push_back(synonym);
+
+    // if no used synonyms, add everything (case where clause groups are all not used)
+    // else only add used synonyms into the table
+    if (used_synonyms.empty() || used_synonyms.find(synonym) != used_synonyms.end()) {
+      synonym_to_index_->insert({synonym, synonym_to_index_->size()});
+      index_to_synonym_->insert({index_to_synonym_->size(), synonym});
+      synonyms_->push_back(synonym);
+      indexes_of_used_synonyms.push_back(i);
+    }
   }
 
   for (int i = 0; i < table_->size(); ++i) {
     for (int j = 0; j < other_table->size(); ++j) {
       std::vector<std::string> curr_row = table_->at(i);
-      curr_row.insert(curr_row.end(), other_table->at(j).begin(), other_table->at(j).end());
+
+      // only add to table synonyms that will be used subsequently
+      for (int k = 0; k < indexes_of_used_synonyms.size(); ++k) {
+        curr_row.push_back(other_table->at(j).at(k));
+      }
+//      curr_row.insert(curr_row.end(), other_table->at(j).begin(), other_table->at(j).end());
       new_table->push_back(curr_row);
     }
   }
@@ -188,7 +201,6 @@ std::vector<std::string> ResultTable::GetColumnVec(std::string synonym) {
   }
   return ret;
 }
-
 
 void ResultTable::set_table(ResultTable &result_table) {
   this->table_ = result_table.get_table();

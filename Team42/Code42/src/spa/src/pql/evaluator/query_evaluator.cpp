@@ -17,6 +17,7 @@ QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
     this->synonym_to_entity_dec_ = pql_query->get_synonym_to_entities();
     this->is_valid_query_ = pql_query->is_valid_query();
     this->pkb_ = pkb;
+    set_used_synonyms();
   } else {
     if (pql_query != nullptr && !pql_query->get_query_entities()->empty()) {
       this->entities_to_return_ = pql_query->get_query_entities();
@@ -98,7 +99,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
       }
       result_table->set_table(*intermediate_table);
     } else if (i > 2) {
-      result_table->CrossJoin(*intermediate_table);
+      result_table->CrossJoin(*intermediate_table, used_synonyms_);
       if (!first_table_entry && result_table->get_table()->empty()) {
         return ConvertToOutput(result_table, false);
       }
@@ -459,4 +460,10 @@ void QueryEvaluator::MakeTableForUsedEntity(ResultTable *result_table,
 
   result_table->AddDoubleColumns(result_clause->get_synonym(),
                                  synonym_vec, elem, to_add);
+}
+
+void QueryEvaluator::set_used_synonyms() {
+  for (ResultClause* result_clause : *entities_to_return_) {
+    used_synonyms_.insert(result_clause->get_synonym());
+  }
 }

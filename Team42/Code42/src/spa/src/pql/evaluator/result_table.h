@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <entity.hpp>
 
 using table = std::vector<std::vector<std::string>>;
@@ -11,7 +12,8 @@ class ResultTable {
  public:
   ResultTable();
   void NaturalJoin(ResultTable &result_table);
-  void CrossJoin(ResultTable &result_table);
+  void CrossJoin(ResultTable &result_table,
+                 std::unordered_set<std::string> used_synonyms);
   void AddSingleColumn(std::string synonym, std::vector<std::string> vec);
   void AddDoubleColumns(std::string synonym_one, std::vector<std::string> vec_one,
                         std::string synonym_two, std::vector<std::string> vec_two);

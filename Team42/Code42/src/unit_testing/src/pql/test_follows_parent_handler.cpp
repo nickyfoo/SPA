@@ -23,9 +23,7 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, {});
-    follows_parents_handler->set_function_pointers(&Statement::get_followers,
-                                                   &Statement::get_followees);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateFollows();
     REQUIRE(res->get_table()->empty() == true);
   }
 
@@ -53,9 +51,7 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_followers,
-                                                   &Statement::get_followees);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateFollows();
     REQUIRE(res->get_table()->size() == 1);
     REQUIRE(res->get_table()->at(0).size() == 1);
     REQUIRE(res->get_table()->at(0).at(0) == "3");
@@ -85,9 +81,7 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_followers,
-                                                   &Statement::get_followees);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateFollows();
     REQUIRE(res->get_table()->size() == 1);
     REQUIRE(res->get_table()->at(0).size() == 1);
     REQUIRE(res->get_table()->at(0).at(0) == "4");
@@ -118,9 +112,7 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_followers,
-                                                   &Statement::get_followees);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateFollows();
     REQUIRE(res->get_table()->size() == 7);
     REQUIRE(res->get_table()->at(0).size() == 2);
     REQUIRE(res->get_table()->at(0).at(0) == "1");
@@ -157,9 +149,7 @@ TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, {});
-    follows_parents_handler->set_function_pointers(&Statement::get_followers_star,
-                                                   &Statement::get_followees_star);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateFollowsT();
     REQUIRE(res->get_table()->empty() == true);
   }
 
@@ -187,9 +177,7 @@ TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_followers_star,
-                                                   &Statement::get_followees_star);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateFollowsT();
     REQUIRE(res->get_table()->size() == 3);
     REQUIRE(res->get_table()->at(0).size() == 1);
     REQUIRE(res->get_table()->at(0).at(0) == "1");
@@ -221,9 +209,7 @@ TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_followers_star,
-                                                   &Statement::get_followees_star);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateFollowsT();
     REQUIRE(res->get_table()->size() == 3);
     REQUIRE(res->get_table()->at(0).size() == 1);
     REQUIRE(res->get_table()->at(0).at(0) == "9");
@@ -256,9 +242,7 @@ TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_followers_star,
-                                                   &Statement::get_followees_star);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateFollowsT();
     REQUIRE(res->get_table()->size() == 16);
   }
 }
@@ -280,9 +264,7 @@ TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, parent_ptr, {});
-    follows_parents_handler->set_function_pointers(&Statement::get_children,
-                                                   &Statement::get_parents);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateParent();
     REQUIRE(res->get_table()->empty() == true);
   }
 
@@ -310,9 +292,7 @@ TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, parent_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_children,
-                                                   &Statement::get_parents);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateParent();
     REQUIRE(res->get_table()->size() == 1);
     REQUIRE(res->get_table()->at(0).size() == 1);
     REQUIRE(res->get_table()->at(0).at(0) == "6");
@@ -342,9 +322,7 @@ TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, parent_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_children,
-                                                   &Statement::get_parents);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateParent();
     REQUIRE(res->get_table()->size() == 2);
     REQUIRE(res->get_table()->at(0).size() == 1);
     REQUIRE(res->get_table()->at(0).at(0) == "13");
@@ -376,9 +354,7 @@ TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, parent_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_children,
-                                                   &Statement::get_parents);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateParent();
     REQUIRE(res->get_table()->size() == 9);
   }
 }
@@ -400,9 +376,7 @@ TEST_CASE("Parent*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, parent_ptr, {});
-    follows_parents_handler->set_function_pointers(&Statement::get_children_star,
-                                                   &Statement::get_parents_star);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateParentT();
     REQUIRE(res->get_table()->empty() == true);
   }
 
@@ -430,9 +404,7 @@ TEST_CASE("Parent*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, parent_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_children_star,
-                                                   &Statement::get_parents_star);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateParentT();
     REQUIRE(res->get_table()->size() == 2);
     REQUIRE(res->get_table()->at(0).size() == 1);
     REQUIRE(res->get_table()->at(0).at(0) == "4");
@@ -463,9 +435,7 @@ TEST_CASE("Parent*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, parent_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_children_star,
-                                                   &Statement::get_parents_star);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateParentT();
     REQUIRE(res->get_table()->size() == 7);
     REQUIRE(res->get_table()->at(0).size() == 1);
     REQUIRE(res->get_table()->at(0).at(0) == "5");
@@ -502,9 +472,7 @@ TEST_CASE("Parent*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, parent_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_children_star,
-                                                   &Statement::get_parents_star);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateParentT();
     REQUIRE(res->get_table()->size() == 11);
   }
 }

@@ -1,17 +1,5 @@
+#include <pkb.h>
 #include <queue>
-#include "pkb.h"
-
-void PKB::ClearNextAffectsCache() {
-  next_cache.clear();
-  next_star_cache.clear();
-  affects_cache.clear();
-  affects_star_cache.clear();
-}
-
-bool PKB::NextAffectsCacheIsEmpty() {
-  return next_cache.empty() && next_star_cache.empty()
-      && affects_cache.empty() && affects_star_cache.empty();
-}
 
 std::set<std::pair<int, int>> *PKB::get_next(int a, int b) {
   // Return cached results if found

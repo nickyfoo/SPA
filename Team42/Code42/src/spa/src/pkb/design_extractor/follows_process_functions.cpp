@@ -1,10 +1,9 @@
-#include "pkb.h"
+#include <design_extractor.h>
 #include <algorithm>
 #include <vector>
 #include "ast_utils.hpp"
-#include "pkb_exception.h"
 
-void PKB::FollowsProcessProcedureNode(Node *node) {
+void DesignExtractor::FollowsProcessProcedureNode(Node *node) {
   auto *procedure_node = dynamic_cast<ProcedureNode *>(node);
   std::vector<int> line_no;
 
@@ -13,12 +12,12 @@ void PKB::FollowsProcessProcedureNode(Node *node) {
   }
   std::sort(line_no.begin(), line_no.end());
   for (int i = 1; i < line_no.size(); i++) {
-    stmt_table_.get_statement(line_no[i - 1])->AddFollower(line_no[i]);
-    stmt_table_.get_statement(line_no[i])->AddFollowee(line_no[i - 1]);
+    pkb_->stmt_table_.get_statement(line_no[i - 1])->AddFollower(line_no[i]);
+    pkb_->stmt_table_.get_statement(line_no[i])->AddFollowee(line_no[i - 1]);
   }
 }
 
-void PKB::FollowsProcessIfNode(Node *node) {
+void DesignExtractor::FollowsProcessIfNode(Node *node) {
   auto *if_node = dynamic_cast<IfNode *>(node);
   std::vector<int> then_line_nos, else_line_nos;
 
@@ -27,8 +26,8 @@ void PKB::FollowsProcessIfNode(Node *node) {
   }
   std::sort(then_line_nos.begin(), then_line_nos.end());
   for (int i = 1; i < then_line_nos.size(); i++) {
-    stmt_table_.get_statement(then_line_nos[i - 1])->AddFollower(then_line_nos[i]);
-    stmt_table_.get_statement(then_line_nos[i])->AddFollowee(then_line_nos[i - 1]);
+    pkb_->stmt_table_.get_statement(then_line_nos[i - 1])->AddFollower(then_line_nos[i]);
+    pkb_->stmt_table_.get_statement(then_line_nos[i])->AddFollowee(then_line_nos[i - 1]);
   }
 
   for (StatementNode *n : if_node->get_else_stmt_lst()) {
@@ -36,12 +35,12 @@ void PKB::FollowsProcessIfNode(Node *node) {
   }
   std::sort(else_line_nos.begin(), else_line_nos.end());
   for (int i = 1; i < else_line_nos.size(); i++) {
-    stmt_table_.get_statement(else_line_nos[i - 1])->AddFollower(else_line_nos[i]);
-    stmt_table_.get_statement(else_line_nos[i])->AddFollowee(else_line_nos[i - 1]);
+    pkb_->stmt_table_.get_statement(else_line_nos[i - 1])->AddFollower(else_line_nos[i]);
+    pkb_->stmt_table_.get_statement(else_line_nos[i])->AddFollowee(else_line_nos[i - 1]);
   }
 }
 
-void PKB::FollowsProcessWhileNode(Node *node) {
+void DesignExtractor::FollowsProcessWhileNode(Node *node) {
   auto *while_node = dynamic_cast<WhileNode *>(node);
   std::vector<int> line_nos;
 
@@ -50,7 +49,7 @@ void PKB::FollowsProcessWhileNode(Node *node) {
   }
   std::sort(line_nos.begin(), line_nos.end());
   for (int i = 1; i < line_nos.size(); i++) {
-    stmt_table_.get_statement(line_nos[i - 1])->AddFollower(line_nos[i]);
-    stmt_table_.get_statement(line_nos[i])->AddFollowee(line_nos[i - 1]);
+    pkb_->stmt_table_.get_statement(line_nos[i - 1])->AddFollower(line_nos[i]);
+    pkb_->stmt_table_.get_statement(line_nos[i])->AddFollowee(line_nos[i - 1]);
   }
 }

@@ -3,7 +3,8 @@
 #include "catch.hpp"
 #include "entities/statement.h"
 #include "parse.h"
-#include "pkb.h"
+#include <pkb.h>
+#include <design_extractor.h>
 #include <chrono>
 
 enum ProgramSource {
@@ -261,8 +262,17 @@ ProgramNode *BuildProgAst(ProgramSource source_name) {
   return p;
 }
 
+PKB InitialisePKB(ProgramSource source_name) {
+  ProgramNode *p = BuildProgAst(source_name);
+  PKB pkb;
+  DesignExtractor design_extractor(&pkb, p);
+  design_extractor.ExtractDesigns();
+
+  return pkb;
+}
+
 TEST_CASE("PkbExtractEntities_SampleProgram_Correct") {
-  PKB pkb(BuildProgAst(kSampleSource));
+  PKB pkb = InitialisePKB(kSampleSource);
 
   SECTION("Test procedures") {
     std::set<std::string> correct_procedures =
@@ -303,7 +313,7 @@ TEST_CASE("PkbExtractEntities_SampleProgram_Correct") {
 }
 
 TEST_CASE("PkbFollows_SampleProgram_Correct") {
-  PKB pkb(BuildProgAst(kSampleSource));
+  PKB pkb = InitialisePKB(kSampleSource);
 
   std::map<int, std::vector<int>> follows_ans = {
       {1, {2}}, {2, {3}}, {3, {}}, {4, {5}}, {5, {}}, {6, {7}}, {7, {8}}, {8, {9}}, {9, {}},
@@ -335,7 +345,7 @@ TEST_CASE("PkbFollows_SampleProgram_Correct") {
 }
 
 TEST_CASE("PkbFollowsStar_SampleProgram_Correct") {
-  PKB pkb(BuildProgAst(kSampleSource));
+  PKB pkb = InitialisePKB(kSampleSource);
 
   std::map<int, std::vector<int>> follows_star_ans = {
       {1, {2, 3}}, {2, {3}}, {3, {}}, {4, {5}}, {5, {}}, {6, {7, 8, 9}}, {7, {8, 9}}, {8, {9}},
@@ -370,7 +380,7 @@ TEST_CASE("PkbFollowsStar_SampleProgram_Correct") {
 }
 
 TEST_CASE("PkbFollows_NestedSource_Correct") {
-  PKB pkb(BuildProgAst(kNestedSource));
+  PKB pkb = InitialisePKB(kNestedSource);
 
   std::map<int, std::vector<int>> follows_ans = {
       {1, {2}}, {2, {3}}, {3, {4}}, {4, {10}}, {5, {6}}, {6, {}}, {7, {}}, {8, {}}, {9, {}},
@@ -402,7 +412,7 @@ TEST_CASE("PkbFollows_NestedSource_Correct") {
 }
 
 TEST_CASE("PkbFollowsStar_Nested_Correct") {
-  PKB pkb(BuildProgAst(kNestedSource));
+  PKB pkb = InitialisePKB(kNestedSource);
 
   std::map<int, std::vector<int>> follows_star_ans = {
       {1, {2, 3, 4, 10}}, {2, {3, 4, 10}}, {3, {4, 10}}, {4, {10}}, {5, {6}}, {6, {}}, {7, {}},
@@ -433,7 +443,7 @@ TEST_CASE("PkbFollowsStar_Nested_Correct") {
 }
 
 TEST_CASE("PkbParent_SampleProgram_Correct") {
-  PKB pkb(BuildProgAst(kSampleSource));
+  PKB pkb = InitialisePKB(kSampleSource);
 
   std::map<int, std::vector<int>> children_ans = {
       {1, {}}, {2, {}}, {3, {}}, {4, {}}, {5, {}}, {6, {}}, {7, {}}, {8, {}}, {9, {}},
@@ -465,7 +475,7 @@ TEST_CASE("PkbParent_SampleProgram_Correct") {
 }
 
 TEST_CASE("PkbParentStar_SampleProgram_Correct") {
-  PKB pkb(BuildProgAst(kSampleSource));
+  PKB pkb = InitialisePKB(kSampleSource);
 
   std::map<int, std::vector<int>> children_star_ans = {
       {1, {}}, {2, {}}, {3, {}}, {4, {}}, {5, {}}, {6, {}}, {7, {}}, {8, {}}, {9, {}},
@@ -497,7 +507,7 @@ TEST_CASE("PkbParentStar_SampleProgram_Correct") {
 }
 
 TEST_CASE("PkbParent_Nested_Correct") {
-  PKB pkb(BuildProgAst(kNestedSource));
+  PKB pkb = InitialisePKB(kNestedSource);
 
   std::map<int, std::vector<int>> children_ans = {
       {1, {}}, {2, {}}, {3, {}}, {4, {5, 6}}, {5, {}}, {6, {7}}, {7, {8, 9}}, {8, {}}, {9, {}},
@@ -527,7 +537,7 @@ TEST_CASE("PkbParent_Nested_Correct") {
 }
 
 TEST_CASE("PkbParentStar_Nested_Correct") {
-  PKB pkb(BuildProgAst(kNestedSource));
+  PKB pkb = InitialisePKB(kNestedSource);
 
   std::map<int, std::vector<int>> children_star_ans = {
       {1, {}}, {2, {}}, {3, {}}, {4, {5, 6, 7, 8, 9}}, {5, {}}, {6, {7, 8, 9}}, {7, {8, 9}},
@@ -559,7 +569,7 @@ TEST_CASE("PkbParentStar_Nested_Correct") {
 }
 
 TEST_CASE("PkbCalls_SampleProgram_Correct") {
-  PKB pkb(BuildProgAst(kSampleSource));
+  PKB pkb = InitialisePKB(kSampleSource);
 
   std::map<std::string, std::vector<std::string>> calls_ans = {
       {"main", {"computeCentroid", "printResults"}},
@@ -593,7 +603,7 @@ TEST_CASE("PkbCalls_SampleProgram_Correct") {
 }
 
 TEST_CASE("PkbCallsStar_SampleProgram_Correct") {
-  PKB pkb(BuildProgAst(kSampleSource));
+  PKB pkb = InitialisePKB(kSampleSource);
 
   std::map<std::string, std::vector<std::string>> calls_star_ans = {
       {"main", {"computeCentroid", "printResults", "readPoint"}},
@@ -627,7 +637,7 @@ TEST_CASE("PkbCallsStar_SampleProgram_Correct") {
 }
 
 TEST_CASE("PkbUses_SampleProgram_Correct") {
-  PKB pkb(BuildProgAst(kSampleSource));
+  PKB pkb = InitialisePKB(kSampleSource);
 
   std::map<int, std::vector<std::string>> stmt_uses_ans = {
       {1, {}}, {2, {"x", "y", "count", "cenX", "cenY"}}, {3, {"flag", "cenX", "cenY", "normSq"}},
@@ -698,7 +708,10 @@ TEST_CASE("PkbUses_SampleProgram_Correct") {
 }
 
 TEST_CASE("PkbModifies_SampleProgram_Correct") {
-  PKB pkb(BuildProgAst(kSampleSource));
+  ProgramNode *p = BuildProgAst(kSampleSource);
+  PKB pkb;
+  DesignExtractor design_extractor(&pkb, p);
+  design_extractor.ExtractDesigns();
 
   std::map<int, std::vector<std::string>> stmt_modifies_ans = {
       {1, {{"flag"}}}, {2, {"count", "cenX", "cenY", "x", "y", "flag", "normSq"}}, {3, {}},
@@ -769,7 +782,7 @@ TEST_CASE("PkbModifies_SampleProgram_Correct") {
 }
 
 TEST_CASE("PkbUses_ContainerStmt_Correct") {
-  PKB pkb(BuildProgAst(kSimpleContainer));
+  PKB pkb = InitialisePKB(kSimpleContainer);
 
   std::map<int, std::vector<std::string>> stmt_uses_ans = {
       {1, {"x", "y", "b", "c", "e", "f"}},
@@ -825,7 +838,7 @@ TEST_CASE("PkbUses_ContainerStmt_Correct") {
 }
 
 TEST_CASE("PkbModifies_ContainerStmt_Correct") {
-  PKB pkb(BuildProgAst(kSimpleContainer));
+  PKB pkb = InitialisePKB(kSimpleContainer);
 
   std::map<int, std::vector<std::string>> stmt_modifies_ans = {
       {1, {"a", "d"}},
@@ -882,16 +895,22 @@ TEST_CASE("PkbModifies_ContainerStmt_Correct") {
 
 TEST_CASE("PkbInitialisation_UndefinedProcCalled_ThrowsException") {
   ProgramNode *p = BuildProgAst(kUndefinedProc);
-  REQUIRE_THROWS_AS(PKB(p), PKBException);
+  PKB pkb;
+  DesignExtractor design_extractor(&pkb, p);
+
+  REQUIRE_THROWS_AS(design_extractor.ExtractDesigns(), PKBException);
 }
 
 TEST_CASE("PkbInitialisation_CyclicProcCalls_ThrowsException") {
   ProgramNode *p = BuildProgAst(kCyclicProcs);
-  REQUIRE_THROWS_AS(PKB(p), PKBException);
+  PKB pkb;
+  DesignExtractor design_extractor(&pkb, p);
+
+  REQUIRE_THROWS_AS(design_extractor.ExtractDesigns(), PKBException);
 }
 
 TEST_CASE("PkbCfg_AdvancedSample_Correct") {
-  PKB pkb(BuildProgAst(kAdvancedSample));
+  PKB pkb = InitialisePKB(kAdvancedSample);
 
   std::map<int, std::vector<int>> ans = {
       {1, {2}}, {2, {3}}, {3, {}}, {4, {5}}, {5, {6}}, {6, {7, 10}}, {7, {8}}, {8, {9}}, {9, {6}},
@@ -909,7 +928,7 @@ TEST_CASE("PkbCfg_AdvancedSample_Correct") {
 }
 
 TEST_CASE("PkbCfg_NestedIf_Correct") {
-  PKB pkb(BuildProgAst(kNestedIf));
+  PKB pkb = InitialisePKB(kNestedIf);
 
   std::map<int, std::vector<int>> ans = {
       {1, {2}}, {2, {3, 6}}, {3, {4, 5}}, {4, {9}}, {5, {9}}, {6, {7, 8}}, {7, {9}}, {8, {9}}
@@ -926,7 +945,7 @@ TEST_CASE("PkbCfg_NestedIf_Correct") {
 }
 
 TEST_CASE("PkbNext_AdvancedSample_Correct") {
-  PKB pkb(BuildProgAst(kAdvancedSample));
+  PKB pkb = InitialisePKB(kAdvancedSample);
 
   std::map<int, std::vector<int>> next_ans = {
       {1, {2}}, {2, {3}}, {3, {}}, {4, {5}}, {5, {6}}, {6, {7, 10}}, {7, {8}},
@@ -1004,7 +1023,7 @@ TEST_CASE("PkbNext_AdvancedSample_Correct") {
 }
 
 TEST_CASE("PkbNextStar_AdvancedSample_Correct") {
-  PKB pkb(BuildProgAst(kAdvancedSample));
+  PKB pkb = InitialisePKB(kAdvancedSample);
 
   std::map<int, std::vector<int>> next_star_ans = {
       {1, {2, 3}},
@@ -1108,7 +1127,7 @@ TEST_CASE("PkbNextStar_AdvancedSample_Correct") {
 }
 
 TEST_CASE("PkbNext_NestedIf_Correct") {
-  PKB pkb(BuildProgAst(kNestedIf));
+  PKB pkb = InitialisePKB(kNestedIf);
 
   std::map<int, std::vector<int>> next_ans = {
       {1, {2}}, {2, {3, 6}}, {3, {4, 5}}, {4, {9}}, {5, {9}}, {6, {7, 8}}, {7, {9}},
@@ -1180,7 +1199,10 @@ TEST_CASE("PkbNext_NestedIf_Correct") {
 }
 
 TEST_CASE("PkbNextStar_NestedIf_Correct") {
-  PKB pkb(BuildProgAst(kNestedIf));
+  ProgramNode *p = BuildProgAst(kNestedIf);
+  PKB pkb;
+  DesignExtractor design_extractor(&pkb, p);
+  design_extractor.ExtractDesigns();
 
   std::map<int, std::vector<int>> next_star_ans = {
       {1, {2, 3, 4, 5, 6, 7, 8, 9}},
@@ -1265,7 +1287,7 @@ TEST_CASE("PkbNextStar_NestedIf_Correct") {
 }
 
 TEST_CASE("PkbAffects_AdvancedSample_Correct") {
-  PKB pkb(BuildProgAst(kAdvancedSample));
+  PKB pkb = InitialisePKB(kAdvancedSample);
 
   std::map<int, std::vector<int>> affects_ans = {
       {1, {}}, {2, {}}, {3, {}}, {4, {7, 11, 13, 15}}, {5, {9, 13}}, {6, {}},
@@ -1342,7 +1364,7 @@ TEST_CASE("PkbAffects_AdvancedSample_Correct") {
 }
 
 TEST_CASE("PkbAffectsStar_AdvancedSample_Correct") {
-  PKB pkb(BuildProgAst(kAdvancedSample));
+  PKB pkb = InitialisePKB(kAdvancedSample);
 
   std::map<int, std::vector<int>> affects_star_ans = {
       {1, {}}, {2, {}}, {3, {}}, {4, {7, 11, 13, 14, 15}}, {5, {9, 13, 14, 15}}, {6, {}},
@@ -1419,7 +1441,7 @@ TEST_CASE("PkbAffectsStar_AdvancedSample_Correct") {
 }
 
 TEST_CASE("PkbAffects_NestedWhileIf_Correct") {
-  PKB pkb(BuildProgAst(kNestedWhileIf));
+  PKB pkb = InitialisePKB(kNestedWhileIf);
 
   std::map<int, std::vector<int>> affects_ans = {
       {1, {}}, {2, {}}, {3, {}}, {4, {}}, {5, {8, 15, 18, 20}}, {6, {10, 17, 18}}, {7, {}},
@@ -1480,7 +1502,7 @@ TEST_CASE("PkbAffects_NestedWhileIf_Correct") {
 }
 
 TEST_CASE("PkbNext_CacheTestTime_correct") {
-  PKB pkb(BuildProgAst(kSampleSource));
+  PKB pkb = InitialisePKB(kSampleSource);
 
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
@@ -1516,7 +1538,7 @@ TEST_CASE("PkbNext_CacheTestTime_correct") {
 }
 
 TEST_CASE("Pkb_NextStarCacheTestTime_correct") {
-  PKB pkb(BuildProgAst(kSampleSource));
+  PKB pkb = InitialisePKB(kSampleSource);
 
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
@@ -1552,7 +1574,7 @@ TEST_CASE("Pkb_NextStarCacheTestTime_correct") {
 }
 
 TEST_CASE("PkbAffects_CacheTestTime_correct") {
-  PKB pkb(BuildProgAst(kSampleSource));
+  PKB pkb = InitialisePKB(kSampleSource);
 
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
@@ -1588,7 +1610,7 @@ TEST_CASE("PkbAffects_CacheTestTime_correct") {
 }
 
 TEST_CASE("PkbAffectsStar_CacheTestTime_correct") {
-  PKB pkb(BuildProgAst(kSampleSource));
+  PKB pkb = InitialisePKB(kSampleSource);
 
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
@@ -1596,10 +1618,10 @@ TEST_CASE("PkbAffectsStar_CacheTestTime_correct") {
     for (auto &b : pkb.get_statements(NodeType::Assign)) {
       pkb.get_affects_star(a->get_stmt_no(), b->get_stmt_no());
     }
-    pkb.get_affects_star(a->get_stmt_no(), pkb.kWild);
+    pkb.get_affects_star(a->get_stmt_no(), PKB::kWild);
     pkb.get_affects_star(PKB::kWild, a->get_stmt_no());
   }
-  pkb.get_affects_star(PKB::kWild, pkb.kWild);
+  pkb.get_affects_star(PKB::kWild, PKB::kWild);
   auto empty_cache_end = std::chrono::steady_clock::now();
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
@@ -1624,7 +1646,7 @@ TEST_CASE("PkbAffectsStar_CacheTestTime_correct") {
 }
 
 TEST_CASE("PkbCfgBip_SampleProgram_Correct") {
-  PKB pkb(BuildProgAst(kCfgBipSample));
+  PKB pkb = InitialisePKB(kCfgBipSample);
 
   std::map<int, std::vector<std::pair<int, int>>> ans = {
       {1, {{2, PKB::kNoBranch}}},
@@ -1652,7 +1674,7 @@ TEST_CASE("PkbCfgBip_SampleProgram_Correct") {
 }
 
 TEST_CASE("PkbCFGBip_SecondSampleProgram_Correct") {
-  PKB pkb(BuildProgAst(kCfgBipSecondSample));
+  PKB pkb = InitialisePKB(kCfgBipSecondSample);
 
   std::map<int, std::vector<std::pair<int, int>>> ans = {
       {1, {{4, 1}}},
@@ -1675,7 +1697,7 @@ TEST_CASE("PkbCFGBip_SecondSampleProgram_Correct") {
 }
 
 TEST_CASE("PkbNextBip_SampleProgram_Correct") {
-  PKB pkb(BuildProgAst(kCfgBipSample));
+  PKB pkb = InitialisePKB(kCfgBipSample);
 
   std::map<int, std::vector<int>> next_bip_ans = {
       {1, {2}}, {2, {6}}, {3, {4}}, {4, {9}}, {5, {}}, {6, {7}}, {7, {9}},
@@ -1731,25 +1753,34 @@ TEST_CASE("PkbNextBip_SampleProgram_Correct") {
   }
 
   // Negative cases
-  REQUIRE(pkb.get_next_bip(1, 3)->empty()); // Not directly after
+  // Not directly after
+  REQUIRE(pkb.get_next_bip(1, 3)->empty());
   pkb.ClearNextAffectsBipCache();
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
-  REQUIRE(pkb.get_next_bip(2, 7)->empty()); // Not directly across procedures
+
+  // Not directly across procedures
+  REQUIRE(pkb.get_next_bip(2, 7)->empty());
   pkb.ClearNextAffectsBipCache();
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
-  REQUIRE(pkb.get_next_bip(10, 11)->empty()); // Different if branches
+
+  // Different if branches
+  REQUIRE(pkb.get_next_bip(10, 11)->empty());
   pkb.ClearNextAffectsBipCache();
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
-  REQUIRE(pkb.get_next_bip(PKB::kWild, 1)->empty()); // First statement of first procedure
+
+  // First statement of first procedure
+  REQUIRE(pkb.get_next_bip(PKB::kWild, 1)->empty());
   pkb.ClearNextAffectsBipCache();
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
-  REQUIRE(pkb.get_next_bip(5, PKB::kWild)->empty()); // Last statement of last procedure
+
+  // Last statement of last procedure
+  REQUIRE(pkb.get_next_bip(5, PKB::kWild)->empty());
   pkb.ClearNextAffectsBipCache();
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
 }
 
 TEST_CASE("PkbNextBipStar_SampleProgram_Correct") {
-  PKB pkb(BuildProgAst(kCfgBipSample));
+  PKB pkb = InitialisePKB(kCfgBipSample);
 
   std::map<int, std::vector<int>> next_bip_star_ans = {
       {1, {2, 3, 4, 5, 6, 7, 8, 9, 10, 11}},
@@ -1833,7 +1864,7 @@ TEST_CASE("PkbNextBipStar_SampleProgram_Correct") {
 }
 
 TEST_CASE("PkbAffectsBip_SampleProgram_Correct") {
-  PKB pkb(BuildProgAst(kCfgBipSample));
+  PKB pkb = InitialisePKB(kCfgBipSample);
 
   std::map<int, std::vector<int>> affects_bip_ans = {
       {1, {3, 5, 6, 8, 10, 11}},
@@ -1851,8 +1882,6 @@ TEST_CASE("PkbAffectsBip_SampleProgram_Correct") {
 
   // Check Affects(_,_)
   std::set<std::pair<int, int>> *affects_bip_wild_wild = pkb.get_affects_bip(PKB::kWild, PKB::kWild);
-  for (auto&[a, b] : *affects_bip_wild_wild) {
-  }
   for (auto&[a, affects] : affects_bip_ans) {
     for (auto &b : affects) {
       REQUIRE(affects_bip_wild_wild->find({a, b}) != affects_bip_wild_wild->end());
@@ -1910,7 +1939,7 @@ TEST_CASE("PkbAffectsBip_SampleProgram_Correct") {
 }
 
 TEST_CASE("PkbAffectsBipStar_SampleProgram_Correct") {
-  PKB pkb(BuildProgAst(kCfgBipSample));
+  PKB pkb = InitialisePKB(kCfgBipSample);
 
   std::map<int, std::vector<int>> affects_bip_star_ans = {
       {1, {3, 5, 6, 8, 10, 11}}, {2, {}}, {3, {5, 11}}, {4, {}}, {5, {}}, {6, {5, 8, 10, 11}},
@@ -1966,25 +1995,34 @@ TEST_CASE("PkbAffectsBipStar_SampleProgram_Correct") {
   }
 
   // Negative cases
-  REQUIRE(pkb.get_affects_star(16, 7)->empty()); // Different procedures
+  // Different procedures
+  REQUIRE(pkb.get_affects_star(16, 7)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_affects_star(5, 7)->empty()); // 5 is not modifying x or y
+
+  // 5 is not modifying x or y
+  REQUIRE(pkb.get_affects_star(5, 7)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_affects_star(5, 8)->empty()); // 8 is not an assignment statement
+
+  // 8 is not an assignment statement
+  REQUIRE(pkb.get_affects_star(5, 8)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_affects_star(8, 12)->empty()); // 8 is not an assignment statement
+
+  // 8 is not an assignment statement
+  REQUIRE(pkb.get_affects_star(8, 12)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_affects_star(8, PKB::kWild)->empty()); // 8 is not an assignment statement
+
+  // 8 is not an assignment statement
+  REQUIRE(pkb.get_affects_star(8, PKB::kWild)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }
 
 TEST_CASE("PkbNextBip_CacheTestTime_correct") {
-  PKB pkb(BuildProgAst(kCfgBipSample));
+  PKB pkb = InitialisePKB(kCfgBipSample);
 
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
@@ -2020,7 +2058,7 @@ TEST_CASE("PkbNextBip_CacheTestTime_correct") {
 }
 
 TEST_CASE("PkbNextBipStar_CacheTestTime_correct") {
-  PKB pkb(BuildProgAst(kCfgBipSample));
+  PKB pkb = InitialisePKB(kCfgBipSample);
 
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
@@ -2056,7 +2094,7 @@ TEST_CASE("PkbNextBipStar_CacheTestTime_correct") {
 }
 
 TEST_CASE("PkbAffectsBip_CacheTestTime_correct") {
-  PKB pkb(BuildProgAst(kCfgBipSample));
+  PKB pkb = InitialisePKB(kCfgBipSample);
 
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();
@@ -2092,7 +2130,7 @@ TEST_CASE("PkbAffectsBip_CacheTestTime_correct") {
 }
 
 TEST_CASE("PkbAffectsBipStar_CacheTestTime_correct") {
-  PKB pkb(BuildProgAst(kCfgBipSample));
+  PKB pkb = InitialisePKB(kCfgBipSample);
 
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
   auto empty_cache_start = std::chrono::steady_clock::now();

@@ -1,26 +1,20 @@
-#include "pkb.h"
+#include <pkb.h>
 #include <algorithm>
 #include <vector>
-#include <queue>
 #include "ast_utils.hpp"
 
 PKB::PKB() = default;
-
-PKB::PKB(Node *programRoot) {
-  this->root_ = programRoot;
-  Initialise();
-}
 
 PKB::~PKB() = default;
 
 void PKB::AddProcedure(Node *node, std::vector<Node *> ancestor_list) {
   auto *procedure_node = dynamic_cast<ProcedureNode *>(node);
   std::string proc_name = procedure_node->get_name();
-  std::vector<StatementNode*> stmt_lst = procedure_node->get_stmt_lst();
+  std::vector<StatementNode *> stmt_lst = procedure_node->get_stmt_lst();
   sort(stmt_lst.begin(), stmt_lst.end(),
-    [](StatementNode* a, StatementNode* b) {
-      return a->get_stmt_no() < b->get_stmt_no();
-    });
+       [](StatementNode *a, StatementNode *b) {
+         return a->get_stmt_no() < b->get_stmt_no();
+       });
   int stmt_no = procedure_node->get_stmt_lst()[0]->get_stmt_no();
   proc_table_.AddProcedure(proc_name, stmt_no);
 }
@@ -75,7 +69,8 @@ void PKB::AddExprString(Node *node, std::vector<Node *> ancestor_list) {
             ->set_expr_string(expr_string);
         break;
       }
-      default:break;
+      default:
+        break;
     }
   }
 
@@ -98,7 +93,8 @@ void PKB::AddExprString(Node *node, std::vector<Node *> ancestor_list) {
             ->set_expr_string(expr_string);
         break;
       }
-      default:break;
+      default:
+        break;
     }
   }
 }
@@ -159,10 +155,10 @@ std::map<int, std::set<int>> *PKB::get_reverse_cfg_al() {
   return &reverse_cfg_al_;
 }
 
-std::map<int, std::set<std::pair<int, int>>>* PKB::get_cfg_bip_al() {
+std::map<int, std::set<std::pair<int, int>>> *PKB::get_cfg_bip_al() {
   return &cfg_bip_al_;
 }
-std::map<int, std::set<std::pair<int, int>>>* PKB::get_reverse_cfg_bip_al() {
+std::map<int, std::set<std::pair<int, int>>> *PKB::get_reverse_cfg_bip_al() {
   return &reverse_cfg_bip_al_;
 }
 
@@ -174,43 +170,3 @@ bool PKB::TestIfWhilePattern(Statement *stmt, std::string variable) {
   return pattern_manager_.TestIfWhilePattern(stmt, variable);
 }
 
-void PKB::PrintStatements() {
-  stmt_table_.PrintStatements();
-}
-
-void PKB::PrintProcedures() {
-  proc_table_.PrintProcedures();
-}
-
-void PKB::PrintVariables() {
-  var_table_.PrintVariableDetails();
-}
-
-void PKB::PrintCFGAL() {
-  for (auto &[u, al] : cfg_al_) {
-    std::cout << u << "->";
-    for (auto &v : al) {
-      std::cout << v << ' ';
-    }
-    std::cout << '\n';
-  }
-}
-
-void PKB::PrintCFGBipAL() {
-  for (auto& [u, al] : cfg_bip_al_) {
-    std::cout << u << "->";
-    for (auto& [v,b] : al) {
-      std::cout << v << ',' << b << ' ';
-    }
-    std::cout << '\n';
-  }
-}
-
-void PKB::Initialise() {
-  ExtractEntities();
-  ExtractFollows();
-  ExtractParent();
-  ExtractCalls();
-  ExtractUsesModifies();
-  ExtractCFG();
-}

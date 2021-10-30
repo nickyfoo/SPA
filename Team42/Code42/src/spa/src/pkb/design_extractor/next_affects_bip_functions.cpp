@@ -1,23 +1,7 @@
+#include <pkb.h>
 #include <queue>
+#include <set>
 #include <stack>
-#include "pkb.h"
-
-void PKB::ClearNextAffectsBipCache() {
-  next_bip_cache.clear();
-  next_bip_star_cache.clear();
-  bip_reachability_dfs_cache.clear();
-  affects_bip_cache.clear();
-  affects_bip_dfs_cache.clear();
-  affects_bip_star_cache.clear();
-  affects_bip_star_dfs_cache.clear();
-}
-
-bool PKB::NextAffectsBipCacheIsEmpty() {
-  return next_bip_cache.empty() && next_bip_star_cache.empty()
-      && bip_reachability_dfs_cache.empty()
-      && affects_bip_cache.empty() && affects_bip_dfs_cache.empty()
-      && affects_bip_star_cache.empty() && affects_bip_star_dfs_cache.empty();
-}
 
 std::set<std::pair<int, int>> *PKB::get_next_bip(int a, int b) {
   // Return cached results if found

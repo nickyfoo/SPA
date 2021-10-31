@@ -2,7 +2,7 @@ import subprocess
 import sys
 
 files = [
-    "iter3_optimization1"
+    "iter3Stress"
 ]
 
 for file in files:

@@ -109,7 +109,6 @@ void ResultTable::CrossJoin(ResultTable &other_result_table,
   std::vector<int> indexes_of_used_synonyms;
   for (int i = 0; i < other_index_to_synonym->size(); ++i) {
     std::string synonym = other_index_to_synonym->at(i);
-
     // if no used synonyms, add everything (case where clause groups are all not used)
     // else only add used synonyms into the table
     if (used_synonyms.empty() || used_synonyms.find(synonym) != used_synonyms.end()) {
@@ -126,7 +125,7 @@ void ResultTable::CrossJoin(ResultTable &other_result_table,
 
       // only add to table synonyms that will be used subsequently
       for (int k = 0; k < indexes_of_used_synonyms.size(); ++k) {
-        curr_row.push_back(other_table->at(j).at(k));
+        curr_row.push_back(other_table->at(j).at(indexes_of_used_synonyms.at(k)));
       }
 //      curr_row.insert(curr_row.end(), other_table->at(j).begin(), other_table->at(j).end());
       new_table->push_back(curr_row);
@@ -206,6 +205,7 @@ void ResultTable::set_table(ResultTable &result_table) {
   this->table_ = result_table.get_table();
   this->synonym_to_index_ = result_table.get_synonym_to_index();
   this->index_to_synonym_ = result_table.get_index_to_synonym();
+  this->synonyms_ = result_table.get_synonyms();
 }
 
 table *ResultTable::get_table() {
@@ -218,4 +218,8 @@ std::unordered_map<std::string, int> *ResultTable::get_synonym_to_index() {
 
 std::unordered_map<int, std::string> *ResultTable::get_index_to_synonym() {
   return this->index_to_synonym_;
+}
+
+std::vector<std::string> *ResultTable::get_synonyms() {
+  return this->synonyms_;
 }

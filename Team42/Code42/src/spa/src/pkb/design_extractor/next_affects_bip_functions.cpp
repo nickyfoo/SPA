@@ -256,7 +256,6 @@ std::set<std::pair<int, int>>* PKB::get_affects_bip_star(int a, int b) {
     return &affects_bip_star_cache[a][b];
   }
 
-  std::set<std::pair<int, std::string>> prev_stmts;
   std::string hash = "";
   if (a == kWild) {
     if (b != kWild) {
@@ -283,11 +282,9 @@ std::set<std::pair<int, int>>* PKB::get_affects_bip_star(int a, int b) {
         hash = CallStackToString(&call_stack);
         if (affects_bip_star_dfs_cache.find(stmt_no) == affects_bip_star_dfs_cache.end()
           || affects_bip_star_dfs_cache[stmt_no].find(hash) == affects_bip_star_dfs_cache[stmt_no].end()) {
-          prev_stmts.insert({ stmt_no, hash });
-          AffectsBipStarDFS(prev_stmts, stmt_no, hash);
-          prev_stmts.erase({ stmt_no, hash });
+          std::set<std::pair<int, std::string>> visited;
+          AffectsBipStarDFS(visited, stmt_no, hash, stmt_no, hash);
         }
-
         for (auto& [affected_stmt_no, affected_stmt_hash] : affects_bip_star_dfs_cache[stmt_no][hash]) {
           affects_bip_star_cache[kWild][kWild].insert({ stmt_no, affected_stmt_no });
           affects_bip_star_cache[stmt_no][kWild].insert({ stmt_no, affected_stmt_no });
@@ -325,9 +322,8 @@ std::set<std::pair<int, int>>* PKB::get_affects_bip_star(int a, int b) {
       hash = CallStackToString(&call_stack);
       if (affects_bip_star_dfs_cache.find(stmt_no) == affects_bip_star_dfs_cache.end()
         || affects_bip_star_dfs_cache[stmt_no].find(hash) == affects_bip_star_dfs_cache[stmt_no].end()) {
-        prev_stmts.insert({ stmt_no, hash });
-        AffectsBipStarDFS(prev_stmts, stmt_no, hash);
-        prev_stmts.erase({ stmt_no, hash });
+        std::set<std::pair<int, std::string>> visited;
+        AffectsBipStarDFS(visited, stmt_no, hash, stmt_no, hash);
       }
 
       for (auto& [affected_stmt_no, affected_stmt_hash] : affects_bip_star_dfs_cache[stmt_no][hash]) {
@@ -474,24 +470,20 @@ void PKB::AffectsBipDFS(int start, std::string& start_hash, int u, std::vector<i
   }
 }
 
-void PKB::AffectsBipStarDFS(std::set<std::pair<int, std::string>>&prev_stmts, int u, std::string &u_hash) {
+void PKB::AffectsBipStarDFS(std::set<std::pair<int, std::string>>&visited, int u, std::string &u_hash, int start, std::string&start_hash) {
   if (affects_bip_star_dfs_cache.find(u) != affects_bip_star_dfs_cache.end() && affects_bip_star_dfs_cache[u].find(u_hash) != affects_bip_star_dfs_cache[u].end()) {
     for (auto& val : affects_bip_star_dfs_cache[u][u_hash]) {
-      for (auto& [prev_stmt, prev_hash] : prev_stmts) {
-        affects_bip_star_dfs_cache[prev_stmt][prev_hash].insert(val);
-      }
+      affects_bip_star_dfs_cache[start][start_hash].insert(val);
     }
     return;
   }
   get_affects_bip(u, kWild);
   for (auto [v, v_hash] : affects_bip_dfs_cache[u][u_hash]) {
-    for (auto& [prev_stmt, prev_hash] : prev_stmts) {
-      affects_bip_star_dfs_cache[prev_stmt][prev_hash].insert({ v, v_hash });
+    affects_bip_star_dfs_cache[start][start_hash].insert({ v, v_hash });
+    if (visited.find({ v,v_hash }) == visited.end()) {
+      visited.insert({ v,v_hash });
+      AffectsBipStarDFS(visited, v, v_hash, start, start_hash);
     }
-    bool visited_before = prev_stmts.find({ v, v_hash }) != prev_stmts.end();
-    prev_stmts.insert({ v, v_hash });
-    AffectsBipStarDFS(prev_stmts, v, v_hash);
-    if (!visited_before) prev_stmts.erase({ v, v_hash });
   }
 }
 

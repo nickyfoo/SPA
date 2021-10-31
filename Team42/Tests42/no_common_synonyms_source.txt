@@ -1,0 +1,38 @@
+procedure Example {
+    a = 1 + 3 * 5;
+    b = 17;
+    c = 64 / 2;
+    while (c > a) {
+        c = (a + c + 1) / 2;
+        if (b > a) then {
+            b = b - 1;
+        } else {
+            b = c + 1;
+        }
+        call f;
+    }
+    print c;
+    print a;
+}
+
+procedure f {
+    read x;
+    read y;
+    z = x + y;
+    if (z == 0) then {
+        print z;
+    } else {
+        call g;
+    }
+    print z;
+}
+
+procedure g {
+    v = 1 * 2 + 3;
+    print v;
+    call h;
+}
+
+procedure h {
+    read t;
+}

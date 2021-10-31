@@ -1,0 +1,50 @@
+1 - Next with procedure
+stmt s;
+Select s such that Next(2, s)
+3
+5000
+2 - Next with while
+while w; stmt s;
+Select s such that Next(w, s)
+4,6,7,10,13
+5000
+3 - Next with If
+if ifs; assign a;
+Select <ifs, a> such that Next(ifs, a)
+10 11, 10 12
+5000
+4 - Nested Next
+stmt s1,s2; if ifs;
+Select <s1,s2,ifs> such that Next(s1,s2) and Next(s2,ifs)
+5 6 7, 5 6 10, 8 6 10, 9 6 10, 9 6 7, 8 6 7
+5000
+5 - Invalid Next with 0 as stmt number
+
+Select BOOLEAN such that Next(0,0)
+FALSE
+5000
+6 - Invalid Next with same number without cyclic calls
+stmt s;
+Select s such that Next(1,1)
+
+5000
+7 - Valid Next with same number with cyclic calls
+stmt s1,s2,s3;
+Select <s1,s2,s3> such that Next(s3,s1) and Next(s1,s2) and Next(s2,s3)
+6 7 8, 6 7 9, 7 8 6, 7 9 6, 8 6 7,9 6 7
+5000
+8 - Next* with procedure
+stmt s;
+Select s such that Next*(1, 14)
+
+5000
+9 - Next* with while
+while w; stmt s;
+Select w such that Next*(s,w)
+3,5,6
+5000
+10 - Next* with if
+if ifs; stmt s;
+Select ifs such that Next*(8, ifs)
+7,10
+5000

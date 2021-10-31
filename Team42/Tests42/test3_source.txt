@@ -66,16 +66,20 @@ procedure TestDeepNesting {
 	} else {
 		if (4 > then) then {
 			if (then > 4) then {
+			    then = 4;
 			} else {
 				if (then > 5) then {
 					if (!(then == then)) then {
+					    bye = bye * 2;
 					} else {
+					    x = x + 1;
 					}
 				} else {
+				    then = x - then;
 				}
-				
 			}
 		} else {
+            call TestKeywords;
 		}
 		
 		while (4 > then) {
@@ -83,6 +87,8 @@ procedure TestDeepNesting {
 				while(abc * 3 % 1 == xdg) {
 					while(295715212851-2501810825 == 423*1) {
 						while (testtest - test == test) {
+						    abc = test*2359;
+						    read hello;
 						}
 					}
 				}
@@ -141,6 +147,7 @@ procedure TestDeepNesting {
 		}
 				
 		while ((k != l) || (i == j) && (g <= h) || (e >= f) && (c < d) || (a > b)) {
+		    print mamamia;
 		}
 	}
 	

@@ -278,3 +278,13 @@ stmt s;
 Select s such that Parent* ("x", s)
 
 5000
+57 - Invalid Follow with 0 in statement number
+stmt s;
+Select s such that Follow(0, s)
+
+5000
+58 - Invalid Parent with -1 in statement number
+stmt s;
+Select s such that Parent(-1, s)
+
+5000

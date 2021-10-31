@@ -30,7 +30,7 @@ std::vector<Procedure *> ProcTable::get_all_procedures() {
   return ans;
 }
 
-Procedure *ProcTable::get_procedure(std::string name) { 
+Procedure *ProcTable::get_procedure(const std::string &name) {
   if (name_to_index_.find(name) == name_to_index_.end()) {
     return nullptr;
   }
@@ -40,8 +40,7 @@ Procedure *ProcTable::get_procedure(std::string name) {
 void ProcTable::ProcessCalls() {
   for (Procedure &p : table_) {
     for (auto &proc_name : *p.get_calls()) {
-      calls_int_.insert(
-          {name_to_index_[p.get_name()], name_to_index_[proc_name]});
+      calls_int_[name_to_index_[p.get_name()]].insert(name_to_index_[proc_name]);
     }
   }
 }
@@ -51,7 +50,7 @@ void ProcTable::ProcessCallsStar() {
   std::vector<std::vector<int>> d = GetTransitiveClosure(calls_int_, n);
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < n; j++) {
-      if (d[i][j] == kInf) continue;
+      if (d[i][j] == 0) continue;
       table_[i].AddCallsStar(table_[j].get_name());
       table_[j].AddCallersStar(table_[i].get_name());
     }
@@ -100,8 +99,8 @@ void ProcTable::DFS(int u, std::vector<std::vector<int>> &al,
 
 void ProcTable::PropagateUsesModifiesIndirect(int u,
                                               std::vector<std::vector<int>> &al,
-                                              std::set<std::string> &uses,
-                                              std::set<std::string> &modifies) {
+                                              std::set<std::string> uses,
+                                              std::set<std::string> modifies) {
   for (auto &var_name : *(table_[u].get_uses())) {
     uses.insert(var_name);
   }

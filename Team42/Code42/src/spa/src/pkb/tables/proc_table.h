@@ -22,7 +22,7 @@ class ProcTable : public Table {
   // Get all procedures.
   std::vector<Procedure *> get_all_procedures();
   // Gets a procedure by its procedure name.
-  Procedure *get_procedure(std::string name);
+  virtual Procedure *get_procedure(const std::string &name);
 
   // Gets Calls relationship from Procedures in preparation to get
   // transitive closure.
@@ -51,7 +51,7 @@ class ProcTable : public Table {
 
   // for <p1, p2> in calls_, Calls(v1, v2) is true. Stored as ints for
   // transitive closure.
-  std::set<std::pair<int, int>> calls_int_, calls_star_int_;
+  std::map<int, std::set<int>> calls_int_, calls_star_int_;
   // for <p1, p2> in calls_, Calls(v1, v2) is true. Stored as strings.
   std::set<std::pair<std::string, std::string>> calls_, calls_star_;
 
@@ -64,6 +64,6 @@ class ProcTable : public Table {
   // Propagates the Uses and Modifies variables that have been encountered to
   // the calling procedures.
   void PropagateUsesModifiesIndirect(
-      int u, std::vector<std::vector<int>> &al, std::set<std::string> &uses,
-      std::set<std::string> &modifies);
+      int u, std::vector<std::vector<int>> &al, std::set<std::string> uses,
+      std::set<std::string> modifies);
 };

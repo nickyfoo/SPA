@@ -1,34 +1,32 @@
 #pragma once
 #include <unordered_map>
 #include <vector>
+#include <memory>
+#include <string>
 
 #include "entity_declaration.h"
 #include "pattern_clause.h"
 #include "such_that_clause.h"
 #include "with_clause.h"
+#include "clause_group.h"
+#include "result_clause.h"
 
 class PQLQuery {
  public:
-  PQLQuery(std::vector<std::string> *return_entities, std::vector<SuchThatClause *> *relationships,
-           std::vector<PatternClause *> *patterns,
-           std::vector<WithClause *> *withs,
-           std::unordered_map<std::string, EntityDeclaration *> *synonym_to_entities,
-           bool has_one_repeated_synonym, bool has_two_repeated_synonyms);
+  PQLQuery(std::vector<ResultClause *> *return_entities,
+           std::vector<std::shared_ptr<ClauseGroup>> clause_groups,
+           std::unordered_map<std::string, EntityDeclaration *>
+           *synonym_to_entities,
+           bool is_valid_query);
   ~PQLQuery();
-  std::vector<std::string> *get_query_entities();
-  std::vector<SuchThatClause *> *get_query_relationships();
-  std::vector<PatternClause *> *get_query_patterns();
-  std::vector<WithClause *> *get_query_withs();
+  std::vector<ResultClause *> *get_query_entities();
+  std::vector<std::shared_ptr<ClauseGroup>> get_clause_groups();
   std::unordered_map<std::string, EntityDeclaration *> *get_synonym_to_entities();
-  bool has_one_repeated_synonym();
-  bool has_two_repeated_synonyms();
+  bool is_valid_query();
 
  private:
-  std::vector<std::string> *entities_;
-  std::vector<SuchThatClause *> *relationships_;
-  std::vector<PatternClause *> *patterns_;
-  std::vector<WithClause *> *withs_;
+  std::vector<ResultClause *> *entities_;
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups_;
   std::unordered_map<std::string, EntityDeclaration *> *synonym_to_entities_;
-  bool has_one_repeated_synonym_;
-  bool has_two_repeated_synonyms_;
+  bool is_valid_query_;
 };

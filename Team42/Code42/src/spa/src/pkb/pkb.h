@@ -210,7 +210,7 @@ class PKB {
   // Returns true if v is an assign stmt that modifies var_name
   bool ModifiesVarName(int v, std::string var_name);
   // DFS to check reachability for AffectsBip* relationship
-  void AffectsBipStarDFS(std::set<std::pair<int, std::string>>& prev_stmts, int u, std::string& hash);
+  void AffectsBipStarDFS(std::set<std::pair<int, std::string>>& visited, int u, std::string& u_hash, int start, std::string& start_hash);
 
   // Cache for Next
   std::map<int, std::map<int,

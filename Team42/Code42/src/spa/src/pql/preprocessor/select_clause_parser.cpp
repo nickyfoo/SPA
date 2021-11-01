@@ -637,10 +637,6 @@ std::vector<std::string> SelectClauseParser::SplitTokensByEqualDelim(std::string
 std::tuple<std::string, std::vector<std::string>, std::vector<std::string>,
            std::vector<std::string>>
 SelectClauseParser::SplitTokensByClauses(const std::string &input) {
-  std::string SUCH_THAT_DELIM = "such that ";
-  std::string PATTERN_DELIM = "pattern ";
-  std::string WITH_DELIM = "with ";
-  std::vector<std::string> delimiters{SUCH_THAT_DELIM, PATTERN_DELIM, WITH_DELIM};
   std::string select_clause;
   std::vector<std::string> such_that_clauses;
   std::vector<std::string> pattern_clauses;
@@ -648,9 +644,6 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
 
   size_t pos;
   std::string token;
-  bool last_found_such_that = false;
-  bool last_found_pattern = false;
-  bool last_found_with = false;
   std::stringstream ss;
 
   // first pass to remove all whitespaces within brackets and before brackets
@@ -664,9 +657,6 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
       inverted_commas_found = !inverted_commas_found;
       whitespace_found = false;
     } else if (inverted_commas_found) {
-      if (isspace(c)) {
-        continue;
-      }
       ss << c;
     } else if (isspace(c)) {
       // extra check to account for such that clause without extra spaces
@@ -727,48 +717,59 @@ SelectClauseParser::SplitTokensByClauses(const std::string &input) {
   }
   select_clause = clean_input.substr(0, pos);  // adds the select clause
   clean_input.erase(0, pos);
-  while (clean_input.find(SUCH_THAT_DELIM) != std::string::npos ||
-         clean_input.find(PATTERN_DELIM) != std::string::npos ||
-         clean_input.find(WITH_DELIM) != std::string::npos) {
-    // find the earliest clause
-    pos = std::min(std::min(clean_input.find(SUCH_THAT_DELIM), clean_input.find(PATTERN_DELIM)),
-                   clean_input.find(WITH_DELIM));
-    token = clean_input.substr(0, pos);
-    if (last_found_such_that) {
-      such_that_clauses.push_back(token);
-    } else if (last_found_pattern) {
-      pattern_clauses.push_back(token);
-    } else if (last_found_with) {
-      with_clauses.push_back(token);
-    }
 
-    if (clean_input.substr(pos, SUCH_THAT_DELIM.length()) == SUCH_THAT_DELIM) {
-      clean_input.erase(0, pos + SUCH_THAT_DELIM.length());
-      last_found_such_that = true;
-      last_found_pattern = false;
-      last_found_with = false;
-    } else if (clean_input.substr(pos, PATTERN_DELIM.length()) == PATTERN_DELIM) {
-      clean_input.erase(0, pos + PATTERN_DELIM.length());
-      last_found_pattern = true;
-      last_found_such_that = false;
-      last_found_with = false;
-    } else if (clean_input.substr(pos, WITH_DELIM.length()) == WITH_DELIM) {
-      clean_input.erase(0, pos + WITH_DELIM.length());
-      last_found_with = true;
-      last_found_such_that = false;
-      last_found_pattern = false;
+  // second pass to split into clauses
+  inverted_commas_found = false;
+  bool last_found_such_that = false;
+  bool last_found_pattern = false;
+  bool last_found_with = false;
+  prev_word_stream.str("");
+  ss.str("");
+  for (char c : clean_input) {
+    if (c == '\"' || c == '\'') {
+      ss << prev_word_stream.str();
+      ss << c;
+      prev_word_stream.str("");
+      inverted_commas_found = !inverted_commas_found;
+    } else if (inverted_commas_found) {
+      ss << c;
+    } else if (isspace(c)) {
+      if (prev_word_stream.str() == "such") {
+        prev_word_stream << " ";
+      } else if (prev_word_stream.str() == "such that" || prev_word_stream.str() == "pattern"
+          || prev_word_stream.str() == "with") {
+        if (last_found_such_that) such_that_clauses.push_back(ss.str());
+        else if (last_found_pattern) pattern_clauses.push_back(ss.str());
+        else if (last_found_with) with_clauses.push_back(ss.str());
+        // if there is a term before the first clause keyword, error
+        else if (ss.str() != " ") {
+          select_clause = "";
+          return make_tuple(select_clause, such_that_clauses, pattern_clauses, with_clauses);
+        }
+
+        last_found_such_that = false;
+        last_found_pattern = false;
+        last_found_with = false;
+        if (prev_word_stream.str() == "such that") last_found_such_that = true;
+        else if (prev_word_stream.str() == "pattern") last_found_pattern = true;
+        else if (prev_word_stream.str() == "with") last_found_with = true;
+        prev_word_stream.str("");
+        ss.str("");
+      } else {
+        ss << prev_word_stream.str();
+        ss << " ";
+        prev_word_stream.str("");
+      }
+    } else {
+      prev_word_stream << c;
     }
   }
-  if (!last_found_such_that && !last_found_pattern && !last_found_with) {
-    select_clause.append(clean_input);  // error
-  }
-  if (last_found_such_that) {
-    such_that_clauses.push_back(clean_input);
-  } else if (last_found_pattern) {
-    pattern_clauses.push_back(clean_input);
-  } else if (last_found_with) {
-    with_clauses.push_back(clean_input);
-  }
+
+  ss << prev_word_stream.str();
+  if (last_found_such_that) such_that_clauses.push_back(ss.str());
+  else if (last_found_pattern) pattern_clauses.push_back(ss.str());
+  else if (last_found_with) with_clauses.push_back(ss.str());
+  else select_clause.append(clean_input);
 
   return make_tuple(select_clause, such_that_clauses, pattern_clauses, with_clauses);
 }

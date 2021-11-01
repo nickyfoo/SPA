@@ -774,7 +774,7 @@ TEST_CASE("Pattern_AssignWildCardAndPattern_ReturnsCorrect") {
   REQUIRE(std::get<2>(*clause)->size() == 1);
   REQUIRE(std::get<2>(*clause)->at(0)->get_synonym()->get_synonym() == "a");
   REQUIRE(std::get<2>(*clause)->at(0)->get_variable()->get_type() == EntRefType::WildCard);
-  REQUIRE(std::get<2>(*clause)->at(0)->get_exp_spec()->get_expression() == "count+1");
+  REQUIRE(std::get<2>(*clause)->at(0)->get_exp_spec()->get_expression() == "count + 1");
   REQUIRE(std::get<2>(*clause)->at(0)->get_exp_spec()->IsPartialPattern() == false);
   REQUIRE(std::get<3>(*clause)->size() == 0);
 }
@@ -795,7 +795,7 @@ TEST_CASE("Pattern_AssignWildCardAndPartialPattern_ReturnsCorrect") {
   REQUIRE(std::get<2>(*clause)->size() == 1);
   REQUIRE(std::get<2>(*clause)->at(0)->get_synonym()->get_synonym() == "a");
   REQUIRE(std::get<2>(*clause)->at(0)->get_variable()->get_type() == EntRefType::WildCard);
-  REQUIRE(std::get<2>(*clause)->at(0)->get_exp_spec()->get_expression() == "count+1");
+  REQUIRE(std::get<2>(*clause)->at(0)->get_exp_spec()->get_expression() == "count + 1");
   REQUIRE(std::get<2>(*clause)->at(0)->get_exp_spec()->IsPartialPattern() == true);
   REQUIRE(std::get<3>(*clause)->size() == 0);
 }
@@ -838,7 +838,7 @@ TEST_CASE("Pattern_AssignVarAndPartialPattern_ReturnsCorrect") {
   REQUIRE(pattern->get_synonym()->get_synonym() == "a");
   REQUIRE(pattern->get_variable()->get_type() == EntRefType::Argument);
   REQUIRE(pattern->get_variable()->get_argument() == "normSq");
-  REQUIRE(pattern->get_exp_spec()->get_expression() == "cenX*cenX");
+  REQUIRE(pattern->get_exp_spec()->get_expression() == "cenX * cenX");
   REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == true);
   REQUIRE(std::get<3>(*clause)->size() == 0);
 }
@@ -1061,7 +1061,7 @@ TEST_CASE("Pattern_KeywordPatternInPattern_ReturnsCorrect") {
   PatternClause *pattern = std::get<2>(*clause)->at(0);
   REQUIRE(pattern->get_synonym()->get_synonym() == "a");
   REQUIRE(pattern->get_variable()->get_type() == EntRefType::WildCard);
-  REQUIRE(pattern->get_exp_spec()->get_expression() == "pattern");
+  REQUIRE(pattern->get_exp_spec()->get_expression() == " pattern ");
   REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == false);
 
   REQUIRE(std::get<3>(*clause)->size() == 0);

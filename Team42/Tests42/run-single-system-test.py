@@ -2,7 +2,7 @@ import subprocess
 import sys
 
 files = [
-    "system_test_5"
+    "testing"
 ]
 
 for file in files:

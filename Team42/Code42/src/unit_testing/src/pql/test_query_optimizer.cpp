@@ -29,7 +29,7 @@ TEST_CASE("GroupingSuchThat_ClausesWithNoSynonyms_AddsOnlyToNoSynGroup") {
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
 
     REQUIRE(clause_groups.at(0)->get_clauses().size() == 1);
     REQUIRE(clause_groups[1]->get_clauses().size() == 0);
@@ -81,7 +81,7 @@ TEST_CASE("GroupingSuchThat_ClausesWithNoSynonyms_AddsOnlyToNoSynGroup") {
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups[0]->get_clauses().size() == 3);
     REQUIRE(clause_groups[1]->get_clauses().size() == 0);
     REQUIRE(clause_groups[2]->get_clauses().size() == 0);
@@ -114,7 +114,7 @@ TEST_CASE("GroupingSuchThat_ClausesWithNoReturnSynonyms_AddsOnlyToNoReturnSynGro
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups[0]->get_clauses().size() == 0);
     REQUIRE(clause_groups[1]->get_clauses().size() == 1);
     REQUIRE(clause_groups[2]->get_clauses().size() == 0);
@@ -165,7 +165,7 @@ TEST_CASE("GroupingSuchThat_ClausesWithNoReturnSynonyms_AddsOnlyToNoReturnSynGro
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups[0]->get_clauses().size() == 0);
     REQUIRE(clause_groups[1]->get_clauses().size() == 3);
     REQUIRE(clause_groups[2]->get_clauses().size() == 0);
@@ -198,7 +198,7 @@ TEST_CASE("GroupingSuchThat_ClausesWithReturnSynonyms_AddsOnlyToReturnSynGroup")
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups[0]->get_clauses().size() == 0);
     REQUIRE(clause_groups[1]->get_clauses().size() == 0);
     REQUIRE(clause_groups[2]->get_clauses().size() == 1);
@@ -252,7 +252,7 @@ TEST_CASE("GroupingSuchThat_ClausesWithReturnSynonyms_AddsOnlyToReturnSynGroup")
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups[0]->get_clauses().size() == 0);
     REQUIRE(clause_groups[1]->get_clauses().size() == 0);
     REQUIRE(clause_groups[2]->get_clauses().size() == 3);
@@ -281,7 +281,7 @@ TEST_CASE("GroupingPattern_ClausesWithNoReturnSynonyms_AddsOnlyToNoReturnSynGrou
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups[0]->get_clauses().size() == 0);
     REQUIRE(clause_groups[1]->get_clauses().size() == 1);
     REQUIRE(clause_groups[2]->get_clauses().size() == 0);
@@ -320,7 +320,7 @@ TEST_CASE("GroupingPattern_ClausesWithNoReturnSynonyms_AddsOnlyToNoReturnSynGrou
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups[0]->get_clauses().size() == 0);
     REQUIRE(clause_groups[1]->get_clauses().size() == 3);
     REQUIRE(clause_groups[2]->get_clauses().size() == 0);
@@ -349,7 +349,7 @@ TEST_CASE("GroupingPattern_ClausesWithReturnSynonyms_AddsOnlyToReturnSynGroup") 
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups.size() == 3);
     REQUIRE(clause_groups[0]->get_clauses().size() == 0);
     REQUIRE(clause_groups[1]->get_clauses().size() == 0);
@@ -392,7 +392,7 @@ TEST_CASE("GroupingPattern_ClausesWithReturnSynonyms_AddsOnlyToReturnSynGroup") 
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups.size() == 3);
     REQUIRE(clause_groups[0]->get_clauses().size() == 0);
     REQUIRE(clause_groups[1]->get_clauses().size() == 0);
@@ -420,7 +420,7 @@ TEST_CASE("GroupingWith_ClausesWithNoSynonyms_AddsOnlyToNoSynGroup") {
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups.size() == 3);
     REQUIRE(clause_groups[0]->get_clauses().size() == 1);
     REQUIRE(clause_groups[1]->get_clauses().size() == 0);
@@ -452,7 +452,7 @@ TEST_CASE("GroupingWith_ClausesWithNoSynonyms_AddsOnlyToNoSynGroup") {
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups.size() == 3);
     REQUIRE(clause_groups[0]->get_clauses().size() == 3);
     REQUIRE(clause_groups[1]->get_clauses().size() == 0);
@@ -480,7 +480,7 @@ TEST_CASE("GroupingWith_ClausesWithNoReturnSynonyms_AddsOnlyToNoReturnSynGroup")
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups.size() == 3);
     REQUIRE(clause_groups[0]->get_clauses().size() == 0);
     REQUIRE(clause_groups[1]->get_clauses().size() == 1);
@@ -512,7 +512,7 @@ TEST_CASE("GroupingWith_ClausesWithNoReturnSynonyms_AddsOnlyToNoReturnSynGroup")
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups.size() == 3);
     REQUIRE(clause_groups[0]->get_clauses().size() == 0);
     REQUIRE(clause_groups[1]->get_clauses().size() == 3);
@@ -540,7 +540,7 @@ TEST_CASE("GroupingWith_ClausesWithReturnSynonyms_AddsOnlyToReturnSynGroup") {
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups.size() == 3);
     REQUIRE(clause_groups[0]->get_clauses().size() == 0);
     REQUIRE(clause_groups[1]->get_clauses().size() == 0);
@@ -575,7 +575,7 @@ TEST_CASE("GroupingWith_ClausesWithReturnSynonyms_AddsOnlyToReturnSynGroup") {
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups.size() == 3);
     REQUIRE(clause_groups[0]->get_clauses().size() == 0);
     REQUIRE(clause_groups[1]->get_clauses().size() == 0);
@@ -613,7 +613,7 @@ TEST_CASE("GroupingNoReturnButConnected_ClausesWithSynonyms_AddsToReturnSynGroup
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups.size() == 3);
     REQUIRE(clause_groups[0]->get_clauses().size() == 0);
     REQUIRE(clause_groups[1]->get_clauses().size() == 0);
@@ -655,7 +655,7 @@ TEST_CASE("GroupingNoReturnButConnected_ClausesWithSynonyms_AddsToReturnSynGroup
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups.size() == 3);
     REQUIRE(clause_groups[0]->get_clauses().size() == 0);
     REQUIRE(clause_groups[1]->get_clauses().size() == 1);
@@ -694,7 +694,7 @@ TEST_CASE("SortingWithinGroup_SortingHasReturnSynonymGroup_AddsOnlyToReturnSynGr
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups.size() == 3);
     REQUIRE(clause_groups[0]->get_clauses().size() == 0);
     REQUIRE(clause_groups[1]->get_clauses().size() == 0);
@@ -745,7 +745,7 @@ TEST_CASE("SortingWithinGroup_SortingHasReturnSynonymGroup_AddsOnlyToReturnSynGr
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups.size() == 3);
     REQUIRE(clause_groups[0]->get_clauses().size() == 0);
     REQUIRE(clause_groups[1]->get_clauses().size() == 0);
@@ -803,7 +803,7 @@ TEST_CASE("SortingWithinGroup_SortingHasReturnSynonymGroup_AddsOnlyToReturnSynGr
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups.size() == 3);
     REQUIRE(clause_groups[0]->get_clauses().size() == 0);
     REQUIRE(clause_groups[1]->get_clauses().size() == 0);
@@ -848,7 +848,7 @@ TEST_CASE("SortingWithinGroup_SortingNoReturnSynonymGroup_AddsOnlyToNoReturnSynG
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups.size() == 3);
     REQUIRE(clause_groups[0]->get_clauses().size() == 0);
     REQUIRE(clause_groups[1]->get_clauses().size() == 2);
@@ -896,7 +896,7 @@ TEST_CASE("SortingWithinGroup_SortingNoReturnSynonymGroup_AddsOnlyToNoReturnSynG
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups.size() == 3);
     REQUIRE(clause_groups[0]->get_clauses().size() == 0);
     REQUIRE(clause_groups[1]->get_clauses().size() == 3);
@@ -952,7 +952,7 @@ TEST_CASE("SortingWithinGroup_SortingNoReturnSynonymGroup_AddsOnlyToNoReturnSynG
                                                     pattern_clauses,
                                                     with_clauses,
                                                     return_syns);
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups.size() == 3);
     REQUIRE(clause_groups[0]->get_clauses().size() == 0);
     REQUIRE(clause_groups[1]->get_clauses().size() == 4);
@@ -964,5 +964,50 @@ TEST_CASE("SortingWithinGroup_SortingNoReturnSynonymGroup_AddsOnlyToNoReturnSynG
     std::shared_ptr<SuchThatClause> such_that_clause =
         std::dynamic_pointer_cast<SuchThatClause>(clause_groups[1]->get_clauses()[3].get_clause());
     REQUIRE(such_that_clause->get_type() == RelRef::ParentT);
+  }
+}
+
+TEST_CASE("DefaultGrouping_NoOptimization_AddsOnlyToLastGroup") {
+  SECTION("No synonym With, 1 synonym Follows, 2 synonym pattern") {
+    std::string ss = "assign a; stmt s1, s2; variable v;\n"
+                     "Select s1 such that Follows(s1, 4) "
+                     "with 2 = 3 pattern a(v, _)";
+    WithClause *with = new WithClause("2", EntityType::None, AttrValueType::Integer,
+                                       "3", EntityType::None, AttrValueType::Integer);
+
+    SuchThatClause *follows = new SuchThatClause("Follows");
+    StmtRef left_stmt_ref = StmtRef();
+    left_stmt_ref.set_synonym("s1");
+    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    StmtRef right_stmt_ref = StmtRef();
+    right_stmt_ref.set_stmt_num(4);
+    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    follows->set_ref(left_such_that_ref, right_such_that_ref);
+
+    auto *pattern = new PatternClause(new EntityDeclaration(EntityType::Assign, "a"));
+    auto *pattern_ent_ref = new EntRef();
+    pattern_ent_ref->set_synonym("v");
+    pattern->set_ref(pattern_ent_ref, "_");
+
+    auto *such_that_clauses = new std::vector<SuchThatClause *>();
+    auto *pattern_clauses = new std::vector<PatternClause *>();
+    auto *with_clauses = new std::vector<WithClause *>();
+    auto *return_syns = new std::vector<ResultClause *>();
+    return_syns->push_back(new ResultClause("s2",
+                                            EntityType::Stmt,
+                                            ReturnType::Default));
+    with_clauses->push_back(with);
+    such_that_clauses->push_back(follows);
+    pattern_clauses->push_back(pattern);
+
+    QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
+                                                    pattern_clauses,
+                                                    with_clauses,
+                                                    return_syns);
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateDefaultGroupings();
+    REQUIRE(clause_groups.size() == 3);
+    REQUIRE(clause_groups[0]->get_clauses().size() == 0);
+    REQUIRE(clause_groups[1]->get_clauses().size() == 0);
+    REQUIRE(clause_groups[2]->get_clauses().size() == 3);
   }
 }

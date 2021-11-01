@@ -15,7 +15,26 @@ QueryOptimizer::QueryOptimizer(std::vector<SuchThatClause *> *relationships,
   this->return_entities_ = return_entities;
 }
 
-std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateGroupings() {
+// Optimizer is "off" and will create 3 groups with only the last group filled.
+std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateDefaultGroupings() {
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groupings;
+
+  // Creating empty groups for first 2 groups
+  clause_groupings.push_back(std::make_shared<ClauseGroup>(ClauseGroup()));
+  clause_groupings.push_back(std::make_shared<ClauseGroup>(ClauseGroup()));
+
+  std::vector<ClauseVertex> all_vertices = CombineAllVertices(MakeSuchThatVertices(relationships_),
+                                                              MakePatternVertices(patterns_),
+                                                              MakeWithVertices(withs_));
+  auto all_clauses = ClauseGroup();
+  all_clauses.set_clauses(all_vertices);
+  auto all_clauses_ptr = std::make_shared<ClauseGroup>(all_clauses);
+  clause_groupings.push_back(all_clauses_ptr);
+
+  return clause_groupings;
+}
+
+std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateOptimizedGroupings() {
   std::vector<std::shared_ptr<ClauseGroup>> clause_groupings;
   std::vector<ClauseVertex> no_syn_used;
   std::vector<ClauseVertex> has_syn_used;
@@ -225,7 +244,7 @@ std::vector<ClauseVertex> QueryOptimizer::MakeSuchThatVertices(std::vector<SuchT
     SuchThatRef *left_ent = such_that_clause->get_left_ref();
     SuchThatRef *right_ent = such_that_clause->get_right_ref();
 
-    std::string left_syn = "";
+    std::string left_syn;
     // If left arg is a synonym, add to synonyms used
     if (left_ent->get_type() == SuchThatRefType::Statement &&
         left_ent->get_stmt_ref().get_type() == StmtRefType::Synonym) {
@@ -237,7 +256,7 @@ std::vector<ClauseVertex> QueryOptimizer::MakeSuchThatVertices(std::vector<SuchT
         left_ent->get_line_ref().get_type() == LineRefType::Synonym) {
       left_syn = left_ent->get_line_ref().get_synonym();
     }
-    if (left_syn != "") {
+    if (!left_syn.empty()) {
       synonyms_used.push_back(left_syn);
       // If synonym is part of return synonyms, set has_return_syn to true.
       if (ReturnEntitiesContainSynonym(left_syn)) {
@@ -245,7 +264,7 @@ std::vector<ClauseVertex> QueryOptimizer::MakeSuchThatVertices(std::vector<SuchT
       }
     }
 
-    std::string right_syn = "";
+    std::string right_syn;
     // If right arg is a synonym, add to synonyms used.
     if (right_ent->get_type() == SuchThatRefType::Statement &&
         right_ent->get_stmt_ref().get_type() == StmtRefType::Synonym) {
@@ -257,7 +276,7 @@ std::vector<ClauseVertex> QueryOptimizer::MakeSuchThatVertices(std::vector<SuchT
         right_ent->get_line_ref().get_type() == LineRefType::Synonym) {
       right_syn = right_ent->get_line_ref().get_synonym();
     }
-    if (right_syn != "") {
+    if (!right_syn.empty()) {
       synonyms_used.push_back(right_syn);
       // If synonym is part of return synonyms, set has_return_syn to true.
       if (ReturnEntitiesContainSynonym(right_syn)) {

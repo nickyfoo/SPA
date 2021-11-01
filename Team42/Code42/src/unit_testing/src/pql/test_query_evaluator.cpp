@@ -24,7 +24,7 @@ TEST_CASE("SingleClause_SuchThatClause_OutputsVectorOfStrings") {
                                                     std::get<2>(*clause),
                                                     std::get<3>(*clause),
                                                     std::get<0>(*clause));
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                        clause_groups,
                                        std::get<4>(*clause),
@@ -47,7 +47,7 @@ TEST_CASE("SingleClause_SuchThatClause_OutputsVectorOfStrings") {
                                                     std::get<2>(*clause),
                                                     std::get<3>(*clause),
                                                     std::get<0>(*clause));
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                        clause_groups,
                                        std::get<4>(*clause),

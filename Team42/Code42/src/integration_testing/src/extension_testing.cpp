@@ -64,7 +64,7 @@ TEST_CASE("AffectsBip*_OneSynonym_ReturnsExpected") {
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),
                                                   std::get<0>(*clause));
-  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
   PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                      clause_groups,
                                      std::get<4>(*clause),
@@ -97,7 +97,7 @@ TEST_CASE("AffectsBip*_TwoSynonyms_ReturnsExpected") {
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),
                                                   std::get<0>(*clause));
-  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
   PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                      clause_groups,
                                      std::get<4>(*clause),
@@ -130,7 +130,7 @@ TEST_CASE("AffectsBip*_TwoArgs_ReturnsExpected") {
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),
                                                   std::get<0>(*clause));
-  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
   PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                      clause_groups,
                                      std::get<4>(*clause),
@@ -163,7 +163,7 @@ TEST_CASE("Modifies_TwoArgs_ReturnsExpected") {
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),
                                                   std::get<0>(*clause));
-  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
   PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                      clause_groups,
                                      std::get<4>(*clause),

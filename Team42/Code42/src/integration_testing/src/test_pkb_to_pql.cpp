@@ -58,7 +58,7 @@ TEST_CASE("PQL_FollowsAndPattern_ReturnsExpected") {
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),
                                                   std::get<0>(*clause));
-  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
   PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                      clause_groups,
                                      std::get<4>(*clause),
@@ -96,7 +96,7 @@ TEST_CASE("PQL_PatternAndFollows_ReturnsExpected") {
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),
                                                   std::get<0>(*clause));
-  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
   PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                      clause_groups,
                                      std::get<4>(*clause),
@@ -134,7 +134,7 @@ TEST_CASE("PQL_PatternAndFollowsWithExtraWords_ReturnsEmpty") {
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),
                                                   std::get<0>(*clause));
-  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
   PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                      clause_groups,
                                      std::get<4>(*clause),
@@ -172,7 +172,7 @@ TEST_CASE("PQL_FollowsAndPatternUnrelated_ReturnsExpected") {
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),
                                                   std::get<0>(*clause));
-  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
   PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                      clause_groups,
                                      std::get<4>(*clause),
@@ -210,7 +210,7 @@ TEST_CASE("PQL_FollowsStarAndPattern_ReturnsExpected") {
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),
                                                   std::get<0>(*clause));
-  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
   PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                      clause_groups,
                                      std::get<4>(*clause),
@@ -248,7 +248,7 @@ TEST_CASE("PQL_ParentAndPattern_ReturnsExpected") {
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),
                                                   std::get<0>(*clause));
-  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
   PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                      clause_groups,
                                      std::get<4>(*clause),
@@ -286,7 +286,7 @@ TEST_CASE("PQL_ParentStarAndPattern_ReturnsExpected") {
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),
                                                   std::get<0>(*clause));
-  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
   PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                      clause_groups,
                                      std::get<4>(*clause),
@@ -324,7 +324,7 @@ TEST_CASE("PQL_UsesAndPattern_ReturnsExpected") {
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),
                                                   std::get<0>(*clause));
-  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
   PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                      clause_groups,
                                      std::get<4>(*clause),
@@ -362,7 +362,7 @@ TEST_CASE("PQL_ModifiesAndPattern_ReturnsExpected") {
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),
                                                   std::get<0>(*clause));
-  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
   PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                      clause_groups,
                                      std::get<4>(*clause),
@@ -401,7 +401,7 @@ TEST_CASE("PQL_KeywordAsSynonym_ReturnsExpected") {
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),
                                                   std::get<0>(*clause));
-  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
   PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                      clause_groups,
                                      std::get<4>(*clause),
@@ -439,7 +439,7 @@ TEST_CASE("PQL_RelationshipAndPatternDependencies_ReturnsExpected") {
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),
                                                   std::get<0>(*clause));
-  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
   PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                      clause_groups,
                                      std::get<4>(*clause),
@@ -476,7 +476,7 @@ TEST_CASE("PQL_RelationshipAndPatternOneCommonSynonym_ReturnsExpected") {
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),
                                                   std::get<0>(*clause));
-  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
   PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                      clause_groups,
                                      std::get<4>(*clause),
@@ -514,7 +514,7 @@ TEST_CASE("PQL_UsesPAndPatternOneCommonSynonym_ReturnsExpected") {
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),
                                                   std::get<0>(*clause));
-  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
   PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                      clause_groups,
                                      std::get<4>(*clause),
@@ -551,7 +551,7 @@ TEST_CASE("PQL_InvalidUsesAndPattern_ReturnsExpected") {
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),
                                                   std::get<0>(*clause));
-  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
   PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                      clause_groups,
                                      std::get<4>(*clause),

@@ -124,8 +124,8 @@ std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
 
     std::string left_ref = relationship_clause.at(1);
     std::string right_ref = relationship_clause.at(2);
-    SuchThatRef *left_such_that_ref = MakeSuchThatRefLeft(relationship, left_ref);
-    SuchThatRef *right_such_that_ref = MakeSuchThatRefRight(relationship, right_ref);
+    SuchThatRef *left_such_that_ref = SetSuchThatRefLeft(relationship, left_ref);
+    SuchThatRef *right_such_that_ref = SetSuchThatRefRight(relationship, right_ref);
     if (left_such_that_ref == nullptr || right_such_that_ref == nullptr) {
       return nullptr;
     }
@@ -156,7 +156,7 @@ std::vector<PatternClause *> *SelectClauseParser::MakePatternClause(
     if (pattern_clause.size() == 3) {  // assign and while
       auto *pattern = MakePatternRef(synonym, left_ref, right_ref);
       if (pattern == nullptr || !(pattern->get_type() == EntityType::Assign ||
-                                  pattern->get_type() == EntityType::While)) {
+          pattern->get_type() == EntityType::While)) {
         return nullptr;
       } else {
         ret->push_back(pattern);
@@ -343,8 +343,8 @@ SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
   return std::make_tuple("", EntityType::None, AttrValueType::None);  // not a valid with clause
 }
 
-SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(SuchThatClause *relationship,
-                                                     std::string left_ref) {
+SuchThatRef *SelectClauseParser::SetSuchThatRefLeft(SuchThatClause *relationship,
+                                                    std::string left_ref) {
   SuchThatRef *left_such_that_ref;
   StmtRef left_stmt_ref;
   EntRef left_ent_ref;
@@ -446,8 +446,8 @@ SuchThatRef *SelectClauseParser::MakeSuchThatRefLeft(SuchThatClause *relationshi
   return nullptr;
 }
 
-SuchThatRef *SelectClauseParser::MakeSuchThatRefRight(SuchThatClause *relationship,
-                                                      std::string right_ref) {
+SuchThatRef *SelectClauseParser::SetSuchThatRefRight(SuchThatClause *relationship,
+                                                     std::string right_ref) {
   SuchThatRef *right_such_that_ref;
   StmtRef right_stmt_ref;
   EntRef right_ent_ref;

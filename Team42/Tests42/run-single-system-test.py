@@ -2,7 +2,11 @@ import subprocess
 import sys
 
 files = [
-    "iter3Stress"
+    "parent_1",
+    "parent_2",
+    "parent_3",
+    "parent_4",
+    "parent_5",
 ]
 
 for file in files:

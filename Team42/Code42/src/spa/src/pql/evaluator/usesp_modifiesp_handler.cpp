@@ -124,7 +124,7 @@ ResultTable *UsesPModifiesPHandler::Evaluate() {
     std::string left_arg = left_ent.get_argument();
     std::string right_arg = right_ent.get_argument();
     Procedure *proc = pkb_->get_procedure(left_arg);
-    if (!ProcedureForwarder(get_normal_, proc)->count(right_arg)) {
+    if (proc == nullptr || !ProcedureForwarder(get_normal_, proc)->count(right_arg)) {
       // Return nullptr if this relationship_ is false
       return nullptr;
     }

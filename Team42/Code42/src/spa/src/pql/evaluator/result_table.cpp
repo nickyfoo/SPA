@@ -11,6 +11,8 @@ ResultTable::ResultTable() {
 
 void ResultTable::NaturalJoin(ResultTable &other_result_table) {
   auto common_synonyms = GetCommonSynonyms(other_result_table);
+//  printf("num of common synonyms: %d", common_synonyms->size());
+//  printf("other table size: %d", other_result_table.synonyms_->size());
   table *other_table = other_result_table.get_table();
   if (other_table->empty()) {
     delete table_;
@@ -44,6 +46,7 @@ void ResultTable::NaturalJoin(ResultTable &other_result_table) {
     }
   } else if (common_synonyms->size() == 1) {  // one common
     int num_of_synonyms = other_table->at(0).size();
+//    printf("num of syns : %d\n", num_of_synonyms);
     std::vector<std::string> col_one = GetColumnVec(common_synonyms->at(0).first);
     std::vector<std::string> other_col_one = other_result_table.GetColumnVec(
         common_synonyms->at(0).first);
@@ -55,6 +58,7 @@ void ResultTable::NaturalJoin(ResultTable &other_result_table) {
       for (auto &it : *other_synonyms_to_index) {
         if (std::find(synonyms_->begin(), synonyms_->end(), it.first)
         == synonyms_->end()) {  // if item is new
+//          printf("new item\n");
           synonym_to_index_->insert({it.first, synonym_to_index_->size()});
           index_to_synonym_->insert({index_to_synonym_->size(), it.first});
           synonyms_->push_back(it.first);
@@ -64,6 +68,15 @@ void ResultTable::NaturalJoin(ResultTable &other_result_table) {
 
     table *new_table = new std::vector<std::vector<std::string>>();
     std::vector<int> index_to_erase;
+//    printf("COL ONE: \n");
+//    for (std::string s : col_one) {
+//      printf("%s ", s.c_str());
+//    }
+//    printf("\n");
+//    printf("OTHER COL ONE: \n");
+//    for (std::string s : other_col_one) {
+//      printf("%s ", s.c_str());
+//    }
     for (int i = 0; i < col_one.size(); ++i) {
       bool found_matching_row = false;
       for (int j = 0; j < other_col_one.size(); ++j) {
@@ -72,6 +85,7 @@ void ResultTable::NaturalJoin(ResultTable &other_result_table) {
             found_matching_row = true;
             break;
           } else {  // two synonyms
+//            printf("adding\n");
             std::vector<std::string> curr_vec = table_->at(i);
             curr_vec.push_back(other_table->at(j).at(other_col_two_index));
             new_table->push_back(curr_vec);

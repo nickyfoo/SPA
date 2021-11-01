@@ -75,6 +75,7 @@ ResultTable* AffectsHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func
       auto *stmt = dynamic_cast<Statement *>(e);
       assert(stmt != nullptr);
       auto right_arg = stmt->get_stmt_no();
+
       if (!(pkb_->*func)(left_arg, right_arg)->empty()) {
         stmt_vec.push_back(std::to_string(right_arg));
       }
@@ -122,7 +123,10 @@ ResultTable* AffectsHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func
         }
       }
 
-      ret->AddDoubleColumns(left_synonym, left_stmt_vec, right_synonym, right_stmt_vec);
+      ret->AddDoubleColumns(left_synonym,
+                            left_stmt_vec,
+                            right_synonym,
+                            right_stmt_vec);
     }
   } else if (left_ent.get_type() == StmtRefType::WildCard &&
       right_ent.get_type() == StmtRefType::WildCard) {

@@ -40,7 +40,6 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
       return new std::vector<std::string>{};
     }
   }
-  printf("AM HERE 1\n");
   RelationshipQueryManager *relationship_query_manager;
   PatternQueryManager *pattern_query_manager;
   WithQueryManager *with_query_manager;
@@ -54,7 +53,6 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
   // second group is without any return synonyms,
   // and third groups on are those with synonyms in results
   for (int i = 0; i < clause_groups_.size(); i++) {
-    printf("AM HERE I IS %d\n", i);
     std::vector<ClauseVertex> clause_vertexes = clause_groups_.at(i)->get_clauses();
     ResultTable *intermediate_table = new ResultTable();
     bool first_table_entry = true;
@@ -106,7 +104,6 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
       }
     }
   }
-  printf("FINISHED1\n");
   return ConvertToOutput(result_table, true);
 }
 
@@ -220,18 +217,6 @@ QueryEvaluator::GetPossibleEntitiesVec(ClauseVertex clause_vertex) {
 // Converting from vector Entity objects to vector of strings to output.
 std::vector<std::string>
 *QueryEvaluator::ConvertToOutput(ResultTable *table_result, bool is_valid_query) {
-//  printf("Final result table:\n");
-//  for (int i = 0; i < table_result->get_index_to_synonym()->size(); ++i) {
-//    printf("%s ", table_result->get_index_to_synonym()->at(i).c_str());
-//  }
-//  printf("\n");
-//  for (int j = 0; j < table_result->get_table()->size(); ++j) {
-//    for (int k = 0; k < table_result->get_table()->at(j).size(); ++k) {
-//      printf("%s ", table_result->get_table()->at(j).at(k).c_str());
-//    }
-//    printf("\n");
-//  }
-
   auto *output = new std::vector<std::string>();
   if (!is_valid_query) {
     if (entities_to_return_->size() == 1
@@ -246,31 +231,17 @@ std::vector<std::string>
     output->push_back("TRUE");
     return output;
   }
-  printf("SUP1\n");
   std::vector<int> indexes_of_return_entities;
   auto synonym_to_index_map = table_result->get_synonym_to_index();
   auto index_to_synonym_map = table_result->get_index_to_synonym();
   // first loop to detect all synonyms in return entities that were not in clauses
   for (ResultClause *result_clause : *entities_to_return_) {
-//    printf("HERE\n");
-    printf("SUP2\n");
     std::string elem = result_clause->get_elem();
     std::string synonym = result_clause->get_synonym();
-//    printf("elem is : %s", elem.c_str());
-//    printf("syn is : %s", synonym.c_str());
     // use the exact result as key
+
     if (synonym_to_index_map->find(elem) == synonym_to_index_map->end()) {
-//      printf("Final result table:\n");
-//      for (int i = 0; i < table_result->get_index_to_synonym()->size(); ++i) {
-//        printf("%s ", table_result->get_index_to_synonym()->at(i).c_str());
-//      }
-//      printf("\n");
-//      for (int j = 0; j < table_result->get_table()->size(); ++j) {
-//        for (int k = 0; k < table_result->get_table()->at(j).size(); ++k) {
-//          printf("%s ", table_result->get_table()->at(j).at(k).c_str());
-//        }
-//        printf("\n");
-//      }
+
       ResultTable *new_table = new ResultTable();
       // synonym was used previously,
       if (synonym_to_index_map->find(synonym) != synonym_to_index_map->end()) {
@@ -278,41 +249,23 @@ std::vector<std::string>
       } else {
         MakeTableForUnusedEntity(new_table, result_clause);
       }
-//      printf("new result table:\n");
-//      for (int i = 0; i < new_table->get_index_to_synonym()->size(); ++i) {
-//        printf("%s ", new_table->get_index_to_synonym()->at(i).c_str());
-//      }
-//      printf("\n");
-//      for (int j = 0; j < new_table->get_table()->size(); ++j) {
-//        for (int k = 0; k < new_table->get_table()->at(j).size(); ++k) {
-//          printf("%s ", new_table->get_table()->at(j).at(k).c_str());
-//        }
-//        printf("\n");
-//      }
       // empty result for the result clause
       if (new_table->get_table()->empty()) {
         return output;
       }
       if (table_result->get_table()->empty()) {
-        printf("fksup\n");
-        printf("new table size: %d\n", new_table->get_table()->size());
         table_result->set_table(*new_table);
         synonym_to_index_map = new_table->get_synonym_to_index();
         index_to_synonym_map = new_table->get_index_to_synonym();
       } else {
-        printf("fkmi\n");
         table_result->NaturalJoin(*new_table);
       }
     }
   }
-//  printf("blah\n");
   // second loop to retrieve synonym indexes
   for (ResultClause *result_clause : *entities_to_return_) {
-    printf("lahblah\n");
-    printf("%s\n", result_clause->get_elem().c_str());
     indexes_of_return_entities.push_back(synonym_to_index_map->at(result_clause->get_elem()));
   }
-  printf("yeboi\n");
   std::set<std::string> unique_results;
   for (std::vector<std::string> row : *table_result->get_table()) {
     std::stringstream ss;
@@ -335,14 +288,10 @@ void QueryEvaluator::MakeTableForUnusedEntity(ResultTable *result_table,
   EntityType synonym_type = result_clause->get_synonym_type();
   ReturnType return_type = result_clause->get_return_type();
   std::vector<std::string> to_add = std::vector<std::string>();
-  printf("elem: %s\n", elem.c_str());
 
   switch (synonym_type) {
-    printf("wat1\n");
     case EntityType::ProgLine:
-      printf("wat2\n");
     case EntityType::Stmt: {
-      printf("wat3\n");
       std::vector<Statement *> entities_stmt;
       entities_stmt = pkb_->get_all_statements();
       for (Statement *stmt : entities_stmt) {
@@ -351,12 +300,10 @@ void QueryEvaluator::MakeTableForUnusedEntity(ResultTable *result_table,
       break;
     }
     case EntityType::Read: {
-      printf("wat4\n");
       std::vector<Statement *> entities_stmt;
       entities_stmt = pkb_->get_statements(NodeType::Read);
       for (Statement *stmt : entities_stmt) {
         if (return_type == ReturnType::Default || return_type == ReturnType::Integer) {
-          printf("in\n");
           to_add.push_back(std::to_string(stmt->get_stmt_no()));
         } else {
           for (auto &i : *stmt->get_modifies()) {
@@ -367,7 +314,6 @@ void QueryEvaluator::MakeTableForUnusedEntity(ResultTable *result_table,
       break;
     }
     case EntityType::Print: {
-      printf("wat5\n");
       std::vector<Statement *> entities_stmt;
       entities_stmt = pkb_->get_statements(NodeType::Print);
       for (Statement *stmt : entities_stmt) {
@@ -382,7 +328,6 @@ void QueryEvaluator::MakeTableForUnusedEntity(ResultTable *result_table,
       break;
     }
     case EntityType::Call: {
-      printf("wat6\n");
       std::vector<Statement *> entities_stmt;
       entities_stmt = pkb_->get_statements(NodeType::Call);
       for (Statement *stmt : entities_stmt) {
@@ -395,7 +340,6 @@ void QueryEvaluator::MakeTableForUnusedEntity(ResultTable *result_table,
       break;
     }
     case EntityType::While: {
-      printf("wat7\n");
       std::vector<Statement *> entities_stmt;
       entities_stmt = pkb_->get_statements(NodeType::While);
       for (Statement *stmt : entities_stmt) {
@@ -404,7 +348,6 @@ void QueryEvaluator::MakeTableForUnusedEntity(ResultTable *result_table,
       break;
     }
     case EntityType::If: {
-      printf("wat8\n");
       std::vector<Statement *> entities_stmt;
       entities_stmt = pkb_->get_statements(NodeType::If);
       for (Statement *stmt : entities_stmt) {
@@ -413,7 +356,6 @@ void QueryEvaluator::MakeTableForUnusedEntity(ResultTable *result_table,
       break;
     }
     case EntityType::Assign: {
-      printf("wat9\n");
       std::vector<Statement *> entities_stmt;
       entities_stmt = pkb_->get_statements(NodeType::Assign);
       for (Statement *stmt : entities_stmt) {
@@ -422,7 +364,6 @@ void QueryEvaluator::MakeTableForUnusedEntity(ResultTable *result_table,
       break;
     }
     case EntityType::Variable: {
-      printf("wat10\n");
       std::vector<Variable *> entities_var;
       entities_var = pkb_->get_all_variables();
       for (Variable *var : entities_var) {
@@ -431,7 +372,6 @@ void QueryEvaluator::MakeTableForUnusedEntity(ResultTable *result_table,
       break;
     }
     case EntityType::Constant: {
-      printf("wat11\n");
       std::vector<Constant *> entities_const;
       entities_const = pkb_->get_all_constants();
       for (Constant *cons : entities_const) {
@@ -440,7 +380,6 @@ void QueryEvaluator::MakeTableForUnusedEntity(ResultTable *result_table,
       break;
     }
     case EntityType::Procedure: {
-      printf("wat12\n");
       std::vector<Procedure *> entities_proc;
       entities_proc = pkb_->get_all_procedures();
       for (Procedure *proc : entities_proc) {
@@ -449,12 +388,7 @@ void QueryEvaluator::MakeTableForUnusedEntity(ResultTable *result_table,
       break;
     }
     case EntityType::None:
-      printf("wat13\n");
       throw std::runtime_error("Unknown EntityType!");
-  }
-  printf("adding\n");
-  for (std::string s : to_add) {
-    printf("%s ", s.c_str());
   }
   result_table->AddSingleColumn(elem, to_add);
 }

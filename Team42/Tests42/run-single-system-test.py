@@ -2,11 +2,7 @@ import subprocess
 import sys
 
 files = [
-    "parent_1",
-    "parent_2",
-    "parent_3",
-    "parent_4",
-    "parent_5",
+    "system_test_5"
 ]
 
 for file in files:

@@ -41,11 +41,11 @@ void TestWrapper::parse(std::string filename) {
   BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
-  PKB pkb;
-  DesignExtractor design_extractor(&pkb, p);
+  PKB *pkb = new PKB();
+  DesignExtractor design_extractor(pkb, p);
   design_extractor.ExtractDesigns();
 
-  this->pkb_ = &pkb;
+  this->pkb_ = pkb;
 }
 
 // method to evaluating a query

@@ -262,6 +262,35 @@ TEST_CASE("PkbAffectsBip_SampleProgram_Correct") {
   }
 }
 
+TEST_CASE("PkbAffectsBip_SampleProgram_NegativeCases") {
+  PKB pkb = InitialisePKB(kCfgBipSample);
+
+  // Invalid statement number
+  REQUIRE(pkb.get_affects_bip(0, 1)->empty());
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+
+  // 1 is the first statement of cfg
+  REQUIRE(pkb.get_affects_bip(PKB::kWild, 1)->empty());
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+
+  // 5 is the last statement of cfg
+  REQUIRE(pkb.get_affects_bip(5, PKB::kWild)->empty());
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+
+  // 2 is not an assignment statement
+  REQUIRE(pkb.get_affects_bip(2, PKB::kWild)->empty());
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+
+  // 4 is not an assignment statement
+  REQUIRE(pkb.get_affects_bip(3, 4)->empty());
+  pkb.ClearNextAffectsCache();
+  REQUIRE(pkb.NextAffectsCacheIsEmpty());
+}
+
 TEST_CASE("PkbAffectsBipStar_SampleProgram_Correct") {
   PKB pkb = InitialisePKB(kCfgBipSample);
 
@@ -325,28 +354,28 @@ TEST_CASE("PkbAffectsBipStar_SampleProgram_Correct") {
 TEST_CASE("PkbAffectsBipStar_SampleProgram_NegativeCases") {
   PKB pkb = InitialisePKB(kCfgBipSample);
 
-  // Different procedures
-  REQUIRE(pkb.get_affects_star(16, 7)->empty());
+  // Invalid statement number
+  REQUIRE(pkb.get_affects_bip_star(0, 1)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 
-  // 5 is not modifying x or y
-  REQUIRE(pkb.get_affects_star(5, 7)->empty());
+  // 1 is the first statement of cfg
+  REQUIRE(pkb.get_affects_bip_star(PKB::kWild, 1)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 
-  // 8 is not an assignment statement
-  REQUIRE(pkb.get_affects_star(5, 8)->empty());
+  // 5 is the last statement of cfg
+  REQUIRE(pkb.get_affects_bip_star(5, PKB::kWild)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 
-  // 8 is not an assignment statement
-  REQUIRE(pkb.get_affects_star(8, 12)->empty());
+  // 2 is not an assignment statement
+  REQUIRE(pkb.get_affects_bip_star(2, PKB::kWild)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 
-  // 8 is not an assignment statement
-  REQUIRE(pkb.get_affects_star(8, PKB::kWild)->empty());
+  // 4 is not an assignment statement
+  REQUIRE(pkb.get_affects_bip_star(3, 4)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }

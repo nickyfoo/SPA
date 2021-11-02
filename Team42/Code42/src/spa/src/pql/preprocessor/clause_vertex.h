@@ -16,9 +16,10 @@ class ClauseVertex {
   void set_id(int id);
   int get_id();
   void set_priority(int priority);
-  int get_priority();
+  int get_priority() const;
   ~ClauseVertex();
  private:
+  friend bool operator < (const ClauseVertex &lhs, const ClauseVertex &rhs);
   std::vector<std::string> synonyms_used_;
   int id_;
   int priority_;

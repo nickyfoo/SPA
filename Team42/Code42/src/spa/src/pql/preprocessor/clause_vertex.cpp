@@ -36,6 +36,10 @@ void ClauseVertex::set_priority(int priority) {
   this->priority_ = priority;
 }
 
-int ClauseVertex::get_priority() {
+int ClauseVertex::get_priority() const {
   return this->priority_;
+}
+
+bool operator < (const ClauseVertex &lhs, const ClauseVertex &rhs) {
+  return lhs.get_priority() < rhs.get_priority();
 }

@@ -268,8 +268,8 @@ std::set<std::pair<int, int>> *PKB::get_affects_star(int a, int b) {
   if (a == kWild && b == kWild) {
     affects_star_cache[kWild][kWild] = std::set<std::pair<int, int>>();
     std::map<int, std::set<int>> affects_al;
-    for (auto&[a, b] : *get_affects(kWild, kWild)) {
-      affects_al[a].insert(b);
+    for (auto&[s_a, s_b] : *get_affects(kWild, kWild)) {
+      affects_al[s_a].insert(s_b);
     }
     for (auto&[u, al_u] : affects_al) {
       affects_star_cache[u][kWild] = std::set<std::pair<int, int>>();
@@ -342,10 +342,9 @@ void PKB::ReachabilityDFS(int start, int u, std::vector<std::vector<int>> &d,
   }
 }
 
-void PKB::AffectsDFS(int start, int u, std::string var_name,
+void PKB::AffectsDFS(int start, int u, const std::string &var_name,
                      std::vector<bool> &visited, std::vector<std::vector<int>> &d, bool &found) {
   if (found) return;
-  Statement *stmt = stmt_table_.get_statement(start);
   for (auto &v : cfg_al_[u]) {
     Statement *stmt_v = stmt_table_.get_statement(v);
     if (visited[v]) continue;

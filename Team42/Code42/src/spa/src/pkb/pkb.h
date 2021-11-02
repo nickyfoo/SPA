@@ -27,15 +27,15 @@ class PKB {
   inline static const int kNoBranch = 0;
 
   // Adds a procedure to the procedures table.
-  void AddProcedure(Node *node, std::vector<Node *> ancestor_list);
+  void AddProcedure(Node *node, const std::vector<Node *> &ancestor_list);
   // Adds a statement to the statements table.
-  void AddStatement(Node *node, std::vector<Node *> ancestor_list);
+  void AddStatement(Node *node, const std::vector<Node *> &ancestor_list);
   // Adds a postfix expression string to the table.
-  void AddExprString(Node *node, std::vector<Node *> ancestor_list);
+  void AddExprString(Node *node, const std::vector<Node *> &ancestor_list);
   // Adds a variable to the variables table.
-  void AddVariable(Node *node, std::vector<Node *> ancestor_list);
+  void AddVariable(Node *node, const std::vector<Node *> &ancestor_list);
   // Adds a constant to the variables table.
-  void AddConstant(Node *node, std::vector<Node *> ancestor_list);
+  void AddConstant(Node *node, const std::vector<Node *> &ancestor_list);
 
   // Gets the total number of procedures in the procedure table
   int get_num_procedures();
@@ -94,10 +94,10 @@ class PKB {
 
   // Tests the RHS of assignment statement against the given pattern.
   // Returns true if pattern matches.
-  bool TestAssignmentPattern(Statement *statement, std::string pattern, bool is_partial_match);
+  bool TestAssignmentPattern(Statement *statement, const std::string &pattern, bool is_partial_match);
   // Tests for a variable in the expression of the if statement.
   // Returns true if variable matches.
-  bool TestIfWhilePattern(Statement *stmt, std::string variable);
+  bool TestIfWhilePattern(Statement *stmt, const std::string &variable);
 
   // Clears cache for Next and Affects
   void ClearNextAffectsCache();
@@ -125,7 +125,7 @@ class PKB {
   void ReachabilityDFS(int start, int u, std::vector<std::vector<int>> &d,
                        std::map<int, std::set<int>> &al);
   // DFS to check reachability for Affects relationship.
-  void AffectsDFS(int start, int u, std::string var_name, std::vector<bool> &visited,
+  void AffectsDFS(int start, int u, const std::string &var_name, std::vector<bool> &visited,
                   std::vector<std::vector<int>> &d, bool &found);
   // DFS to check reachability for Affects* relationship
   // If forward relation is true, this method propagates forward in terms of Affects*(a,b)
@@ -153,12 +153,14 @@ class PKB {
   // Returns true if v is an assign stmt that modifies var_name
   bool ModifiesVarName(int v, const std::string &var_name);
   // DFS to check reachability for AffectsBip* relationship
-  void AffectsBipStarDFS(std::set<std::pair<int, std::string>>& visited, int u, std::string& u_hash, int start, std::string& start_hash);
+  void AffectsBipStarDFS(std::set<std::pair<int, std::string>> &visited,
+                         int u,
+                         std::string &u_hash,
+                         int start,
+                         std::string &start_hash);
   // Utility to hash a call_stack
   std::string CallStackToString(std::vector<int> *call_stack);
 
-  // Root AST node of the program.
-  Node *root_;
   // Root AST node of the program.
   PatternManager pattern_manager_;
   // Table of procedures in the program.

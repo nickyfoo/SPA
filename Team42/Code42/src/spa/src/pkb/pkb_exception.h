@@ -4,7 +4,7 @@
 
 class PKBException : public std::exception {
  public:
-  PKBException(std::string error);
+  explicit PKBException(const std::string &error);
   virtual const char *what() const noexcept;
 
  private:

@@ -10,7 +10,7 @@ class ConstTable : public Table {
   ~ConstTable();
 
   // Adds a constant to the table.
-  void AddConstant(std::string value);
+  void AddConstant(const std::string &value);
 
   // Get all constants.
   std::vector<Constant *> get_all_constants();

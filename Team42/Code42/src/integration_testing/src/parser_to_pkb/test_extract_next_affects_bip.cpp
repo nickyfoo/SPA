@@ -1,7 +1,6 @@
 #include "catch.hpp"
 #include <vector>
 #include <chrono>
-#include <iostream>
 
 #include "../test_utils.hpp"
 #include <parse.h>
@@ -65,7 +64,7 @@ TEST_CASE("PkbNextBip_SampleProgram_Correct") {
   }
 }
 
-TEST_CASE("PkbNextBipStar_SampleProgram_NegativeCases") {
+TEST_CASE("PkbNextBip_SampleProgram_NegativeCases") {
   PKB pkb = InitialisePKB(kCfgBipSample);
 
   // Not directly after
@@ -166,15 +165,23 @@ TEST_CASE("PkbNextBipStar_SampleProgram_Correct") {
     pkb.ClearNextAffectsBipCache();
     REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
   }
+}
 
-  // Negative cases
-  REQUIRE(pkb.get_next_bip_star(2, 1)->empty()); // Reverse direction
+TEST_CASE("PkbNextBipStar_SampleProgram_NegativeCases") {
+  PKB pkb = InitialisePKB(kCfgBipSample);
+
+  // Reverse direction
+  REQUIRE(pkb.get_next_bip_star(2, 1)->empty());
   pkb.ClearNextAffectsBipCache();
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
-  REQUIRE(pkb.get_next_bip_star(PKB::kWild, 1)->empty()); // First statement of first procedure
+
+  // First statement of first procedure
+  REQUIRE(pkb.get_next_bip_star(PKB::kWild, 1)->empty());
   pkb.ClearNextAffectsBipCache();
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
-  REQUIRE(pkb.get_next_bip_star(5, PKB::kWild)->empty()); // Last statement of last procedure
+
+  // Last statement of last procedure
+  REQUIRE(pkb.get_next_bip_star(5, PKB::kWild)->empty());
   pkb.ClearNextAffectsBipCache();
   REQUIRE(pkb.NextAffectsBipCacheIsEmpty());
 }
@@ -313,8 +320,11 @@ TEST_CASE("PkbAffectsBipStar_SampleProgram_Correct") {
     pkb.ClearNextAffectsCache();
     REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
+}
 
-  // Negative cases
+TEST_CASE("PkbAffectsBipStar_SampleProgram_NegativeCases") {
+  PKB pkb = InitialisePKB(kCfgBipSample);
+
   // Different procedures
   REQUIRE(pkb.get_affects_star(16, 7)->empty());
   pkb.ClearNextAffectsCache();

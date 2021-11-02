@@ -41,7 +41,7 @@ void PKB::ClearNextAffectsCache() {
 
 bool PKB::NextAffectsCacheIsEmpty() {
   return next_cache.empty() && next_star_cache.empty()
-  && affects_cache.empty() && affects_star_cache.empty();
+      && affects_cache.empty() && affects_star_cache.empty();
 }
 
 void PKB::ClearNextAffectsBipCache() {
@@ -56,9 +56,9 @@ void PKB::ClearNextAffectsBipCache() {
 
 bool PKB::NextAffectsBipCacheIsEmpty() {
   return next_bip_cache.empty() && next_bip_star_cache.empty()
-  && bip_reachability_dfs_cache.empty()
-  && affects_bip_cache.empty() && affects_bip_dfs_cache.empty()
-  && affects_bip_star_cache.empty() && affects_bip_star_dfs_cache.empty();
+      && bip_reachability_dfs_cache.empty()
+      && affects_bip_cache.empty() && affects_bip_dfs_cache.empty()
+      && affects_bip_star_cache.empty() && affects_bip_star_dfs_cache.empty();
 }
 
 std::string PKB::CallStackToString(std::vector<int> *call_stack) {

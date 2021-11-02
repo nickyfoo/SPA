@@ -7,7 +7,7 @@ PKB::PKB() = default;
 
 PKB::~PKB() = default;
 
-void PKB::AddProcedure(Node *node, std::vector<Node *> ancestor_list) {
+void PKB::AddProcedure(Node *node, const std::vector<Node *> &ancestor_list) {
   auto *procedure_node = dynamic_cast<ProcedureNode *>(node);
   std::string proc_name = procedure_node->get_name();
   std::vector<StatementNode *> stmt_lst = procedure_node->get_stmt_lst();
@@ -19,11 +19,11 @@ void PKB::AddProcedure(Node *node, std::vector<Node *> ancestor_list) {
   proc_table_.AddProcedure(proc_name, stmt_no);
 }
 
-void PKB::AddStatement(Node *node, std::vector<Node *> ancestor_list) {
+void PKB::AddStatement(Node *node, const std::vector<Node *> &ancestor_list) {
   stmt_table_.AddStatement(node);
 }
 
-void PKB::AddExprString(Node *node, std::vector<Node *> ancestor_list) {
+void PKB::AddExprString(Node *node, const std::vector<Node *> &ancestor_list) {
   if (node->get_kind() == NodeType::Assign) {
     auto *assign_node = dynamic_cast<AssignNode *>(node);
     switch (assign_node->expr()->get_kind()) {
@@ -99,14 +99,14 @@ void PKB::AddExprString(Node *node, std::vector<Node *> ancestor_list) {
   }
 }
 
-void PKB::AddVariable(Node *node, std::vector<Node *> ancestor_list) {
+void PKB::AddVariable(Node *node, const std::vector<Node *> &ancestor_list) {
   auto *identifier_node = dynamic_cast<IdentifierNode *>(node);
   if (ancestor_list.back()->get_kind() != NodeType::Call) {
     var_table_.AddVariable(identifier_node->get_name());
   }
 }
 
-void PKB::AddConstant(Node *node, std::vector<Node *> ancestor_list) {
+void PKB::AddConstant(Node *node, const std::vector<Node *> &ancestor_list) {
   auto *constant_node = dynamic_cast<ConstantNode *>(node);
   const_table_.AddConstant(constant_node->get_value());
 }
@@ -162,11 +162,13 @@ std::map<int, std::set<std::pair<int, int>>> *PKB::get_reverse_cfg_bip_al() {
   return &reverse_cfg_bip_al_;
 }
 
-bool PKB::TestAssignmentPattern(Statement *statement, std::string pattern, bool is_partial_match) {
+bool PKB::TestAssignmentPattern(Statement *statement,
+                                const std::string &pattern,
+                                bool is_partial_match) {
   return pattern_manager_.TestAssignmentPattern(statement, pattern, is_partial_match);
 }
 
-bool PKB::TestIfWhilePattern(Statement *stmt, std::string variable) {
+bool PKB::TestIfWhilePattern(Statement *stmt, const std::string &variable) {
   return pattern_manager_.TestIfWhilePattern(stmt, variable);
 }
 

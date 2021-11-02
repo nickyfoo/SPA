@@ -311,11 +311,11 @@ static std::vector<std::string> *EvaluateQuery(std::string ss) {
 
   auto query = QueryPreprocessor(std::move(ss));
   std::tuple<std::vector<ResultClause *> *,
-  std::vector<SuchThatClause *> *,
-  std::vector<PatternClause *> *,
-  std::vector<WithClause *> *,
-  std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+             std::vector<SuchThatClause *> *,
+             std::vector<PatternClause *> *,
+             std::vector<WithClause *> *,
+             std::unordered_map<std::string, EntityDeclaration *> *,
+             bool> *clause = query.get_clauses();
   QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clause),
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),

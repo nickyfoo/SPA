@@ -6,7 +6,7 @@ ProcTable::ProcTable() = default;
 
 ProcTable::~ProcTable() = default;
 
-int ProcTable::AddProcedure(const std::string & name, int stmt_no) {
+int ProcTable::AddProcedure(const std::string &name, int stmt_no) {
   auto it = name_to_index_.find(name);
   if (it != name_to_index_.end()) {
     return it->second;
@@ -84,7 +84,7 @@ std::vector<std::vector<int>> ProcTable::SetupAL() {
 }
 
 void ProcTable::ToposortProcsDFS(int u, std::vector<std::vector<int>> &al,
-                    std::vector<int> &status, std::vector<int> &ans) {
+                                 std::vector<int> &status, std::vector<int> &ans) {
   status[u] = kVisited;
   for (auto &v : al[u]) {
     if (status[v] == kUnvisited) {

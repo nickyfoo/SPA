@@ -17,7 +17,7 @@ TEST_CASE("PkbUses_SampleProgram_Correct") {
       {11, {}}, {12, {}}, {13, {}}, {14, {"x", "y", "count", "cenX", "cenY"}}, {15, {"count"}},
       {16, {"cenX", "x"}}, {17, {"cenY", "y"}}, {18, {}}, {19, {"count", "cenX", "cenY"}},
       {20, {}}, {21, {"cenX", "count"}}, {22, {"cenY", "count"}}, {23, {"cenX", "cenY"}},
-      };
+  };
   for (auto stmt : pkb.get_all_statements()) {
     std::set<std::string> *stmt_uses = stmt->get_uses();
     std::vector<std::string> uses = stmt_uses_ans[stmt->get_stmt_no()];
@@ -50,7 +50,7 @@ TEST_CASE("PkbUses_SampleProgram_Correct") {
       {"x", {"computeCentroid", "main"}},
       {"y", {"computeCentroid", "main"}},
       {"count", {"computeCentroid", "main"}},
-      };
+  };
   for (auto var : pkb.get_all_variables()) {
     std::set<std::string> *procs_using = var->get_procs_using();
     std::vector<std::string> procs = var_used_by_procs[var->get_name()];
@@ -68,7 +68,7 @@ TEST_CASE("PkbUses_SampleProgram_Correct") {
       {"x", {2, 14, 16}},
       {"y", {2, 14, 17}},
       {"count", {2, 14, 15, 19, 21, 22}},
-      };
+  };
   for (auto var : pkb.get_all_variables()) {
     std::set<int> *stmts_using = var->get_stmts_using();
     std::vector<int> stmts = var_used_by_stmts[var->get_name()];
@@ -124,7 +124,7 @@ TEST_CASE("PkbModifies_SampleProgram_Correct") {
       {"x", {"readPoint", "computeCentroid", "main"}},
       {"y", {"readPoint", "computeCentroid", "main"}},
       {"count", {"computeCentroid", "main"}},
-      };
+  };
   for (auto var : pkb.get_all_variables()) {
     std::set<std::string> *procs_modifying = var->get_procs_modifying();
     std::vector<std::string> procs = var_modified_by_procs[var->get_name()];
@@ -198,7 +198,7 @@ TEST_CASE("PkbUses_ContainerStmt_Correct") {
   std::map<std::string, std::vector<int>> var_used_by_stmts = {
       {"a", {}}, {"b", {1, 2}}, {"c", {1, 2}}, {"d", {}}, {"e", {1, 3}},
       {"f", {1, 3}}, {"x", {1}}, {"y", {1}},
-      };
+  };
   for (auto var : pkb.get_all_variables()) {
     std::set<int> *stmts_using = var->get_stmts_using();
     std::vector<int> stmts = var_used_by_stmts[var->get_name()];
@@ -241,7 +241,7 @@ TEST_CASE("PkbModifies_ContainerStmt_Correct") {
   std::map<std::string, std::vector<std::string>> var_modified_by_procs = {
       {"a", {"main"}}, {"b", {}}, {"c", {}}, {"d", {"main"}}, {"e", {}},
       {"f", {}}, {"x", {}}, {"y", {}},
-      };
+  };
   for (auto var : pkb.get_all_variables()) {
     std::set<std::string> *procs_modifying = var->get_procs_modifying();
     std::vector<std::string> procs = var_modified_by_procs[var->get_name()];
@@ -254,7 +254,7 @@ TEST_CASE("PkbModifies_ContainerStmt_Correct") {
   std::map<std::string, std::vector<int>> var_modified_by_stmts = {
       {"a", {1, 2}}, {"b", {}}, {"c", {}}, {"d", {1, 3}}, {"e", {}},
       {"f", {}}, {"x", {}}, {"y", {}},
-      };
+  };
   for (auto var : pkb.get_all_variables()) {
     std::set<int> *stmts_modifying = var->get_stmts_modifying();
     std::vector<int> stmts = var_modified_by_stmts[var->get_name()];

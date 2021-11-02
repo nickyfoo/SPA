@@ -37,8 +37,10 @@ TEST_CASE("PkbNext_CacheTestTime_AcceptableTiming") {
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
   std::chrono::duration<double> empty_cache_elapsed_seconds = empty_cache_end - empty_cache_start;
   std::chrono::duration<double> full_cache_elapsed_seconds = full_cache_end - full_cache_start;
-  std::cout << "Next empty cache elapsed time: " << empty_cache_elapsed_seconds.count() << "s\n";
-  std::cout << "Next full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
+  std::cout << "Next empty cache elapsed time: ";
+  std::cout << empty_cache_elapsed_seconds.count() * 1000 << "ms\n";
+  std::cout << "Next full cache elapsed time: ";
+  std::cout << full_cache_elapsed_seconds.count() * 1000 << "ms\n";
 }
 
 TEST_CASE("Pkb_NextStarCacheTestTime_AcceptableTiming") {
@@ -73,8 +75,10 @@ TEST_CASE("Pkb_NextStarCacheTestTime_AcceptableTiming") {
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
   std::chrono::duration<double> empty_cache_elapsed_seconds = empty_cache_end - empty_cache_start;
   std::chrono::duration<double> full_cache_elapsed_seconds = full_cache_end - full_cache_start;
-  std::cout << "Next* empty cache elapsed time: " << empty_cache_elapsed_seconds.count() << "s\n";
-  std::cout << "Next* full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
+  std::cout << "Next* empty cache elapsed time: ";
+  std::cout << empty_cache_elapsed_seconds.count() * 1000 << "ms\n";
+  std::cout << "Next* full cache elapsed time: ";
+  std::cout << full_cache_elapsed_seconds.count() * 1000 << "ms\n";
 }
 
 TEST_CASE("PkbAffects_CacheTestTime_AcceptableTiming") {
@@ -109,8 +113,10 @@ TEST_CASE("PkbAffects_CacheTestTime_AcceptableTiming") {
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
   std::chrono::duration<double> empty_cache_elapsed_seconds = empty_cache_end - empty_cache_start;
   std::chrono::duration<double> full_cache_elapsed_seconds = full_cache_end - full_cache_start;
-  std::cout << "Affects empty cache elapsed time: " << empty_cache_elapsed_seconds.count() << "s\n";
-  std::cout << "Affects full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
+  std::cout << "Affects empty cache elapsed time: ";
+  std::cout << empty_cache_elapsed_seconds.count() * 1000 << "ms\n";
+  std::cout << "Affects full cache elapsed time: ";
+  std::cout << full_cache_elapsed_seconds.count() * 1000 << "ms\n";
 }
 
 TEST_CASE("PkbAffectsStar_CacheTestTime_AcceptableTiming") {
@@ -145,8 +151,10 @@ TEST_CASE("PkbAffectsStar_CacheTestTime_AcceptableTiming") {
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
   std::chrono::duration<double> empty_cache_elapsed_seconds = empty_cache_end - empty_cache_start;
   std::chrono::duration<double> full_cache_elapsed_seconds = full_cache_end - full_cache_start;
-  std::cout << "Affects* empty cache elapsed time: " << empty_cache_elapsed_seconds.count() << "s\n";
-  std::cout << "Affects* full cache elapsed time: " << full_cache_elapsed_seconds.count() << "s\n";
+  std::cout << "Affects* empty cache elapsed time: ";
+  std::cout << empty_cache_elapsed_seconds.count() * 1000 << "ms\n";
+  std::cout << "Affects* full cache elapsed time: ";
+  std::cout << full_cache_elapsed_seconds.count() * 1000 << "ms\n";
 }
 
 TEST_CASE("PkbNextBip_CacheTestTime_AcceptableTiming") {
@@ -182,9 +190,9 @@ TEST_CASE("PkbNextBip_CacheTestTime_AcceptableTiming") {
   std::chrono::duration<double> empty_cache_elapsed_seconds = empty_cache_end - empty_cache_start;
   std::chrono::duration<double> full_cache_elapsed_seconds = full_cache_end - full_cache_start;
   std::cout << "NextBip empty cache elapsed time: ";
-  std::cout << empty_cache_elapsed_seconds.count() << "s\n";
+  std::cout << empty_cache_elapsed_seconds.count() * 1000 << "ms\n";
   std::cout << "NextBip full cache elapsed time: ";
-  std::cout << full_cache_elapsed_seconds.count() << "s\n";
+  std::cout << full_cache_elapsed_seconds.count() * 1000 << "ms\n";
 }
 
 TEST_CASE("PkbNextBipStar_CacheTestTime_AcceptableTiming") {
@@ -220,9 +228,9 @@ TEST_CASE("PkbNextBipStar_CacheTestTime_AcceptableTiming") {
   std::chrono::duration<double> empty_cache_elapsed_seconds = empty_cache_end - empty_cache_start;
   std::chrono::duration<double> full_cache_elapsed_seconds = full_cache_end - full_cache_start;
   std::cout << "NextBip* empty cache elapsed time: ";
-  std::cout << empty_cache_elapsed_seconds.count() << "s\n";
+  std::cout << empty_cache_elapsed_seconds.count() * 1000 << "ms\n";
   std::cout << "NextBip* full cache elapsed time: ";
-  std::cout << full_cache_elapsed_seconds.count() << "s\n";
+  std::cout << full_cache_elapsed_seconds.count() * 1000 << "ms\n";
 }
 
 TEST_CASE("PkbAffectsBip_CacheTestTime_AcceptableTiming") {
@@ -258,9 +266,9 @@ TEST_CASE("PkbAffectsBip_CacheTestTime_AcceptableTiming") {
   std::chrono::duration<double> empty_cache_elapsed_seconds = empty_cache_end - empty_cache_start;
   std::chrono::duration<double> full_cache_elapsed_seconds = full_cache_end - full_cache_start;
   std::cout << "AffectsBip empty cache elapsed time: ";
-  std::cout << empty_cache_elapsed_seconds.count() << "s\n";
+  std::cout << empty_cache_elapsed_seconds.count() * 1000 << "ms\n";
   std::cout << "AffectsBip full cache elapsed time: ";
-  std::cout << full_cache_elapsed_seconds.count() << "s\n";
+  std::cout << full_cache_elapsed_seconds.count() * 1000 << "ms\n";
 }
 
 TEST_CASE("PkbAffectsBipStar_CacheTestTime_AcceptableTiming") {
@@ -296,7 +304,7 @@ TEST_CASE("PkbAffectsBipStar_CacheTestTime_AcceptableTiming") {
   std::chrono::duration<double> empty_cache_elapsed_seconds = empty_cache_end - empty_cache_start;
   std::chrono::duration<double> full_cache_elapsed_seconds = full_cache_end - full_cache_start;
   std::cout << "AffectsBip* empty cache elapsed time: ";
-  std::cout << empty_cache_elapsed_seconds.count() << "s\n";
+  std::cout << empty_cache_elapsed_seconds.count() * 1000 << "ms\n";
   std::cout << "AffectsBip* full cache elapsed time: ";
-  std::cout << full_cache_elapsed_seconds.count() << "s\n";
+  std::cout << full_cache_elapsed_seconds.count() * 1000 << "ms\n";
 }

@@ -4,7 +4,7 @@
 
 Variable::Variable(int index, std::string name) {
   this->index_ = index;
-  this->name_ = name;
+  this->name_ = std::move(name);
 }
 
 Variable::~Variable() = default;
@@ -25,11 +25,11 @@ void Variable::AddStmtModifying(int stmt_no) {
   stmts_modifying_.insert(stmt_no);
 }
 
-void Variable::AddProcUsing(const std::string& proc_name) {
+void Variable::AddProcUsing(const std::string &proc_name) {
   procs_using_.insert(proc_name);
 }
 
-void Variable::AddProcModifying(const std::string& proc_name) {
+void Variable::AddProcModifying(const std::string &proc_name) {
   procs_modifying_.insert(proc_name);
 }
 

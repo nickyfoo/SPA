@@ -115,7 +115,7 @@ std::set<std::pair<int, int>> *PKB::get_next_bip_star(int a, int b) {
         }
       }
     }
-  } else if (a != kWild) {
+  } else { // a != kWild
     // Get result for Next(a,b)/Next(a,_)
     next_bip_star_cache[a][kWild] = std::set<std::pair<int, int>>();
     for (int i = 0; i < n; i++) {
@@ -197,7 +197,7 @@ std::set<std::pair<int, int>> *PKB::get_affects_bip(int a, int b) {
         }
       }
     }
-  } else if (a != kWild) {
+  } else { // a != kWild
     Statement *stmt_a = stmt_table_.get_statement(a);
 
     // If statement a are invalid statements, cache and return empty results
@@ -283,19 +283,19 @@ std::set<std::pair<int, int>> *PKB::get_affects_bip_star(int a, int b) {
       for (auto call_stack : *stmt->get_call_stacks()) {
         hash = CallStackToString(&call_stack);
         if (affects_bip_star_dfs_cache.find(stmt_no) == affects_bip_star_dfs_cache.end()
-          || affects_bip_star_dfs_cache[stmt_no].find(hash) == affects_bip_star_dfs_cache[stmt_no].end()) {
+            || affects_bip_star_dfs_cache[stmt_no].find(hash) == affects_bip_star_dfs_cache[stmt_no].end()) {
           std::set<std::pair<int, std::string>> visited;
           AffectsBipStarDFS(visited, stmt_no, hash, stmt_no, hash);
         }
-        for (auto& [affected_stmt_no, affected_stmt_hash] : affects_bip_star_dfs_cache[stmt_no][hash]) {
-          affects_bip_star_cache[kWild][kWild].insert({ stmt_no, affected_stmt_no });
-          affects_bip_star_cache[stmt_no][kWild].insert({ stmt_no, affected_stmt_no });
-          affects_bip_star_cache[kWild][affected_stmt_no].insert({ stmt_no, affected_stmt_no });
-          affects_bip_star_cache[stmt_no][affected_stmt_no].insert({ stmt_no, affected_stmt_no });
+        for (auto&[affected_stmt_no, affected_stmt_hash] : affects_bip_star_dfs_cache[stmt_no][hash]) {
+          affects_bip_star_cache[kWild][kWild].insert({stmt_no, affected_stmt_no});
+          affects_bip_star_cache[stmt_no][kWild].insert({stmt_no, affected_stmt_no});
+          affects_bip_star_cache[kWild][affected_stmt_no].insert({stmt_no, affected_stmt_no});
+          affects_bip_star_cache[stmt_no][affected_stmt_no].insert({stmt_no, affected_stmt_no});
         }
       }
     }
-  } else if (a != kWild) {
+  } else { // Case: a != kWild
     Statement *stmt_a = stmt_table_.get_statement(a);
 
     // If statement a are invalid statements, cache and return empty results
@@ -324,7 +324,7 @@ std::set<std::pair<int, int>> *PKB::get_affects_bip_star(int a, int b) {
     for (auto call_stack : *stmt_a->get_call_stacks()) {
       hash = CallStackToString(&call_stack);
       if (affects_bip_star_dfs_cache.find(stmt_no) == affects_bip_star_dfs_cache.end()
-        || affects_bip_star_dfs_cache[stmt_no].find(hash) == affects_bip_star_dfs_cache[stmt_no].end()) {
+          || affects_bip_star_dfs_cache[stmt_no].find(hash) == affects_bip_star_dfs_cache[stmt_no].end()) {
         std::set<std::pair<int, std::string>> visited;
         AffectsBipStarDFS(visited, stmt_no, hash, stmt_no, hash);
       }
@@ -422,7 +422,6 @@ void PKB::AffectsBipDFS(int start,
                         std::string var_name,
                         std::set<std::pair<int, std::string>> &visited) {
 
-  Statement *stmt = stmt_table_.get_statement(start);
   int branch;
   if (call_stack.empty()) {
     branch = kNoBranch;
@@ -482,19 +481,24 @@ void PKB::AffectsBipDFS(int start,
   }
 }
 
-void PKB::AffectsBipStarDFS(std::set<std::pair<int, std::string>>&visited, int u, std::string &u_hash, int start, std::string&start_hash) {
-  if (affects_bip_star_dfs_cache.find(u) != affects_bip_star_dfs_cache.end() && affects_bip_star_dfs_cache[u].find(u_hash) != affects_bip_star_dfs_cache[u].end()) {
-    for (auto& val : affects_bip_star_dfs_cache[u][u_hash]) {
+void PKB::AffectsBipStarDFS(std::set<std::pair<int, std::string>> &visited,
+                            int u,
+                            std::string &u_hash,
+                            int start,
+                            std::string &start_hash) {
+  if (affects_bip_star_dfs_cache.find(u) != affects_bip_star_dfs_cache.end()
+      && affects_bip_star_dfs_cache[u].find(u_hash) != affects_bip_star_dfs_cache[u].end()) {
+    for (auto &val : affects_bip_star_dfs_cache[u][u_hash]) {
       affects_bip_star_dfs_cache[start][start_hash].insert(val);
     }
     return;
   }
 
   get_affects_bip(u, kWild);
-  for (auto [v, v_hash] : affects_bip_dfs_cache[u][u_hash]) {
-    affects_bip_star_dfs_cache[start][start_hash].insert({ v, v_hash });
-    if (visited.find({ v,v_hash }) == visited.end()) {
-      visited.insert({ v,v_hash });
+  for (auto[v, v_hash] : affects_bip_dfs_cache[u][u_hash]) {
+    affects_bip_star_dfs_cache[start][start_hash].insert({v, v_hash});
+    if (visited.find({v, v_hash}) == visited.end()) {
+      visited.insert({v, v_hash});
       AffectsBipStarDFS(visited, v, v_hash, start, start_hash);
     }
   }

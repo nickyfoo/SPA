@@ -287,7 +287,6 @@ void DesignExtractor::LinkProcedures() {
 }
 
 void DesignExtractor::AddCallStacks() {
-  int n = pkb_->stmt_table_.get_num_statements() + 1;
   // Using int for stmt_no, string for call stack
   std::set<std::pair<int, std::string>> visited;
   std::vector<int> call_stack;
@@ -299,7 +298,7 @@ void DesignExtractor::AddCallStacks() {
 }
 
 void DesignExtractor::ProcessCallStacks(std::set<std::pair<int, std::string>> &visited,
-                            std::vector<int> &call_stack, int u) {
+                                        std::vector<int> &call_stack, int u) {
   std::string hash = pkb_->CallStackToString(&call_stack);
   if (visited.find({u, hash}) != visited.end()) return;
 

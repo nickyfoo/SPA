@@ -81,7 +81,7 @@ TEST_CASE("PkbCfg_AdvancedSample_Correct") {
   std::map<int, std::vector<int>> ans = {
       {1, {2}}, {2, {3}}, {3, {}}, {4, {5}}, {5, {6}}, {6, {7, 10}}, {7, {8}}, {8, {9}}, {9, {6}},
       {10, {11, 12}}, {11, {13}}, {12, {13}}, {13, {14}}, {14, {15}}, {16, {17}}, {17, {18}},
-      };
+  };
   std::map<int, std::set<int>> cfg_al = *pkb.get_cfg_al();
   REQUIRE(cfg_al.size() == ans.size());
   for (auto &[k, vals] : ans) {
@@ -149,7 +149,7 @@ TEST_CASE("PkbCFGBip_SecondSampleProgram_Correct") {
       {5, {{6, PKB::kNoBranch}}},
       {6, {{7, PKB::kNoBranch}}},
       {7, {{2, -1}, {3, -2}}},
-      };
+  };
   std::map<int, std::set<std::pair<int, int>>> cfg_bip_al = *pkb.get_cfg_bip_al();
   REQUIRE(cfg_bip_al.size() == ans.size());
   for (auto&[u, vals] : ans) {

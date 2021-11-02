@@ -15,7 +15,7 @@ TEST_CASE("PkbNext_AdvancedSample_Correct") {
       {1, {2}}, {2, {3}}, {3, {}}, {4, {5}}, {5, {6}}, {6, {7, 10}}, {7, {8}},
       {8, {9}}, {9, {6}}, {10, {11, 12}}, {11, {13}}, {12, {13}}, {13, {14}},
       {14, {15}}, {15, {}}, {16, {17}}, {17, {18}},
-      };
+  };
 
   // Check Next(_,_)
   std::set<std::pair<int, int>> *next_wild_wild = pkb.get_next(PKB::kWild, PKB::kWild);
@@ -53,7 +53,7 @@ TEST_CASE("PkbNext_AdvancedSample_Correct") {
       {1, {}}, {2, {1}}, {3, {2}}, {4, {}}, {5, {4}}, {6, {5, 9}}, {7, {6}}, {8, {7}}, {9, {8}},
       {10, {6}}, {11, {10}}, {12, {10}}, {13, {11, 12}}, {14, {13}}, {15, {14}}, {16, {}},
       {17, {16}}, {18, {17}},
-      };
+  };
   for (auto&[b, prevs] : prev_ans) {
     // Check Next(_,b)
     std::set<std::pair<int, int>> *next_wild_b = pkb.get_next(PKB::kWild, b);
@@ -64,24 +64,37 @@ TEST_CASE("PkbNext_AdvancedSample_Correct") {
     pkb.ClearNextAffectsCache();
     REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
+}
 
-  // Negative cases
-  REQUIRE(pkb.get_next(1, 3)->empty()); // Not directly after
+TEST_CASE("PkbNext_AdvancedSample_NegativeCases") {
+  PKB pkb = InitialisePKB(kAdvancedSample);
+  // Not directly after
+  REQUIRE(pkb.get_next(1, 3)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_next(3, 4)->empty()); // Across procedures
+
+  // Across procedures
+  REQUIRE(pkb.get_next(3, 4)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_next(9, 7)->empty()); // Last line of while loop goes through condition first
+
+  // Last line of while loop goes through condition first
+  REQUIRE(pkb.get_next(9, 7)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_next(11, 12)->empty()); // Different if branches
+
+  // Different if branches
+  REQUIRE(pkb.get_next(11, 12)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_next(PKB::kWild, 1)->empty()); // First statement of procedure
+
+  // First statement of procedure
+  REQUIRE(pkb.get_next(PKB::kWild, 1)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_next(15, PKB::kWild)->empty()); // Last statement of procedure
+
+  // Last statement of procedure
+  REQUIRE(pkb.get_next(15, PKB::kWild)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }
@@ -107,7 +120,7 @@ TEST_CASE("PkbNextStar_AdvancedSample_Correct") {
       {15, {}},
       {16, {17, 18}},
       {17, {18}},
-      };
+  };
 
   std::set<std::pair<int, int>> *next_star_wild_wild = pkb.get_next_star(PKB::kWild, PKB::kWild);
   for (auto&[a, nexts_star] : next_star_ans) {
@@ -160,7 +173,7 @@ TEST_CASE("PkbNextStar_AdvancedSample_Correct") {
       {16, {}},
       {17, {16}},
       {18, {16, 17}},
-      };
+  };
   // Check Next*(_,b)
   for (auto&[b, prevs_star] : prev_star_ans) {
     std::set<std::pair<int, int>> *next_star_wild_b = pkb.get_next_star(PKB::kWild, b);
@@ -171,21 +184,33 @@ TEST_CASE("PkbNextStar_AdvancedSample_Correct") {
     pkb.ClearNextAffectsCache();
     REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
+}
 
-  // Negative cases
-  REQUIRE(pkb.get_next_star(2, 1)->empty()); // Reverse direction
+TEST_CASE("PkbNextStar_AdvancedSample_NegativeCases") {
+  PKB pkb = InitialisePKB(kAdvancedSample);
+
+  // Reverse direction
+  REQUIRE(pkb.get_next_star(2, 1)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_next_star(3, 4)->empty()); // Across procedures
+
+  // Across procedures
+  REQUIRE(pkb.get_next_star(3, 4)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_next_star(11, 12)->empty()); // Different if branches
+
+  // Different if branches
+  REQUIRE(pkb.get_next_star(11, 12)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_next_star(PKB::kWild, 1)->empty()); // First statement of procedure
+
+  // First statement of procedure
+  REQUIRE(pkb.get_next_star(PKB::kWild, 1)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_next_star(15, PKB::kWild)->empty()); // Last statement of procedure
+
+  // Last statement of procedure
+  REQUIRE(pkb.get_next_star(15, PKB::kWild)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }
@@ -243,30 +268,39 @@ TEST_CASE("PkbNext_NestedIf_Correct") {
     pkb.ClearNextAffectsCache();
     REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
+}
 
-  // Negative cases
-  REQUIRE(pkb.get_next(1, 9)->empty()); // Not directly after
+TEST_CASE("PkbNext_NestedIf_NegativeCases") {
+  PKB pkb = InitialisePKB(kNestedIf);
+
+  // Not directly after
+  REQUIRE(pkb.get_next(1, 9)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_next(1, 3)->empty()); // Not directly after
+
+  // Not directly after
+  REQUIRE(pkb.get_next(1, 3)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_next(4, 5)->empty()); // Different if branches
+
+  // Different if branches
+  REQUIRE(pkb.get_next(4, 5)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_next(PKB::kWild, 1)->empty()); // First statement of procedure
+
+  // First statement of procedure
+  REQUIRE(pkb.get_next(PKB::kWild, 1)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_next(9, PKB::kWild)->empty()); // Last statement of procedure
+
+  // Last statement of procedure
+  REQUIRE(pkb.get_next(9, PKB::kWild)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }
 
 TEST_CASE("PkbNextStar_NestedIf_Correct") {
-  ProgramNode *p = BuildProgAst(kNestedIf);
-  PKB pkb;
-  DesignExtractor design_extractor(&pkb, p);
-  design_extractor.ExtractDesigns();
+  PKB pkb = InitialisePKB(kNestedIf);
 
   std::map<int, std::vector<int>> next_star_ans = {
       {1, {2, 3, 4, 5, 6, 7, 8, 9}},
@@ -322,7 +356,7 @@ TEST_CASE("PkbNextStar_NestedIf_Correct") {
       {7, {1, 2, 6}},
       {8, {1, 2, 6}},
       {9, {1, 2, 3, 4, 5, 6, 7, 8}},
-      };
+  };
 
   // Check Next*(_,b)
   for (auto&[b, prevs_star] : prev_star_ans) {
@@ -334,18 +368,28 @@ TEST_CASE("PkbNextStar_NestedIf_Correct") {
     pkb.ClearNextAffectsCache();
     REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
+}
 
-  // Negative cases
-  REQUIRE(pkb.get_next_star(2, 1)->empty()); // Reverse direction
+TEST_CASE("PkbNextStar_NestedIf_NegativeCases") {
+  PKB pkb = InitialisePKB(kNestedIf);
+
+  // Reverse direction
+  REQUIRE(pkb.get_next_star(2, 1)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_next_star(7, 8)->empty()); // Different if branches
+
+  // Different if branches
+  REQUIRE(pkb.get_next_star(7, 8)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_next_star(PKB::kWild, 1)->empty()); // First statement of procedure
+
+  // First statement of procedure
+  REQUIRE(pkb.get_next_star(PKB::kWild, 1)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_next_star(9, PKB::kWild)->empty()); // Last statement of procedure
+
+  // Last statement of procedure
+  REQUIRE(pkb.get_next_star(9, PKB::kWild)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }
@@ -358,7 +402,7 @@ TEST_CASE("PkbAffects_AdvancedSample_Correct") {
       {7, {7, 11, 13, 15}}, {8, {}}, {9, {9, 13}}, {10, {}}, {11, {13, 15}}, {12, {13}},
       {13, {14, 15}}, {14, {15}}, {15, {}}, {16, {17}}, {17, {}}, {18, {}}, {19, {}},
       {20, {}}, {21, {}}, {22, {}}, {23, {}},
-      };
+  };
 
   // Check Affects(_,_)
   std::set<std::pair<int, int>> *affects_wild_wild = pkb.get_affects(PKB::kWild, PKB::kWild);
@@ -397,7 +441,7 @@ TEST_CASE("PkbAffects_AdvancedSample_Correct") {
       {10, {}}, {11, {4, 7}}, {12, {}}, {13, {4, 5, 7, 9, 11, 12}}, {14, {13}},
       {15, {4, 7, 11, 13, 14}}, {16, {}}, {17, {16}}, {18, {}}, {19, {}}, {20, {}}, {21, {}},
       {22, {}}, {23, {}},
-      };
+  };
   // Check Affects(_,b)
   for (auto&[b, affected_bys] : affected_by_ans) {
     std::set<std::pair<int, int>> *affects_wild_b = pkb.get_affects(PKB::kWild, b);
@@ -408,21 +452,33 @@ TEST_CASE("PkbAffects_AdvancedSample_Correct") {
     pkb.ClearNextAffectsCache();
     REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
+}
 
-  // Negative cases
-  REQUIRE(pkb.get_affects(16, 7)->empty()); // Different procedures
+TEST_CASE("PkbAffects_AdvancedSample_NegativeCases") {
+  PKB pkb = InitialisePKB(kAdvancedSample);
+
+  // Different procedures
+  REQUIRE(pkb.get_affects(16, 7)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_affects(5, 7)->empty()); // 5 is not modifying x or y
+
+  // 5 is not modifying x or y
+  REQUIRE(pkb.get_affects(5, 7)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_affects(5, 8)->empty()); // 8 is not an assignment statement
+
+  // 8 is not an assignment statement
+  REQUIRE(pkb.get_affects(5, 8)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_affects(8, 12)->empty()); // 8 is not an assignment statement
+
+  // 8 is not an assignment statement
+  REQUIRE(pkb.get_affects(8, 12)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_affects(8, PKB::kWild)->empty()); // 8 is not an assignment statement
+
+  // 8 is not an assignment statement
+  REQUIRE(pkb.get_affects(8, PKB::kWild)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }
@@ -435,7 +491,7 @@ TEST_CASE("PkbAffectsStar_AdvancedSample_Correct") {
       {7, {7, 11, 13, 14, 15}}, {8, {}}, {9, {9, 13, 14, 15}}, {10, {}}, {11, {13, 14, 15}},
       {12, {13, 14, 15}}, {13, {14, 15}}, {14, {15}}, {15, {}}, {16, {17}}, {17, {}},
       {18, {}}, {19, {}}, {20, {}}, {21, {}}, {22, {}}, {23, {}},
-      };
+  };
   // Check Affects*(_,_)
   std::set<std::pair<int, int>> *affects_star_wild_wild =
       pkb.get_affects_star(PKB::kWild, PKB::kWild);
@@ -474,7 +530,7 @@ TEST_CASE("PkbAffectsStar_AdvancedSample_Correct") {
       {10, {}}, {11, {4, 7}}, {12, {}}, {13, {4, 5, 7, 9, 11, 12}}, {14, {4, 5, 7, 9, 11, 12, 13}},
       {15, {4, 5, 7, 9, 11, 12, 13, 14}}, {16, {}}, {17, {16}}, {18, {}}, {19, {}}, {20, {}},
       {21, {}}, {22, {}}, {23, {}},
-      };
+  };
 
   // Check Affects(_,b)
   for (auto&[b, affected_bys_star] : affected_by_star_ans) {
@@ -486,21 +542,33 @@ TEST_CASE("PkbAffectsStar_AdvancedSample_Correct") {
     pkb.ClearNextAffectsCache();
     REQUIRE(pkb.NextAffectsCacheIsEmpty());
   }
+}
 
-  // Negative cases
-  REQUIRE(pkb.get_affects_star(16, 7)->empty()); // Different procedures
+TEST_CASE("PkbAffectsStar_AdvancedSample_NegativeCases") {
+  PKB pkb = InitialisePKB(kAdvancedSample);
+
+  // Different procedures
+  REQUIRE(pkb.get_affects_star(16, 7)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_affects_star(5, 7)->empty()); // 5 is not modifying x or y
+
+  // 5 is not modifying x or y
+  REQUIRE(pkb.get_affects_star(5, 7)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_affects_star(5, 8)->empty()); // 8 is not an assignment statement
+
+  // 8 is not an assignment statement
+  REQUIRE(pkb.get_affects_star(5, 8)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_affects_star(8, 12)->empty()); // 8 is not an assignment statement
+
+  // 8 is not an assignment statement
+  REQUIRE(pkb.get_affects_star(8, 12)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
-  REQUIRE(pkb.get_affects_star(8, PKB::kWild)->empty()); // 8 is not an assignment statement
+
+  // 8 is not an assignment statement
+  REQUIRE(pkb.get_affects_star(8, PKB::kWild)->empty());
   pkb.ClearNextAffectsCache();
   REQUIRE(pkb.NextAffectsCacheIsEmpty());
 }

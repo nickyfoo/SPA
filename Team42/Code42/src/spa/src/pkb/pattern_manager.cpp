@@ -48,7 +48,7 @@ std::string PatternManager::GetPostfixExpr(std::string infix_expr) {
           ops.push(*it);
           break;
         case ')':
-          while (ops.top() != '(' && !ops.empty()) {
+          while (!ops.empty() && ops.top() != '(') {
             output << ops.top() << ' ';
             ops.pop();
           }
@@ -72,6 +72,7 @@ std::string PatternManager::GetPostfixExpr(std::string infix_expr) {
           } else if (new_ops->second > last_ops->second) {
             // Case 2: New operand has a lower precedence than the top of the stack
             while (new_ops->second >= last_ops->second && !ops.empty()) {
+              if (ops.top() == '(') break;
               // Pop stack while precedence of the new operand is lte the top of the stack
               output << ops.top() << ' ';
               ops.pop();

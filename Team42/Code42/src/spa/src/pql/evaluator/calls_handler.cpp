@@ -191,7 +191,6 @@ ResultTable *CallsHandler::Evaluate(std::set<std::string> *(Procedure::*get_norm
         return ret;
       }
     }
-
     return nullptr;
   }
 

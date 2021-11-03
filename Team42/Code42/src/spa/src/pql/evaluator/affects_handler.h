@@ -13,6 +13,8 @@ class AffectsHandler {
                 std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec);
   ResultTable *EvaluateAffects();
   ResultTable *EvaluateAffectsT();
+  ResultTable *EvaluateAffectsBip();
+  ResultTable *EvaluateAffectsTBip();
 
  private:
   static AffectsHandler *instance_;

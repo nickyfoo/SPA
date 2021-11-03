@@ -20,6 +20,10 @@ enum class RelRef {
   NextT,
   Affects,
   AffectsT,
+  NextBip,
+  NextTBip,
+  AffectsBip,
+  AffectsTBip,
   None
 };
 

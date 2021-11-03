@@ -17,14 +17,15 @@ class QueryOptimizer {
                  std::vector<PatternClause *> *patterns,
                  std::vector<WithClause *> *withs,
                  std::vector<ResultClause *> *return_entities);
-  std::vector<std::shared_ptr<ClauseGroup>> CreateGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> CreateOptimizedGroupings();
+  std::vector<std::shared_ptr<ClauseGroup>> CreateDefaultGroupings();
 
  private:
   std::vector<SuchThatClause *> *relationships_;
   std::vector<PatternClause *> *patterns_;
   std::vector<WithClause *> *withs_;
   std::vector<ResultClause *> *return_entities_;
- std::vector<ClauseVertex> MakeSuchThatVertices(std::vector<SuchThatClause *> *such_that_clauses);
+  std::vector<ClauseVertex> MakeSuchThatVertices(std::vector<SuchThatClause *> *such_that_clauses);
   std::vector<ClauseVertex> MakePatternVertices(std::vector<PatternClause *> *pattern_clauses);
   std::vector<ClauseVertex> MakeWithVertices(std::vector<WithClause *> *with_clauses);
   std::vector<ClauseVertex> CombineAllVertices(std::vector<ClauseVertex> such_that_vertices,

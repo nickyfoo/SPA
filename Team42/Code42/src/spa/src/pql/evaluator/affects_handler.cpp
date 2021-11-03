@@ -25,6 +25,10 @@ ResultTable *AffectsHandler::EvaluateAffects() { return Evaluate(&PKB::get_affec
 
 ResultTable *AffectsHandler::EvaluateAffectsT() { return Evaluate(&PKB::get_affects_star); }
 
+ResultTable *AffectsHandler::EvaluateAffectsBip() { return Evaluate(&PKB::get_affects_bip); }
+
+ResultTable *AffectsHandler::EvaluateAffectsTBip() { return Evaluate(&PKB::get_affects_bip_star); }
+
 // if is nullpointer, means False
 // if is empty, means that True with no synonyms
 ResultTable* AffectsHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func)(int, int)) {
@@ -71,6 +75,7 @@ ResultTable* AffectsHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func
       auto *stmt = dynamic_cast<Statement *>(e);
       assert(stmt != nullptr);
       auto right_arg = stmt->get_stmt_no();
+
       if (!(pkb_->*func)(left_arg, right_arg)->empty()) {
         stmt_vec.push_back(std::to_string(right_arg));
       }
@@ -118,7 +123,10 @@ ResultTable* AffectsHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func
         }
       }
 
-      ret->AddDoubleColumns(left_synonym, left_stmt_vec, right_synonym, right_stmt_vec);
+      ret->AddDoubleColumns(left_synonym,
+                            left_stmt_vec,
+                            right_synonym,
+                            right_stmt_vec);
     }
   } else if (left_ent.get_type() == StmtRefType::WildCard &&
       right_ent.get_type() == StmtRefType::WildCard) {

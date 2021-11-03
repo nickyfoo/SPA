@@ -12,13 +12,6 @@ FollowsParentHandler *FollowsParentHandler::get_instance() {
   return instance_;
 }
 
-void FollowsParentHandler::set_function_pointers(
-    std::set<int> *(Statement::*get_normal)(),
-    std::set<int> *(Statement::*get_reverse)()) {
-  this->get_normal_ = get_normal;
-  this->get_reverse_ = get_reverse;
-}
-
 void FollowsParentHandler::set_args(PKB *pkb,
                                     std::shared_ptr<SuchThatClause> relationship,
                                     std::unordered_map<std::string,
@@ -28,14 +21,30 @@ void FollowsParentHandler::set_args(PKB *pkb,
   this->synonym_to_entities_vec_ = synonym_to_entities_vec;
 }
 
-std::set<int> *FollowsParentHandler::Forwarder(std::set<int> *(Statement::*function)(),
-                                               Statement *stmt) {
-  return (stmt->*function)();
+ResultTable *FollowsParentHandler::EvaluateFollows() {
+  return Evaluate(&Statement::get_followers,
+                  &Statement::get_followees);
+}
+
+ResultTable *FollowsParentHandler::EvaluateFollowsT() {
+  return Evaluate(&Statement::get_followers_star,
+                  &Statement::get_followees_star);
+}
+
+ResultTable *FollowsParentHandler::EvaluateParent() {
+  return Evaluate(&Statement::get_children,
+                  &Statement::get_parents);
+}
+
+ResultTable *FollowsParentHandler::EvaluateParentT() {
+  return Evaluate(&Statement::get_children_star,
+                  &Statement::get_parents_star);
 }
 
 // if is nullpointer, means False
 // if is empty, means that True with no synonyms
-ResultTable* FollowsParentHandler::Evaluate() {
+ResultTable* FollowsParentHandler::Evaluate(std::set<int> *(Statement::*get_normal)(),
+                                            std::set<int> *(Statement::*get_reverse)()) {
   ResultTable *ret = new ResultTable();
   StmtRef left_ent = relationship_->get_left_ref()->get_stmt_ref();
   StmtRef right_ent = relationship_->get_right_ref()->get_stmt_ref();
@@ -45,7 +54,7 @@ ResultTable* FollowsParentHandler::Evaluate() {
     int left_arg = left_ent.get_stmt_num();
     int right_arg = right_ent.get_stmt_num();
     Statement *stmt = pkb_->get_statement(left_arg);
-    if (stmt == nullptr || !Forwarder(get_normal_, stmt)->count(right_arg)) {
+    if (stmt == nullptr || !(stmt->*get_normal)()->count(right_arg)) {
       return nullptr;
     }
   } else if (left_ent.get_type() == StmtRefType::Synonym &&
@@ -59,8 +68,11 @@ ResultTable* FollowsParentHandler::Evaluate() {
     // Remove each statement that doesnt have right arg in its followers
     for (int i = 0; i < left_entity_vec.size(); i++) {
       auto *stmt = dynamic_cast<Statement *>(left_entity_vec.at(i));
+
+      assert(stmt != nullptr);
+
       // Remove each statement that doesnt have right arg in its followers
-      if (stmt != nullptr && Forwarder(get_normal_, stmt)->count(right_arg)) {
+      if ((stmt->*get_normal)()->count(right_arg)) {
         stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
       }
     }
@@ -76,8 +88,11 @@ ResultTable* FollowsParentHandler::Evaluate() {
     // Remove each statement that doesnt have left arg in its followees.
     for (int i = 0; i < right_entity_vec.size(); i++) {
       auto *stmt = dynamic_cast<Statement *>(right_entity_vec.at(i));
+
+      assert(stmt != nullptr);
+
       // Remove each statement that doesnt have left arg in its followees,
-      if (stmt != nullptr && Forwarder(get_reverse_, stmt)->count(left_arg)) {
+      if ((stmt->*get_reverse)()->count(left_arg)) {
         stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
       }
     }
@@ -99,11 +114,14 @@ ResultTable* FollowsParentHandler::Evaluate() {
     std::vector<std::string> right_stmt_vec;
 
     for (int i = 0; i < left_entity_vec.size(); i++) {
-      auto *stmt_left = dynamic_cast<Statement *>(left_entity_vec.at(i));
       for (int j = 0; j < right_entity_vec.size(); j++) {
+        auto *stmt_left = dynamic_cast<Statement *>(left_entity_vec.at(i));
         auto *stmt_right = dynamic_cast<Statement *>(right_entity_vec.at(j));
+
+        assert(stmt_left != nullptr && stmt_right != nullptr);
+
         if (stmt_left != nullptr && stmt_right != nullptr
-        && Forwarder(get_normal_, stmt_left)->count(stmt_right->get_stmt_no())) {
+        && (stmt_left->*get_normal)()->count(stmt_right->get_stmt_no())) {
           left_stmt_vec.push_back(std::to_string(stmt_left->get_stmt_no()));
           right_stmt_vec.push_back(std::to_string(stmt_right->get_stmt_no()));
         }
@@ -116,7 +134,7 @@ ResultTable* FollowsParentHandler::Evaluate() {
     entity_vec = pkb_->get_all_statements();
     for (int i = 0; i < entity_vec.size(); i++) {
       Statement *stmt = entity_vec.at(i);
-      if (stmt != nullptr && !Forwarder(get_normal_, stmt)->empty()) {
+      if (stmt != nullptr && !(stmt->*get_normal)()->empty()) {
         return ret;
       }
     }
@@ -125,7 +143,7 @@ ResultTable* FollowsParentHandler::Evaluate() {
       right_ent.get_type() == StmtRefType::StmtNum) {  // eg Follows(_, 4)
     int right_arg = right_ent.get_stmt_num();
     Statement *stmt = pkb_->get_statement(right_arg);
-    if (stmt == nullptr || Forwarder(get_reverse_, stmt)->empty()) {
+    if (stmt == nullptr || (stmt->*get_reverse)()->empty()) {
       return nullptr;
     }
   } else if (left_ent.get_type() == StmtRefType::WildCard &&
@@ -136,7 +154,10 @@ ResultTable* FollowsParentHandler::Evaluate() {
     std::vector<std::string> stmt_vec;
     for (int i = 0; i < right_entity_vec.size(); i++) {
       auto *stmt = dynamic_cast<Statement *>(right_entity_vec.at(i));
-      if (stmt != nullptr && !Forwarder(get_reverse_, stmt)->empty()) {
+
+      assert(stmt != nullptr);
+
+      if (!(stmt->*get_reverse)()->empty()) {
         stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
       }
     }
@@ -145,7 +166,7 @@ ResultTable* FollowsParentHandler::Evaluate() {
       right_ent.get_type() == StmtRefType::WildCard) {  // eg Follows(4, _)
     int left_arg = left_ent.get_stmt_num();
     Statement *stmt = pkb_->get_statement(left_arg);
-    if (stmt == nullptr || Forwarder(get_normal_, stmt)->empty()) {
+    if (stmt == nullptr || (stmt->*get_normal)()->empty()) {
       return nullptr;
     }
   } else if (left_ent.get_type() == StmtRefType::Synonym &&
@@ -156,7 +177,10 @@ ResultTable* FollowsParentHandler::Evaluate() {
     std::vector<std::string> stmt_vec;
     for (int i = 0; i < left_entity_vec.size(); i++) {
       auto *stmt = dynamic_cast<Statement *>(left_entity_vec.at(i));
-      if (stmt != nullptr && !Forwarder(get_normal_, stmt)->empty()) {
+
+      assert(stmt != nullptr);
+
+      if (!(stmt->*get_normal)()->empty()) {
         stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
       }
     }

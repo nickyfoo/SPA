@@ -40,14 +40,14 @@ class PKB {
   // Gets the total number of procedures in the procedure table
   int get_num_procedures();
   // Gets all procedures in the program.
-  std::vector<Procedure *> get_all_procedures();
+  virtual std::vector<Procedure *> get_all_procedures();
   // Gets a procedure by its procedure name.
   virtual Procedure *get_procedure(std::string &name);
 
   // Gets the total number of statements in the statement table.
   int get_num_statements();
   // Gets all statements in the statement table.
-  std::vector<Statement *> get_all_statements();
+  virtual std::vector<Statement *> get_all_statements();
   // Gets all statements of the given type.
   std::vector<Statement *> get_statements(NodeType type);
   // Gets a statement by its corresponding line number.

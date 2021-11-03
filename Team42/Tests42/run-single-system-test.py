@@ -2,7 +2,17 @@ import subprocess
 import sys
 
 files = [
-    "affectss"
+    "affectsbip_1",
+    "affectsbip_2",
+    "affectsbip_3",
+    "affectsbip_4",
+    "affectsbip_5",
+    "nextbip_1",
+    "nextbip_2",
+    "nextbip_3",
+    "nextbip_4",
+    "nextbip_5",
+    "testing"
 ]
 
 for file in files:

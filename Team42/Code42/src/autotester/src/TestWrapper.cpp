@@ -76,7 +76,7 @@ void TestWrapper::evaluate(std::string query, std::list<std::string> &results) {
                                                     std::get<2>(*clauses),
                                                     std::get<3>(*clauses),
                                                     std::get<0>(*clauses));
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     pql_query = new PQLQuery(std::get<0>(*clauses),
                              clause_groups,
                              std::get<4>(*clauses),

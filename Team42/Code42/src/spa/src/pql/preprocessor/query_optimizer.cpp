@@ -15,7 +15,26 @@ QueryOptimizer::QueryOptimizer(std::vector<SuchThatClause *> *relationships,
   this->return_entities_ = return_entities;
 }
 
-std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateGroupings() {
+// Optimizer is "off" and will create 3 groups with only the last group filled.
+std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateDefaultGroupings() {
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groupings;
+
+  // Creating empty groups for first 2 groups
+  clause_groupings.push_back(std::make_shared<ClauseGroup>(ClauseGroup()));
+  clause_groupings.push_back(std::make_shared<ClauseGroup>(ClauseGroup()));
+
+  std::vector<ClauseVertex> all_vertices = CombineAllVertices(MakeSuchThatVertices(relationships_),
+                                                              MakePatternVertices(patterns_),
+                                                              MakeWithVertices(withs_));
+  auto all_clauses = ClauseGroup();
+  all_clauses.set_clauses(all_vertices);
+  auto all_clauses_ptr = std::make_shared<ClauseGroup>(all_clauses);
+  clause_groupings.push_back(all_clauses_ptr);
+
+  return clause_groupings;
+}
+
+std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateOptimizedGroupings() {
   std::vector<std::shared_ptr<ClauseGroup>> clause_groupings;
   std::vector<ClauseVertex> no_syn_used;
   std::vector<ClauseVertex> has_syn_used;
@@ -26,6 +45,7 @@ std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateGroupings() {
   std::vector<ClauseVertex> all_vertices = CombineAllVertices(MakeSuchThatVertices(relationships_),
                                                               MakePatternVertices(patterns_),
                                                               MakeWithVertices(withs_));
+
   // Add to no_syn_used vector if clause vertex has no synonyms used.
   std::copy_if(all_vertices.begin(),
                all_vertices.end(),
@@ -42,7 +62,7 @@ std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateGroupings() {
   // Group with no synonyms will be evaluated first
   auto no_syn_group = ClauseGroup();
   no_syn_group.set_clauses(no_syn_used);
-  no_syn_group.SortWithinGroup();
+//  no_syn_group.SortWithinGroup();
   std::shared_ptr<ClauseGroup> no_syn_group_ptr = std::make_shared<ClauseGroup>(no_syn_group);
   clause_groupings.push_back(no_syn_group_ptr);
 
@@ -66,10 +86,12 @@ std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateGroupings() {
       } else if (syn_to_clause.find(syn) != syn_to_clause.end()) {
         syn_to_clause[syn].push_back(clause_vertex);
       } else if (clause_vertex.get_has_return_syn()) {
+        // If map does not contain syn and clause vertex has return syn
         syn_to_clause.insert({syn, {clause_vertex}});
         return_syn_to_clause.insert({syn, {clause_vertex}});
         has_visited_syn->insert({syn, false});
       } else {
+        // If map does not contain syn and clause vertex has no return syn
         syn_to_clause.insert({syn, {clause_vertex}});
         has_visited_syn->insert({syn, false});
       }
@@ -93,7 +115,6 @@ std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateGroupings() {
       return_syn_clause_groupings.push_back(connected_syn_group_ptr);
     }
   }
-
   // Create and add group with no return synonyms
   clause_groupings.push_back(MakeNoReturnSynGroup(syn_to_clause, has_visited_clause));
 
@@ -108,6 +129,7 @@ std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateGroupings() {
     clause_groupings.insert(clause_groupings.end(), return_syn_clause_groupings.begin(),
                             return_syn_clause_groupings.end());
   }
+
   return clause_groupings;
 }
 
@@ -142,52 +164,79 @@ void QueryOptimizer::FindConnectedGroups(
   }
 }
 
+//    Group 1: with (1 syn)
+//    Group 2: with (2 syn)
+//    Group 3: one syn follows, parent, next
+//    Group 4: one syn usesS, usesP, modifiesS, modifiesP, calls, pattern
+//    Group 5: one syn follows*, parent*, next*, calls*, affects, affects*
+//    Group 6: one syn affectsbip, nextbip
+//    Group 7: one syn affectsbip*, nextbip*
+//    Group 8: two syn follows, parent, next
+//    Group 9: two syn usesS, usesP, modifiesS, modifiesP, calls, pattern
+//    Group 10: two syn follows*, parent*, next*, calls*, affects, affects*
+//    Group 11: two syn affectsbip, nextbip
+//    Group 12: two syn affectsbip*, nextbip*
 int QueryOptimizer::AssignPriority(std::vector<std::string> synonyms_used,
                                    std::shared_ptr<Clause> clause) {
   if (clause->get_type() == ClauseType::WithClause) {
-    return 0;
+    if (synonyms_used.size() == 1) {
+      return 0;
+    } else {
+      return 1;
+    }
   } else if (clause->get_type() == ClauseType::SuchThatClause) {
     std::shared_ptr<SuchThatClause> such_that_clause =
         std::dynamic_pointer_cast<SuchThatClause>(clause);
-    // Assigning priority based on number of synonyms used and such that clause type.
-    if (synonyms_used.size() == 1 && (such_that_clause->get_type() == RelRef::Follows ||
-                                      such_that_clause->get_type() == RelRef::Parent ||
-                                      such_that_clause->get_type() == RelRef::UsesP ||
-                                      such_that_clause->get_type() == RelRef::UsesS ||
-                                      such_that_clause->get_type() == RelRef::ModifiesP ||
-                                      such_that_clause->get_type() == RelRef::ModifiesS ||
-                                      such_that_clause->get_type() == RelRef::Next ||
-                                      such_that_clause->get_type() == RelRef::Calls)) {
-      return 1;
-    } else if (synonyms_used.size() == 1 && (such_that_clause->get_type() == RelRef::FollowsT ||
-                                             such_that_clause->get_type() == RelRef::ParentT ||
-                                             such_that_clause->get_type() == RelRef::NextT ||
-                                             such_that_clause->get_type() == RelRef::CallsT ||
-                                             such_that_clause->get_type() == RelRef::Affects ||
-                                             such_that_clause->get_type() == RelRef::AffectsT)) {
-      return 2;
-    } else if (synonyms_used.size() == 2 && (such_that_clause->get_type() == RelRef::Follows ||
-                                             such_that_clause->get_type() == RelRef::Parent ||
-                                             such_that_clause->get_type() == RelRef::UsesP ||
-                                             such_that_clause->get_type() == RelRef::UsesS ||
-                                             such_that_clause->get_type() == RelRef::ModifiesP ||
-                                             such_that_clause->get_type() == RelRef::ModifiesS ||
-                                             such_that_clause->get_type() == RelRef::Next ||
-                                             such_that_clause->get_type() == RelRef::Calls)) {
-      return 3;
-    } else if (synonyms_used.size() == 2 && (such_that_clause->get_type() == RelRef::FollowsT ||
-                                             such_that_clause->get_type() == RelRef::ParentT ||
-                                             such_that_clause->get_type() == RelRef::NextT ||
-                                             such_that_clause->get_type() == RelRef::CallsT ||
-                                             such_that_clause->get_type() == RelRef::Affects ||
-                                             such_that_clause->get_type() == RelRef::AffectsT)) {
-      return 4;
+// Assigning priority based on number of synonyms used and such that clause type.
+    if (such_that_clause->get_type() == RelRef::Follows ||
+    such_that_clause->get_type() == RelRef::Parent ||
+    such_that_clause->get_type() == RelRef::Next) {
+      if (synonyms_used.size() == 1) {
+        return 3;
+      } else if (synonyms_used.size() == 2) {
+        return 8;
+      }
+    } else if (such_that_clause->get_type() == RelRef::UsesP ||
+    such_that_clause->get_type() == RelRef::UsesS ||
+    such_that_clause->get_type() == RelRef::ModifiesP ||
+    such_that_clause->get_type() == RelRef::ModifiesS ||
+    such_that_clause->get_type() == RelRef::Calls) {
+      if (synonyms_used.size() == 1) {
+        return 4;
+      } else if (synonyms_used.size() == 2) {
+        return 9;
+      }
+    } else if (such_that_clause->get_type() == RelRef::FollowsT ||
+    such_that_clause->get_type() == RelRef::ParentT ||
+    such_that_clause->get_type() == RelRef::NextT ||
+    such_that_clause->get_type() == RelRef::CallsT ||
+    such_that_clause->get_type() == RelRef::Affects ||
+    such_that_clause->get_type() == RelRef::AffectsT) {
+      if (synonyms_used.size() == 1) {
+        return 5;
+      } else if (synonyms_used.size() == 2) {
+        return 10;
+      }
+    } else if (such_that_clause->get_type() == RelRef::AffectsBip ||
+    such_that_clause->get_type() == RelRef::NextBip) {
+      if (synonyms_used.size() == 1) {
+        return 6;
+      } else if (synonyms_used.size() == 2) {
+        return 11;
+      }
+    } else if (such_that_clause->get_type() == RelRef::AffectsTBip ||
+    such_that_clause->get_type() == RelRef::NextTBip) {
+      if (synonyms_used.size() == 1) {
+        return 7;
+      } else if (synonyms_used.size() == 2) {
+        return 12;
+      }
     }
   } else if (clause->get_type() == ClauseType::PatternClause) {
     if (synonyms_used.size() == 1) {
-      return 1;
+      return 4;
     } else if (synonyms_used.size() == 2) {
-      return 3;
+      return 9;
     }
   }
 }
@@ -199,7 +248,7 @@ std::shared_ptr<ClauseGroup> QueryOptimizer::MakeNoReturnSynGroup(
   std::vector<ClauseVertex> no_return_syn_used;
   for (auto pair : syn_to_clause) {
     for (ClauseVertex clause_vertex : pair.second) {
-      // Adding clause vertex to no return syn if it hasn't been added before and
+      // Adding clause vertex to no return syn if it hasn't been added before
       if (!has_visited_clause->at(clause_vertex.get_id())) {
         no_return_syn_used.push_back(clause_vertex);
         has_visited_clause->at(clause_vertex.get_id()) = true;
@@ -208,7 +257,7 @@ std::shared_ptr<ClauseGroup> QueryOptimizer::MakeNoReturnSynGroup(
   }
   ClauseGroup clause_group = ClauseGroup();
   clause_group.set_clauses(no_return_syn_used);
-  clause_group.SortWithinGroup();
+//  clause_group.SortWithinGroup();
   std::shared_ptr<ClauseGroup> no_syn_group_ptr = std::make_shared<ClauseGroup>(clause_group);
   return no_syn_group_ptr;
 }
@@ -225,7 +274,7 @@ std::vector<ClauseVertex> QueryOptimizer::MakeSuchThatVertices(std::vector<SuchT
     SuchThatRef *left_ent = such_that_clause->get_left_ref();
     SuchThatRef *right_ent = such_that_clause->get_right_ref();
 
-    std::string left_syn = "";
+    std::string left_syn;
     // If left arg is a synonym, add to synonyms used
     if (left_ent->get_type() == SuchThatRefType::Statement &&
         left_ent->get_stmt_ref().get_type() == StmtRefType::Synonym) {
@@ -237,7 +286,7 @@ std::vector<ClauseVertex> QueryOptimizer::MakeSuchThatVertices(std::vector<SuchT
         left_ent->get_line_ref().get_type() == LineRefType::Synonym) {
       left_syn = left_ent->get_line_ref().get_synonym();
     }
-    if (left_syn != "") {
+    if (!left_syn.empty()) {
       synonyms_used.push_back(left_syn);
       // If synonym is part of return synonyms, set has_return_syn to true.
       if (ReturnEntitiesContainSynonym(left_syn)) {
@@ -245,7 +294,7 @@ std::vector<ClauseVertex> QueryOptimizer::MakeSuchThatVertices(std::vector<SuchT
       }
     }
 
-    std::string right_syn = "";
+    std::string right_syn;
     // If right arg is a synonym, add to synonyms used.
     if (right_ent->get_type() == SuchThatRefType::Statement &&
         right_ent->get_stmt_ref().get_type() == StmtRefType::Synonym) {
@@ -257,7 +306,7 @@ std::vector<ClauseVertex> QueryOptimizer::MakeSuchThatVertices(std::vector<SuchT
         right_ent->get_line_ref().get_type() == LineRefType::Synonym) {
       right_syn = right_ent->get_line_ref().get_synonym();
     }
-    if (right_syn != "") {
+    if (!right_syn.empty()) {
       synonyms_used.push_back(right_syn);
       // If synonym is part of return synonyms, set has_return_syn to true.
       if (ReturnEntitiesContainSynonym(right_syn)) {
@@ -311,6 +360,7 @@ std::vector<ClauseVertex> QueryOptimizer::MakePatternVertices(std::vector<Patter
     count++;
     clause_vertices.push_back(clause_vertex);
   }
+
   return clause_vertices;
 }
 
@@ -348,6 +398,7 @@ std::vector<ClauseVertex> QueryOptimizer::MakeWithVertices(std::vector<WithClaus
     count++;
     clause_vertices.push_back(clause_vertex);
     }
+
   return clause_vertices;
 }
 

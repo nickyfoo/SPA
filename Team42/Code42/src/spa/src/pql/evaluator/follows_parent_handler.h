@@ -17,17 +17,17 @@ class FollowsParentHandler {
   void set_args(PKB *pkb,
                 std::shared_ptr<SuchThatClause> relationship,
                 std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec);
-  void set_function_pointers(std::set<int> *(Statement::*get_normal)(),
-                             std::set<int> *(Statement::*get_reverse)());
-  ResultTable *Evaluate();
+  ResultTable *EvaluateFollows();
+  ResultTable *EvaluateFollowsT();
+  ResultTable *EvaluateParent();
+  ResultTable *EvaluateParentT();
+  ResultTable *Evaluate(std::set<int> *(Statement::*get_normal)(),
+                        std::set<int> *(Statement::*get_reverse)());
 
  private:
   static FollowsParentHandler *instance_;
   FollowsParentHandler();
-  std::set<int> *(Statement::*get_normal_)();
-  std::set<int> *(Statement::*get_reverse_)();
   PKB *pkb_;
   std::shared_ptr<SuchThatClause> relationship_;
-  static std::set<int> *Forwarder(std::set<int> *(Statement::*function)(), Statement *stmt);
   std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec_;
 };

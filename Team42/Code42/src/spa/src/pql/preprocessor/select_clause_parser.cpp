@@ -129,7 +129,6 @@ std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
   if (relationship_statement.empty()) {
     return nullptr;
   }
-
   std::vector<std::vector<std::string>> relationship_clauses;
   relationship_clauses = SplitTokensByBrackets(relationship_statement);
   if (relationship_clauses.empty()) return nullptr;
@@ -137,12 +136,10 @@ std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
     if (relationship_clause.size() != 3) {
       return nullptr;
     }
-
     auto *relationship = new SuchThatClause(relationship_clause.at(0));
     if (relationship->get_type() == RelRef::None) {  // invalid relation
       return nullptr;
     }
-
     std::string left_ref = relationship_clause.at(1);
     std::string right_ref = relationship_clause.at(2);
     SuchThatRef *left_such_that_ref = new SuchThatRef();
@@ -357,14 +354,11 @@ SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
       EntityType type = synonym_to_entity_->find(synonym)->second->get_type();
       AttrValueType attr_value_type = AttrValueType::None;
       switch (type) {
-        case EntityType::Procedure:
-          if (attribute == "procName") attr_value_type = AttrValueType::Name;
+        case EntityType::Procedure:if (attribute == "procName") attr_value_type = AttrValueType::Name;
           break;
-        case EntityType::Variable:
-          if (attribute == "varName") attr_value_type = AttrValueType::Name;
+        case EntityType::Variable:if (attribute == "varName") attr_value_type = AttrValueType::Name;
           break;
-        case EntityType::Constant:
-          if (attribute == "value") attr_value_type = AttrValueType::Integer;
+        case EntityType::Constant:if (attribute == "value") attr_value_type = AttrValueType::Integer;
           break;
         case EntityType::Call:
           if (attribute == "procName") {
@@ -389,8 +383,7 @@ SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
             attr_value_type = AttrValueType::Integer;
           }
           break;
-        default:
-          break;
+        default:break;
       }
       if (attr_value_type != AttrValueType::None) {
         return std::make_tuple(synonym, type, attr_value_type);
@@ -429,15 +422,17 @@ int SelectClauseParser::SetSuchThatRefLeft(SuchThatRef *left_such_that_ref,
       case EntityType::Stmt:
       case EntityType::ProgLine:
         if ((entity_type == EntityType::Stmt || entity_type == EntityType::ProgLine
-        || entity_type == EntityType::Assign) &&
-        (type == RelRef::Affects || type == RelRef::AffectsT)) {
+            || entity_type == EntityType::Assign) &&
+            (type == RelRef::Affects || type == RelRef::AffectsT ||
+                type == RelRef::AffectsBip || type == RelRef::AffectsTBip)) {
           left_stmt_ref.set_synonym(left_ref);
           left_stmt_ref.set_entity_type(entity_type);
           left_such_that_ref->set_stmt_ref(left_stmt_ref);
           return 1;
         }
       case EntityType::While: {
-        if (type == RelRef::Next || type == RelRef::NextT) {
+        if (type == RelRef::Next || type == RelRef::NextT ||
+            type == RelRef::NextBip || type == RelRef::NextTBip) {
           left_line_ref.set_synonym(left_ref);
           left_line_ref.set_entity_type(entity_type);
           left_such_that_ref->set_line_ref(left_line_ref);
@@ -453,7 +448,7 @@ int SelectClauseParser::SetSuchThatRefLeft(SuchThatRef *left_such_that_ref,
       }
       case EntityType::Procedure:
         if (type == RelRef::Uses || type == RelRef::Modifies ||
-        type == RelRef::Calls || type == RelRef::CallsT) {
+            type == RelRef::Calls || type == RelRef::CallsT) {
           left_ent_ref.set_synonym(left_ref);
           left_such_that_ref->set_ent_ref(left_ent_ref);
           return 1;
@@ -474,7 +469,8 @@ int SelectClauseParser::SetSuchThatRefLeft(SuchThatRef *left_such_that_ref,
     if (left_ref_int < 1) {  // invalid statement number
       return 0;
     }
-    if (type == RelRef::Next || type == RelRef::NextT) {
+    if (type == RelRef::Next || type == RelRef::NextT ||
+        type == RelRef::NextBip || type == RelRef::NextTBip) {
       left_line_ref.set_line_num(std::stoi(left_ref));
       left_such_that_ref->set_line_ref(left_line_ref);
     } else {
@@ -486,7 +482,8 @@ int SelectClauseParser::SetSuchThatRefLeft(SuchThatRef *left_such_that_ref,
         type == RelRef::CallsT) {
       left_ent_ref.set_wild_card();
       left_such_that_ref->set_ent_ref(left_ent_ref);
-    } else if (type == RelRef::Next || type == RelRef::NextT) {
+    } else if (type == RelRef::Next || type == RelRef::NextT ||
+              type == RelRef::NextBip || type == RelRef::NextTBip) {
       left_line_ref.set_wild_card();
       left_such_that_ref->set_line_ref(left_line_ref);
     } else {
@@ -542,21 +539,24 @@ int SelectClauseParser::SetSuchThatRefRight(SuchThatRef *right_such_that_ref,
       case EntityType::Stmt:
       case EntityType::ProgLine:
         if ((entity_type == EntityType::Stmt || entity_type == EntityType::ProgLine
-        || entity_type == EntityType::Assign) &&
-        (type == RelRef::Affects || type == RelRef::AffectsT)) {
+            || entity_type == EntityType::Assign) &&
+            (type == RelRef::Affects || type == RelRef::AffectsT ||
+                type == RelRef::AffectsBip || type == RelRef::AffectsTBip)) {
           right_stmt_ref.set_synonym(right_ref);
           right_stmt_ref.set_entity_type(entity_type);
           right_such_that_ref->set_stmt_ref(right_stmt_ref);
           return 1;
         }
       case EntityType::While: {
-        if (type == RelRef::Next || type == RelRef::NextT) {
+        if (type == RelRef::Next || type == RelRef::NextT ||
+            type == RelRef::NextBip || type == RelRef::NextTBip) {
           right_line_ref.set_synonym(right_ref);
           right_line_ref.set_entity_type(entity_type);
           right_such_that_ref->set_line_ref(right_line_ref);
           return 1;
         } else if (type != RelRef::Affects && type != RelRef::AffectsT &&
-        type != RelRef::Calls && type != RelRef::CallsT) {
+            type != RelRef::AffectsBip && type != RelRef::AffectsTBip &&
+            type != RelRef::Calls && type != RelRef::CallsT) {
           right_stmt_ref.set_synonym(right_ref);
           right_stmt_ref.set_entity_type(entity_type);
           right_such_that_ref->set_stmt_ref(right_stmt_ref);
@@ -580,7 +580,8 @@ int SelectClauseParser::SetSuchThatRefRight(SuchThatRef *right_such_that_ref,
     if (right_ref_int < 1) {  // invalid statement number
       return 0;
     }
-    if (type == RelRef::Next || type == RelRef::NextT) {
+    if (type == RelRef::Next || type == RelRef::NextT ||
+        type == RelRef::NextBip || type == RelRef::NextTBip) {
       right_line_ref.set_line_num(right_ref_int);
       right_such_that_ref->set_line_ref(right_line_ref);
     } else {
@@ -592,7 +593,8 @@ int SelectClauseParser::SetSuchThatRefRight(SuchThatRef *right_such_that_ref,
         type == RelRef::CallsT) {
       right_ent_ref.set_wild_card();
       right_such_that_ref->set_ent_ref(right_ent_ref);
-    } else if (type == RelRef::Next || type == RelRef::NextT) {
+    } else if (type == RelRef::Next || type == RelRef::NextT |
+        type == RelRef::NextBip || type == RelRef::NextTBip) {
       right_line_ref.set_wild_card();
       right_such_that_ref->set_line_ref(right_line_ref);
     } else {
@@ -921,14 +923,11 @@ ResultClause *SelectClauseParser::ValidateResultClauseWithAttr(const std::string
   EntityType synonym_type = synonym_to_entity_->find(synonym)->second->get_type();
   ReturnType return_type;
   switch (synonym_type) {
-    case EntityType::Procedure:
-      if (attribute == "procName") return_type = ReturnType::Name;
+    case EntityType::Procedure:if (attribute == "procName") return_type = ReturnType::Name;
       break;
-    case EntityType::Variable:
-      if (attribute == "varName") return_type = ReturnType::Name;
+    case EntityType::Variable:if (attribute == "varName") return_type = ReturnType::Name;
       break;
-    case EntityType::Constant:
-      if (attribute == "value") return_type = ReturnType::Integer;
+    case EntityType::Constant:if (attribute == "value") return_type = ReturnType::Integer;
       break;
     case EntityType::Call:
       if (attribute == "procName") {
@@ -955,8 +954,7 @@ ResultClause *SelectClauseParser::ValidateResultClauseWithAttr(const std::string
         return_type = ReturnType::Integer;
         break;
       }
-    default:
-      return nullptr;
+    default:return nullptr;
   }
 
   return new ResultClause(synonym, synonym_type, return_type);

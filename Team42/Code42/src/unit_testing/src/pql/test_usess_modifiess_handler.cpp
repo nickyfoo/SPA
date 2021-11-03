@@ -22,10 +22,8 @@ TEST_CASE("UsesSClauses_DifferentCases_OutputsResultTable") {
     PKBStub *pkb_stub = PKBStub::BuildPKB();
 
     UsesSModifiesSHandler *uses_modifies_handler = UsesSModifiesSHandler::get_instance();
-    uses_modifies_handler->set_function_pointers(&Statement::get_uses,
-                                                 &Variable::get_stmts_using);
     uses_modifies_handler->set_args(pkb_stub, uses_ptr, {});
-    ResultTable *res = uses_modifies_handler->Evaluate();
+    ResultTable *res = uses_modifies_handler->EvaluateUsesS();
     REQUIRE(res->get_table()->empty() == true);
   }
 
@@ -52,10 +50,8 @@ TEST_CASE("UsesSClauses_DifferentCases_OutputsResultTable") {
     syn_to_entities_vec["s1"] = entities;
 
     UsesSModifiesSHandler *uses_modifies_handler = UsesSModifiesSHandler::get_instance();
-    uses_modifies_handler->set_function_pointers(&Statement::get_uses,
-                                                 &Variable::get_stmts_using);
     uses_modifies_handler->set_args(pkb_stub, uses_ptr, syn_to_entities_vec);
-    ResultTable *res = uses_modifies_handler->Evaluate();
+    ResultTable *res = uses_modifies_handler->EvaluateUsesS();
     REQUIRE(res->get_table()->size() == 10);
     REQUIRE(res->get_table()->at(0).size() == 1);
     // 4, 5, 6, 7, 8, 9, 10, 12, 13, 14
@@ -86,10 +82,8 @@ TEST_CASE("UsesSClauses_DifferentCases_OutputsResultTable") {
     PKBStub *pkb_stub = PKBStub::BuildPKB();
 
     UsesSModifiesSHandler *uses_modifies_handler = UsesSModifiesSHandler::get_instance();
-    uses_modifies_handler->set_function_pointers(&Statement::get_uses,
-                                                 &Variable::get_stmts_using);
     uses_modifies_handler->set_args(pkb_stub, uses_ptr, {});
-    ResultTable *res = uses_modifies_handler->Evaluate();
+    ResultTable *res = uses_modifies_handler->EvaluateUsesS();
     REQUIRE(res->get_table()->empty() == true);
   }
 
@@ -116,10 +110,8 @@ TEST_CASE("UsesSClauses_DifferentCases_OutputsResultTable") {
     syn_to_entities_vec["s1"] = entities;
 
     UsesSModifiesSHandler *uses_modifies_handler = UsesSModifiesSHandler::get_instance();
-    uses_modifies_handler->set_function_pointers(&Statement::get_uses,
-                                                 &Variable::get_stmts_using);
     uses_modifies_handler->set_args(pkb_stub, uses_ptr, syn_to_entities_vec);
-    ResultTable *res = uses_modifies_handler->Evaluate();
+    ResultTable *res = uses_modifies_handler->EvaluateUsesS();
     REQUIRE(res->get_table()->size() == 11);
     REQUIRE(res->get_table()->at(0).size() == 1);
   }
@@ -147,10 +139,8 @@ TEST_CASE("UsesSClauses_DifferentCases_OutputsResultTable") {
     syn_to_entities_vec["v"] = entities;
 
     UsesSModifiesSHandler *uses_modifies_handler = UsesSModifiesSHandler::get_instance();
-    uses_modifies_handler->set_function_pointers(&Statement::get_uses,
-                                                 &Variable::get_stmts_using);
     uses_modifies_handler->set_args(pkb_stub, uses_ptr, syn_to_entities_vec);
-    ResultTable *res = uses_modifies_handler->Evaluate();
+    ResultTable *res = uses_modifies_handler->EvaluateUsesS();
     REQUIRE(res->get_table()->size() == 3);
     REQUIRE(res->get_table()->at(0).size() == 1);
   }
@@ -185,10 +175,8 @@ TEST_CASE("UsesSClauses_DifferentCases_OutputsResultTable") {
     syn_to_entities_vec["s1"] = entities_s;
 
     UsesSModifiesSHandler *uses_modifies_handler = UsesSModifiesSHandler::get_instance();
-    uses_modifies_handler->set_function_pointers(&Statement::get_uses,
-                                                 &Variable::get_stmts_using);
     uses_modifies_handler->set_args(pkb_stub, uses_ptr, syn_to_entities_vec);
-    ResultTable *res = uses_modifies_handler->Evaluate();
+    ResultTable *res = uses_modifies_handler->EvaluateUsesS();
     REQUIRE(res->get_table()->size() == 20);
     REQUIRE(res->get_table()->at(0).size() == 2);
   }
@@ -210,10 +198,8 @@ TEST_CASE("ModifiesSClauses_DifferentCases_OutputsResultTable") {
     PKBStub *pkb_stub = PKBStub::BuildPKB();
 
     UsesSModifiesSHandler *uses_modifies_handler = UsesSModifiesSHandler::get_instance();
-    uses_modifies_handler->set_function_pointers(&Statement::get_modifies,
-                                                 &Variable::get_stmts_modifying);
     uses_modifies_handler->set_args(pkb_stub, modifies_ptr, {});
-    ResultTable *res = uses_modifies_handler->Evaluate();
+    ResultTable *res = uses_modifies_handler->EvaluateModifiesS();
     REQUIRE(res->get_table()->empty() == true);
   }
 
@@ -240,10 +226,8 @@ TEST_CASE("ModifiesSClauses_DifferentCases_OutputsResultTable") {
     syn_to_entities_vec["s1"] = entities;
 
     UsesSModifiesSHandler *uses_modifies_handler = UsesSModifiesSHandler::get_instance();
-    uses_modifies_handler->set_function_pointers(&Statement::get_modifies,
-                                                 &Variable::get_stmts_modifying);
     uses_modifies_handler->set_args(pkb_stub, modifies_ptr, syn_to_entities_vec);
-    ResultTable *res = uses_modifies_handler->Evaluate();
+    ResultTable *res = uses_modifies_handler->EvaluateModifiesS();
     REQUIRE(res->get_table()->size() == 3);
     REQUIRE(res->get_table()->at(0).size() == 1);
     REQUIRE(res->get_table()->at(0).at(0) == "4");
@@ -266,10 +250,8 @@ TEST_CASE("ModifiesSClauses_DifferentCases_OutputsResultTable") {
     PKBStub *pkb_stub = PKBStub::BuildPKB();
 
     UsesSModifiesSHandler *uses_modifies_handler = UsesSModifiesSHandler::get_instance();
-    uses_modifies_handler->set_function_pointers(&Statement::get_modifies,
-                                                 &Variable::get_stmts_modifying);
     uses_modifies_handler->set_args(pkb_stub, modifies_ptr, {});
-    ResultTable *res = uses_modifies_handler->Evaluate();
+    ResultTable *res = uses_modifies_handler->EvaluateModifiesS();
     REQUIRE(res->get_table()->empty() == true);
   }
 
@@ -296,10 +278,8 @@ TEST_CASE("ModifiesSClauses_DifferentCases_OutputsResultTable") {
     syn_to_entities_vec["s1"] = entities;
 
     UsesSModifiesSHandler *uses_modifies_handler = UsesSModifiesSHandler::get_instance();
-    uses_modifies_handler->set_function_pointers(&Statement::get_modifies,
-                                                 &Variable::get_stmts_modifying);
     uses_modifies_handler->set_args(pkb_stub, modifies_ptr, syn_to_entities_vec);
-    ResultTable *res = uses_modifies_handler->Evaluate();
+    ResultTable *res = uses_modifies_handler->EvaluateModifiesS();
     REQUIRE(res->get_table()->size() == 14);
     REQUIRE(res->get_table()->at(0).size() == 1);
   }
@@ -327,10 +307,8 @@ TEST_CASE("ModifiesSClauses_DifferentCases_OutputsResultTable") {
     syn_to_entities_vec["v"] = entities;
 
     UsesSModifiesSHandler *uses_modifies_handler = UsesSModifiesSHandler::get_instance();
-    uses_modifies_handler->set_function_pointers(&Statement::get_modifies,
-                                                 &Variable::get_stmts_modifying);
     uses_modifies_handler->set_args(pkb_stub, modifies_ptr, syn_to_entities_vec);
-    ResultTable *res = uses_modifies_handler->Evaluate();
+    ResultTable *res = uses_modifies_handler->EvaluateModifiesS();
     REQUIRE(res->get_table()->size() == 4);
     REQUIRE(res->get_table()->at(0).size() == 1);
   }
@@ -365,10 +343,8 @@ TEST_CASE("ModifiesSClauses_DifferentCases_OutputsResultTable") {
     syn_to_entities_vec["s1"] = entities_s;
 
     UsesSModifiesSHandler *uses_modifies_handler = UsesSModifiesSHandler::get_instance();
-    uses_modifies_handler->set_function_pointers(&Statement::get_modifies,
-                                                 &Variable::get_stmts_modifying);
     uses_modifies_handler->set_args(pkb_stub, modifies_ptr, syn_to_entities_vec);
-    ResultTable *res = uses_modifies_handler->Evaluate();
+    ResultTable *res = uses_modifies_handler->EvaluateModifiesS();
     REQUIRE(res->get_table()->size() == 20);
     REQUIRE(res->get_table()->at(0).size() == 2);
   }

@@ -25,6 +25,10 @@ ResultTable *NextHandler::EvaluateNext() { return Evaluate(&PKB::get_next); }
 
 ResultTable *NextHandler::EvaluateNextT() { return Evaluate(&PKB::get_next_star); }
 
+ResultTable *NextHandler::EvaluateNextBip() { return Evaluate(&PKB::get_next_bip); }
+
+ResultTable *NextHandler::EvaluateNextTBip() { return Evaluate(&PKB::get_next_bip_star); }
+
 ResultTable *NextHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func)(int, int)) {
   ResultTable *ret = new ResultTable();
 

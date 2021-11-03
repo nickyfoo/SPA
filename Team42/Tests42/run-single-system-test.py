@@ -2,7 +2,7 @@ import subprocess
 import sys
 
 files = [
-    "testing"
+    "BOOLEAN"
 ]
 
 for file in files:

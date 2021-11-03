@@ -71,6 +71,7 @@ std::string PatternManager::GetPostfixExpr(std::string infix_expr) {
           } else if (new_ops->second > last_ops->second) {
             // Case 2: New operand has a lower precedence than the top of the stack
             while (new_ops->second >= last_ops->second && !ops.empty()) {
+              if (ops.top() == '(') break;
               // Pop stack while precedence of the new operand is lte the top of the stack
               output << ops.top() << ' ';
               ops.pop();
@@ -110,7 +111,6 @@ std::string PatternManager::GetPostfixExpr(std::string infix_expr) {
 bool PatternManager::TestAssignmentPattern(Statement *assignment_stmt, std::string pattern, bool is_partial_match) {
   if (pattern.empty()) return false;
   std::string postfix_pattern = GetPostfixExpr(pattern);
-  printf("postfix: %s\n", postfix_pattern.c_str());
   std::stringstream assign_expr_ss;
   assign_expr_ss << " " << assignment_stmt->get_expr_string() << " ";
   std::string assign_expr = assign_expr_ss.str();

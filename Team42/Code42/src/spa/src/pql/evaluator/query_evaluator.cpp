@@ -31,7 +31,7 @@ QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
 }
 
 std::vector<std::string> *QueryEvaluator::Evaluate() {
-  printf("in here\n");
+  printf("in evaluator\n");
   if (!is_syntactically_valid_ || !is_semantically_valid_) {  // if not valid query
     if (entities_to_return_ != nullptr &&
     entities_to_return_->size() == 1 &&
@@ -42,7 +42,6 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
     }
     return new std::vector<std::string>{};
   }
-  printf("inhere1\n");
   RelationshipQueryManager *relationship_query_manager;
   PatternQueryManager *pattern_query_manager;
   WithQueryManager *with_query_manager;
@@ -56,7 +55,6 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
   // second group is without any return synonyms,
   // and third groups on are those with synonyms in results
   for (int i = 0; i < clause_groups_.size(); i++) {
-    printf("in here3\n");
     std::vector<ClauseVertex> clause_vertexes = clause_groups_.at(i)->get_clauses();
     ResultTable *intermediate_table = new ResultTable();
     bool first_table_entry = true;
@@ -72,10 +70,8 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
                   clause_vertex.get_clause()),synonym_to_entities_vec);
           break;
         case ClauseType::PatternClause:
-          printf("inpattern\n");
           table = pattern_query_manager->EvaluatePattern(std::dynamic_pointer_cast<PatternClause>(
               clause_vertex.get_clause()), synonym_to_entities_vec);
-          printf("finished\n");
           break;
         case ClauseType::WithClause:
           table = with_query_manager->EvaluateWith(std::dynamic_pointer_cast<WithClause>(

@@ -14,13 +14,14 @@ class PatternClause : public Clause {
   EntityType get_type();
   EntRef *get_variable();
   ExpressionSpec *get_exp_spec();
+  bool IsSemanticallyValidExpSpec();
 
  private:
   EntityDeclaration *synonym_;
   EntityType type_;
   EntRef *variable_;
   ExpressionSpec *exp_spec_;
-  bool IsValidExpSpec(std::string ref);
+  bool IsSyntacticallyValidExpSpec(std::string ref);
   static bool IsChar(char c);
   static bool IsExp(char c);
 };

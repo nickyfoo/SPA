@@ -11,7 +11,6 @@ PatternClause::~PatternClause() = default;
 
 bool PatternClause::set_ref(EntRef *variable, const std::string &right_ref) {
   this->variable_ = variable;
-  printf("right ref: %s\n", right_ref.c_str());
   if (this->type_ == EntityType::Assign) {
     return IsSyntacticallyValidExpSpec(right_ref);
   } else {
@@ -39,9 +38,7 @@ bool PatternClause::IsSyntacticallyValidExpSpec(std::string ref) {
 
   bool partial_pattern;
   auto *exp_spec = new ExpressionSpec();
-  printf("ref is: %s\n", ref.c_str());
   if (ref == "_") {
-    printf("yuh\n");
     exp_spec->set_wild_card();
     this->exp_spec_ = exp_spec;
     return true;
@@ -73,18 +70,15 @@ bool PatternClause::IsSyntacticallyValidExpSpec(std::string ref) {
 
 bool PatternClause::IsSemanticallyValidExpSpec() {
 
-  printf("satu\n");
   if (type_ == EntityType::While || type_ == EntityType::If) {
     return true;
   }
 
   if (exp_spec_->IsWildCard()) return true;
-  printf("dua\n");
   bool expecting_exp = false;
   bool must_be_exp = false;
   bool must_be_char = true;
   for (char &c : exp_spec_->get_expression()) {
-    printf("%c ",c);
     if ((must_be_char && IsExp(c)) || (must_be_exp && IsChar(c))) {
       return false;
     } else {
@@ -110,9 +104,7 @@ bool PatternClause::IsSemanticallyValidExpSpec() {
       }
     }
   }
-  printf("tiga\n");
   if (!expecting_exp && !exp_spec_->get_expression().empty()) {
-    printf("empat\n");
     return false;
   }
   return true;

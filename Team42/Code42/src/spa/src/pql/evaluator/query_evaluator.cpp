@@ -31,7 +31,6 @@ QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
 }
 
 std::vector<std::string> *QueryEvaluator::Evaluate() {
-  printf("in evaluator\n");
   if (!is_syntactically_valid_ || !is_semantically_valid_) {  // if not valid query
     if (entities_to_return_ != nullptr &&
     entities_to_return_->size() == 1 &&

@@ -2,7 +2,7 @@ import subprocess
 import sys
 
 files = [
-    "BOOLEAN"
+    "affectss"
 ]
 
 for file in files:

@@ -12,7 +12,6 @@
 
 QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
   if (pql_query != nullptr) {
-    printf("top\n");
     this->entities_to_return_ = pql_query->get_query_entities();
     this->synonym_to_entity_dec_ = pql_query->get_synonym_to_entities();
     this->is_syntactically_valid_ = pql_query->is_syntactically_valid();
@@ -23,7 +22,6 @@ QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
       set_used_synonyms();
     }
   } else {
-    printf("bot\n");
     this->entities_to_return_ = nullptr;
     this->synonym_to_entity_dec_ = nullptr;
     this->is_syntactically_valid_ = false;
@@ -33,22 +31,16 @@ QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
 }
 
 std::vector<std::string> *QueryEvaluator::Evaluate() {
-  printf("two\n");
   if (!is_syntactically_valid_ || !is_semantically_valid_) {  // if not valid query
-    printf("heresyninvalid\n");
     if (entities_to_return_ != nullptr &&
     entities_to_return_->size() == 1 &&
     entities_to_return_->at(0)->get_return_type() == ReturnType::Boolean) {
-      printf("uhhere\n");
       if (is_syntactically_valid_) {
-        printf("dafk\n");
         return new std::vector<std::string>{"FALSE"};
       }
     }
-    printf("wot\n");
     return new std::vector<std::string>{};
   }
-  printf("uhm1\n");
   RelationshipQueryManager *relationship_query_manager;
   PatternQueryManager *pattern_query_manager;
   WithQueryManager *with_query_manager;
@@ -62,20 +54,14 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
   // second group is without any return synonyms,
   // and third groups on are those with synonyms in results
   for (int i = 0; i < clause_groups_.size(); i++) {
-    printf("uhm2\n");
     std::vector<ClauseVertex> clause_vertexes = clause_groups_.at(i)->get_clauses();
     ResultTable *intermediate_table = new ResultTable();
     bool first_table_entry = true;
     for (ClauseVertex clause_vertex : clause_vertexes) {
-      printf("wtf\n");
       ClauseType type = clause_vertex.get_clause()->get_type();
-      printf("HMM\n");
       auto synonym_to_entities_vec = GetPossibleEntitiesVec(clause_vertex);
-      printf("HMMM2\n");
       bool has_synonyms = !clause_vertex.get_synonyms_used().empty();
-      printf("HMM3\n");
       ResultTable *table;
-      printf("here1\n");
       switch (type) {
         case ClauseType::SuchThatClause:
           table = relationship_query_manager->EvaluateRelationship(
@@ -87,7 +73,6 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
               clause_vertex.get_clause()), synonym_to_entities_vec);
           break;
         case ClauseType::WithClause:
-          printf("uhm3\n");
           table = with_query_manager->EvaluateWith(std::dynamic_pointer_cast<WithClause>(
               clause_vertex.get_clause()), synonym_to_entities_vec);
           break;

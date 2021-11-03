@@ -22,6 +22,10 @@ class SuchThatRef {
   StmtRef get_stmt_ref();
   LineRef get_line_ref();
 
+  void set_ent_ref(EntRef entity_ref);
+  void set_stmt_ref(StmtRef stmt_ref);
+  void set_line_ref(LineRef line_ref);
+
  private:
   SuchThatRefType type_;
   EntRef entity_ref_;

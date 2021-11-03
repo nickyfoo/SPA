@@ -19,6 +19,21 @@ SuchThatRef::SuchThatRef(LineRef line_ref) {
   this->line_ref_ = line_ref;
 }
 
+void SuchThatRef::set_ent_ref(EntRef entity_ref) {
+  this->type_ = SuchThatRefType::Entity;
+  this->entity_ref_ = entity_ref;
+}
+
+void SuchThatRef::set_stmt_ref(StmtRef stmt_ref) {
+  this->type_ = SuchThatRefType::Statement;
+  this->stmt_ref_ = stmt_ref;
+}
+
+void SuchThatRef::set_line_ref(LineRef line_ref) {
+  this->type_ = SuchThatRefType::Line;
+  this->line_ref_ = line_ref;
+}
+
 SuchThatRefType SuchThatRef::get_type() {
   return this->type_;
 }

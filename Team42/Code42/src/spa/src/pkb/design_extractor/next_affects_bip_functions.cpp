@@ -83,7 +83,6 @@ std::set<std::pair<int, int>> *PKB::get_next_bip_star(int a, int b) {
     return &next_bip_star_cache[a][b];
   }
 
-  std::set<std::pair<int, std::string>> prev_stmts;
   std::string hash;
   if (a == kWild) {
     // Get result for Next(_,b)/Next(_,_)
@@ -100,11 +99,11 @@ std::set<std::pair<int, int>> *PKB::get_next_bip_star(int a, int b) {
       int stmt_no = stmt->get_stmt_no();
       for (auto call_stack : *stmt->get_call_stacks()) {
         hash = CallStackToString(&call_stack);
+        std::string start_hash = hash;
         if (bip_reachability_dfs_cache.find(stmt_no) == bip_reachability_dfs_cache.end()
             || bip_reachability_dfs_cache[stmt_no].find(hash) == bip_reachability_dfs_cache[stmt_no].end()) {
-          prev_stmts.insert({stmt_no, hash});
-          BipReachabilityDFS(prev_stmts, stmt_no, call_stack, hash);
-          prev_stmts.erase({stmt_no, hash});
+          std::set<std::pair<int, std::string>> visited;
+          BipReachabilityDFS(visited, stmt_no, hash, stmt_no, start_hash, call_stack);
         }
 
         for (auto &reached_stmt_no : bip_reachability_dfs_cache[stmt_no][hash]) {
@@ -124,11 +123,11 @@ std::set<std::pair<int, int>> *PKB::get_next_bip_star(int a, int b) {
 
     for (auto call_stack : *stmt_table_.get_statement(a)->get_call_stacks()) {
       hash = CallStackToString(&call_stack);
+      std::string start_hash = hash;
       if (bip_reachability_dfs_cache.find(a) == bip_reachability_dfs_cache.end()
           || bip_reachability_dfs_cache[a].find(hash) == bip_reachability_dfs_cache[a].end()) {
-        prev_stmts.insert({a, hash});
-        BipReachabilityDFS(prev_stmts, a, call_stack, hash);
-        prev_stmts.erase({a, hash});
+        std::set<std::pair<int, std::string>> visited;
+        BipReachabilityDFS(visited, a, hash, a, start_hash, call_stack);
       }
 
       for (auto &reached_stmt_no : bip_reachability_dfs_cache[a][hash]) {
@@ -338,14 +337,12 @@ std::set<std::pair<int, int>> *PKB::get_affects_bip_star(int a, int b) {
   return &affects_bip_star_cache[a][b];
 }
 
-void PKB::BipReachabilityDFS(std::set<std::pair<int, std::string>> &prev_stmts, int u,
-                             std::vector<int> &call_stack, std::string &hash) {
+void PKB::BipReachabilityDFS(std::set<std::pair<int, std::string>> &visited, int u, std::string &u_hash, int start, std::string &start_hash,
+                             std::vector<int> &call_stack) {
   if (bip_reachability_dfs_cache.find(u) != bip_reachability_dfs_cache.end()
-      && bip_reachability_dfs_cache[u].find(hash) != bip_reachability_dfs_cache[u].end()) {
-    for (auto &reached_stmt: bip_reachability_dfs_cache[u][hash]) {
-      for (auto &[prev_stmt, prev_hash] : prev_stmts) {
-        bip_reachability_dfs_cache[prev_stmt][prev_hash].insert(reached_stmt);
-      }
+      && bip_reachability_dfs_cache[u].find(u_hash) != bip_reachability_dfs_cache[u].end()) {
+    for (auto &reached_stmt: bip_reachability_dfs_cache[u][u_hash]) {
+      bip_reachability_dfs_cache[start][start_hash].insert(reached_stmt);
     }
     return;
   }
@@ -367,49 +364,38 @@ void PKB::BipReachabilityDFS(std::set<std::pair<int, std::string>> &prev_stmts, 
     if (v_branch > 0) {
       call_stack.push_back(v_branch);
       std::string new_call = std::to_string(v_branch) + " ";
-      hash += new_call;
-      for (auto &[prev_stmt, prev_hash] : prev_stmts) {
-        bip_reachability_dfs_cache[prev_stmt][prev_hash].insert(v);
+      u_hash += new_call;
+
+      if (visited.find({ v, u_hash }) == visited.end()) {
+        visited.insert({ v, u_hash });
+        bip_reachability_dfs_cache[start][start_hash].insert(v);
+        BipReachabilityDFS(visited, v, u_hash, start, start_hash, call_stack);
       }
 
-      bool visited_before = prev_stmts.find({v, hash}) != prev_stmts.end();
-      prev_stmts.insert({v, hash});
-
-      BipReachabilityDFS(prev_stmts, v, call_stack, hash);
-
-      if (!visited_before) prev_stmts.erase({v, hash});
       call_stack.pop_back();
-      hash.erase(hash.size() - new_call.size());
+      u_hash.erase(u_hash.size() - new_call.size());
     } else if (v_branch < 0) {
       // Call stack not empty and edge goes back
       if (branch != kNoBranch && v_branch == -branch) {
-        hash.erase(hash.size() - 1 - std::to_string(call_stack.back()).size());
+        u_hash.erase(u_hash.size() - 1 - std::to_string(call_stack.back()).size());
         call_stack.pop_back();
 
-        for (auto &[prev_stmt, prev_hash] : prev_stmts) {
-          bip_reachability_dfs_cache[prev_stmt][prev_hash].insert(v);
+        if (visited.find({ v, u_hash }) == visited.end()) {
+          visited.insert({ v, u_hash });
+          bip_reachability_dfs_cache[start][start_hash].insert(v);
+          BipReachabilityDFS(visited, v, u_hash, start, start_hash, call_stack);
         }
 
-        bool visited_before = prev_stmts.find({v, hash}) != prev_stmts.end();
-        prev_stmts.insert({v, hash});
-
-        BipReachabilityDFS(prev_stmts, v, call_stack, hash);
-
-        if (!visited_before) prev_stmts.erase({v, hash});
         call_stack.push_back(branch);
-        hash += std::to_string(branch) + " ";
+        u_hash += std::to_string(branch) + " ";
       }
     } else if (v_branch == 0) {
-      for (auto &[prev_stmt, prev_hash] : prev_stmts) {
-        bip_reachability_dfs_cache[prev_stmt][prev_hash].insert(v);
+      if (visited.find({ v, u_hash }) == visited.end()) {
+        visited.insert({ v, u_hash });
+        bip_reachability_dfs_cache[start][start_hash].insert(v);
+        BipReachabilityDFS(visited, v, u_hash, start, start_hash, call_stack);
       }
 
-      bool visited_before = prev_stmts.find({v, hash}) != prev_stmts.end();
-      prev_stmts.insert({v, hash});
-
-      BipReachabilityDFS(prev_stmts, v, call_stack, hash);
-
-      if (!visited_before) prev_stmts.erase({v, hash});
     }
   }
 }

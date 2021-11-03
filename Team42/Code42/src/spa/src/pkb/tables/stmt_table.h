@@ -53,7 +53,7 @@ class StmtTable : public Table {
   // statements.
   std::map<NodeType, std::vector<Statement *>> type_to_statement_;
   // for <v1, v2> in follows_, Follows(v1, v2) is true.
-  std::map<int, std::set<int>> follows_, follows_star_;
+  std::map<int, std::set<int>> follows_;
   // for <v1, v2> in parent_, Parent(v1, v2) is true.
-  std::map<int, std::set<int>> parent_, parent_star_;
+  std::map<int, std::set<int>> parent_;
 };

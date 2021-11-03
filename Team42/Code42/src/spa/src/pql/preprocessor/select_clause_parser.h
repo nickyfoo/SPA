@@ -25,6 +25,7 @@ class SelectClauseParser {
              std::vector<PatternClause *> *,
              std::vector<WithClause *> *,
              std::unordered_map<std::string, EntityDeclaration *> *,
+             bool,
              bool> * get_clauses();
 
  private:
@@ -34,10 +35,10 @@ class SelectClauseParser {
   SelectClauseParser();
   SuchThatRef *SetSuchThatRefLeft(SuchThatClause *relationship, std::string left_ref);
   SuchThatRef *SetSuchThatRefRight(SuchThatClause *relationship, std::string right_ref);
-  PatternClause *MakePatternRef(const std::string &synonym,
-                                const std::string &left_ref,
-                                const std::string &right_ref);
-  WithClause *MakeWithRef(const std::string &left_ref, const std::string &right_ref);
+  int SetPatternRef(PatternClause *pattern,
+                    const std::string &left_ref,
+                    const std::string &right_ref);
+  int SetWithRef(WithClause *with, const std::string &left_ref, const std::string &right_ref);
   std::vector<SuchThatClause *> *MakeSuchThatClause(const std::string &relationship_statement);
   std::vector<PatternClause *> *MakePatternClause(const std::string &pattern_statement);
   std::vector<WithClause *> *MakeWithClause(const std::string &with_statement);

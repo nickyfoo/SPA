@@ -56,13 +56,16 @@ void TestWrapper::evaluate(std::string query, std::list<std::string> &results) {
              std::vector<PatternClause *> *,
              std::vector<WithClause *> *,
              std::unordered_map<std::string, EntityDeclaration *> *,
-             bool> *clauses = query_preprocessor->get_clauses();
+             bool, bool> *clauses = query_preprocessor->get_clauses();
   PQLQuery *pql_query;
-  if (!std::get<5>(*clauses)) {
+  bool is_syntactically_valid = std::get<5>(*clauses);
+  bool is_semantically_valid = std::get<6>(*clauses);
+  if (!is_syntactically_valid || !is_semantically_valid) {
     pql_query = new PQLQuery(std::get<0>(*clauses),
                  {},
                  {},
-                 std::get<5>(*clauses));
+                 is_syntactically_valid,
+                 is_semantically_valid);
   } else {
     QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clauses),
                                                     std::get<2>(*clauses),
@@ -72,7 +75,8 @@ void TestWrapper::evaluate(std::string query, std::list<std::string> &results) {
     pql_query = new PQLQuery(std::get<0>(*clauses),
                              clause_groups,
                              std::get<4>(*clauses),
-                             std::get<5>(*clauses));
+                             std::get<5>(*clauses),
+                             std::get<6>(*clauses));
   }
   auto *query_evaluator = new QueryEvaluator(pql_query, pkb_);
   std::vector<std::string> *res = query_evaluator->Evaluate();

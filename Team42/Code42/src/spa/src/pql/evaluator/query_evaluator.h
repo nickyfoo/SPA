@@ -20,7 +20,8 @@ class QueryEvaluator {
   PKB *pkb_;
   std::unordered_map<std::string, EntityDeclaration *> *synonym_to_entity_dec_;
   std::unordered_set<std::string> used_synonyms_;
-  bool is_valid_query_;
+  bool is_syntactically_valid_;
+  bool is_semantically_valid_;
   std::unordered_map<std::string, std::vector<Entity *>> GetPossibleEntitiesVec(
       ClauseVertex clause_vertex);
   std::vector<std::string> *ConvertToOutput(ResultTable *table_result, bool is_valid_query);

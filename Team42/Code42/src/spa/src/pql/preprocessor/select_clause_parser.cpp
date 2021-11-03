@@ -65,13 +65,17 @@ std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
     } else if (synonym_to_entity_->find(select) != synonym_to_entity_->end()) {
       result_clause =
           new ResultClause(select, synonym_to_entity_->at(select)->get_type(), ReturnType::Default);
+    } else if (IsValidIdentifier(select)) {
+      semantically_valid = false;
     } else {
       result_clause = ValidateResultClauseWithAttr(select);
     }
-    if (result_clause == nullptr || !result_clause->set_elem()) {
-      return syntactically_false_res;
-    } else {
-      select_ret->push_back(result_clause);
+    if (semantically_valid) {
+      if (result_clause == nullptr || !result_clause->set_elem()) {
+        return syntactically_false_res;
+      } else {
+        select_ret->push_back(result_clause);
+      }
     }
   }
   for (const std::string &such_that_clause : such_that_clauses) {
@@ -444,7 +448,7 @@ int SelectClauseParser::SetSuchThatRefLeft(SuchThatRef *left_such_that_ref,
           left_such_that_ref->set_stmt_ref(left_stmt_ref);
           return 1;
         } else {
-          return -1;
+          return 0;
         }
       }
       case EntityType::Procedure:
@@ -651,11 +655,15 @@ std::vector<std::string> SelectClauseParser::SplitSelect(std::string select_clau
   std::string token;
 
   while ((pos = select_clause.find(SELECT_DELIM)) != std::string::npos) {
+    found_select = true;
     select_clause.erase(0, pos + SELECT_DELIM.length());
     break;
   }
+
+  if (!found_select) return {};
   select_clause.erase(std::remove_if(select_clause.begin(), select_clause.end(), ::isspace),
                       select_clause.end());
+
   if (select_clause.empty()) {
     return {};
   } else if (select_clause.at(0) == '<' && select_clause.at(select_clause.length() - 1) == '>') {

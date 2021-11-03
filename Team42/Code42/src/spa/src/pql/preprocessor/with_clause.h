@@ -13,6 +13,10 @@ enum class AttrValueType {
 class WithClause : public Clause {
  public:
   WithClause();
+  WithClause(std::string left_ref, EntityType left_type,
+             AttrValueType left_attr_value_type,
+             std::string right_ref, EntityType right_type,
+             AttrValueType right_attr_value_type);
   ~WithClause();
   std::string get_left_ref();
   std::string get_right_ref();

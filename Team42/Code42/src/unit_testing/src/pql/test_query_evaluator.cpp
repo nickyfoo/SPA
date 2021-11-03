@@ -19,7 +19,7 @@ TEST_CASE("SingleClause_SuchThatClause_OutputsVectorOfStrings") {
     std::vector<PatternClause *> *,
     std::vector<WithClause *> *,
     std::unordered_map<std::string, EntityDeclaration *> *,
-    bool> *clause = query.get_clauses();
+    bool, bool> *clause = query.get_clauses();
     QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clause),
                                                     std::get<2>(*clause),
                                                     std::get<3>(*clause),
@@ -28,7 +28,8 @@ TEST_CASE("SingleClause_SuchThatClause_OutputsVectorOfStrings") {
     PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                        clause_groups,
                                        std::get<4>(*clause),
-                                       std::get<5>(*clause));
+                                       std::get<5>(*clause),
+                                       std::get<6>(*clause));
 
     std::vector<std::string> expected = {"2"};
   }
@@ -42,7 +43,7 @@ TEST_CASE("SingleClause_SuchThatClause_OutputsVectorOfStrings") {
     std::vector<PatternClause *> *,
     std::vector<WithClause *> *,
     std::unordered_map<std::string, EntityDeclaration *> *,
-    bool> *clause = query.get_clauses();
+    bool, bool> *clause = query.get_clauses();
     QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clause),
                                                     std::get<2>(*clause),
                                                     std::get<3>(*clause),
@@ -51,7 +52,8 @@ TEST_CASE("SingleClause_SuchThatClause_OutputsVectorOfStrings") {
     PQLQuery *pql_query = new PQLQuery(std::get<0>(*clause),
                                        clause_groups,
                                        std::get<4>(*clause),
-                                       std::get<5>(*clause));
+                                       std::get<5>(*clause),
+                                       std::get<6>(*clause));
 
     std::vector<std::string> expected = {"2"};
   }

@@ -315,7 +315,7 @@ static std::vector<std::string> *EvaluateQuery(std::string ss) {
              std::vector<PatternClause *> *,
              std::vector<WithClause *> *,
              std::unordered_map<std::string, EntityDeclaration *> *,
-             bool> *clause = query.get_clauses();
+             bool, bool> *clause = query.get_clauses();
   QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clause),
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),
@@ -324,7 +324,8 @@ static std::vector<std::string> *EvaluateQuery(std::string ss) {
   auto *pql_query = new PQLQuery(std::get<0>(*clause),
                                  clause_groups,
                                  std::get<4>(*clause),
-                                 std::get<5>(*clause));
+                                 std::get<5>(*clause),
+                                 std::get<6>(*clause));
 
   // Parse source
   BufferedLexer lexer(source);

@@ -11,8 +11,9 @@ TEST_CASE("Select_NoExtraClauses_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 0);
@@ -28,8 +29,9 @@ TEST_CASE("Select_UndefinedEntity_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Select_BadSelectKeyword_ReturnsNullPtr") {
@@ -41,8 +43,9 @@ TEST_CASE("Select_BadSelectKeyword_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Select_NoEntitySelected_ReturnsNullPtr") {
@@ -54,8 +57,9 @@ TEST_CASE("Select_NoEntitySelected_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Select_ExtraSpaces_ReturnsCorrect") {
@@ -67,8 +71,9 @@ TEST_CASE("Select_ExtraSpaces_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 0);
@@ -84,8 +89,9 @@ TEST_CASE("SuchThat_BadSuchThatClauseKeyword_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("SuchThat_BadRelRef_ReturnsNullPtr") {
@@ -97,21 +103,23 @@ TEST_CASE("SuchThat_BadRelRef_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Follows_ArgAndStmt_ReturnsNullPtr") {
   std::string ss = "stmt s1; stmt s2;\n"
-                   "Select s1 such that Follows('test', s2)";
+                   "Select s1 such that Follows(\"test\", s2)";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Follows_StmtAndStmt_ReturnsCorrect") {
@@ -123,8 +131,9 @@ TEST_CASE("Follows_StmtAndStmt_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s1");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::Follows);
@@ -143,8 +152,9 @@ TEST_CASE("Follows_StmtAndStmtNum_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s1");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::Follows);
@@ -163,8 +173,9 @@ TEST_CASE("Follows_StmtNumAndStmt_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s1");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::Follows);
@@ -175,7 +186,7 @@ TEST_CASE("Follows_StmtNumAndStmt_ReturnsCorrect") {
 }
 
 TEST_CASE("Follows_StmtAndVar_ReturnsNullPtr") {
-  std::string ss = "stmt s1; stmt s2; var v;\n"
+  std::string ss = "stmt s1; stmt s2; variable v;\n"
                    "Select s1 such that Follows(s1, v)";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
@@ -183,8 +194,9 @@ TEST_CASE("Follows_StmtAndVar_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Follows_StmtAndProcedure_ReturnsNullPtr") {
@@ -196,8 +208,9 @@ TEST_CASE("Follows_StmtAndProcedure_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("FollowsT_StmtAndStmt_ReturnsCorrect") {
@@ -209,8 +222,9 @@ TEST_CASE("FollowsT_StmtAndStmt_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s1");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::FollowsT);
@@ -229,8 +243,9 @@ TEST_CASE("FollowsT_StmtAndStmtNum_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s1");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::FollowsT);
@@ -249,8 +264,9 @@ TEST_CASE("SuchThat_ExtraSpacesWithinBracket_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s1");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::FollowsT);
@@ -262,15 +278,16 @@ TEST_CASE("SuchThat_ExtraSpacesWithinBracket_ReturnsCorrect") {
 
 TEST_CASE("Parent_ArgAndStmt_ReturnsNullPtr") {
   std::string ss = "stmt s1; stmt s2;\n"
-                   "Select s1 such that Parent('test', s2)";
+                   "Select s1 such that Parent(\"test\", s2)";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Parent_StmtAndStmt_ReturnsCorrect") {
@@ -282,8 +299,9 @@ TEST_CASE("Parent_StmtAndStmt_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s1");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::Parent);
@@ -302,8 +320,9 @@ TEST_CASE("Parent_StmtAndStmtNum_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s1");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::Parent);
@@ -322,8 +341,9 @@ TEST_CASE("Parent_StmtNumAndStmt_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s1");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::Parent);
@@ -334,7 +354,7 @@ TEST_CASE("Parent_StmtNumAndStmt_ReturnsCorrect") {
 }
 
 TEST_CASE("Parent_StmtNumAndVar_ReturnsNullPtr") {
-  std::string ss = "stmt s1; stmt s2; var v;\n"
+  std::string ss = "stmt s1; stmt s2; variable v;\n"
                    "Select s1 such that Parent(s1, v)";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
@@ -342,8 +362,9 @@ TEST_CASE("Parent_StmtNumAndVar_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("ParentT_StmtAndStmt_ReturnsCorrect") {
@@ -355,8 +376,9 @@ TEST_CASE("ParentT_StmtAndStmt_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s1");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::ParentT);
@@ -375,8 +397,9 @@ TEST_CASE("ParentT_StmtAndStmtNum_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s1");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::ParentT);
@@ -395,8 +418,9 @@ TEST_CASE("Modifies_AssignAndVar_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "a");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::ModifiesS);
@@ -415,8 +439,9 @@ TEST_CASE("Modifies_ReadndVar_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "r");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::ModifiesS);
@@ -435,8 +460,9 @@ TEST_CASE("Modifies_IfAndVar_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "ifs");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::ModifiesS);
@@ -455,8 +481,9 @@ TEST_CASE("Modifies_WhileAndVar_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "whiles");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::ModifiesS);
@@ -475,8 +502,9 @@ TEST_CASE("Modifies_ProcedureAndVar_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "proc");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::ModifiesP);
@@ -495,8 +523,9 @@ TEST_CASE("Modifies_CallAndVar_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "calls");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::ModifiesS);
@@ -515,8 +544,9 @@ TEST_CASE("Modifies_StmtAndVar_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::ModifiesS);
@@ -535,8 +565,9 @@ TEST_CASE("Modifies_StmtNumAndVar_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "v");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::ModifiesS);
@@ -555,8 +586,9 @@ TEST_CASE("Modifies_AssignAndStmt_ReturnsFalse") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Modifies_UnknownEntityAndVar_ReturnsFalse") {
@@ -568,8 +600,9 @@ TEST_CASE("Modifies_UnknownEntityAndVar_ReturnsFalse") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Uses_AssignAndVar_ReturnsCorrect") {
@@ -581,8 +614,9 @@ TEST_CASE("Uses_AssignAndVar_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "a");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::UsesS);
@@ -601,8 +635,9 @@ TEST_CASE("Uses_PrintAndVar_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "pn");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::UsesS);
@@ -621,8 +656,9 @@ TEST_CASE("Uses_IfAndVar_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "ifs");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::UsesS);
@@ -641,8 +677,9 @@ TEST_CASE("Uses_WhileAndVar_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "whiles");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::UsesS);
@@ -661,8 +698,9 @@ TEST_CASE("Uses_ProcedureAndVar_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "proc");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::UsesP);
@@ -681,8 +719,9 @@ TEST_CASE("Uses_CallAndVar_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "calls");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::UsesS);
@@ -701,8 +740,9 @@ TEST_CASE("Uses_StmtAndVar_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::UsesS);
@@ -721,8 +761,9 @@ TEST_CASE("Uses_StmtNumAndVar_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "v");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::UsesS);
@@ -741,12 +782,13 @@ TEST_CASE("Uses_AssignAndStmt_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Uses_UnknownEntityAndVar_ReturnsCorrect") {
-  std::string ss = "assign assign; var v;\n"
+  std::string ss = "assign assign; variable v;\n"
                    "Select assign such that Uses(pn, v)";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
@@ -754,21 +796,23 @@ TEST_CASE("Uses_UnknownEntityAndVar_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Pattern_AssignWildCardAndPattern_ReturnsCorrect") {
   std::string ss = "assign a;\n"
-                   "Select a pattern a ( _ , 'count + 1')";
+                   "Select a pattern a ( _ , \"count + 1\")";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "a");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 1);
@@ -781,15 +825,16 @@ TEST_CASE("Pattern_AssignWildCardAndPattern_ReturnsCorrect") {
 
 TEST_CASE("Pattern_AssignWildCardAndPartialPattern_ReturnsCorrect") {
   std::string ss = "assign a;\n"
-                   "Select a pattern a ( _ , _'count + 1'_)";
+                   "Select a pattern a ( _ , _\"count + 1\"_)";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "a");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 1);
@@ -809,8 +854,9 @@ TEST_CASE("Pattern_AssignWildCardAndWildCard_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "a");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 1);
@@ -822,15 +868,16 @@ TEST_CASE("Pattern_AssignWildCardAndWildCard_ReturnsCorrect") {
 
 TEST_CASE("Pattern_AssignVarAndPartialPattern_ReturnsCorrect") {
   std::string ss = "assign a;\n"
-                   "Select a pattern a ( 'normSq' , _'cenX * cenX'_)";
+                   "Select a pattern a ( \"normSq\" , _\"cenX * cenX\"_)";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "a");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 1);
@@ -845,15 +892,16 @@ TEST_CASE("Pattern_AssignVarAndPartialPattern_ReturnsCorrect") {
 
 TEST_CASE("Select_OneSuchThatAndPattern_ReturnsCorrect") {
   std::string ss = "assign a; while w;"
-                   "Select w such that Parent* (w, a) pattern a ('count', _)";
+                   "Select w such that Parent* (w, a) pattern a (\"count\", _)";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "w");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -880,8 +928,9 @@ TEST_CASE("Select_OnePatternAndSuchThat_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "a");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -901,15 +950,16 @@ TEST_CASE("Select_OnePatternAndSuchThat_ReturnsCorrect") {
 
 TEST_CASE("Select_UsesRepeatEntity_ReturnsCorrect") {
   std::string ss = "assign a; while w;"
-                   "Select a pattern a ('x', _) such that Uses (a, 'x')";
+                   "Select a pattern a (\"x\", _) such that Uses (a, \"x\")";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "a");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -930,16 +980,17 @@ TEST_CASE("Select_UsesRepeatEntity_ReturnsCorrect") {
 
 TEST_CASE("Select_ComplexQueryWithSimilarPatternNaming_ReturnsCorrect") {
   std::string ss = "assign pattern; while w;"
-                   "Select pattern pattern pattern ('x', _) "
-                   "such that Uses (pattern, 'x')";
+                   "Select pattern pattern pattern (\"x\", _) "
+                   "such that Uses (pattern, \"x\")";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "pattern");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -968,8 +1019,9 @@ TEST_CASE("Select_ComplexQueryWithSimilarNaming_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "pattern");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -999,8 +1051,9 @@ TEST_CASE("Select_ExtraSuchThatKeyword_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Select_StrangeFormat_ReturnsNullPtr") {
@@ -1013,47 +1066,51 @@ TEST_CASE("Select_StrangeFormat_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Pattern_EndingWithSymbol_ReturnsNullPtr") {
   std::string ss = "assign a;"
-                   "Select a pattern a ( _ , 'x+y*')";
+                   "Select a pattern a ( _ , \"x+y*\")";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Pattern_HavingTwoContinuousSymbols_ReturnsNullPtr") {
   std::string ss = "assign a;"
-                   "Select a pattern a ( _ , 'x+*y')";
+                   "Select a pattern a ( _ , \"x+*y\")";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Pattern_KeywordPatternInPattern_ReturnsCorrect") {
   std::string ss = "assign a;"
-                   "Select a pattern a ( _ , ' pattern ')";
+                   "Select a pattern a ( _ , \" pattern \")";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "a");
   REQUIRE(std::get<1>(*clause)->size() == 0);
 
@@ -1076,8 +1133,9 @@ TEST_CASE("Select_InvalidKeywords_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Select_FollowsPattern_ReturnsCorrect") {
@@ -1089,8 +1147,9 @@ TEST_CASE("Select_FollowsPattern_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "a");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -1116,8 +1175,9 @@ TEST_CASE("SuchThat_SpacesBetweenSuchThat_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Space between 2 entity declarations") {
@@ -1128,8 +1188,9 @@ TEST_CASE("Space between 2 entity declarations") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "call");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -1149,8 +1210,9 @@ TEST_CASE("SuchThat_FollowsAndParent_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s1");
   REQUIRE(std::get<1>(*clause)->size() == 2);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -1169,15 +1231,16 @@ TEST_CASE("SuchThat_FollowsAndParent_ReturnsCorrect") {
 
 TEST_CASE("SuchThat_FollowsAndParentAndUses_ReturnsCorrect") {
   std::string ss = "stmt s1; stmt s2; while w;\n"
-                   "Select s1 such that Follows(s1,s2) and Parent(s2, w) and Uses(w, 'x')";
+                   "Select s1 such that Follows(s1,s2) and Parent(s2, w) and Uses(w, \"x\")";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s1");
   REQUIRE(std::get<1>(*clause)->size() == 3);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -1208,21 +1271,23 @@ TEST_CASE("SuchThat_FollowsAndParentAndPattern_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Pattern_PatternAndPattern_ReturnsCorrect") {
   std::string ss = "assign a, a1; variable v;\n"
-                   "Select v pattern a(v, _) and a1(v, 'x')";
+                   "Select v pattern a(v, _) and a1(v, \"x\")";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "v");
   REQUIRE(std::get<1>(*clause)->size() == 0);
 
@@ -1246,15 +1311,16 @@ TEST_CASE("Pattern_PatternAndPattern_ReturnsCorrect") {
 
 TEST_CASE("Pattern_PatternAndPatternAndPattern_ReturnsCorrect") {
   std::string ss = "assign a, a1, a2; variable v, v2;\n"
-                   "Select v pattern a(v, _) and a1(v, 'x') and a2(v2, _'x2'_)";
+                   "Select v pattern a(v, _) and a1(v, \"x\") and a2(v2, _\"x2\"_)";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "v");
   REQUIRE(std::get<1>(*clause)->size() == 0);
 
@@ -1286,15 +1352,16 @@ TEST_CASE("Pattern_PatternAndPatternAndPattern_ReturnsCorrect") {
 
 TEST_CASE("Pattern_PatternPatternPattern_ReturnsCorrect") {
   std::string ss = "assign a, a1, a2; variable v, v2;\n"
-                   "Select v pattern a(v, _) pattern a1(v, 'x') pattern a2(v2, _'x2'_)";
+                   "Select v pattern a(v, _) pattern a1(v, \"x\") pattern a2(v2, _\"x2\"_)";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "v");
   REQUIRE(std::get<1>(*clause)->size() == 0);
 
@@ -1334,8 +1401,9 @@ TEST_CASE("Complex_MultiplePatternAndSuchThat_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->size() == 4);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s");
   REQUIRE(std::get<0>(*clause)->at(1)->get_synonym() == "a1");
@@ -1378,8 +1446,9 @@ TEST_CASE("Pattern_WhileVariableWildCard_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "w");
   REQUIRE(std::get<1>(*clause)->size() == 0);
 
@@ -1395,15 +1464,16 @@ TEST_CASE("Pattern_WhileVariableWildCard_ReturnsCorrect") {
 
 TEST_CASE("Pattern_WhileArgumentWildCard_ReturnsCorrect") {
   std::string ss = "while w;\n"
-                   "Select w pattern w ('x', _)";
+                   "Select w pattern w (\"x\", _)";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "w");
   REQUIRE(std::get<1>(*clause)->size() == 0);
 
@@ -1426,8 +1496,9 @@ TEST_CASE("Pattern_WhileWildCardWildCard_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "w");
   REQUIRE(std::get<1>(*clause)->size() == 0);
 
@@ -1449,8 +1520,9 @@ TEST_CASE("Pattern_WhileVariableAndNonWildCard_ReturnsWrong") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Pattern_IfVariableWildCard_ReturnsCorrect") {
@@ -1462,8 +1534,9 @@ TEST_CASE("Pattern_IfVariableWildCard_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "ifs");
   REQUIRE(std::get<1>(*clause)->size() == 0);
 
@@ -1479,15 +1552,16 @@ TEST_CASE("Pattern_IfVariableWildCard_ReturnsCorrect") {
 
 TEST_CASE("Pattern_IfArgumentWildCard_ReturnsCorrect") {
   std::string ss = "if ifs;\n"
-                   "Select ifs pattern ifs ('x', _, _)";
+                   "Select ifs pattern ifs (\"x\", _, _)";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "ifs");
   REQUIRE(std::get<1>(*clause)->size() == 0);
 
@@ -1510,8 +1584,9 @@ TEST_CASE("Pattern_IfWildCardWildCard_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "ifs");
   REQUIRE(std::get<1>(*clause)->size() == 0);
 
@@ -1533,8 +1608,9 @@ TEST_CASE("Pattern_IfVariableAndNonLeftWildCard_ReturnsWrong") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Pattern_IfVariableAndNonRightWildCard_ReturnsWrong") {
@@ -1546,8 +1622,9 @@ TEST_CASE("Pattern_IfVariableAndNonRightWildCard_ReturnsWrong") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Pattern_IfVariableAndNonLeftAndRightWildCard_ReturnsWrong") {
@@ -1559,8 +1636,9 @@ TEST_CASE("Pattern_IfVariableAndNonLeftAndRightWildCard_ReturnsWrong") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Pattern_IfVariableWithMissingArgument_ReturnsWrong") {
@@ -1572,8 +1650,9 @@ TEST_CASE("Pattern_IfVariableWithMissingArgument_ReturnsWrong") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("With_ProcedureAndProcedure_ReturnsCorrect") {
@@ -1585,8 +1664,9 @@ TEST_CASE("With_ProcedureAndProcedure_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "p1");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 0);
@@ -1610,8 +1690,9 @@ TEST_CASE("With_ProcedureAndCall_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "p");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 0);
@@ -1635,8 +1716,9 @@ TEST_CASE("With_ProcedureAndVariable_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "v");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 0);
@@ -1660,8 +1742,9 @@ TEST_CASE("With_CallAndRead_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "c");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 0);
@@ -1685,8 +1768,9 @@ TEST_CASE("With_PrintAndPrint_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "pn1");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 0);
@@ -1710,8 +1794,9 @@ TEST_CASE("With_ConstantAndConstant_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "c1");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 0);
@@ -1735,8 +1820,9 @@ TEST_CASE("With_ConstantAndStmt_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "c1");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 0);
@@ -1760,8 +1846,9 @@ TEST_CASE("With_StmtAndRead_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "r");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 0);
@@ -1785,8 +1872,9 @@ TEST_CASE("With_PrintAndCall_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "pn");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 0);
@@ -1810,8 +1898,9 @@ TEST_CASE("With_WhileAndAssign_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "a");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 0);
@@ -1835,8 +1924,9 @@ TEST_CASE("With_ProcedureAndStmt_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("With_ProcedureAndProcedureWrongKeyword_ReturnsNullPtr") {
@@ -1848,8 +1938,9 @@ TEST_CASE("With_ProcedureAndProcedureWrongKeyword_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("With_PrintAndPrintWithDiffType_ReturnsNullPtr") {
@@ -1861,8 +1952,9 @@ TEST_CASE("With_PrintAndPrintWithDiffType_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("With_DoubleEqualSign_ReturnsNullPtr") {
@@ -1874,8 +1966,9 @@ TEST_CASE("With_DoubleEqualSign_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("With_StmtAndStmtWrongKeyword_ReturnsNullPtr") {
@@ -1887,8 +1980,9 @@ TEST_CASE("With_StmtAndStmtWrongKeyword_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("With_IntegerAndProcedure_ReturnsNullPtr") {
@@ -1900,8 +1994,9 @@ TEST_CASE("With_IntegerAndProcedure_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("With_PrintAndInteger_ReturnsNullPtr") {
@@ -1913,8 +2008,9 @@ TEST_CASE("With_PrintAndInteger_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("With_IntegerAndConstant_ReturnsCorrect") {
@@ -1926,8 +2022,9 @@ TEST_CASE("With_IntegerAndConstant_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "c");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 0);
@@ -1951,8 +2048,9 @@ TEST_CASE("With_IfAndInteger_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "ifs");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 0);
@@ -1969,15 +2067,16 @@ TEST_CASE("With_IfAndInteger_ReturnsCorrect") {
 
 TEST_CASE("With_VariableAndIdent_ReturnsCorrect") {
   std::string ss = "variable v;\n"
-                   "Select v with v.varName = 'x'";
+                   "Select v with v.varName = \"x\"";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "v");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 0);
@@ -2001,8 +2100,9 @@ TEST_CASE("With_IfAndIntegerExtraSpace_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "ifs");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 0);
@@ -2026,8 +2126,9 @@ TEST_CASE("With_IfAndIntegerSpaceBeforeAttrValueType_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("With_IfAndIntegerSpaceAfterAttr_ReturnsNullPtr") {
@@ -2039,21 +2140,23 @@ TEST_CASE("With_IfAndIntegerSpaceAfterAttr_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("With_TwoWiths_ReturnsCorrect") {
   std::string ss = "if ifs; procedure p;\n"
-                   "Select ifs with ifs.stmt# = 25461 and p.procName = 'computeCentroid'";
+                   "Select ifs with ifs.stmt# = 25461 and p.procName = \"computeCentroid\"";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "ifs");
   REQUIRE(std::get<1>(*clause)->size() == 0);
   REQUIRE(std::get<2>(*clause)->size() == 0);
@@ -2078,15 +2181,16 @@ TEST_CASE("With_TwoWiths_ReturnsCorrect") {
 
 TEST_CASE("Next_ArgAndStmt_ReturnsNullPtr") {
   std::string ss = "stmt s1; stmt s2;\n"
-                   "Select s1 such that Next('test', s2)";
+                   "Select s1 such that Next(\"test\", s2)";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Next_StmtAndStmt_ReturnsCorrect") {
@@ -2098,8 +2202,9 @@ TEST_CASE("Next_StmtAndStmt_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s1");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::Next);
@@ -2119,8 +2224,9 @@ TEST_CASE("Next_StmtAndStmtNum_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s1");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::Next);
@@ -2140,8 +2246,9 @@ TEST_CASE("Next_StmtNumAndStmt_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s1");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   REQUIRE(std::get<1>(*clause)->at(0)->get_type() == RelRef::Next);
@@ -2153,7 +2260,7 @@ TEST_CASE("Next_StmtNumAndStmt_ReturnsCorrect") {
 }
 
 TEST_CASE("Next_StmtAndVar_ReturnsNullPtr") {
-  std::string ss = "stmt s1; stmt s2; var v;\n"
+  std::string ss = "stmt s1; stmt s2; variable v;\n"
                    "Select s1 such that Next(s1, v)";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
@@ -2161,8 +2268,9 @@ TEST_CASE("Next_StmtAndVar_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Next_StmtAndProcedure_ReturnsNullPtr") {
@@ -2174,8 +2282,9 @@ TEST_CASE("Next_StmtAndProcedure_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("NextT_StmtAndStmt_ReturnsCorrect") {
@@ -2187,8 +2296,9 @@ TEST_CASE("NextT_StmtAndStmt_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s1");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -2209,8 +2319,9 @@ TEST_CASE("NextT_StmtAndStmtNum_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s1");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -2224,15 +2335,16 @@ TEST_CASE("NextT_StmtAndStmtNum_ReturnsCorrect") {
 
 TEST_CASE("Affects_ArgAndAssign_ReturnsNullPtr") {
   std::string ss = "assign a;\n"
-                   "Select a such that Affects('test', a)";
+                   "Select a such that Affects(\"test\", a)";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Affects_AssignAndAssign_ReturnsCorrect") {
@@ -2244,8 +2356,9 @@ TEST_CASE("Affects_AssignAndAssign_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "a1");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -2266,8 +2379,9 @@ TEST_CASE("Affects_AssignAndStmtNum_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "a");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -2288,8 +2402,9 @@ TEST_CASE("Affects_StmtNumAndAssign_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "a");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -2310,8 +2425,9 @@ TEST_CASE("Affects_AssignAndStmt_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -2332,8 +2448,9 @@ TEST_CASE("Affects_AssignAndProcedure_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("AffectsT_AssigAndAssign_ReturnsCorrect") {
@@ -2345,8 +2462,9 @@ TEST_CASE("AffectsT_AssigAndAssign_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "a1");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -2367,8 +2485,9 @@ TEST_CASE("AffectsT_AssignAndStmtNum_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "a1");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -2389,8 +2508,9 @@ TEST_CASE("Calls_ProcedureAndProcedure_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "proc");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -2411,21 +2531,23 @@ TEST_CASE("Calls_ProcedureAndAssign_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Calls_ProcedureAndArgument_ReturnsCorrect") {
   std::string ss = "procedure proc;\n"
-                   "Select proc such that Calls(proc, 'computeCentroid')";
+                   "Select proc such that Calls(proc, \"computeCentroid\")";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "proc");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -2446,8 +2568,9 @@ TEST_CASE("CallsT_ProcedureAndProcedure_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "proc");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -2468,21 +2591,23 @@ TEST_CASE("CallsT_ProcedureAndAssign_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("CallsT_ProcedureAndArgument_ReturnsCorrect") {
   std::string ss = "procedure proc;\n"
-                   "Select proc such that Calls*(proc, 'computeCentroid')";
+                   "Select proc such that Calls*(proc, \"computeCentroid\")";
   auto query = QueryPreprocessor(ss);
   std::tuple<std::vector<ResultClause *> *,
   std::vector<SuchThatClause *> *,
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "proc");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -2503,8 +2628,9 @@ TEST_CASE("CallsT_ProcedureAndWhile_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("CallsT_IntegerAndProcedure_ReturnsNullPtr") {
@@ -2516,8 +2642,9 @@ TEST_CASE("CallsT_IntegerAndProcedure_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Select_ProgLine_ReturnsCorrect") {
@@ -2529,8 +2656,9 @@ TEST_CASE("Select_ProgLine_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "n");
   REQUIRE(std::get<1>(*clause)->size() == 2);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -2557,8 +2685,9 @@ TEST_CASE("Select_ComplexQueries_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -2585,8 +2714,9 @@ TEST_CASE("Select_ValidAttr_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s1");
   REQUIRE(std::get<0>(*clause)->at(0)->get_return_type() == ReturnType::Integer);
   REQUIRE(std::get<1>(*clause)->size() == 1);
@@ -2608,8 +2738,9 @@ TEST_CASE("Select_InvalidAttr_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<6>(*clause) == false);
 }
 
 TEST_CASE("Select_BOOLEANTrue_ReturnsCorrect") {
@@ -2621,8 +2752,9 @@ TEST_CASE("Select_BOOLEANTrue_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_return_type() == ReturnType::Boolean);
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -2643,8 +2775,9 @@ TEST_CASE("Select_QueriesWithSuchThatPatternWith_ReturnsCorrect") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
+  bool, bool> *clause = query.get_clauses();
   REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == true);
   REQUIRE(std::get<0>(*clause)->at(0)->get_synonym() == "s");
   REQUIRE(std::get<1>(*clause)->size() == 1);
   SuchThatClause *relationship = std::get<1>(*clause)->at(0);
@@ -2677,6 +2810,7 @@ TEST_CASE("Calls_ProcedureAndRead_ReturnsNullPtr") {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
 }

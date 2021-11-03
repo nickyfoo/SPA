@@ -2,7 +2,7 @@ import subprocess
 import sys
 
 files = [
-    "iter3_BOOLEAN"
+    "testing"
 ]
 
 for file in files:

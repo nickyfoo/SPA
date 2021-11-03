@@ -26,28 +26,38 @@ ResultTable *PatternQueryManager::EvaluatePattern(std::shared_ptr<PatternClause>
 ResultTable *PatternQueryManager::EvaluateAssignPattern(
     std::shared_ptr<PatternClause> pattern, std::unordered_map<std::string,
     std::vector<Entity *>> synonym_to_entities_vec) {
+  printf("yuh\n");
   auto *ret = new ResultTable();
   EntityDeclaration *synonym = pattern->get_synonym();
   EntRef *left_ent = pattern->get_variable();
   ExpressionSpec *right_ent = pattern->get_exp_spec();
   std::string pattern_to_check = right_ent->get_expression();
   bool is_partial_pattern = right_ent->IsPartialPattern();
-
+  printf("yuh1\n");
   // list of assignment object
   std::vector<Entity *> entity_vec = synonym_to_entities_vec.at(synonym->get_synonym());
   std::set<Entity *> var_set;
   std::string left_synonym;
   std::vector<std::string> stmt_vec;
   std::vector<std::string> var_vec;
-
+  printf("yuh2\n");
+  printf("pattern to check: %s\n", pattern_to_check.c_str());
+  printf("partial pattern %d\n", is_partial_pattern);
   for (int i = 0; i < entity_vec.size(); i++) {
     auto *stmt = dynamic_cast<Statement *>(entity_vec.at(i));  // for each stmt object
+    printf("yuh3\n");
+    printf("first: %d\n", stmt->get_modifies()->empty());
+    printf("second: %d\n", !pkb_->TestAssignmentPattern(stmt, pattern_to_check, is_partial_pattern));
+    printf("third: %d\n", !right_ent->IsWildCard());
     if ((stmt->get_modifies()->empty()
         || !pkb_->TestAssignmentPattern(stmt, pattern_to_check, is_partial_pattern))
         && !right_ent->IsWildCard()) {
+      printf("got something\n");
       continue;
     } else {
+      printf("nothing\n");
       if (left_ent->get_type() == EntRefType::Synonym) {  // pattern a(v, "pattern")
+        printf("one\n");
         left_synonym = left_ent->get_synonym();
 
         // getting list of variable objects
@@ -60,10 +70,12 @@ ResultTable *PatternQueryManager::EvaluateAssignPattern(
           var_vec.push_back(s);
         }
       } else if (left_ent->get_type() == EntRefType::Argument) {  // pattern a("x", "pattern")
+        printf("two\n");
         if (stmt->get_modifies()->count(left_ent->get_argument())) {
           stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
         }
       } else if (left_ent->get_type() == EntRefType::WildCard) {  // pattern a(_, "pattern")
+        printf("three\n");
         stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
       }
     }

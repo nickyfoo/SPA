@@ -35,6 +35,7 @@ ExpressionSpec *PatternClause::get_exp_spec() {
 }
 
 bool PatternClause::IsValidExpSpec(std::string ref) {
+  printf("REF IS: %s\n", ref.c_str());
   bool partial_pattern;
   auto *exp_spec = new ExpressionSpec();
   if (ref == "_") {
@@ -63,6 +64,7 @@ bool PatternClause::IsValidExpSpec(std::string ref) {
   bool must_be_exp = false;
   bool must_be_char = true;
   for (char &c : ref) {
+    printf("%c ", c);
     if ((must_be_char && IsExp(c)) || (must_be_exp && IsChar(c))) {
       return false;
     } else {
@@ -88,7 +90,7 @@ bool PatternClause::IsValidExpSpec(std::string ref) {
       }
     }
   }
-
+  printf("\n");
   if (!expecting_exp && !ref.empty()) {
     return false;
   }
@@ -97,6 +99,7 @@ bool PatternClause::IsValidExpSpec(std::string ref) {
   exp_spec->set_partial_pattern(partial_pattern);
 
   this->exp_spec_ = exp_spec;
+  printf("got set\n");
   return true;
 }
 

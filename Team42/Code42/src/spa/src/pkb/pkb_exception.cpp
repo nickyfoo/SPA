@@ -1,6 +1,6 @@
 #include "pkb_exception.h"
 
-PKBException::PKBException(std::string error) {
+PKBException::PKBException(const std::string &error) {
   this->msg_ = "PKBException: " + error;
 }
 

@@ -19,9 +19,9 @@ class Variable : public Entity {
   // Adds a statement that modifies this variable.
   void AddStmtModifying(int stmt_no);
   // Adds a procedure that uses this variable.
-  void AddProcUsing(std::string proc_name);
+  void AddProcUsing(const std::string &proc_name);
   // Adds a procedure that modifies this variable.
-  void AddProcModifying(std::string proc_name);
+  void AddProcModifying(const std::string &proc_name);
 
   // Gets the statement numbers using this variable.
   std::set<int> *get_stmts_using();

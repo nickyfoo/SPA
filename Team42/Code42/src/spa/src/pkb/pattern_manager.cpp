@@ -44,10 +44,11 @@ std::string PatternManager::GetPostfixExpr(std::string infix_expr) {
       }
 
       switch (*it) {
-        case '(':ops.push(*it);
+        case '(':
+          ops.push(*it);
           break;
         case ')':
-          while (ops.top() != '(' && !ops.empty()) {
+          while (!ops.empty() && ops.top() != '(') {
             output << ops.top() << ' ';
             ops.pop();
           }
@@ -89,8 +90,10 @@ std::string PatternManager::GetPostfixExpr(std::string infix_expr) {
           break;
         }
         case '\t':
-        case ' ': break;
-        default: throw std::invalid_argument("Expression is not valid");
+        case ' ':
+          break;
+        default:
+          throw std::invalid_argument("Expression is not valid");
       }
     }
 
@@ -102,13 +105,15 @@ std::string PatternManager::GetPostfixExpr(std::string infix_expr) {
       output << ops.top() << ' ';
       ops.pop();
     }
-  } catch (std::invalid_argument e) {
+  } catch (std::invalid_argument &e) {
     std::cerr << e.what() << std::endl;
   }
   return output.str();
 }
 
-bool PatternManager::TestAssignmentPattern(Statement *assignment_stmt, std::string pattern, bool is_partial_match) {
+bool PatternManager::TestAssignmentPattern(Statement *assignment_stmt,
+                                           const std::string &pattern,
+                                           bool is_partial_match) {
   if (pattern.empty()) return false;
   std::string postfix_pattern = GetPostfixExpr(pattern);
   std::stringstream assign_expr_ss;
@@ -121,8 +126,8 @@ bool PatternManager::TestAssignmentPattern(Statement *assignment_stmt, std::stri
   }
 }
 
-bool PatternManager::TestIfWhilePattern(Statement *stmt, std::string variable) {
-  if (variable.size() == 0) return false;
+bool PatternManager::TestIfWhilePattern(Statement *stmt, const std::string &variable) {
+  if (variable.empty()) return false;
   std::stringstream expr_ss, variable_ss;
   variable_ss << " " << variable << " ";
   expr_ss << " " << stmt->get_expr_string() << " ";

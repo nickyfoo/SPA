@@ -1,14 +1,24 @@
 #include "procedure.h"
 #include <iostream>
+#include <utility>
+
+Procedure::Procedure(std::string name, int stmt_no) {
+  this->name_ = std::move(name);
+  this->first_statement_ = stmt_no;
+}
 
 Procedure::Procedure(std::string name) {
-  this->name_ = name;
+  this->name_ = std::move(name);
 }
 
 Procedure::~Procedure() = default;
 
 std::string Procedure::get_name() {
   return name_;
+}
+
+int Procedure::get_stmt_no() {
+  return first_statement_;
 }
 
 std::set<std::string> *Procedure::get_uses() {
@@ -35,26 +45,26 @@ std::set<std::string> *Procedure::get_callers_star() {
   return &callers_star_;
 }
 
-void Procedure::AddUses(std::string var_name) {
+void Procedure::AddUses(const std::string &var_name) {
   uses_.insert(var_name);
 }
 
-void Procedure::AddModifies(std::string var_name) {
+void Procedure::AddModifies(const std::string &var_name) {
   modifies_.insert(var_name);
 }
 
-void Procedure::AddCalls(std::string proc_name) {
+void Procedure::AddCalls(const std::string &proc_name) {
   calls_.insert(proc_name);
 }
 
-void Procedure::AddCallsStar(std::string proc_name) {
+void Procedure::AddCallsStar(const std::string &proc_name) {
   calls_star_.insert(proc_name);
 }
 
-void Procedure::AddCallers(std::string proc_name) {
+void Procedure::AddCallers(const std::string &proc_name) {
   callers_.insert(proc_name);
 }
-void Procedure::AddCallersStar(std::string proc_name) {
+void Procedure::AddCallersStar(const std::string &proc_name) {
   callers_star_.insert(proc_name);
 }
 

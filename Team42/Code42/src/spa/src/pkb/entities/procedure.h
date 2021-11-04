@@ -15,6 +15,8 @@ class Procedure : public Entity {
   std::string get_name();
   // Gets the first StmtNo of procedure.
   int get_stmt_no();
+  // Gets the statements in the procedure.
+  std::set<int>* get_stmt_lst();
   // Gets the variables used by the procedure.
   std::set<std::string> *get_uses();
   // Gets the variables modified by the procedure.
@@ -27,7 +29,9 @@ class Procedure : public Entity {
   std::set<std::string> *get_callers();
   // Gets the procedures that call star this procedure.
   std::set<std::string> *get_callers_star();
-
+  
+  // Adds a statement to this procedure's stmt_lst.
+  void AddStmt(int stmt_no);
   // Adds a variable that this procedure uses.
   void AddUses(const std::string &var_name);
   // Adds a variable that this procedure modifies.
@@ -53,6 +57,8 @@ class Procedure : public Entity {
   std::string name_;
   // StmtNo of first statement in procedure
   int first_statement_;
+  // Stmt list of procedure
+  std::set<int> stmt_lst_;
   // Variables used by the procedure.
   std::set<std::string> uses_;
   // Variables modified by the procedure.

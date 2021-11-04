@@ -54,8 +54,8 @@ class DesignExtractor {
 
   // Recursively gets the last stmts of a statement.
   std::set<int> GetLastStmts(StatementNode *node);
-  // Recursively gets the last stmts of a procedure starting at first_stmt.
-  void LastStmtsOfProcedure(int u, std::set<int> &visited, std::set<int> &ans);
+  // Recursively gets the last stmts of a procedure.
+  void LastStmtsOfProcedure(std::string proc_name, std::set<int> &ans);
   // Process and store the AST procedure node into the CFG.
   void CFGProcessProcedureNode(Node *node);
   // Process and store the AST if node into the CFG.

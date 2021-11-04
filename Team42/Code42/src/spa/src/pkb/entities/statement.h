@@ -25,6 +25,8 @@ class Statement : public Entity {
   std::string get_called_proc_name();
   // Gets the name of the procedure that this statement is in
   std::string get_parent_proc();
+  // Gets the last stmts of a container stmt
+  std::set<int>* get_last_stmts();
   // Gets the statements which follows before this statement.
   std::set<int> *get_followers();
   // Gets the statements which follows star before this statement.
@@ -54,7 +56,9 @@ class Statement : public Entity {
   void set_called_proc_name(std::string name);
   // Sets the name of the procedure that this statement is in
   void set_parent_proc(std::string proc_name);
-
+  // Adds a last stmt of the stmt;
+  void add_last_stmt(int last_stmt);
+  
   // Adds a statement that follows before this statement.
   void AddFollower(int line_no);
   // Adds a statement that follows_star before this statement.
@@ -98,6 +102,8 @@ class Statement : public Entity {
   std::string called_proc_name;
   // Name of procedure that this statement is in 
   std::string parent_proc;
+  // Last statements for container statements
+  std::set<int> last_stmts_;
 
   // For v in followers_, Follows(this, v) is true.
   std::set<int> followers_, followers_star_;

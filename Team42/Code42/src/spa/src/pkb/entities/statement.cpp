@@ -52,6 +52,10 @@ std::string Statement::get_called_proc_name() {
   return "";
 }
 
+std::string Statement::get_parent_proc() {
+  return this->parent_proc;
+}
+
 std::set<int> *Statement::get_followers() {
   return &followers_;
 }
@@ -104,6 +108,10 @@ void Statement::set_called_proc_name(std::string name) {
   if (this->kind_ == NodeType::Call) {
     this->called_proc_name = std::move(name);
   }
+}
+
+void Statement::set_parent_proc(std::string name) {
+  this->parent_proc = std::move(name);
 }
 
 void Statement::AddFollower(int line_no) {

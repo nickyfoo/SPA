@@ -205,7 +205,7 @@ void DesignExtractor::ExtractCFG() {
   // Visits and traverse root node
   Visit(root_, functions);
   LinkProcedures();
-  AddCallStacks();
+  AddCallStacks(); 
 }
 
 void DesignExtractor::UpdateVarTableWithProcs() {

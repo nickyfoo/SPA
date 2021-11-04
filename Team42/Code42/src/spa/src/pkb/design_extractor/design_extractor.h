@@ -64,6 +64,8 @@ class DesignExtractor {
   void CFGProcessWhileNode(Node *node);
   // Adds missing links between call stmts and procedures being called
   void LinkProcedures();
+  // Adds missing interprocedure return links
+  void AddInterprocedureReturnLinks(std::set<std::string>&visited,std::set<int>& last_stmts, std::string& proc_name);
   // Adds a call stack to each assign stmt, to store the state that it can be in when encountered.
   void AddCallStacks();
   // Traverses the CFGBip, keeping track of the call stack

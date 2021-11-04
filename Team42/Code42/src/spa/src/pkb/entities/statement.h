@@ -43,24 +43,8 @@ class Statement : public Entity {
   std::set<std::string> *get_uses();
   // Gets the variables which this statement modifies.
   std::set<std::string> *get_modifies();
-  // Gets the next statements.
-  std::set<int> *get_next();
-  // Gets the next star statements.
-  std::set<int> *get_next_star();
-  // Gets the prev statements.
-  std::set<int> *get_prev();
-  // Gets the prev star statements.
-  std::set<int> *get_prev_star();
-  // Gets the statements this affects.
-  std::set<int> *get_affects();
-  // Gets the statements this affects star.
-  std::set<int> *get_affects_star();
-  // Gets the statements affected by this.
-  std::set<int> *get_affected_by();
-  // Gets the statements affected star by this.
-  std::set<int> *get_affected_by_star();
   // Gets the call stack.
-  std::vector <std::vector<int>>* get_call_stacks();
+  std::vector<std::vector<int>> *get_call_stacks();
 
   // Sets the postfix expression string of this statement.
   void set_expr_string(std::string expr_string);
@@ -84,11 +68,11 @@ class Statement : public Entity {
   // Adds a statement that this statement parents_star.
   void AddChildStar(int line_no);
   // Adds a variable that this statement uses.
-  void AddUses(std::string var_name);
+  void AddUses(const std::string &var_name);
   // Adds a variable that this statement modifies.
-  void AddModifies(std::string var_name);
+  void AddModifies(const std::string &var_name);
   // Adds a call stack, returns true if successfully added.
-  bool AddCallStack(std::vector<int>* stack);
+  bool AddCallStack(std::vector<int> *stack);
 
   // Prints the follows information for this statement.
   void FollowsInfo();
@@ -109,20 +93,20 @@ class Statement : public Entity {
   // Name of procedure being called, only valid if of NodeType::Call
   std::string called_proc_name;
 
-  // for v in followers_, Follows(this, v) is true.
+  // For v in followers_, Follows(this, v) is true.
   std::set<int> followers_, followers_star_;
-  // for v in followees_, Follows(v, this) is true.
+  // For v in followees_, Follows(v, this) is true.
   std::set<int> followees_, followees_star_;
-  // for v in parents_, Parent(v, this) is true.
+  // For v in parents_, Parent(v, this) is true.
   std::set<int> parents_, parents_star_;
-  // for v in children_, Parent(this, v) is true.
+  // For v in children_, Parent(this, v) is true.
   std::set<int> children_, children_star_;
 
-  // for var in uses_, Uses(this, var) is true.
+  // For var in uses_, Uses(this, var) is true.
   std::set<std::string> uses_;
-  // for var in modifies_, Modifies(this, var) is true.
+  // For var in modifies_, Modifies(this, var) is true.
   std::set<std::string> modifies_;
 
-  // vector of possible call stacks to keep track of the possible states when encountering this node.
+  // Vector of possible call stacks to keep track of the possible states when encountering this node.
   std::vector<std::vector<int>> call_stacks_;
 };

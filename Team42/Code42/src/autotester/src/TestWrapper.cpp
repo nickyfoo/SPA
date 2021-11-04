@@ -1,6 +1,7 @@
 #include "TestWrapper.h"
 #include "parse.h"
 #include "pkb.h"
+#include "design_extractor.h"
 #include "fstream"
 #include "string"
 #include "sstream"
@@ -40,7 +41,11 @@ void TestWrapper::parse(std::string filename) {
   BufferedLexer lexer(source);
   ParseState s{};
   ProgramNode *p = ParseProgram(&lexer, &s);
-  this->pkb_ = new PKB(p);
+  PKB *pkb = new PKB();
+  DesignExtractor design_extractor(pkb, p);
+  design_extractor.ExtractDesigns();
+
+  this->pkb_ = pkb;
 }
 
 // method to evaluating a query

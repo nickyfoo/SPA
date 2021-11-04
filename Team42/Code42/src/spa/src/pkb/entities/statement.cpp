@@ -1,6 +1,7 @@
 #include "statement.h"
 #include <iostream>
 #include <sstream>
+#include <utility>
 #include <vector>
 #include <string>
 
@@ -91,17 +92,17 @@ std::set<std::string> *Statement::get_modifies() {
   return &modifies_;
 }
 
-std::vector<std::vector<int>>* Statement::get_call_stacks() {
+std::vector<std::vector<int>> *Statement::get_call_stacks() {
   return &call_stacks_;
 }
 
 void Statement::set_expr_string(std::string expr_string) {
-  this->expr_string_ = expr_string;
+  this->expr_string_ = std::move(expr_string);
 }
 
 void Statement::set_called_proc_name(std::string name) {
   if (this->kind_ == NodeType::Call) {
-    this->called_proc_name = name;
+    this->called_proc_name = std::move(name);
   }
 }
 
@@ -137,15 +138,15 @@ void Statement::AddChildStar(int line_no) {
   children_star_.insert(line_no);
 }
 
-void Statement::AddUses(std::string var_name) {
+void Statement::AddUses(const std::string &var_name) {
   uses_.insert(var_name);
 }
 
-void Statement::AddModifies(std::string var_name) {
+void Statement::AddModifies(const std::string &var_name) {
   modifies_.insert(var_name);
 }
 
-bool Statement::AddCallStack(std::vector<int>* stack) {
+bool Statement::AddCallStack(std::vector<int> *stack) {
   /*
   for (auto& existing_stack : call_stacks_) {
     if (existing_stack == *stack) return false;

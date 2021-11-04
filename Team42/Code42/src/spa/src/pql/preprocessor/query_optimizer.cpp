@@ -23,9 +23,10 @@ std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateDefaultGroupings
   clause_groupings.push_back(std::make_shared<ClauseGroup>(ClauseGroup()));
   clause_groupings.push_back(std::make_shared<ClauseGroup>(ClauseGroup()));
 
-  std::vector<ClauseVertex> all_vertices = CombineAllVertices(MakeSuchThatVertices(relationships_),
-                                                              MakePatternVertices(patterns_),
-                                                              MakeWithVertices(withs_));
+  std::vector<ClauseVertex> all_vertices = CombineAllVertices(
+      MakeSuchThatVertices(relationships_),
+      MakePatternVertices(patterns_),
+      MakeWithVertices(withs_));
   auto all_clauses = ClauseGroup();
   all_clauses.set_clauses(all_vertices);
   auto all_clauses_ptr = std::make_shared<ClauseGroup>(all_clauses);
@@ -49,15 +50,18 @@ std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateOptimizedGroupin
   // Add to no_syn_used vector if clause vertex has no synonyms used.
   std::copy_if(all_vertices.begin(),
                all_vertices.end(),
-               std::back_inserter(no_syn_used), [](auto vertex) { return vertex.get_synonyms_used().empty(); });
+               std::back_inserter(no_syn_used),
+               [](auto vertex) { return vertex.get_synonyms_used().empty(); });
   // Add to has_syn_used if clause vertex uses synonyms.
   std::copy_if(all_vertices.begin(),
                all_vertices.end(),
-               std::back_inserter(has_syn_used), [](auto vertex) { return !vertex.get_synonyms_used().empty(); });
+               std::back_inserter(has_syn_used),
+               [](auto vertex) { return !vertex.get_synonyms_used().empty(); });
   // Add to has_return_syn_used if clause vertex uses return synonyms.
   std::copy_if(all_vertices.begin(),
                all_vertices.end(),
-               std::back_inserter(has_return_syn_used), [](auto vertex) { return vertex.get_has_return_syn(); });
+               std::back_inserter(has_return_syn_used),
+               [](auto vertex) { return vertex.get_has_return_syn(); });
 
   // Group with no synonyms will be evaluated first
   auto no_syn_group = ClauseGroup();
@@ -103,7 +107,10 @@ std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateOptimizedGroupin
     if (!has_visited_syn->at(pair.first)) {
       // run dfs if synonym has not been visited
       ClauseGroup *has_return_syn_group = new ClauseGroup();
-      FindConnectedGroups(has_return_syn_group, syn_to_clause, has_visited_syn, has_visited_clause,
+      FindConnectedGroups(has_return_syn_group,
+                          syn_to_clause,
+                          has_visited_syn,
+                          has_visited_clause,
                           pair.first);
       for (std::string syn_used : has_return_syn_group->get_syn_used()) {
         // Remove synonyms used from syn_to_clause if they are connected to return syns
@@ -158,7 +165,11 @@ void QueryOptimizer::FindConnectedGroups(
     for (std::string syn : syn_used) {
       if (!has_visited_syn->at(syn)) {
         // Finding other synonyms that haven't been visited and has been used in the same clause.
-        FindConnectedGroups(clause_group, syn_to_clause, has_visited_syn, has_visited_clause, syn);
+        FindConnectedGroups(clause_group,
+                            syn_to_clause,
+                            has_visited_syn,
+                            has_visited_clause,
+                            syn);
       }
     }
   }

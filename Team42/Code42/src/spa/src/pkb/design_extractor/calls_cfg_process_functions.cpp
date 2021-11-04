@@ -184,6 +184,7 @@ void DesignExtractor::CFGProcessIfNode(Node *node) {
 
     for (auto &last_stmt : GetLastStmts(else_stmt_lst[i - 1])) {
       pkb_->cfg_al_[last_stmt].insert(stmt_no);
+      pkb_->reverse_cfg_al_[stmt_no].insert(last_stmt);
 
       if (else_stmt_lst[i - 1]->get_kind() != NodeType::Call) {
         pkb_->cfg_bip_al_[last_stmt].insert({stmt_no, PKB::kNoBranch});

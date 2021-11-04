@@ -56,6 +56,10 @@ std::string Statement::get_parent_proc() {
   return this->parent_proc;
 }
 
+std::set<int> *Statement::get_last_stmts() {
+  return &last_stmts_;
+}
+
 std::set<int> *Statement::get_followers() {
   return &followers_;
 }
@@ -112,6 +116,10 @@ void Statement::set_called_proc_name(std::string name) {
 
 void Statement::set_parent_proc(std::string name) {
   this->parent_proc = std::move(name);
+}
+
+void Statement::add_last_stmt(int last_stmt) {
+  last_stmts_.insert(last_stmt);
 }
 
 void Statement::AddFollower(int line_no) {

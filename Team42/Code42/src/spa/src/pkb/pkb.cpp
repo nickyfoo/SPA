@@ -21,6 +21,16 @@ void PKB::AddProcedure(Node *node, const std::vector<Node *> &ancestor_list) {
 
 void PKB::AddStatement(Node *node, const std::vector<Node *> &ancestor_list) {
   stmt_table_.AddStatement(node);
+  auto* stmt_node = dynamic_cast<StatementNode*>(node);
+  int stmt_no = stmt_node->get_stmt_no();
+  for (auto& n : ancestor_list) {
+    if (n->get_kind() == NodeType::Procedure) {
+      auto* parent_proc_node = dynamic_cast<ProcedureNode*>(n);
+      std::string parent_proc_name = parent_proc_node->get_name();
+      stmt_table_.get_statement(stmt_no)->set_parent_proc(parent_proc_name);
+      break;
+    }
+  }
 }
 
 void PKB::AddExprString(Node *node, const std::vector<Node *> &ancestor_list) {

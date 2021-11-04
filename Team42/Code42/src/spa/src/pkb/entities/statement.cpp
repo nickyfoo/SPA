@@ -56,7 +56,7 @@ std::string Statement::get_parent_proc() {
   return this->parent_proc;
 }
 
-std::set<int>* Statement::get_last_stmts() {
+std::set<int> *Statement::get_last_stmts() {
   return &last_stmts_;
 }
 

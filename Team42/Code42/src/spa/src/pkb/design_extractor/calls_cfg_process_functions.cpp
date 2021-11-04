@@ -55,10 +55,10 @@ std::set<int> DesignExtractor::GetLastStmts(StatementNode *node) {
   return ans;
 }
 
-void DesignExtractor::LastStmtsOfProcedure(std::string proc_name, std::set<int>& ans) {
-  std::set<int>*stmt_lst = pkb_->proc_table_.get_procedure(proc_name)->get_stmt_lst();
+void DesignExtractor::LastStmtsOfProcedure(std::string proc_name, std::set<int> &ans) {
+  std::set<int> *stmt_lst = pkb_->proc_table_.get_procedure(proc_name)->get_stmt_lst();
   int last_stmt_no = *stmt_lst->rbegin();
-  Statement* stmt = pkb_->stmt_table_.get_statement(last_stmt_no);
+  Statement *stmt = pkb_->stmt_table_.get_statement(last_stmt_no);
   
   std::set<int> *last_stmts_of_stmt = stmt->get_last_stmts();
   for (auto &stmt_no : *last_stmts_of_stmt) {
@@ -94,7 +94,7 @@ void DesignExtractor::CFGProcessProcedureNode(Node *node) {
   }
 
   // For getting last stmts of procedure later on
-  for (auto& last_stmt : GetLastStmts(stmt_lst[stmt_lst.size() - 1])) {
+  for (auto &last_stmt : GetLastStmts(stmt_lst[stmt_lst.size() - 1])) {
     pkb_->stmt_table_.get_statement(stmt_lst[stmt_lst.size() - 1]->get_stmt_no())->add_last_stmt(last_stmt);
   }
 
@@ -281,7 +281,7 @@ void DesignExtractor::LinkProcedures() {
   }
 }
 
-void DesignExtractor::AddInterprocedureReturnLinks(std::set<std::string> &visited, std::set<int> &last_stmts, std::string &proc_name) {
+void DesignExtractor::AddInterprocedureReturnLinks(std::set<std::string> &visited, std::set<int> &last_stmts, std::string proc_name) {
   for (auto &call_stmt : pkb_->stmt_table_.get_statements(NodeType::Call)) {
     std::string called_proc_name = call_stmt->get_called_proc_name();
     int call_stmt_no = call_stmt->get_stmt_no();
@@ -296,10 +296,7 @@ void DesignExtractor::AddInterprocedureReturnLinks(std::set<std::string> &visite
           }
           else {
             std::string nextproc = call_stmt->get_parent_proc();
-            if (visited.find(nextproc) == visited.end()) {
-              visited.insert(nextproc);
-              AddInterprocedureReturnLinks(visited, last_stmts, nextproc);
-            }
+            AddInterprocedureReturnLinks(visited, last_stmts, nextproc);
           }
         }
     }

@@ -21,7 +21,7 @@ int Procedure::get_stmt_no() {
   return first_statement_;
 }
 
-std::set<int>* Procedure::get_stmt_lst() {
+std::set<int> *Procedure::get_stmt_lst() {
   return &stmt_lst_;
 }
 

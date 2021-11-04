@@ -16,7 +16,7 @@ class Procedure : public Entity {
   // Gets the first StmtNo of procedure.
   int get_stmt_no();
   // Gets the statements in the procedure.
-  std::set<int>* get_stmt_lst();
+  std::set<int> *get_stmt_lst();
   // Gets the variables used by the procedure.
   std::set<std::string> *get_uses();
   // Gets the variables modified by the procedure.

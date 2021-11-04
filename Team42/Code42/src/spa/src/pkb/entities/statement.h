@@ -26,7 +26,7 @@ class Statement : public Entity {
   // Gets the name of the procedure that this statement is in
   std::string get_parent_proc();
   // Gets the last stmts of a container stmt
-  std::set<int>* get_last_stmts();
+  std::set<int> *get_last_stmts();
   // Gets the statements which follows before this statement.
   std::set<int> *get_followers();
   // Gets the statements which follows star before this statement.

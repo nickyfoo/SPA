@@ -30,10 +30,20 @@ std::set<std::pair<int, int>> *PKB::get_next_bip(int a, int b) {
 
     for (auto&[u, al_u] : cfg_bip_al_) {
       for (auto&[v, branch] : al_u) {
-        next_bip_cache[kWild][kWild].insert({u, v});
-        next_bip_cache[kWild][v].insert({u, v});
-        next_bip_cache[u][kWild].insert({u, v});
-        next_bip_cache[u][v].insert({u, v});
+        if (v < 0) {
+          for (auto& [vv, vv_branch] : cfg_bip_al_[v]) {
+            next_bip_cache[kWild][kWild].insert({ u, vv });
+            next_bip_cache[kWild][vv].insert({ u, vv });
+            next_bip_cache[u][kWild].insert({ u, vv });
+            next_bip_cache[u][vv].insert({ u, vv });
+          }
+        }
+        else {
+          next_bip_cache[kWild][kWild].insert({ u, v });
+          next_bip_cache[kWild][v].insert({ u, v });
+          next_bip_cache[u][kWild].insert({ u, v });
+          next_bip_cache[u][v].insert({ u, v });
+        }
       }
     }
   } else if (a == kWild && b != kWild) {
@@ -44,10 +54,18 @@ std::set<std::pair<int, int>> *PKB::get_next_bip(int a, int b) {
       next_bip_cache[i][b] = std::set<std::pair<int, int>>();
     }
     for (auto&[v, branch] : reverse_cfg_bip_al_[b]) {
-      next_bip_cache[kWild][b].insert({v, b});
-      next_bip_cache[v][b].insert({v, b});
+      if (v < 0) {
+        for (auto& [vv, vv_branch] : reverse_cfg_bip_al_[v]) {
+          next_bip_cache[kWild][b].insert({ vv, b });
+          next_bip_cache[vv][b].insert({ vv, b });
+        }
+      }
+      else {
+        next_bip_cache[kWild][b].insert({ v, b });
+        next_bip_cache[v][b].insert({ v, b });
+      }
     }
-  } else if (a != kWild && b == kWild) {
+  } else if (a != kWild) {
     // Get result for NextBip(a,_)
     next_bip_cache[a][kWild] = std::set<std::pair<int, int>>();
 
@@ -55,15 +73,16 @@ std::set<std::pair<int, int>> *PKB::get_next_bip(int a, int b) {
       next_bip_cache[a][i] = std::set<std::pair<int, int>>();
     }
     for (auto&[v, branch] : cfg_bip_al_[a]) {
-      next_bip_cache[a][kWild].insert({a, v});
-      next_bip_cache[a][v].insert({a, v});
-    }
-  } else {
-    // Get result for NextBip(a,b)
-    next_bip_cache[a][b] = std::set<std::pair<int, int>>();
-
-    if (cfg_bip_al_[a].lower_bound({b, INT_MIN}) != cfg_bip_al_[a].end()) {
-      next_bip_cache[a][b].insert({a, b});
+      if (v < 0) {
+        for (auto& [vv, vv_branch] : cfg_bip_al_[v]) {
+          next_bip_cache[a][kWild].insert({ a, vv });
+          next_bip_cache[a][vv].insert({ a, vv });
+        }
+      }
+      else {
+        next_bip_cache[a][kWild].insert({ a, v });
+        next_bip_cache[a][v].insert({ a, v });
+      }
     }
   }
   return &next_bip_cache[a][b];
@@ -107,6 +126,7 @@ std::set<std::pair<int, int>> *PKB::get_next_bip_star(int a, int b) {
         }
 
         for (auto &reached_stmt_no : bip_reachability_dfs_cache[stmt_no][hash]) {
+          if (reached_stmt_no < 0) continue;
           next_bip_star_cache[kWild][kWild].insert({stmt_no, reached_stmt_no});
           next_bip_star_cache[stmt_no][kWild].insert({stmt_no, reached_stmt_no});
           next_bip_star_cache[kWild][reached_stmt_no].insert({stmt_no, reached_stmt_no});
@@ -131,6 +151,7 @@ std::set<std::pair<int, int>> *PKB::get_next_bip_star(int a, int b) {
       }
 
       for (auto &reached_stmt_no : bip_reachability_dfs_cache[a][hash]) {
+        if (reached_stmt_no < 0) continue;
         next_bip_star_cache[a][kWild].insert({a, reached_stmt_no});
         next_bip_star_cache[a][reached_stmt_no].insert({a, reached_stmt_no});
       }
@@ -339,6 +360,7 @@ std::set<std::pair<int, int>> *PKB::get_affects_bip_star(int a, int b) {
 
 void PKB::BipReachabilityDFS(std::set<std::pair<int, std::string>> &visited, int u, std::string &u_hash, int start, std::string &start_hash,
                              std::vector<int> &call_stack) {
+  //std::cout << u << ' ' << u_hash << ' ' << ", Start: " << start << ' ' << start_hash << '\n';
   if (bip_reachability_dfs_cache.find(u) != bip_reachability_dfs_cache.end()
       && bip_reachability_dfs_cache[u].find(u_hash) != bip_reachability_dfs_cache[u].end()) {
     for (auto &reached_stmt: bip_reachability_dfs_cache[u][u_hash]) {
@@ -353,7 +375,41 @@ void PKB::BipReachabilityDFS(std::set<std::pair<int, std::string>> &visited, int
   } else {
     branch = call_stack.back();
   }
+
+  if (u < 0) {
+    for (auto& [v, v_branch] : cfg_bip_al_[u]) {
+      if (v_branch < 0) {
+        // Call stack not empty and edge goes back
+        if (branch != kNoBranch && v_branch == -branch) {
+          u_hash.erase(u_hash.size() - 1 - std::to_string(call_stack.back()).size());
+          call_stack.pop_back();
+
+          if (visited.find({ v, u_hash }) == visited.end()) {
+            visited.insert({ v, u_hash });
+            bip_reachability_dfs_cache[start][start_hash].insert(v);
+            BipReachabilityDFS(visited, v, u_hash, start, start_hash, call_stack);
+          }
+
+          call_stack.push_back(branch);
+          u_hash += std::to_string(branch) + " ";
+        }
+      }
+      else {
+
+        BipReachabilityDFS(visited, v, u_hash, start, start_hash, call_stack);
+        continue;
+      }
+    }
+    return;
+  }
+
+
   for (auto &[v, v_branch] : cfg_bip_al_[u]) {
+    if (v < 0) {
+      BipReachabilityDFS(visited, v, u_hash, start, start_hash, call_stack);
+      continue;
+    }
+    
     // Was called from another procedure, and this edge is a returning edge
     // that does not return to that procedure
     if (branch != kNoBranch && v_branch < 0 && v_branch != -branch) {
@@ -407,6 +463,7 @@ void PKB::AffectsBipDFS(int start,
                         std::string &hash,
                         std::string var_name,
                         std::set<std::pair<int, std::string>> &visited) {
+  
 
   int branch;
   if (call_stack.empty()) {
@@ -416,6 +473,11 @@ void PKB::AffectsBipDFS(int start,
   }
 
   for (auto &[v, v_branch] : cfg_bip_al_[u]) {
+    if (v < 0) {
+      AffectsBipDFS(start, start_hash, v, call_stack, hash, var_name, visited);
+      continue;
+    }
+
     // Was called from another procedure, and this edge is a returning edge
     // that does not return to that procedure
     if (branch != kNoBranch && v_branch < 0 && v_branch != -branch) {

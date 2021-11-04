@@ -182,10 +182,12 @@ class PKB {
   // Reverse Adjacency List of CFG for Next and Affects.
   std::map<int, std::set<int>> reverse_cfg_al_;
   // Adjacency List of CFG for NextBip and AffectsBip, u -> {v, branch}
+  // u is negative if it is the dummy end of procedure node for the procedure starting at u.
   // branch is positive stmt_no if branching out from u to v
   // branch is negative stmt_no if branching back from u to v
   std::map<int, std::set<std::pair<int, int>>> cfg_bip_al_;
   // Reverse Adjacency List of CFG for NextBip and AffectsBip.
+  // u is negative if it is the dummy end of procedure node for the procedure starting at u.
   // branch is positive stmt_no if branching out from u to v
   // branch is negative stmt_no if branching back from u to v
   std::map<int, std::set<std::pair<int, int>>> reverse_cfg_bip_al_;

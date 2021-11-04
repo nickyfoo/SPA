@@ -53,9 +53,11 @@ class DesignExtractor {
   void CallsProcessCallNode(Node *node, std::vector<Node *> &ancestors);
 
   // Recursively gets the last stmts of a statement.
-  std::set<int> GetLastStmts(StatementNode *node);
+  std::set<std::pair<int,int>> GetLastStmts(StatementNode *node, bool forCFG);
   // Recursively gets the last stmts of a procedure.
-  void LastStmtsOfProcedure(std::string proc_name, std::set<int> &ans);
+  //void LastStmtsOfProcedure(std::string proc_name, std::set<int> &ans);
+  // Processes stmt list and stores stmt nodes into the CFG.
+  void CFGProcessStmtLst(std::vector<StatementNode*>& stmt_lst);
   // Process and store the AST procedure node into the CFG.
   void CFGProcessProcedureNode(Node *node);
   // Process and store the AST if node into the CFG.
@@ -63,9 +65,9 @@ class DesignExtractor {
   // Process and store the AST while node into the CFG.
   void CFGProcessWhileNode(Node *node);
   // Adds missing links between call stmts and procedures being called
-  void LinkProcedures();
+  //void LinkProcedures();
   // Adds missing interprocedure return links
-  void AddInterprocedureReturnLinks(std::set<std::string> &visited,std::set<int> &last_stmts, std::string proc_name);
+  //void AddInterprocedureReturnLinks(std::set<std::string> &visited,std::set<int> &last_stmts, std::string proc_name);
   // Adds a call stack to each assign stmt, to store the state that it can be in when encountered.
   void AddCallStacks();
   // Traverses the CFGBip, keeping track of the call stack

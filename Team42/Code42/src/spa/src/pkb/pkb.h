@@ -133,13 +133,13 @@ class PKB {
                       bool forward_relation);
 
   // DFS to check reachability for NextBip and AffectsBip* relationship
-  void PKB::BipReachabilityDFS(std::set<std::pair<int, 
-                               std::string>>& visited, 
+  void BipReachabilityDFS(std::set<std::pair<int,
+                               std::string>> &visited,
                                int u, 
-                               std::string& u_hash, 
+                               std::string &u_hash,
                                int start, 
-                               std::string& start_hash,
-                               std::vector<int>& call_stack);
+                               std::string &start_hash,
+                               std::vector<int> &call_stack);
   // DFS to check reachability for AffectsBip relationship.
   // If target is not kWild, supports fast termination to save on unnecessary computations.
   void AffectsBipDFS(int start,

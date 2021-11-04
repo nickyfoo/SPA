@@ -17,6 +17,7 @@ QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
     this->synonym_to_entity_dec_ = pql_query->get_synonym_to_entities();
     this->is_valid_query_ = pql_query->is_valid_query();
     this->pkb_ = pkb;
+    set_used_synonyms();
   } else {
     if (pql_query != nullptr && !pql_query->get_query_entities()->empty()) {
       this->entities_to_return_ = pql_query->get_query_entities();
@@ -39,7 +40,6 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
       return new std::vector<std::string>{};
     }
   }
-
   RelationshipQueryManager *relationship_query_manager;
   PatternQueryManager *pattern_query_manager;
   WithQueryManager *with_query_manager;
@@ -98,12 +98,11 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
       }
       result_table->set_table(*intermediate_table);
     } else if (i > 2) {
-      result_table->CrossJoin(*intermediate_table);
+      result_table->CrossJoin(*intermediate_table, used_synonyms_);
       if (!first_table_entry && result_table->get_table()->empty()) {
         return ConvertToOutput(result_table, false);
       }
     }
-
   }
   return ConvertToOutput(result_table, true);
 }
@@ -232,7 +231,6 @@ std::vector<std::string>
     output->push_back("TRUE");
     return output;
   }
-
   std::vector<int> indexes_of_return_entities;
   auto synonym_to_index_map = table_result->get_synonym_to_index();
   auto index_to_synonym_map = table_result->get_index_to_synonym();
@@ -240,9 +238,10 @@ std::vector<std::string>
   for (ResultClause *result_clause : *entities_to_return_) {
     std::string elem = result_clause->get_elem();
     std::string synonym = result_clause->get_synonym();
-
     // use the exact result as key
+
     if (synonym_to_index_map->find(elem) == synonym_to_index_map->end()) {
+
       ResultTable *new_table = new ResultTable();
       // synonym was used previously,
       if (synonym_to_index_map->find(synonym) != synonym_to_index_map->end()) {
@@ -250,21 +249,23 @@ std::vector<std::string>
       } else {
         MakeTableForUnusedEntity(new_table, result_clause);
       }
-
+      // empty result for the result clause
+      if (new_table->get_table()->empty()) {
+        return output;
+      }
       if (table_result->get_table()->empty()) {
-        table_result = new_table;
-        synonym_to_index_map = table_result->get_synonym_to_index();
+        table_result->set_table(*new_table);
+        synonym_to_index_map = new_table->get_synonym_to_index();
+        index_to_synonym_map = new_table->get_index_to_synonym();
       } else {
         table_result->NaturalJoin(*new_table);
       }
     }
   }
-
   // second loop to retrieve synonym indexes
   for (ResultClause *result_clause : *entities_to_return_) {
     indexes_of_return_entities.push_back(synonym_to_index_map->at(result_clause->get_elem()));
   }
-
   std::set<std::string> unique_results;
   for (std::vector<std::string> row : *table_result->get_table()) {
     std::stringstream ss;
@@ -389,7 +390,6 @@ void QueryEvaluator::MakeTableForUnusedEntity(ResultTable *result_table,
     case EntityType::None:
       throw std::runtime_error("Unknown EntityType!");
   }
-
   result_table->AddSingleColumn(elem, to_add);
 }
 
@@ -399,6 +399,10 @@ void QueryEvaluator::MakeTableForUsedEntity(ResultTable *result_table,
                                             ResultTable *other_result_table) {
   std::vector<std::string> synonym_vec = other_result_table->GetColumnVec(
       result_clause->get_synonym());
+
+  // removing duplicates in the column vec, since we are doing natural join later
+  sort( synonym_vec.begin(), synonym_vec.end() );
+  synonym_vec.erase( unique( synonym_vec.begin(), synonym_vec.end() ), synonym_vec.end() );
 
   std::string elem = result_clause->get_elem();
   EntityType synonym_type = result_clause->get_synonym_type();
@@ -459,4 +463,10 @@ void QueryEvaluator::MakeTableForUsedEntity(ResultTable *result_table,
 
   result_table->AddDoubleColumns(result_clause->get_synonym(),
                                  synonym_vec, elem, to_add);
+}
+
+void QueryEvaluator::set_used_synonyms() {
+  for (ResultClause* result_clause : *entities_to_return_) {
+    used_synonyms_.insert(result_clause->get_synonym());
+  }
 }

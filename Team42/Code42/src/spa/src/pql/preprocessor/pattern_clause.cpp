@@ -60,16 +60,29 @@ bool PatternClause::IsValidExpSpec(std::string ref) {
 
   ref = ref.substr(1, ref.length() - 2);  // remove ""
   bool expecting_exp = false;
+  bool must_be_exp = false;
+  bool must_be_char = true;
   for (char &c : ref) {
-    if (!expecting_exp && IsExp(c)) {
+    if ((must_be_char && IsExp(c)) || (must_be_exp && IsChar(c))) {
       return false;
     } else {
       if (IsExp(c)) {
         expecting_exp = false;
+        must_be_exp = false;
+        must_be_char = true;
       } else if (IsChar(c)) {
         expecting_exp = true;
-      } else if (c == '(' || c == ')' || isspace(c)) {
+        must_be_char = false;
+      } else if (c == '(' || c == ')') {
         continue;
+      } else if (isspace(c)) {
+        if (expecting_exp) {
+          must_be_exp = true;
+          must_be_char = false;
+        } else {
+          must_be_exp = false;
+          must_be_char = true;
+        }
       } else {
         return false;
       }

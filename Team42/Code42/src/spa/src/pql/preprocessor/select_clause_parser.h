@@ -32,8 +32,8 @@ class SelectClauseParser {
   std::unordered_map<std::string, EntityDeclaration *> *synonym_to_entity_;
   std::string select_statement_;
   SelectClauseParser();
-  SuchThatRef *MakeSuchThatRefLeft(SuchThatClause *relationship, std::string ref);
-  SuchThatRef *MakeSuchThatRefRight(SuchThatClause *relationship, std::string ref);
+  SuchThatRef *SetSuchThatRefLeft(SuchThatClause *relationship, std::string left_ref);
+  SuchThatRef *SetSuchThatRefRight(SuchThatClause *relationship, std::string right_ref);
   PatternClause *MakePatternRef(const std::string &synonym,
                                 const std::string &left_ref,
                                 const std::string &right_ref);

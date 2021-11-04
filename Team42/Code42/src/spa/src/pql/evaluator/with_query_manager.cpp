@@ -48,7 +48,11 @@ ResultTable *WithQueryManager::EvaluateWith(std::shared_ptr<WithClause> with,
   with->get_right_type() != EntityType::None) {  // s.stmt# = a.stmt#
     std::vector<std::string> left_vec, right_vec;
     std::tie(left_vec, right_vec) = GetSynonymPairs(with, synonym_to_entities_vec);
-    ret->AddDoubleColumns(with->get_left_ref(),left_vec, with->get_right_ref(), right_vec);
+    if (with->get_left_ref() == with->get_right_ref()) {
+      ret->AddSingleColumn(with->get_left_ref(), left_vec);
+    } else {
+      ret->AddDoubleColumns(with->get_left_ref(),left_vec, with->get_right_ref(), right_vec);
+    }
   }
 
   if (ret->get_table()->empty()) {

@@ -169,7 +169,7 @@ TEST_CASE("Joins") {
     result_table.AddSingleColumn("b", {"four", "five", "six"});
     other_result_table.AddSingleColumn("c", {"seven", "eight", "nine"});
     other_result_table.AddSingleColumn("d", {"ten", "eleven", "twelve"});
-    result_table.CrossJoin(other_result_table);
+    result_table.CrossJoin(other_result_table, {});
     table *expected = new std::vector<std::vector<std::string>>();
     expected->push_back({"one", "four", "seven", "ten"});
     expected->push_back({"one", "four", "eight", "eleven"});
@@ -212,7 +212,7 @@ TEST_CASE("Joins") {
     result_table.AddSingleColumn("b", {"four", "five", "six"});
     other_result_table.AddSingleColumn("c", {"seven", "eight", "nine"});
     other_result_table.AddSingleColumn("d", {"ten", "eleven", "twelve"});
-    result_table.CrossJoin(other_result_table);
+    result_table.CrossJoin(other_result_table, {});
     table *expected = new std::vector<std::vector<std::string>>();
     expected->push_back({"one", "four", "seven", "ten"});
     expected->push_back({"one", "four", "eight", "eleven"});

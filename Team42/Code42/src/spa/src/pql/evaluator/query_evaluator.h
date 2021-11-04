@@ -2,6 +2,7 @@
 
 #include "vector"
 #include "unordered_map"
+#include "unordered_set"
 #include "string"
 #include "pkb.h"
 #include "pql_query.h"
@@ -18,6 +19,7 @@ class QueryEvaluator {
   std::vector<std::shared_ptr<ClauseGroup>> clause_groups_;
   PKB *pkb_;
   std::unordered_map<std::string, EntityDeclaration *> *synonym_to_entity_dec_;
+  std::unordered_set<std::string> used_synonyms_;
   bool is_valid_query_;
   std::unordered_map<std::string, std::vector<Entity *>> GetPossibleEntitiesVec(
       ClauseVertex clause_vertex);
@@ -26,4 +28,5 @@ class QueryEvaluator {
   void MakeTableForUsedEntity(ResultTable *result_table,
                               ResultClause *result_clause,
                               ResultTable *other_result_table);
+  void set_used_synonyms();
   };

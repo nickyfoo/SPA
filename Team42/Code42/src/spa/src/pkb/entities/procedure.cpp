@@ -21,6 +21,10 @@ int Procedure::get_stmt_no() {
   return first_statement_;
 }
 
+std::set<int> *Procedure::get_stmt_lst() {
+  return &stmt_lst_;
+}
+
 std::set<std::string> *Procedure::get_uses() {
   return &uses_;
 }
@@ -43,6 +47,10 @@ std::set<std::string> *Procedure::get_callers() {
 
 std::set<std::string> *Procedure::get_callers_star() {
   return &callers_star_;
+}
+
+void Procedure::AddStmt(int stmt_no) {
+  stmt_lst_.insert(stmt_no);
 }
 
 void Procedure::AddUses(const std::string &var_name) {

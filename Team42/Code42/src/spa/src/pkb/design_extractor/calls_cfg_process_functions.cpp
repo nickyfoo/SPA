@@ -52,28 +52,22 @@ std::set<int> DesignExtractor::GetLastStmts(StatementNode *node) {
   } else {
     ans.insert(node->get_stmt_no());
   }
-
   return ans;
 }
 
-void DesignExtractor::LastStmtsOfProcedure(int u, std::set<int> &visited, std::set<int> &ans) {
-  if (visited.find(u) != visited.end()) return;
-  visited.insert(u);
-
-  if (pkb_->stmt_table_.get_statement(u)->get_kind() == NodeType::While
-      && pkb_->cfg_al_.find(u) != pkb_->cfg_al_.end()
-      && pkb_->cfg_al_[u].size() == 1) {
-    ans.insert(u);
-    return;
-  }
-
-  if (pkb_->cfg_al_.find(u) == pkb_->cfg_al_.end()) {
-    ans.insert(u);
-    return;
-  }
-
-  for (auto &v : pkb_->cfg_al_[u]) {
-    LastStmtsOfProcedure(v, visited, ans);
+void DesignExtractor::LastStmtsOfProcedure(std::string proc_name, std::set<int> &ans) {
+  std::set<int> *stmt_lst = pkb_->proc_table_.get_procedure(proc_name)->get_stmt_lst();
+  int last_stmt_no = *stmt_lst->rbegin();
+  Statement *stmt = pkb_->stmt_table_.get_statement(last_stmt_no);
+  
+  std::set<int> *last_stmts_of_stmt = stmt->get_last_stmts();
+  for (auto &stmt_no : *last_stmts_of_stmt) {
+    if (pkb_->stmt_table_.get_statement(stmt_no)->get_kind() == NodeType::Call) {
+      LastStmtsOfProcedure(pkb_->stmt_table_.get_statement(stmt_no)->get_called_proc_name(), ans);
+    }
+    else {
+      ans.insert(stmt_no);
+    }
   }
 }
 
@@ -97,6 +91,11 @@ void DesignExtractor::CFGProcessProcedureNode(Node *node) {
         pkb_->reverse_cfg_bip_al_[stmt_lst[i]->get_stmt_no()].insert({last_stmt, PKB::kNoBranch});
       }
     }
+  }
+
+  // For getting last stmts of procedure later on
+  for (auto &last_stmt : GetLastStmts(stmt_lst[stmt_lst.size() - 1])) {
+    pkb_->stmt_table_.get_statement(stmt_lst[stmt_lst.size() - 1]->get_stmt_no())->add_last_stmt(last_stmt);
   }
 
   for (auto &stmt : stmt_lst) {
@@ -275,14 +274,14 @@ void DesignExtractor::LinkProcedures() {
     int first_stmt_of_proc = pkb_->proc_table_.get_procedure(called_proc_name)->get_stmt_no();
     int call_stmt_no = call_stmt->get_stmt_no();
 
-    std::set<int> visited, ans;
-    LastStmtsOfProcedure(first_stmt_of_proc, visited, ans);
+    std::set<int> ans;
+    LastStmtsOfProcedure(called_proc_name, ans);
     std::set<std::string> procs_visited;
     AddInterprocedureReturnLinks(procs_visited, ans, called_proc_name);
   }
 }
 
-void DesignExtractor::AddInterprocedureReturnLinks(std::set<std::string> &visited, std::set<int> &last_stmts, std::string &proc_name) {
+void DesignExtractor::AddInterprocedureReturnLinks(std::set<std::string> &visited, std::set<int> &last_stmts, std::string proc_name) {
   for (auto &call_stmt : pkb_->stmt_table_.get_statements(NodeType::Call)) {
     std::string called_proc_name = call_stmt->get_called_proc_name();
     int call_stmt_no = call_stmt->get_stmt_no();
@@ -296,7 +295,8 @@ void DesignExtractor::AddInterprocedureReturnLinks(std::set<std::string> &visite
             }
           }
           else {
-            AddInterprocedureReturnLinks(visited, last_stmts, call_stmt->get_parent_proc());
+            std::string nextproc = call_stmt->get_parent_proc();
+            AddInterprocedureReturnLinks(visited, last_stmts, nextproc);
           }
         }
     }

@@ -281,25 +281,23 @@ void DesignExtractor::LinkProcedures() {
   }
 }
 
-void DesignExtractor::AddInterprocedureReturnLinks(std::set<std::string> &visited, std::set<int>& last_stmts, std::string& proc_name) {
-  for (auto& call_stmt : pkb_->stmt_table_.get_statements(NodeType::Call)) {
+void DesignExtractor::AddInterprocedureReturnLinks(std::set<std::string> &visited, std::set<int> &last_stmts, std::string &proc_name) {
+  for (auto &call_stmt : pkb_->stmt_table_.get_statements(NodeType::Call)) {
     std::string called_proc_name = call_stmt->get_called_proc_name();
     int call_stmt_no = call_stmt->get_stmt_no();
     if (called_proc_name == proc_name) {
         // Update links
-        for (auto& last_stmt : last_stmts) {
+        for (auto &last_stmt : last_stmts) {
           if (pkb_->cfg_al_[call_stmt_no].size()) {
-            for (auto& next_stmt : pkb_->cfg_al_[call_stmt_no]) {
+            for (auto &next_stmt : pkb_->cfg_al_[call_stmt_no]) {
               pkb_->cfg_bip_al_[last_stmt].insert({ next_stmt, -call_stmt_no });
               pkb_->reverse_cfg_bip_al_[next_stmt].insert({ last_stmt, call_stmt_no });
             }
           }
           else {
-
             AddInterprocedureReturnLinks(visited, last_stmts, call_stmt->get_parent_proc());
           }
         }
-
     }
   }
 }

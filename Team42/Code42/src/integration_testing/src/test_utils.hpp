@@ -266,11 +266,11 @@ static ProgramNode *BuildProgAst(ProgramSource source_name) {
 
 static PKB InitialisePKB(ProgramSource source_name) {
   ProgramNode *p = BuildProgAst(source_name);
-  PKB pkb;
-  DesignExtractor design_extractor(&pkb, p);
+  PKB *pkb = new PKB();
+  DesignExtractor design_extractor(pkb, p);
   design_extractor.ExtractDesigns();
 
-  return pkb;
+  return *pkb;
 }
 
 static std::vector<std::string> *EvaluateQuery(std::string ss) {

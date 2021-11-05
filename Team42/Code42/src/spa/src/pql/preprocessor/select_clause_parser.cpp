@@ -465,13 +465,7 @@ int SelectClauseParser::SetSuchThatRefLeft(SuchThatRef *left_such_that_ref,
           left_such_that_ref->set_ent_ref(left_ent_ref);
           return 1;
         }
-      case EntityType::Variable: {
-        if (type != RelRef::Uses && type != RelRef::Modifies) {
-          left_ent_ref.set_synonym(left_ref);
-          left_such_that_ref->set_ent_ref(left_ent_ref);
-          return 1;
-        }
-      }
+      case EntityType::Variable:
       case EntityType::Constant:
       default:
         return 0;

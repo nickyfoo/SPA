@@ -13,10 +13,11 @@ files = [
     # "nextbip_4",
     # "nextbip_5",
     # "testing",
-    "testing2",
+    # "testing2",
     # "BOOLEAN"
-    "SIMPLE_6_0clause",
-    "SIMPLE_6_1clause"
+    # "SIMPLE_6_0clause",
+    # "SIMPLE_6_1clause"
+    "callsStar_1"
 ]
 
 for file in files:

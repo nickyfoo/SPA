@@ -64,6 +64,7 @@ bool PatternClause::IsSyntacticallyValidExpSpec(std::string ref) {
   bool expecting_exp = false;
   bool must_be_exp = false;
   bool must_be_char = true;
+  int bracket_count = 0;
   for (char &c : ref) {
     if ((must_be_char && IsExp(c)) || (must_be_exp && IsChar(c))) {
       return false;
@@ -75,8 +76,10 @@ bool PatternClause::IsSyntacticallyValidExpSpec(std::string ref) {
       } else if (IsChar(c)) {
         expecting_exp = true;
         must_be_char = false;
-      } else if (c == '(' || c == ')') {
-        continue;
+      } else if (c == '(') {
+        bracket_count++;
+      } else if (c == ')') {
+        bracket_count--;
       } else if (isspace(c)) {
         if (expecting_exp) {
           must_be_exp = true;
@@ -89,8 +92,9 @@ bool PatternClause::IsSyntacticallyValidExpSpec(std::string ref) {
         return false;
       }
     }
+    if (bracket_count > 0) return false;
   }
-  if (!expecting_exp && !ref.empty()) {
+  if (bracket_count != 0 || (!expecting_exp && !ref.empty())) {
     return false;
   }
 

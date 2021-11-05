@@ -13,7 +13,9 @@ files = [
     # "nextbip_4",
     # "nextbip_5",
     # "testing",
-    "BOOLEAN"
+    "testing2",
+    # "BOOLEAN"
+    "SIMPLE_3"
 ]
 
 for file in files:

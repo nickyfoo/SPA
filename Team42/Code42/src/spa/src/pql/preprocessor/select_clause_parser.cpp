@@ -632,6 +632,7 @@ int SelectClauseParser::SetSuchThatRefRight(SuchThatRef *right_such_that_ref,
 
 // Function that returns true if str is a valid identifier
 bool SelectClauseParser::IsValidIdentifier(const std::string &str) {
+
   // If first character is invalid
   if (!((str[0] >= 'a' && str[0] <= 'z') || (str[0] >= 'A' && str[0] <= 'Z'))) {
     return false;
@@ -869,6 +870,7 @@ std::vector<std::vector<std::string>> SelectClauseParser::SplitBrackets(
   std::vector<std::vector<std::string>> ret;
   std::vector<std::string> clauses = SplitTokensByDelimiter(input, AND_DELIM);
   for (const std::string &clause : clauses) {
+    if (clause == "") return {};
     std::vector<std::string> tokens;
     std::stringstream ss;
 

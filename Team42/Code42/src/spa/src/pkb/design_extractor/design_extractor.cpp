@@ -33,6 +33,14 @@ void DesignExtractor::ExtractEntities() {
   auto extract_statement =
       [this](Node *node, std::vector<Node *> ancestor_list) {
         pkb_->AddStatement(node, std::move(ancestor_list));
+
+        // For getting last stmts of procedure later on
+        /*
+        auto* stmt_node = dynamic_cast<StatementNode*>(node);
+        for (auto& last_stmt : GetLastStmts(stmt_node)) {
+          pkb_->stmt_table_.get_statement(stmt_node->get_stmt_no())->add_last_stmt(last_stmt);
+        }
+        */
       };
   auto extract_expr_string =
       [this](Node *node, std::vector<Node *> ancestor_list) {
@@ -204,7 +212,7 @@ void DesignExtractor::ExtractCFG() {
 
   // Visits and traverse root node
   Visit(root_, functions);
-  LinkProcedures();
+  //LinkProcedures();
   AddCallStacks();
 }
 

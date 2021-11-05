@@ -109,8 +109,8 @@ void DesignExtractor::CFGProcessStmtLst(std::vector<StatementNode*>& stmt_lst) {
     }
     else {
       for (auto& [last_stmt, branch] : GetLastStmts(stmt_lst[i - 1], false)) {
-        pkb_->cfg_bip_al_[last_stmt].insert({ stmt_lst[i]->get_stmt_no(), PKB::kNoBranch });
-        pkb_->reverse_cfg_bip_al_[stmt_lst[i]->get_stmt_no()].insert({ last_stmt, PKB::kNoBranch });
+        pkb_->cfg_bip_al_[last_stmt].insert({ stmt_lst[i]->get_stmt_no(), branch });
+        pkb_->reverse_cfg_bip_al_[stmt_lst[i]->get_stmt_no()].insert({ last_stmt, branch });
       }
     }
   }
@@ -295,18 +295,38 @@ void DesignExtractor::ProcessCallStacks(std::set<std::pair<int, std::string>> &v
   std::string hash = pkb_->CallStackToString(&call_stack);
   if (visited.find({u, hash}) != visited.end()) return;
 
+  int branch;
+  if (call_stack.empty()) {
+    branch = PKB::kNoBranch;
+  }
+  else {
+    branch = call_stack.back();
+  }
+
   visited.insert({u, hash});
   if (u > 0) {
     auto stmt = pkb_->stmt_table_.get_statement(u);
     stmt->AddCallStack(&call_stack);
   }
+  else {
+    for (auto &[v, v_branch] : pkb_->cfg_bip_al_[u]) {
+      if (v_branch < 0) {
+        // Call stack not empty and edge goes back
+        if (branch != pkb_->kNoBranch && v_branch == -branch) {
+          call_stack.pop_back();
+          ProcessCallStacks(visited, call_stack, v);
+          call_stack.push_back(branch);
+        }
+      }
+      else {
 
-  int branch;
-  if (call_stack.empty()) {
-    branch = PKB::kNoBranch;
-  } else {
-    branch = call_stack.back();
+        ProcessCallStacks(visited, call_stack, v);
+        continue;
+      }
+    }
+    return;
   }
+
 
   for (auto &[v, v_branch] : pkb_->cfg_bip_al_[u]) {
     // Next is dummy end of proc node

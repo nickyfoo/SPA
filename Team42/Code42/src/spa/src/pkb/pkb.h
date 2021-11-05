@@ -157,6 +157,8 @@ class PKB {
                             std::string &var_name);
   // Returns true if v is an assign stmt that modifies var_name
   bool ModifiesVarName(int v, const std::string &var_name);
+  // Traverses CFG to get Next(u,_), since there are negative nodes.
+  void GetFirstPositiveStmts(int u, std::set<int>& visited, std::set<int>& ans);
   // DFS to check reachability for AffectsBip* relationship
   void AffectsBipStarDFS(std::set<std::pair<int, std::string>> &visited,
                          int u,

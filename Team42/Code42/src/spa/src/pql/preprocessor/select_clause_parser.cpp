@@ -286,6 +286,7 @@ int SelectClauseParser::SetWithRef(WithClause *with, const std::string &left_ref
   EntityType right_type;
   AttrValueType left_attr_value_type;
   AttrValueType right_attr_value_type;
+
   // check left and right ref
   if (IsInteger(left_ref)) {  // set as EntityType::None if it is an integer
     left_str = left_ref;
@@ -298,12 +299,9 @@ int SelectClauseParser::SetWithRef(WithClause *with, const std::string &left_ref
     left_attr_value_type = AttrValueType::Name;
   } else {
     std::tie(left_str, left_type, left_attr_value_type) = GetWithRefTypeAndAttrValueType(left_ref);
-    if (left_type == EntityType::None) {  // not valid ref
-      if (IsValidIdentifier(left_str) &&
-      synonym_to_entity_->find(left_str) == synonym_to_entity_->end()) return 0;
-      else return -1;
-    }
+    if (left_type == EntityType::None) return 0;
   }
+
   if (IsInteger(right_ref)) {  // set as EntityType::None if it is an integer
     right_str = right_ref;
     right_type = EntityType::None;
@@ -316,11 +314,7 @@ int SelectClauseParser::SetWithRef(WithClause *with, const std::string &left_ref
   } else {
     std::tie(right_str, right_type, right_attr_value_type) =
         GetWithRefTypeAndAttrValueType(right_ref);
-    if (right_type == EntityType::None) {  // not valid ref
-      if (IsValidIdentifier(right_str) &&
-      synonym_to_entity_->find(right_str) == synonym_to_entity_->end()) return 0;
-      else return -1;
-    }
+    if (right_type == EntityType::None) return 0;
   }
 
   // not previously declared
@@ -385,6 +379,7 @@ SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
           break;
         default:break;
       }
+
       if (attr_value_type != AttrValueType::None) {
         return std::make_tuple(synonym, type, attr_value_type);
       }

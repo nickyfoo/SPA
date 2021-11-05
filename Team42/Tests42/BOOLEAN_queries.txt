@@ -161,7 +161,7 @@ FALSE
 33 - Select BOOLEAN with wrong with attr type (invalid syntax)
 stmt s;
 Select BOOLEAN with s.varName = "p"
-
+FALSE
 5000
 34 - Select BOOLEAN with not matching left and right with type (invalid semantic)
 stmt s;

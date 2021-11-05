@@ -336,7 +336,7 @@ Select c such that Next*(_,_)
 67 - If Pattern synonym and wildcard
 if ifs;
 Select ifs pattern ifs(_,_,_)
-22,30,33,38,42,43,45,46,60,64,72,76,78,
+22,30,33,38,42,43,45,46,60,64,72
 5000
 68 - If Pattern synonym and synonym
 if ifs; variable v;
@@ -356,7 +356,7 @@ Select ifs pattern ifs(60,_,_)
 71 - While Pattern synonym and wildcard
 while w;
 Select w pattern w(_,_)
-26,31,32,36,40,51,52,53,54,55,58,62,66,74,81,84,90
+26,31,32,40,51,52,53,55,58,62,66,74,84,90
 5000
 72 - While Pattern synonym and synonym
 while w; variable v;

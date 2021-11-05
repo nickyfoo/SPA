@@ -61,24 +61,10 @@ bool PatternClause::IsSyntacticallyValidExpSpec(std::string ref) {
 
   ref = ref.substr(1, ref.length() - 2);  // remove ""
 
-  exp_spec->set_expression(ref);
-  exp_spec->set_partial_pattern(partial_pattern);
-
-  this->exp_spec_ = exp_spec;
-  return true;
-}
-
-bool PatternClause::IsSemanticallyValidExpSpec() {
-
-  if (type_ == EntityType::While || type_ == EntityType::If) {
-    return true;
-  }
-
-  if (exp_spec_->IsWildCard()) return true;
   bool expecting_exp = false;
   bool must_be_exp = false;
   bool must_be_char = true;
-  for (char &c : exp_spec_->get_expression()) {
+  for (char &c : ref) {
     if ((must_be_char && IsExp(c)) || (must_be_exp && IsChar(c))) {
       return false;
     } else {
@@ -104,11 +90,58 @@ bool PatternClause::IsSemanticallyValidExpSpec() {
       }
     }
   }
-  if (!expecting_exp && !exp_spec_->get_expression().empty()) {
+  if (!expecting_exp && !ref.empty()) {
     return false;
   }
+
+  exp_spec->set_expression(ref);
+  exp_spec->set_partial_pattern(partial_pattern);
+
+  this->exp_spec_ = exp_spec;
   return true;
 }
+
+//bool PatternClause::IsSemanticallyValidExpSpec() {
+//
+//  if (type_ == EntityType::While || type_ == EntityType::If) {
+//    return true;
+//  }
+//
+//  if (exp_spec_->IsWildCard()) return true;
+//  bool expecting_exp = false;
+//  bool must_be_exp = false;
+//  bool must_be_char = true;
+//  for (char &c : exp_spec_->get_expression()) {
+//    if ((must_be_char && IsExp(c)) || (must_be_exp && IsChar(c))) {
+//      return false;
+//    } else {
+//      if (IsExp(c)) {
+//        expecting_exp = false;
+//        must_be_exp = false;
+//        must_be_char = true;
+//      } else if (IsChar(c)) {
+//        expecting_exp = true;
+//        must_be_char = false;
+//      } else if (c == '(' || c == ')') {
+//        continue;
+//      } else if (isspace(c)) {
+//        if (expecting_exp) {
+//          must_be_exp = true;
+//          must_be_char = false;
+//        } else {
+//          must_be_exp = false;
+//          must_be_char = true;
+//        }
+//      } else {
+//        return false;
+//      }
+//    }
+//  }
+//  if (!expecting_exp && !exp_spec_->get_expression().empty()) {
+//    return false;
+//  }
+//  return true;
+//}
 
 bool PatternClause::IsChar(char c) {
   if (!((c >= 'a' && c <= 'z')

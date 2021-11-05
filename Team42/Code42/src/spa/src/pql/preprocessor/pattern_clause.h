@@ -14,7 +14,7 @@ class PatternClause : public Clause {
   EntityType get_type();
   EntRef *get_variable();
   ExpressionSpec *get_exp_spec();
-  bool IsSemanticallyValidExpSpec();
+//  bool IsSemanticallyValidExpSpec();
 
  private:
   EntityDeclaration *synonym_;

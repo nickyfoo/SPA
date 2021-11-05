@@ -269,8 +269,7 @@ int SelectClauseParser::SetPatternRef(PatternClause *pattern,
     return -1;
   }
   if (pattern->set_ref(ent_ref, right_ref)) {
-    if (pattern->IsSemanticallyValidExpSpec()) return 1;
-    else return 0;
+    return 1;
   } else {
     return -1;
   }
@@ -299,7 +298,10 @@ int SelectClauseParser::SetWithRef(WithClause *with, const std::string &left_ref
     left_attr_value_type = AttrValueType::Name;
   } else {
     std::tie(left_str, left_type, left_attr_value_type) = GetWithRefTypeAndAttrValueType(left_ref);
-    if (left_type == EntityType::None) return 0;
+    if (left_type == EntityType::None) {
+      if (left_str == "") return -1;
+      else return 0;
+    }
   }
 
   if (IsInteger(right_ref)) {  // set as EntityType::None if it is an integer
@@ -314,7 +316,10 @@ int SelectClauseParser::SetWithRef(WithClause *with, const std::string &left_ref
   } else {
     std::tie(right_str, right_type, right_attr_value_type) =
         GetWithRefTypeAndAttrValueType(right_ref);
-    if (right_type == EntityType::None) return 0;
+    if (right_type == EntityType::None) {
+      if (right_str == "") return -1;
+      else return 0;
+    }
   }
 
   // not previously declared
@@ -380,7 +385,8 @@ SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
         default:break;
       }
 
-      if (attr_value_type != AttrValueType::None) {
+      if (attribute == "procName" || attribute == "stmt#"
+      || attribute == "value" || attribute == "varName") {  // correct semantics
         return std::make_tuple(synonym, type, attr_value_type);
       }
     }

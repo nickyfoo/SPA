@@ -153,12 +153,12 @@ while w;
 Select BOOLEAN pattern w(_,"y")
 
 5000
-32 - Select BOOLEAN with bad expression spec (invalid semantics)
+32 - Select BOOLEAN with bad expression spec (invalid syntax)
 assign a;
 Select BOOLEAN pattern a(_,"+")
-FALSE
+
 5000
-33 - Select BOOLEAN with wrong with attr type (invalid syntax)
+33 - Select BOOLEAN with wrong with attr type (invalid semantic)
 stmt s;
 Select BOOLEAN with s.varName = "p"
 FALSE
@@ -168,17 +168,22 @@ stmt s;
 Select BOOLEAN with s.stmt# = "p"
 FALSE
 5000
-35 - Select BOOLEAN with undeclared synonyms (invalid semantic)
+35 - Select BOOLEAN with negative number (invalid syntax)
+stmt s;
+Select BOOLEAN with s.stmt# = -2
+
+5000
+36 - Select BOOLEAN with undeclared synonyms (invalid semantic)
 stmt s1;
 Select BOOLEAN such that Follows(s1,s2)
 FALSE
 5000
-36 - Select BOOLEAN with negative integer in Follows (invalid syntax)
+37 - Select BOOLEAN with negative integer in Follows (invalid syntax)
 
 Select BOOLEAN such that Follows(-1,1)
 
 5000
-37 - Select BOOLEAN with 0 in Follows (invalid semantic)
+38 - Select BOOLEAN with 0 in Follows (invalid semantic)
 
 Select BOOLEAN such that Follows(0,1)
 FALSE

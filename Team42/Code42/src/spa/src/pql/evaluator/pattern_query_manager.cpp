@@ -117,7 +117,9 @@ ResultTable *PatternQueryManager::EvaluateIfAndWhilePattern(
         stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
       }
     } else if (variable->get_type() == EntRefType::WildCard) {  // pattern if(_, _, _)
-      stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
+      if (!stmt ->get_vars_from_expr_string().empty()) {
+        stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
+      }
     }
   }
   if (variable->get_type() == EntRefType::Synonym) {

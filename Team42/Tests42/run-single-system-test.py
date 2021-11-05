@@ -17,7 +17,8 @@ files = [
     # "BOOLEAN"
     # "SIMPLE_6_0clause",
     # "SIMPLE_6_1clause"
-    "callsStar_1"
+    # "callsStar_1"
+    "SIMPLE_WITH"
 ]
 
 for file in files:

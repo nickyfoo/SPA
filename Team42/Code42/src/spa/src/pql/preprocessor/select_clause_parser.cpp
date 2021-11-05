@@ -371,13 +371,11 @@ SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
           if (attribute == "value") attr_value_type = AttrValueType::Integer;
           break;
         case EntityType::Call:
-          if (attribute == "procName") {
+          if (attribute == "procName")
             attr_value_type = AttrValueType::Name;
-            break;
-          } else if (attribute == "stmt#") {
+          else if (attribute == "stmt#")
             attr_value_type = AttrValueType::Integer;
-            break;
-          }
+          break;
         case EntityType::Print:
         case EntityType::Read:
           if (attribute == "varName")
@@ -389,9 +387,8 @@ SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
         case EntityType::While:
         case EntityType::If:
         case EntityType::Assign:
-          if (attribute == "stmt#") {
+          if (attribute == "stmt#")
             attr_value_type = AttrValueType::Integer;
-          }
           break;
         default:break;
       }

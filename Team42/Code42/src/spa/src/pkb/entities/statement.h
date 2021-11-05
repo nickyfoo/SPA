@@ -23,10 +23,6 @@ class Statement : public Entity {
   std::vector<std::string> get_vars_from_expr_string();
   // Gets the name of the procedure being called, only works for NodeType::Call
   std::string get_called_proc_name();
-  // Gets the name of the procedure that this statement is in
-  std::string get_parent_proc();
-  // Gets the last stmts of a container stmt
-  std::set<int> *get_last_stmts();
   // Gets the statements which follows before this statement.
   std::set<int> *get_followers();
   // Gets the statements which follows star before this statement.
@@ -54,10 +50,6 @@ class Statement : public Entity {
   void set_expr_string(std::string expr_string);
   // Sets the name of the procedure being called, only works for NodeType::Call
   void set_called_proc_name(std::string name);
-  // Sets the name of the procedure that this statement is in
-  void set_parent_proc(std::string proc_name);
-  // Adds a last stmt of the stmt;
-  void add_last_stmt(int last_stmt);
   
   // Adds a statement that follows before this statement.
   void AddFollower(int line_no);

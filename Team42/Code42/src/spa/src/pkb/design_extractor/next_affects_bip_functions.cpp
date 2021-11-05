@@ -17,7 +17,7 @@ std::set<std::pair<int, int>> *PKB::get_next_bip(int a, int b) {
     return &next_bip_cache[a][b];
   }
 
-  if (a == kWild && b == kWild) {
+  if (a == kWild) {
     // Get result for NextBip(_,_)
     next_bip_cache[kWild][kWild] = std::set<std::pair<int, int>>();
     for (int i = 0; i < n; i++) {
@@ -28,41 +28,16 @@ std::set<std::pair<int, int>> *PKB::get_next_bip(int a, int b) {
       }
     }
 
-    for (auto&[u, al_u] : cfg_bip_al_) {
-      for (auto&[v, branch] : al_u) {
-        if (v < 0) {
-          for (auto& [vv, vv_branch] : cfg_bip_al_[v]) {
-            next_bip_cache[kWild][kWild].insert({ u, vv });
-            next_bip_cache[kWild][vv].insert({ u, vv });
-            next_bip_cache[u][kWild].insert({ u, vv });
-            next_bip_cache[u][vv].insert({ u, vv });
-          }
-        }
-        else {
+
+    for (auto &[u, al_u] : cfg_bip_al_) {
+      if (u < 0) continue;
+      std::set<int> visited, ans;
+      GetFirstPositiveStmts(u, visited, ans);
+      for(auto &v:ans){
           next_bip_cache[kWild][kWild].insert({ u, v });
           next_bip_cache[kWild][v].insert({ u, v });
           next_bip_cache[u][kWild].insert({ u, v });
           next_bip_cache[u][v].insert({ u, v });
-        }
-      }
-    }
-  } else if (a == kWild && b != kWild) {
-    // Get result for NextBip(_,b)
-    next_bip_cache[kWild][b] = std::set<std::pair<int, int>>();
-
-    for (int i = 0; i < n; i++) {
-      next_bip_cache[i][b] = std::set<std::pair<int, int>>();
-    }
-    for (auto&[v, branch] : reverse_cfg_bip_al_[b]) {
-      if (v < 0) {
-        for (auto& [vv, vv_branch] : reverse_cfg_bip_al_[v]) {
-          next_bip_cache[kWild][b].insert({ vv, b });
-          next_bip_cache[vv][b].insert({ vv, b });
-        }
-      }
-      else {
-        next_bip_cache[kWild][b].insert({ v, b });
-        next_bip_cache[v][b].insert({ v, b });
       }
     }
   } else if (a != kWild) {
@@ -72,17 +47,13 @@ std::set<std::pair<int, int>> *PKB::get_next_bip(int a, int b) {
     for (int i = 0; i < n; i++) {
       next_bip_cache[a][i] = std::set<std::pair<int, int>>();
     }
-    for (auto&[v, branch] : cfg_bip_al_[a]) {
-      if (v < 0) {
-        for (auto& [vv, vv_branch] : cfg_bip_al_[v]) {
-          next_bip_cache[a][kWild].insert({ a, vv });
-          next_bip_cache[a][vv].insert({ a, vv });
-        }
-      }
-      else {
-        next_bip_cache[a][kWild].insert({ a, v });
-        next_bip_cache[a][v].insert({ a, v });
-      }
+
+
+    std::set<int> visited, ans;
+    GetFirstPositiveStmts(a, visited, ans);
+    for (auto &v:ans) {
+      next_bip_cache[a][kWild].insert({ a, v });
+      next_bip_cache[a][v].insert({ a, v });
     }
   }
   return &next_bip_cache[a][b];
@@ -360,7 +331,6 @@ std::set<std::pair<int, int>> *PKB::get_affects_bip_star(int a, int b) {
 
 void PKB::BipReachabilityDFS(std::set<std::pair<int, std::string>> &visited, int u, std::string &u_hash, int start, std::string &start_hash,
                              std::vector<int> &call_stack) {
-  //std::cout << u << ' ' << u_hash << ' ' << ", Start: " << start << ' ' << start_hash << '\n';
   if (bip_reachability_dfs_cache.find(u) != bip_reachability_dfs_cache.end()
       && bip_reachability_dfs_cache[u].find(u_hash) != bip_reachability_dfs_cache[u].end()) {
     for (auto &reached_stmt: bip_reachability_dfs_cache[u][u_hash]) {
@@ -377,7 +347,7 @@ void PKB::BipReachabilityDFS(std::set<std::pair<int, std::string>> &visited, int
   }
 
   if (u < 0) {
-    for (auto& [v, v_branch] : cfg_bip_al_[u]) {
+    for (auto &[v, v_branch] : cfg_bip_al_[u]) {
       if (v_branch < 0) {
         // Call stack not empty and edge goes back
         if (branch != kNoBranch && v_branch == -branch) {
@@ -395,7 +365,6 @@ void PKB::BipReachabilityDFS(std::set<std::pair<int, std::string>> &visited, int
         }
       }
       else {
-
         BipReachabilityDFS(visited, v, u_hash, start, start_hash, call_stack);
         continue;
       }
@@ -464,12 +433,45 @@ void PKB::AffectsBipDFS(int start,
                         std::string var_name,
                         std::set<std::pair<int, std::string>> &visited) {
   
-
   int branch;
   if (call_stack.empty()) {
     branch = kNoBranch;
   } else {
     branch = call_stack.back();
+  }
+
+  if (u < 0) {
+    for (auto &[v, v_branch] : cfg_bip_al_[u]) {
+      if (v_branch < 0) {
+        // Call stack not empty and edge goes back
+        if (branch != kNoBranch && v_branch == -branch) {
+          hash.erase(hash.size() - 1 - std::to_string(call_stack.back()).size());
+          call_stack.pop_back();
+
+          if (visited.find({ v, hash }) == visited.end()) {
+            visited.insert({ v, hash });
+            if (v > 0) {
+              AddStmtIfAffectedBip(start, start_hash, v, hash, var_name);
+              if (!ModifiesVarName(v, var_name)) {
+                AffectsBipDFS(start, start_hash, v, call_stack, hash, var_name, visited);
+              }
+            }
+            else {
+              AffectsBipDFS(start, start_hash, v, call_stack, hash, var_name, visited);
+            }
+          }
+
+          call_stack.push_back(branch);
+          hash += std::to_string(branch) + " ";
+        }
+      }
+      else {
+
+        AffectsBipDFS(start, start_hash, v, call_stack, hash, var_name, visited);
+        continue;
+      }
+    }
+    return;
   }
 
   for (auto &[v, v_branch] : cfg_bip_al_[u]) {
@@ -573,4 +575,15 @@ bool PKB::ModifiesVarName(int v, const std::string &var_name) {
     if (modifies->find(var_name) != modifies->end()) return true;
   }
   return false;
+}
+
+void PKB::GetFirstPositiveStmts(int u, std::set<int> &visited, std::set<int> &ans) {
+  if (visited.find(u) != visited.end()) return;
+  visited.insert(u);
+  for (auto &[v, vbranch] : cfg_bip_al_[u]) {
+    if (v < 0) GetFirstPositiveStmts(v, visited, ans);
+    else {
+      ans.insert(v);
+    }
+  }
 }

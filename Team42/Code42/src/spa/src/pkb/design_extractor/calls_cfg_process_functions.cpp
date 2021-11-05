@@ -66,27 +66,9 @@ std::set<std::pair<int,int>> DesignExtractor::GetLastStmts(StatementNode *node, 
   return ans;
 }
 
-/*
-void DesignExtractor::LastStmtsOfProcedure(std::string proc_name, std::set<int> &ans) {
-  std::set<int> *stmt_lst = pkb_->proc_table_.get_procedure(proc_name)->get_stmt_lst();
-  int last_stmt_no = *stmt_lst->rbegin();
-  Statement *stmt = pkb_->stmt_table_.get_statement(last_stmt_no);
-  
-  std::set<int> *last_stmts_of_stmt = stmt->get_last_stmts();
-  for (auto &stmt_no : *last_stmts_of_stmt) {
-    if (pkb_->stmt_table_.get_statement(stmt_no)->get_kind() == NodeType::Call) {
-      LastStmtsOfProcedure(pkb_->stmt_table_.get_statement(stmt_no)->get_called_proc_name(), ans);
-    }
-    else {
-      ans.insert(stmt_no);
-    }
-  }
-}
-*/
-
-void DesignExtractor::CFGProcessStmtLst(std::vector<StatementNode*>& stmt_lst) {
+void DesignExtractor::CFGProcessStmtLst(std::vector<StatementNode*> &stmt_lst) {
   std::sort(stmt_lst.begin(), stmt_lst.end(),
-    [](StatementNode* a, StatementNode* b) {
+    [](StatementNode *a, StatementNode *b) {
       return a->get_stmt_no() < b->get_stmt_no();
     });
 
@@ -100,7 +82,7 @@ void DesignExtractor::CFGProcessStmtLst(std::vector<StatementNode*>& stmt_lst) {
 
   for (int i = 1; i < n; i++) {
     if (stmt_lst[i - 1]->get_kind() == NodeType::Call) {
-      Statement* call_stmt = pkb_->stmt_table_.get_statement(stmt_lst[i - 1]->get_stmt_no());
+      Statement *call_stmt = pkb_->stmt_table_.get_statement(stmt_lst[i - 1]->get_stmt_no());
       int first_stmt_of_called_proc = pkb_->proc_table_.get_procedure(call_stmt->get_called_proc_name())->get_stmt_no();
       pkb_->cfg_bip_al_[stmt_lst[i - 1]->get_stmt_no()].insert({ first_stmt_of_called_proc, stmt_lst[i - 1]->get_stmt_no() });
       pkb_->cfg_bip_al_[-first_stmt_of_called_proc].insert({ stmt_lst[i]->get_stmt_no(), -stmt_lst[i - 1]->get_stmt_no() });
@@ -109,8 +91,8 @@ void DesignExtractor::CFGProcessStmtLst(std::vector<StatementNode*>& stmt_lst) {
     }
     else {
       for (auto& [last_stmt, branch] : GetLastStmts(stmt_lst[i - 1], false)) {
-        pkb_->cfg_bip_al_[last_stmt].insert({ stmt_lst[i]->get_stmt_no(), PKB::kNoBranch });
-        pkb_->reverse_cfg_bip_al_[stmt_lst[i]->get_stmt_no()].insert({ last_stmt, PKB::kNoBranch });
+        pkb_->cfg_bip_al_[last_stmt].insert({ stmt_lst[i]->get_stmt_no(), branch });
+        pkb_->reverse_cfg_bip_al_[stmt_lst[i]->get_stmt_no()].insert({ last_stmt, branch });
       }
     }
   }
@@ -128,7 +110,7 @@ void DesignExtractor::CFGProcessProcedureNode(Node *node) {
   //Join last stmt to dummy end of proc node
   int first_stmt_of_current_proc = pkb_->proc_table_.get_procedure(procedure_node->get_name())->get_stmt_no();
   if (stmt_lst[n-1]->get_kind() == NodeType::Call) {
-    Statement* call_stmt = pkb_->stmt_table_.get_statement(stmt_lst[n-1]->get_stmt_no());
+    Statement *call_stmt = pkb_->stmt_table_.get_statement(stmt_lst[n-1]->get_stmt_no());
     int first_stmt_of_called_proc = pkb_->proc_table_.get_procedure(call_stmt->get_called_proc_name())->get_stmt_no();
     pkb_->cfg_bip_al_[stmt_lst[n - 1]->get_stmt_no()].insert({ first_stmt_of_called_proc, stmt_lst[n - 1]->get_stmt_no() });
     pkb_->cfg_bip_al_[-first_stmt_of_called_proc].insert({ -first_stmt_of_current_proc, -stmt_lst[n - 1]->get_stmt_no() });
@@ -136,7 +118,7 @@ void DesignExtractor::CFGProcessProcedureNode(Node *node) {
     pkb_->reverse_cfg_bip_al_[-first_stmt_of_current_proc].insert({ -first_stmt_of_called_proc, -stmt_lst[n - 1]->get_stmt_no() });
   }
   else {
-    for (auto& [last_stmt,branch] : GetLastStmts(stmt_lst[n - 1], false)) {
+    for (auto &[last_stmt,branch] : GetLastStmts(stmt_lst[n - 1], false)) {
       pkb_->cfg_bip_al_[last_stmt].insert({ -first_stmt_of_current_proc, branch });
       pkb_->reverse_cfg_bip_al_[-first_stmt_of_current_proc].insert({ last_stmt, branch });
     }
@@ -149,7 +131,7 @@ void DesignExtractor::CFGProcessIfNode(Node *node) {
 
   // Sort then statement list in ascending statement numbers
   std::vector<StatementNode *> then_stmt_lst = if_node->get_then_stmt_lst();
-  std::vector<StatementNode*> else_stmt_lst = if_node->get_else_stmt_lst();
+  std::vector<StatementNode *> else_stmt_lst = if_node->get_else_stmt_lst();
   CFGProcessStmtLst(then_stmt_lst);
   CFGProcessStmtLst(else_stmt_lst);
 
@@ -168,12 +150,10 @@ void DesignExtractor::CFGProcessIfNode(Node *node) {
 
   //Join last stmt to dummy end of proc node
   if (then_stmt_lst[then_n - 1]->get_kind() == NodeType::Call) {
-    Statement* call_stmt = pkb_->stmt_table_.get_statement(then_stmt_lst[then_n - 1]->get_stmt_no());
+    Statement *call_stmt = pkb_->stmt_table_.get_statement(then_stmt_lst[then_n - 1]->get_stmt_no());
     int first_stmt_of_called_proc = pkb_->proc_table_.get_procedure(call_stmt->get_called_proc_name())->get_stmt_no();
     pkb_->cfg_bip_al_[then_stmt_lst[then_n - 1]->get_stmt_no()].insert({ first_stmt_of_called_proc, then_stmt_lst[then_n - 1]->get_stmt_no() });
-    //pkb_->cfg_bip_al_[-first_stmt_of_called_proc].insert({ -first_stmt_of_current_proc, -stmt_lst[n - 1]->get_stmt_no() });
     pkb_->reverse_cfg_bip_al_[first_stmt_of_called_proc].insert({ then_stmt_lst[then_n - 1]->get_stmt_no(), then_stmt_lst[then_n - 1]->get_stmt_no() });
-    //pkb_->reverse_cfg_bip_al_[-first_stmt_of_current_proc].insert({ -first_stmt_of_called_proc, -stmt_lst[n - 1]->get_stmt_no() });
   }
 
   // Connect if node to first node of else_stmt_lst
@@ -190,12 +170,10 @@ void DesignExtractor::CFGProcessIfNode(Node *node) {
 
   //Join last stmt to dummy end of proc node
   if (else_stmt_lst[else_n - 1]->get_kind() == NodeType::Call) {
-    Statement* call_stmt = pkb_->stmt_table_.get_statement(else_stmt_lst[else_n - 1]->get_stmt_no());
+    Statement *call_stmt = pkb_->stmt_table_.get_statement(else_stmt_lst[else_n - 1]->get_stmt_no());
     int first_stmt_of_called_proc = pkb_->proc_table_.get_procedure(call_stmt->get_called_proc_name())->get_stmt_no();
     pkb_->cfg_bip_al_[else_stmt_lst[else_n - 1]->get_stmt_no()].insert({ first_stmt_of_called_proc, else_stmt_lst[else_n - 1]->get_stmt_no() });
-    //pkb_->cfg_bip_al_[-first_stmt_of_called_proc].insert({ -first_stmt_of_current_proc, -stmt_lst[n - 1]->get_stmt_no() });
     pkb_->reverse_cfg_bip_al_[first_stmt_of_called_proc].insert({ else_stmt_lst[else_n - 1]->get_stmt_no(), else_stmt_lst[else_n - 1]->get_stmt_no() });
-    //pkb_->reverse_cfg_bip_al_[-first_stmt_of_current_proc].insert({ -first_stmt_of_called_proc, -stmt_lst[n - 1]->get_stmt_no() });
   }
 }
 
@@ -218,14 +196,14 @@ void DesignExtractor::CFGProcessWhileNode(Node *node) {
 
   int n = stmt_lst.size();
   //Join last stmt back to while
-  for (auto& [last_stmt,branch] : GetLastStmts(stmt_lst[n - 1], true)) {
+  for (auto &[last_stmt,branch] : GetLastStmts(stmt_lst[n - 1], true)) {
     pkb_->cfg_al_[last_stmt].insert(while_stmt_no);
     pkb_->reverse_cfg_al_[while_stmt_no].insert(last_stmt);
   }
 
   //Join last stmt back to while bip
   if (stmt_lst[n - 1]->get_kind() == NodeType::Call) {
-    Statement* call_stmt = pkb_->stmt_table_.get_statement(stmt_lst[n - 1]->get_stmt_no());
+    Statement *call_stmt = pkb_->stmt_table_.get_statement(stmt_lst[n - 1]->get_stmt_no());
     int first_stmt_of_called_proc = pkb_->proc_table_.get_procedure(call_stmt->get_called_proc_name())->get_stmt_no();
     pkb_->cfg_bip_al_[stmt_lst[n - 1]->get_stmt_no()].insert({ first_stmt_of_called_proc, stmt_lst[n - 1]->get_stmt_no() });
     pkb_->cfg_bip_al_[-first_stmt_of_called_proc].insert({ while_stmt_no, -stmt_lst[n - 1]->get_stmt_no() });
@@ -233,52 +211,13 @@ void DesignExtractor::CFGProcessWhileNode(Node *node) {
     pkb_->reverse_cfg_bip_al_[while_stmt_no].insert({ -first_stmt_of_called_proc, -stmt_lst[n - 1]->get_stmt_no() });
   }
   else {
-    for (auto& [last_stmt,branch] : GetLastStmts(stmt_lst[n - 1], false)) {
+    for (auto &[last_stmt,branch] : GetLastStmts(stmt_lst[n - 1], false)) {
       pkb_->cfg_bip_al_[last_stmt].insert({ while_stmt_no, branch });
       pkb_->reverse_cfg_bip_al_[while_stmt_no].insert({ last_stmt, branch });
     }
   }
 }
 
-/*
-void DesignExtractor::LinkProcedures() {
-  for (auto &call_stmt : pkb_->stmt_table_.get_statements(NodeType::Call)) {
-    std::string called_proc_name = call_stmt->get_called_proc_name();
-    int first_stmt_of_proc = pkb_->proc_table_.get_procedure(called_proc_name)->get_stmt_no();
-    int call_stmt_no = call_stmt->get_stmt_no();
-
-    std::set<int> ans;
-    LastStmtsOfProcedure(called_proc_name, ans);
-    std::cout << "last stmts of " << called_proc_name << " are: ";
-    for (auto& x : ans)std::cout << x << ' ';
-    std::cout << '\n';
-    std::set<std::string> procs_visited;
-    AddInterprocedureReturnLinks(procs_visited, ans, called_proc_name);
-  }
-}
-void DesignExtractor::AddInterprocedureReturnLinks(std::set<std::string> &visited, std::set<int> &last_stmts, std::string proc_name) {
-  for (auto &call_stmt : pkb_->stmt_table_.get_statements(NodeType::Call)) {
-    std::string called_proc_name = call_stmt->get_called_proc_name();
-    int call_stmt_no = call_stmt->get_stmt_no();
-    if (called_proc_name == proc_name) {
-        // Update links
-        for (auto &last_stmt : last_stmts) {
-          if (pkb_->cfg_al_[call_stmt_no].size()) {
-            for (auto &next_stmt : pkb_->cfg_al_[call_stmt_no]) {
-              pkb_->cfg_bip_al_[last_stmt].insert({ next_stmt, -call_stmt_no });
-              pkb_->reverse_cfg_bip_al_[next_stmt].insert({ last_stmt, call_stmt_no });
-            }
-          }
-          else {
-            std::string nextproc = call_stmt->get_parent_proc();
-            AddInterprocedureReturnLinks(visited, last_stmts, nextproc);
-          }
-        }
-    }
-  }
-}
-
-*/
 void DesignExtractor::AddCallStacks() {
   // Using int for stmt_no, string for call stack
   std::set<std::pair<int, std::string>> visited;
@@ -295,18 +234,38 @@ void DesignExtractor::ProcessCallStacks(std::set<std::pair<int, std::string>> &v
   std::string hash = pkb_->CallStackToString(&call_stack);
   if (visited.find({u, hash}) != visited.end()) return;
 
+  int branch;
+  if (call_stack.empty()) {
+    branch = PKB::kNoBranch;
+  }
+  else {
+    branch = call_stack.back();
+  }
+
   visited.insert({u, hash});
   if (u > 0) {
     auto stmt = pkb_->stmt_table_.get_statement(u);
     stmt->AddCallStack(&call_stack);
   }
+  else {
+    for (auto &[v, v_branch] : pkb_->cfg_bip_al_[u]) {
+      if (v_branch < 0) {
+        // Call stack not empty and edge goes back
+        if (branch != pkb_->kNoBranch && v_branch == -branch) {
+          call_stack.pop_back();
+          ProcessCallStacks(visited, call_stack, v);
+          call_stack.push_back(branch);
+        }
+      }
+      else {
 
-  int branch;
-  if (call_stack.empty()) {
-    branch = PKB::kNoBranch;
-  } else {
-    branch = call_stack.back();
+        ProcessCallStacks(visited, call_stack, v);
+        continue;
+      }
+    }
+    return;
   }
+
 
   for (auto &[v, v_branch] : pkb_->cfg_bip_al_[u]) {
     // Next is dummy end of proc node

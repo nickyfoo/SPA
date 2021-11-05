@@ -1,4 +1,5 @@
 #include "usesp_modifiesp_handler.h"
+#include <assert.h>
 
 UsesPModifiesPHandler::UsesPModifiesPHandler() = default;
 UsesPModifiesPHandler *UsesPModifiesPHandler::instance_ = nullptr;

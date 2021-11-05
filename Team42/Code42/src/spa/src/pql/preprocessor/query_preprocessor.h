@@ -20,6 +20,7 @@ class QueryPreprocessor {
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
   bool, bool> *get_clauses();
+
  private:
   std::unordered_map<std::string, EntityDeclaration> syn_to_entity_;
   std::tuple<std::vector<ResultClause *> *,

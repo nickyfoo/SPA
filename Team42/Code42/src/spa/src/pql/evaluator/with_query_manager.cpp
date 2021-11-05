@@ -51,7 +51,7 @@ ResultTable *WithQueryManager::EvaluateWith(std::shared_ptr<WithClause> with,
     if (with->get_left_ref() == with->get_right_ref()) {
       ret->AddSingleColumn(with->get_left_ref(), left_vec);
     } else {
-      ret->AddDoubleColumns(with->get_left_ref(),left_vec, with->get_right_ref(), right_vec);
+      ret->AddDoubleColumns(with->get_left_ref(), left_vec, with->get_right_ref(), right_vec);
     }
   }
 
@@ -120,11 +120,12 @@ std::vector<std::string> WithQueryManager::GetNames(std::string synonym,
 std::vector<std::string> WithQueryManager::GetIntegers(std::string synonym,
                                                        EntityType type,
                                                        std::string argument,
-                                                       std::unordered_map<std::string,
-                                                                          std::vector<Entity *>> synonym_to_entities_vec) {
+                                                       std::unordered_map<
+                                                           std::string,std::vector<Entity *>>
+                                                           synonym_to_entities_vec) {
   std::vector<std::string> output;
   for (Entity *entity : synonym_to_entities_vec.at(synonym)) {
-    switch(type) {
+    switch (type) {
       case EntityType::Constant: {
         auto *constant = dynamic_cast<Constant *>(entity);
         if (constant->get_value() == argument) {
@@ -163,7 +164,7 @@ std::tuple<std::vector<std::string>, std::vector<std::string>> WithQueryManager:
       EntityType type = with->get_right_type();
       std::vector<std::string> curr_vec;
       std::string right_arg;
-      switch(type) {
+      switch (type) {
         case EntityType::Constant: {
           auto *constant = dynamic_cast<Constant *>(right_entity);
           right_arg = constant->get_value();
@@ -198,7 +199,7 @@ std::tuple<std::vector<std::string>, std::vector<std::string>> WithQueryManager:
       EntityType type = with->get_right_type();
       std::vector<std::string> curr_vec;
       std::string right_arg;
-      switch(type) {
+      switch (type) {
         case EntityType::Procedure: {
           auto *procedure = dynamic_cast<Procedure *>(right_entity);
           right_arg = procedure->get_name();

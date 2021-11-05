@@ -66,7 +66,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         case ClauseType::SuchThatClause:
           table = relationship_query_manager->EvaluateRelationship(
               std::dynamic_pointer_cast<SuchThatClause>(
-                  clause_vertex.get_clause()),synonym_to_entities_vec);
+                  clause_vertex.get_clause()), synonym_to_entities_vec);
           break;
         case ClauseType::PatternClause:
           table = pattern_query_manager->EvaluatePattern(std::dynamic_pointer_cast<PatternClause>(
@@ -402,7 +402,7 @@ void QueryEvaluator::MakeTableForUsedEntity(ResultTable *result_table,
       result_clause->get_synonym());
 
   // removing duplicates in the column vec, since we are doing natural join later
-  sort( synonym_vec.begin(), synonym_vec.end() );
+  sort(synonym_vec.begin(), synonym_vec.end());
   synonym_vec.erase( unique( synonym_vec.begin(), synonym_vec.end() ), synonym_vec.end() );
 
   std::string elem = result_clause->get_elem();

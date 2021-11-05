@@ -60,7 +60,8 @@ std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
 
   for (const std::string &select : select_clauses) {
     ResultClause *result_clause;
-    if (select == "BOOLEAN" && select_clauses.size() == 1) {
+    if (select == "BOOLEAN" && select_clauses.size() == 1
+        && synonym_to_entity_->find("BOOLEAN") == synonym_to_entity_->end()) {
       result_clause = new ResultClause("", EntityType::None, ReturnType::Boolean);
     } else if (synonym_to_entity_->find(select) != synonym_to_entity_->end()) {
       result_clause =

@@ -92,7 +92,7 @@ bool PatternClause::IsSyntacticallyValidExpSpec(std::string ref) {
         return false;
       }
     }
-    if (bracket_count > 0) return false;
+    if (bracket_count < 0) return false;
   }
   if (bracket_count != 0 || (!expecting_exp && !ref.empty())) {
     return false;

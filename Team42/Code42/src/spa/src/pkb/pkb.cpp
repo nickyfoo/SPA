@@ -17,26 +17,10 @@ void PKB::AddProcedure(Node *node, const std::vector<Node *> &ancestor_list) {
        });
   int stmt_no = procedure_node->get_stmt_lst()[0]->get_stmt_no();
   proc_table_.AddProcedure(proc_name, stmt_no);
-  
-  // Add stmts to stmt list in Procedure
-  Procedure *added_proc = proc_table_.get_procedure(proc_name);
-  for (auto &stmt : stmt_lst) {
-    added_proc->AddStmt(stmt->get_stmt_no());
-  }
 }
 
 void PKB::AddStatement(Node *node, const std::vector<Node *> &ancestor_list) {
   stmt_table_.AddStatement(node);
-  auto *stmt_node = dynamic_cast<StatementNode*>(node);
-  int stmt_no = stmt_node->get_stmt_no();
-  for (auto &n : ancestor_list) {
-    if (n->get_kind() == NodeType::Procedure) {
-      auto *parent_proc_node = dynamic_cast<ProcedureNode*>(n);
-      std::string parent_proc_name = parent_proc_node->get_name();
-      stmt_table_.get_statement(stmt_no)->set_parent_proc(parent_proc_name);
-      break;
-    }
-  }
 }
 
 void PKB::AddExprString(Node *node, const std::vector<Node *> &ancestor_list) {

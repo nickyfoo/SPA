@@ -18,8 +18,11 @@ SelectClauseParser *SelectClauseParser::get_instance() {
   return instance;
 }
 
-void SelectClauseParser::set_select_clause(
-    std::unordered_map<std::string, EntityDeclaration *> *syn_to_ent, std::string select_clause) {
+void SelectClauseParser::set_select_clause(bool semantically_valid,
+                                           std::unordered_map<std::string,
+                                           EntityDeclaration *> *syn_to_ent,
+                                           std::string select_clause) {
+  this->semantically_valid_ = semantically_valid;
   this->synonym_to_entity_ = syn_to_ent;
   select_clause.erase(remove(select_clause.begin(), select_clause.end(), '\n'),
                       select_clause.end());
@@ -46,7 +49,7 @@ std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
   auto *pattern_ret = new std::vector<PatternClause *>();
   auto *with_ret = new std::vector<WithClause *>();
   bool syntactically_valid = true;
-  bool semantically_valid = true;
+  bool semantically_valid = semantically_valid_;
   std::vector<std::string> select_clauses = SplitSelect(select_clause);
   auto *syntactically_false_res = new std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
                              std::vector<PatternClause *> *, std::vector<WithClause *> *,

@@ -14,8 +14,15 @@ TEST_CASE("AddingEntitiesToMap_StatementEntities_ReturnsEntitiesMap") {
       {"s1", new EntityDeclaration(EntityType::Stmt, "s1")},
       {"s2", new EntityDeclaration(EntityType::Stmt, "s2")}
   };
-  unordered_map<string, EntityDeclaration *> *entities_map =
-      entity_parser->get_entities_map();
+
+  std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
+  bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
+  std::unordered_map<std::string, EntityDeclaration *> *entities_map = std::get<0>(entities_parser_tuple);
+  bool syntactically_valid = std::get<1>(entities_parser_tuple);
+  bool semantically_valid = std::get<2>(entities_parser_tuple);
+
+  REQUIRE(syntactically_valid == true);
+  REQUIRE(semantically_valid == true);
   REQUIRE(expected_entities_map.size() == entities_map->size());
   REQUIRE(expected_entities_map.at("s1")->get_synonym() ==
       entities_map->at("s1")->get_synonym());
@@ -38,8 +45,14 @@ TEST_CASE("AddingEntitiesToMap_OtherEntityTypes_ReturnsEntitiesMap") {
       {"procedure", new EntityDeclaration(
           EntityType::Procedure, "procedure")}
   };
-  unordered_map<string, EntityDeclaration *> *entities_map =
-      entity_parser->get_entities_map();
+  std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
+  bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
+  std::unordered_map<std::string, EntityDeclaration *> *entities_map = std::get<0>(entities_parser_tuple);
+  bool syntactically_valid = std::get<1>(entities_parser_tuple);
+  bool semantically_valid = std::get<2>(entities_parser_tuple);
+
+  REQUIRE(syntactically_valid == true);
+  REQUIRE(semantically_valid == true);
   REQUIRE(expected_entities_map.size() == entities_map->size());
   REQUIRE(expected_entities_map.at("assign")->get_synonym() ==
       entities_map->at("assign")->get_synonym());
@@ -61,8 +74,15 @@ TEST_CASE("AddingEntitiesToMap_MultipleSynonymsForOneEntityType_ReturnsEntitiesM
       {"s2", new EntityDeclaration(EntityType::Stmt, "s2")},
       {"p", new EntityDeclaration(EntityType::Procedure, "p")}
   };
-  unordered_map<string, EntityDeclaration *> *entities_map =
-      entity_parser->get_entities_map();
+
+  std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
+  bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
+  std::unordered_map<std::string, EntityDeclaration *> *entities_map = std::get<0>(entities_parser_tuple);
+  bool syntactically_valid = std::get<1>(entities_parser_tuple);
+  bool semantically_valid = std::get<2>(entities_parser_tuple);
+
+  REQUIRE(syntactically_valid == true);
+  REQUIRE(semantically_valid == true);
   REQUIRE(expected_entities_map.size() == entities_map->size());
   REQUIRE(expected_entities_map.at("S")->get_synonym() ==
       entities_map->at("S")->get_synonym());
@@ -80,10 +100,15 @@ TEST_CASE("InvalidEntityDeclaration_WrongEntityType_ReturnsNullptr") {
       EntityDeclarationParser::get_instance();
   vector<string> *entities = new vector<string>({"stmts s", "procedure p"});
   entity_parser->set_entities(entities);
-  unordered_map<string, EntityDeclaration *> *entities_map =
-      entity_parser->get_entities_map();
 
-  REQUIRE(entities_map == nullptr);
+  std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
+  bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
+  std::unordered_map<std::string, EntityDeclaration *> *entities_map = std::get<0>(entities_parser_tuple);
+  bool syntactically_valid = std::get<1>(entities_parser_tuple);
+  bool semantically_valid = std::get<2>(entities_parser_tuple);
+
+  REQUIRE(syntactically_valid == false);
+  REQUIRE(semantically_valid == true);
 }
 
 TEST_CASE("InvalidEntityDeclaration_InvalidSynonym_ReturnsNullptr") {
@@ -91,10 +116,15 @@ TEST_CASE("InvalidEntityDeclaration_InvalidSynonym_ReturnsNullptr") {
       EntityDeclarationParser::get_instance();
   vector<string> *entities = new vector<string>({"stmt s?", "procedure p"});
   entity_parser->set_entities(entities);
-  unordered_map<string, EntityDeclaration *> *entities_map =
-      entity_parser->get_entities_map();
 
-  REQUIRE(entities_map == nullptr);
+  std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
+  bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
+  std::unordered_map<std::string, EntityDeclaration *> *entities_map = std::get<0>(entities_parser_tuple);
+  bool syntactically_valid = std::get<1>(entities_parser_tuple);
+  bool semantically_valid = std::get<2>(entities_parser_tuple);
+
+  REQUIRE(syntactically_valid == false);
+  REQUIRE(semantically_valid == true);
 }
 
 TEST_CASE("InvalidEntityDeclaration_RepeatSynonym_ReturnsNullptr") {
@@ -103,10 +133,16 @@ TEST_CASE("InvalidEntityDeclaration_RepeatSynonym_ReturnsNullptr") {
   vector<string> *entities =
       new vector<string>({"stmt s1, s1", "procedure s"});
   entity_parser->set_entities(entities);
-  unordered_map<string, EntityDeclaration *> *entities_map =
-      entity_parser->get_entities_map();
 
-  REQUIRE(entities_map == nullptr);
+  std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
+  bool, bool> entities_parser_tuple;
+  entities_parser_tuple = entity_parser->get_entities_map();
+
+  bool syntactically_valid = std::get<1>(entities_parser_tuple);
+  bool semantically_valid = std::get<2>(entities_parser_tuple);
+
+  REQUIRE(syntactically_valid == true);
+  REQUIRE(semantically_valid == false);
 }
 
 TEST_CASE("InvalidEntityDeclaration_MissingSynonym_ReturnsNullptr") {
@@ -115,9 +151,15 @@ TEST_CASE("InvalidEntityDeclaration_MissingSynonym_ReturnsNullptr") {
   vector<string> *entities =
       new vector<string>({"assign"});
   entity_parser->set_entities(entities);
-  unordered_map<string, EntityDeclaration *> *entities_map =
-      entity_parser->get_entities_map();
-  REQUIRE(entities_map == nullptr);
+
+  std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
+  bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
+  std::unordered_map<std::string, EntityDeclaration *> *entities_map = std::get<0>(entities_parser_tuple);
+  bool syntactically_valid = std::get<1>(entities_parser_tuple);
+  bool semantically_valid = std::get<2>(entities_parser_tuple);
+
+  REQUIRE(syntactically_valid == false);
+  REQUIRE(semantically_valid == true);
 }
 
 TEST_CASE("AddingEntitiesToMap_ExtraSpaceInEntityDeclaration_ReturnsEntitiesMap") {
@@ -126,9 +168,15 @@ TEST_CASE("AddingEntitiesToMap_ExtraSpaceInEntityDeclaration_ReturnsEntitiesMap"
   vector<string> *entities =
       new vector<string>({"while        while", "call call"});
   entity_parser->set_entities(entities);
-  unordered_map<string, EntityDeclaration *> *entities_map =
-      entity_parser->get_entities_map();
-  REQUIRE(entities_map != nullptr);
+
+  std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
+  bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
+  std::unordered_map<std::string, EntityDeclaration *> *entities_map = std::get<0>(entities_parser_tuple);
+  bool syntactically_valid = std::get<1>(entities_parser_tuple);
+  bool semantically_valid = std::get<2>(entities_parser_tuple);
+
+  REQUIRE(syntactically_valid == true);
+  REQUIRE(semantically_valid == true);
 }
 
 TEST_CASE("InvalidSynonym_MissingCommaBetweenMultipleDeclaration_ReturnsNullptr") {
@@ -137,7 +185,13 @@ TEST_CASE("InvalidSynonym_MissingCommaBetweenMultipleDeclaration_ReturnsNullptr"
   vector<string> *entities =
       new vector<string>({"stmt s, stmt s1", "call call"});
   entity_parser->set_entities(entities);
-  unordered_map<string, EntityDeclaration *> *entities_map =
-      entity_parser->get_entities_map();
-  REQUIRE(entities_map == nullptr);
+
+  std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
+  bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
+  std::unordered_map<std::string, EntityDeclaration *> *entities_map = std::get<0>(entities_parser_tuple);
+  bool syntactically_valid = std::get<1>(entities_parser_tuple);
+  bool semantically_valid = std::get<2>(entities_parser_tuple);
+
+  REQUIRE(syntactically_valid == false);
+  REQUIRE(semantically_valid == true);
 }

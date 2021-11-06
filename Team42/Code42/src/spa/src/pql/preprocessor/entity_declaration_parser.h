@@ -21,9 +21,12 @@ class EntityDeclarationParser {
       std::vector<std::string> *synonyms,
       EntityType entity_type);
   static std::string trim(std::string str);
+  bool syntactically_valid_ = true;
+  bool semantically_valid_ = true;
 
  public:
   static EntityDeclarationParser *get_instance();
   void set_entities(std::vector<std::string> *entities);
-  std::unordered_map<std::string, EntityDeclaration *> *get_entities_map();
+  std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
+  bool, bool> get_entities_map();
 };

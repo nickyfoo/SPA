@@ -2814,3 +2814,18 @@ TEST_CASE("Calls_ProcedureAndRead_ReturnsNullPtr") {
   REQUIRE(std::get<5>(*clause) == true);
   REQUIRE(std::get<6>(*clause) == false);
 }
+
+TEST_CASE("SemanticallyInvalid_EntityDeclaration_ReturnsNullPtr") {
+  std::string ss = "stmt s, s1, s2; assign a, s1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; "
+                   "constant c, c1; call cl; print pn; read re; prog_line n, n1; "
+                   "Select BOOLEAN such that Follows(1, 2)";
+  auto query = QueryPreprocessor(ss);
+  std::tuple<std::vector<ResultClause *> *,
+  std::vector<SuchThatClause *> *,
+  std::vector<PatternClause *> *,
+  std::vector<WithClause *> *,
+  std::unordered_map<std::string, EntityDeclaration *> *,
+  bool, bool> *clause = query.get_clauses();
+  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<6>(*clause) == false);
+}

@@ -17,7 +17,8 @@
 class SelectClauseParser {
  public:
   static SelectClauseParser *get_instance();
-  void set_select_clause(std::unordered_map<std::string,
+  void set_select_clause(bool semantically_valid,
+                         std::unordered_map<std::string,
                                             EntityDeclaration *> *syn_to_ent,
                          std::string select_clause);
   std::tuple<std::vector<ResultClause *> *,
@@ -32,6 +33,7 @@ class SelectClauseParser {
   static SelectClauseParser *instance;
   std::unordered_map<std::string, EntityDeclaration *> *synonym_to_entity_;
   std::string select_statement_;
+  bool semantically_valid_;
   SelectClauseParser();
   ResultClause *ValidateResultClauseWithAttr(const std::string &select);
 

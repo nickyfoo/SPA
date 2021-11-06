@@ -12,7 +12,7 @@ PatternClause::~PatternClause() = default;
 bool PatternClause::set_ref(EntRef *variable, const std::string &right_ref) {
   this->variable_ = variable;
   if (this->type_ == EntityType::Assign) {
-    return IsValidExpSpec(right_ref);
+    return IsSyntacticallyValidExpSpec(right_ref);
   } else {
     return right_ref == "_";
   }
@@ -34,7 +34,8 @@ ExpressionSpec *PatternClause::get_exp_spec() {
   return this->exp_spec_;
 }
 
-bool PatternClause::IsValidExpSpec(std::string ref) {
+bool PatternClause::IsSyntacticallyValidExpSpec(std::string ref) {
+
   bool partial_pattern;
   auto *exp_spec = new ExpressionSpec();
   if (ref == "_") {
@@ -59,9 +60,11 @@ bool PatternClause::IsValidExpSpec(std::string ref) {
   }
 
   ref = ref.substr(1, ref.length() - 2);  // remove ""
+
   bool expecting_exp = false;
   bool must_be_exp = false;
   bool must_be_char = true;
+  int bracket_count = 0;
   for (char &c : ref) {
     if ((must_be_char && IsExp(c)) || (must_be_exp && IsChar(c))) {
       return false;
@@ -73,8 +76,10 @@ bool PatternClause::IsValidExpSpec(std::string ref) {
       } else if (IsChar(c)) {
         expecting_exp = true;
         must_be_char = false;
-      } else if (c == '(' || c == ')') {
-        continue;
+      } else if (c == '(') {
+        bracket_count++;
+      } else if (c == ')') {
+        bracket_count--;
       } else if (isspace(c)) {
         if (expecting_exp) {
           must_be_exp = true;
@@ -87,9 +92,9 @@ bool PatternClause::IsValidExpSpec(std::string ref) {
         return false;
       }
     }
+    if (bracket_count < 0) return false;
   }
-
-  if (!expecting_exp && !ref.empty()) {
+  if (bracket_count != 0 || (!expecting_exp && !ref.empty())) {
     return false;
   }
 

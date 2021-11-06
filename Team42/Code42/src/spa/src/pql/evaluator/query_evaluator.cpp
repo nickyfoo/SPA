@@ -11,34 +11,35 @@
 #include "pkb.h"
 
 QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
-  if (pql_query != nullptr && pql_query->is_valid_query()) {
+  if (pql_query != nullptr) {
     this->entities_to_return_ = pql_query->get_query_entities();
-    this->clause_groups_ = pql_query->get_clause_groups();
     this->synonym_to_entity_dec_ = pql_query->get_synonym_to_entities();
-    this->is_valid_query_ = pql_query->is_valid_query();
+    this->is_syntactically_valid_ = pql_query->is_syntactically_valid();
+    this->is_semantically_valid_ = pql_query->is_semantically_valid();
     this->pkb_ = pkb;
-    set_used_synonyms();
-  } else {
-    if (pql_query != nullptr && !pql_query->get_query_entities()->empty()) {
-      this->entities_to_return_ = pql_query->get_query_entities();
-    } else {
-      this->entities_to_return_ = nullptr;
+    if (pql_query->is_syntactically_valid() && pql_query->is_semantically_valid()) {
+      this->clause_groups_ = pql_query->get_clause_groups();
+      set_used_synonyms();
     }
+  } else {
+    this->entities_to_return_ = nullptr;
     this->synonym_to_entity_dec_ = nullptr;
-    this->is_valid_query_ = false;
+    this->is_syntactically_valid_ = false;
+    this->is_semantically_valid_ = false;
     this->pkb_ = nullptr;
   }
 }
 
 std::vector<std::string> *QueryEvaluator::Evaluate() {
-  if (!is_valid_query_) {  // if not valid query
+  if (!is_syntactically_valid_ || !is_semantically_valid_) {  // if not valid query
     if (entities_to_return_ != nullptr &&
     entities_to_return_->size() == 1 &&
     entities_to_return_->at(0)->get_return_type() == ReturnType::Boolean) {
-      return new std::vector<std::string>{"FALSE"};
-    } else {
-      return new std::vector<std::string>{};
+      if (is_syntactically_valid_) {
+        return new std::vector<std::string>{"FALSE"};
+      }
     }
+    return new std::vector<std::string>{};
   }
   RelationshipQueryManager *relationship_query_manager;
   PatternQueryManager *pattern_query_manager;
@@ -65,7 +66,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         case ClauseType::SuchThatClause:
           table = relationship_query_manager->EvaluateRelationship(
               std::dynamic_pointer_cast<SuchThatClause>(
-                  clause_vertex.get_clause()),synonym_to_entities_vec);
+                  clause_vertex.get_clause()), synonym_to_entities_vec);
           break;
         case ClauseType::PatternClause:
           table = pattern_query_manager->EvaluatePattern(std::dynamic_pointer_cast<PatternClause>(
@@ -401,7 +402,7 @@ void QueryEvaluator::MakeTableForUsedEntity(ResultTable *result_table,
       result_clause->get_synonym());
 
   // removing duplicates in the column vec, since we are doing natural join later
-  sort( synonym_vec.begin(), synonym_vec.end() );
+  sort(synonym_vec.begin(), synonym_vec.end());
   synonym_vec.erase( unique( synonym_vec.begin(), synonym_vec.end() ), synonym_vec.end() );
 
   std::string elem = result_clause->get_elem();

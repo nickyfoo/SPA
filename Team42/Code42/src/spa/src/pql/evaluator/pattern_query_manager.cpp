@@ -39,7 +39,6 @@ ResultTable *PatternQueryManager::EvaluateAssignPattern(
   std::string left_synonym;
   std::vector<std::string> stmt_vec;
   std::vector<std::string> var_vec;
-
   for (int i = 0; i < entity_vec.size(); i++) {
     auto *stmt = dynamic_cast<Statement *>(entity_vec.at(i));  // for each stmt object
     if ((stmt->get_modifies()->empty()
@@ -118,7 +117,9 @@ ResultTable *PatternQueryManager::EvaluateIfAndWhilePattern(
         stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
       }
     } else if (variable->get_type() == EntRefType::WildCard) {  // pattern if(_, _, _)
-      stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
+      if (!stmt ->get_vars_from_expr_string().empty()) {
+        stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
+      }
     }
   }
   if (variable->get_type() == EntRefType::Synonym) {

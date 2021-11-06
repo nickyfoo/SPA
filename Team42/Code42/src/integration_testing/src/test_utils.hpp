@@ -315,7 +315,7 @@ static std::vector<std::string> *EvaluateQuery(std::string ss) {
              std::vector<PatternClause *> *,
              std::vector<WithClause *> *,
              std::unordered_map<std::string, EntityDeclaration *> *,
-             bool> *clause = query.get_clauses();
+             bool, bool> *clause = query.get_clauses();
   QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clause),
                                                   std::get<2>(*clause),
                                                   std::get<3>(*clause),
@@ -324,7 +324,87 @@ static std::vector<std::string> *EvaluateQuery(std::string ss) {
   auto *pql_query = new PQLQuery(std::get<0>(*clause),
                                  clause_groups,
                                  std::get<4>(*clause),
-                                 std::get<5>(*clause));
+                                 std::get<5>(*clause),
+                                 std::get<6>(*clause));
+
+  // Parse source
+  BufferedLexer lexer(source);
+  ParseState s{};
+  ProgramNode *p = ParseProgram(&lexer, &s);
+
+  // Initialise PKB and extract relationships
+  PKB pkb;
+  DesignExtractor design_extractor(&pkb, p);
+  design_extractor.ExtractDesigns();
+
+  // Set up query evaluator and evaluate
+  auto evaluator = new QueryEvaluator(pql_query, &pkb);
+  std::vector<std::string> *ret = evaluator->Evaluate();
+
+  return ret;
+}
+
+
+static std::vector<std::string> *EvaluateBipQuery(std::string ss) {
+  std::string source = "procedure foo {\n"
+                                   "  read x;\n"
+                                   "  read y;\n"
+                                   "  length = x * x + y * y;\n"
+                                   "  t = 30;\n"
+                                   "  call bar;\n"
+                                   "  print length;\n"
+                                   "}\n"
+                                   "\n"
+                                   "procedure bar {\n"
+                                   "  if ((x >= 0) && (y >= 0)) then {\n"
+                                   "    while (x != 0) {\n"
+                                   "      tan = y / x;\n"
+                                   "      sin = y / length;\n"
+                                   "      cos = x / length;\n"
+                                   "      call ellipse;\n"
+                                   "      if (((sin * sin + cos * cos) == 1) || (!(tan != (sin / cos)))) then {\n"
+                                   "        x = y / 2;\n"
+                                   "        y = x / 2;\n"
+                                   "      } else {\n"
+                                   "        x = 0;\n"
+                                   "      }\n"
+                                   "      length = x * x + y * y;\n"
+                                   "    }\n"
+                                   "  } else {\n"
+                                   "    x = 10;\n"
+                                   "    y = 10;\n"
+                                   "    length = x * x + y * y;\n"
+                                   "  }\n"
+                                   "}\n"
+                                   "\n"
+                                   "procedure ellipse {\n"
+                                   "  pi = 3;\n"
+                                   "  area = pi * x * y;\n"
+                                   "  if (area < 10) then {\n"
+                                   "    x = x + 1;\n"
+                                   "    y = y + y / x + 1;\n"
+                                   "  } else {\n"
+                                   "    print area;\n"
+                                   "  }\n"
+                                   "}";
+
+  auto query = QueryPreprocessor(std::move(ss));
+  std::tuple<std::vector<ResultClause *> *,
+             std::vector<SuchThatClause *> *,
+             std::vector<PatternClause *> *,
+             std::vector<WithClause *> *,
+             std::unordered_map<std::string, EntityDeclaration *> *,
+             bool, bool> *clause = query.get_clauses();
+  QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clause),
+                                                  std::get<2>(*clause),
+                                                  std::get<3>(*clause),
+                                                  std::get<0>(*clause));
+  std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
+  auto *pql_query = new PQLQuery(std::get<0>(*clause),
+                                 clause_groups,
+                                 std::get<4>(*clause),
+                                 std::get<5>(*clause),
+                                 std::get<6>(*clause));
 
   // Parse source
   BufferedLexer lexer(source);

@@ -57,6 +57,7 @@ FALSE
 
 Select BOOLEAN such that Uses("Boolean", "a")
 TRUE
+5000
 13 - Select BOOLEAN with UsesP false
 
 Select BOOLEAN such that Uses("Boolean", "nothing")
@@ -80,5 +81,110 @@ TRUE
 17 - Select BOOLEAN with ModifiesP false
 
 Select BOOLEAN such that Modifies("BooleanNope", "v")
+FALSE
+5000
+18 - Select BOOLEAN with Next true
+
+Select BOOLEAN such that Next(11,7)
+TRUE
+5000
+19 - Select BOOLEAN with Next* false
+
+Select BOOLEAN such that Next*(2,1)
+FALSE
+5000
+20 - Select BOOLEAN with Calls false
+
+Select BOOLEAN such that Calls(_,_)
+FALSE
+5000
+21 - Select BOOLEAN with Affects true
+
+Select BOOLEAN such that Affects(2,10)
+TRUE
+5000
+22 - Select BOOLEAN with Affects* true
+
+Select BOOLEAN such that Affects(2,1)
+FALSE
+5000
+23 - Select BOOLEAN with unknown relationship (invalid syntax)
+
+Select BOOLEAN such that Hello(1,2)
+
+5000
+24 - Select BOOLEAN with wrong number of arguments (invalid syntax)
+
+Select BOOLEAN such that Follows(1,2,3)
+
+5000
+25 - Select BOOLEAN with extra commas (invalid syntax)
+
+Select BOOLEAN such that Follows(1,,2)
+
+5000
+26 - Select BOOLEAN with bad Modifies argument (invalid semantic)
+variable v;
+Select BOOLEAN such that Modifies(_,v)
+FALSE
+5000
+27 - Select BOOLEAN with bad Affects argument (invalid semantic)
+if ifs; assign a;
+Select BOOLEAN such that Affects(ifs, a)
+FALSE
+5000
+28 - Select BOOLEAN with wrong entity in pattern (invalid syntax)
+read r;
+Select BOOLEAN pattern r(_,_)
+
+5000
+29 - Select BOOLEAN with wrong number of arguments in if pattern (invalid syntax)
+if ifs;
+Select BOOLEAN pattern ifs(_,_)
+
+5000
+30 - Select BOOLEAN with half partial match (invalid syntax)
+assign a;
+Select BOOLEAN pattern a(_,_"i")
+
+5000
+31 - Select BOOLEAN with argument in while (invalid syntax)
+while w;
+Select BOOLEAN pattern w(_,"y")
+
+5000
+32 - Select BOOLEAN with bad expression spec (invalid syntax)
+assign a;
+Select BOOLEAN pattern a(_,"+")
+
+5000
+33 - Select BOOLEAN with wrong with attr type (invalid semantic)
+stmt s;
+Select BOOLEAN with s.varName = "p"
+FALSE
+5000
+34 - Select BOOLEAN with not matching left and right with type (invalid semantic)
+stmt s;
+Select BOOLEAN with s.stmt# = "p"
+FALSE
+5000
+35 - Select BOOLEAN with negative number (invalid syntax)
+stmt s;
+Select BOOLEAN with s.stmt# = -2
+
+5000
+36 - Select BOOLEAN with undeclared synonyms (invalid semantic)
+stmt s1;
+Select BOOLEAN such that Follows(s1,s2)
+FALSE
+5000
+37 - Select BOOLEAN with negative integer in Follows (invalid syntax)
+
+Select BOOLEAN such that Follows(-1,1)
+
+5000
+38 - Select BOOLEAN with 0 in Follows (invalid semantic)
+
+Select BOOLEAN such that Follows(0,1)
 FALSE
 5000

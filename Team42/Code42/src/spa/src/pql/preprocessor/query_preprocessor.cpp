@@ -18,9 +18,9 @@ QueryPreprocessor::QueryPreprocessor(std::string input) {
     std::vector<PatternClause *> *,
     std::vector<WithClause *> *,
     std::unordered_map<std::string, EntityDeclaration *> *,
-    bool>(
+    bool, bool>(
         select_ret, such_that_ret,
-        pattern_ret, with_ret, entities_map, false);
+        pattern_ret, with_ret, entities_map, false, false);
     this->clauses_ = false_res;
     return;
   }
@@ -29,7 +29,7 @@ QueryPreprocessor::QueryPreprocessor(std::string input) {
   std::vector<PatternClause *> *,
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
-  bool> *clauses = MakeClauses(entities_map, select_clause);
+  bool, bool> *clauses = MakeClauses(entities_map, select_clause);
   this->clauses_ = clauses;
 }
 
@@ -40,7 +40,7 @@ std::vector<SuchThatClause *> *,
 std::vector<PatternClause *> *,
 std::vector<WithClause *> *,
 std::unordered_map<std::string, EntityDeclaration *> *,
-bool> *QueryPreprocessor::get_clauses() {
+bool, bool> *QueryPreprocessor::get_clauses() {
   return this->clauses_;
 }
 
@@ -72,7 +72,7 @@ std::vector<SuchThatClause *> *,
 std::vector<PatternClause *> *,
 std::vector<WithClause *> *,
 std::unordered_map<std::string, EntityDeclaration *> *,
-bool> *QueryPreprocessor::MakeClauses(std::unordered_map<std::string,
+bool, bool> *QueryPreprocessor::MakeClauses(std::unordered_map<std::string,
                                                              EntityDeclaration *> *entities_map,
                                           const std::string &select_clause) {
   SelectClauseParser *scp = SelectClauseParser::get_instance();
@@ -82,6 +82,6 @@ bool> *QueryPreprocessor::MakeClauses(std::unordered_map<std::string,
              std::vector<PatternClause *> *,
              std::vector<WithClause *> *,
              std::unordered_map<std::string, EntityDeclaration *> *,
-             bool> *clauses_tuple = scp->get_clauses();
+             bool, bool> *clauses_tuple = scp->get_clauses();
   return clauses_tuple;
 }

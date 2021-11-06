@@ -20,7 +20,7 @@ class PatternClause : public Clause {
   EntityType type_;
   EntRef *variable_;
   ExpressionSpec *exp_spec_;
-  bool IsValidExpSpec(std::string ref);
+  bool IsSyntacticallyValidExpSpec(std::string ref);
   static bool IsChar(char c);
   static bool IsExp(char c);
 };

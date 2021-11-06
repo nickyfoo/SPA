@@ -127,7 +127,6 @@ void ResultTable::CrossJoin(ResultTable &other_result_table,
       for (int k = 0; k < indexes_of_used_synonyms.size(); ++k) {
         curr_row.push_back(other_table->at(j).at(indexes_of_used_synonyms.at(k)));
       }
-//      curr_row.insert(curr_row.end(), other_table->at(j).begin(), other_table->at(j).end());
       new_table->push_back(curr_row);
     }
   }

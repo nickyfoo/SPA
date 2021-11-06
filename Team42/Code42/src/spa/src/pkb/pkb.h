@@ -140,7 +140,7 @@ class PKB {
                                int start, 
                                std::string &start_hash,
                                std::vector<int> &call_stack);
-  // DFS to check reachability for AffectsBip relationship.
+ // DFS to check reachability for AffectsBip relationship.
   // If target is not kWild, supports fast termination to save on unnecessary computations.
   void AffectsBipDFS(int start,
                      std::string &start_hash,

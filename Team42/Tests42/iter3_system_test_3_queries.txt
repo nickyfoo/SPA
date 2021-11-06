@@ -1,0 +1,150 @@
+1 - Multiple Follows with no common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select s1 such that Follows(s1, pn) and Follows(ifs, cl) and Follows(w, s2) and Follows(a, a1) and Follows(re, s)
+8,16
+5000
+2 - Multiple Follows with common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <ifs, s2> such that Follows(s1, ifs) and Follows(ifs, cl) and Follows(w, s2) and Follows(a1, w)
+98 39, 98 45, 98 54, 98 36
+5000
+3 - Multiple Follows* with no common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select pn such that Follows*(pn, s) and Follows*(ifs, cl) and Follows*(re, s1) and Follows*(a, a1) and Follows*(n, w)
+9,17
+5000
+4 - Multiple Follows* with common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <w, re> such that Follows*(re, a) and Follows*(w, ifs) and Follows*(a1, w) and Follows*(ifs, s) and Follows*(s1, s)
+77 52, 77 100, 82 52, 82 100
+5000
+5 - Multiple Parent with no common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select re such that Parent(w, re) and Parent(w1, ifs) and Parent(ifs1, a) and Parent(s, s1) and Parent(s2, a1)
+44
+5000
+6 - Multiple Parent with common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <w, ifs1> such that Parent(w, a) and Parent(w, ifs) and Parent(ifs, a1) and Parent(ifs1, s) and Parent(ifs1, pn)
+31 5, 31 12
+5000
+7 - Multiple Parent* with no common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a such that Parent*(s, ifs) and Parent*(w, a) and Parent*(w1, ifs1) and Parent*(s1, pn) and Parent*(s2, a1)
+32,33,35,37,38,51,53,78,79,80,81,83,84,85,74
+5000
+8 - Multiple Parent* with common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <w, w1> such that Parent*(w, a) and Parent*(ifs, a) and Parent*(w, cl) and Parent*(w1, re) and Parent*(ifs, pn)
+
+5000
+9 - Multiple Uses with no common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select ifs1 such that Uses(ifs1, "ingredients") and Uses(a, v) and Uses(p, v1) and Uses(q, "i") and Uses(ifs, v1)
+4,5,12,26,61,65
+5000
+10 - Multiple Uses with common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <w, cl> such that Uses(p, v) and Uses(w, v) and Uses(a, v) and Uses(cl, _) and Uses(a, v1)
+31 10,31 102,31 15,31 18,31 59,31 7,31 99,34 10,34 102,34 15,34 18,34 59,34 7,34 99,49 10,49 102,49 15,49 18,49 59,49 7,49 99,58 10,58 102,58 15,58 18,58 59,58 7,58 99,73 10,73 102,73 15,73 18,73 59,73 7,73 99,77 10,77 102,77 15,77 18,77 59,77 7,77 99,82 10,82 102,82 15,82 18,82 59,82 7,82 99
+5000
+11 - Multiple Modifies with no common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, ifs> such that Modifies(s, v) and Modifies(p, _) and Modifies(a, "noodles") and Modifies(ifs, _) and Modifies(w, v1)
+63 12,63 26,63 36,63 4,63 5,63 50,63 61,63 65,63 72,63 88,63 90,63 98,85 12,85 26,85 36,85 4,85 5,85 50,85 61,85 65,85 72,85 88,85 90,85 98
+5000
+12 - Multiple Modifies with common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <w, cl> such that Modifies(w, "dinner") and Modifies(w, v) and Modifies(ifs, v) and Modifies(cl, v) and Modifies(p, v)
+58 10,58 102,58 15,58 18,58 59,58 7,58 99
+5000
+13 - Multiple Calls with no common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p1 such that Calls(p, "poorStudentMeal") and Calls(_, _) and Calls(_, "makeKimchiStew") and Calls("hungryStudent", q) and Calls(p1, _)
+hungryStudent,makeKimchiStew,makeRamen
+5000
+14 - Multiple Calls with common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select q such that Calls(p, _) and Calls(_, p) and Calls(q, p1) and Calls(p1, p) and Calls(p1, "poorStudentMeal")
+
+5000
+15 - Multiple Calls* with no common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Calls*(_, _) and Calls*(p, _) and Calls*(_, q) and Calls*(p1, "makeRamen") and Calls*("poorStudentMeal", _)
+FALSE
+5000
+16 - Multiple Calls* with common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select p such that Calls*(p, p1) and Calls*(p, q) and Calls*(p1, q) and Calls*(p, "poorStudentMeal") and Calls*(p1, "poorStudentMeal")
+hungryStudent
+5000
+17 - Multiple Next with no common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select n1 such that Next(n, w) and Next(a, s) and Next(ifs, n1) and Next(re, cl) and Next(a1, pn)
+
+5000
+18 - Multiple Next with common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <w1, pn> such that Next(w, n) and Next(w, w1) and Next(a, w1) and Next(a1, pn) and Next(pn, cl)
+77 17,77 9,82 17,82 9
+5000
+19 - Multiple Next* with no common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Next*(a, a) and Next*(cl, cl) and Next*(pn, pn) and Next*(w, w) and Next*(ifs, ifs)
+FALSE
+5000
+20 - Multiple Next* with common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, re, cl> such that Next*(a, w) and Next*(w, a1) and Next*(a1, re) and Next*(re, ifs) and Next*(a1, cl)
+25 44 59,25 52 59,27 44 59,27 52 59,28 44 59,28 52 59,29 44 59,29 52 59,30 44 59,30 52 59,32 44 59,32 52 59,33 44 59,33 52 59,35 44 59,35 52 59,37 44 59,37 52 59,38 44 59,38 52 59,39 52 59,40 52 59,41 52 59,42 52 59,45 52 59,46 52 59,47 52 59,48 52 59,51 52 59,53 52 59
+5000
+21 - Multiple Affects with no common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Affects(a, 56) and Affects(_, 94) and Affects(89, _) and Affects(a1, _) and Affects(25, 39)
+TRUE
+5000
+22 - Multiple Affects with common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, a1> such that Affects(a, _) and Affects(a1, _) and Affects(a, a1) and Affects(a, 94) and Affects(_, 91)
+
+5000
+23 - Multiple Affects* with no common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Affects*(a, _) and Affects*(_, _) and Affects*(_, a1) and Affects*(78, 86) and Affects*(85, 83)
+FALSE
+5000
+24 - Multiple Affects* with common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, a1> such that Affects*(a, _) and Affects*(a1, _) and Affects*(a, a1) and Affects*(_, a)
+
+5000
+25 - Multiple clauses with common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select <a, ifs, p> such that Affects*(a, a1) and Parent(ifs, a) and Uses(a, v) and Uses(p, v) pattern ifs(v,_,_) such that Calls(p, _) with v.varName = "soup"
+
+5000
+26 - Multiple clauses with common synonym
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a.stmt# such that Uses(p, "i") and Calls*(q, p) and Modifies(q, v) pattern w(v, _) such that Next*(a, w) with v.varName = "chicken"
+60,62,63,64,66,67,68,69,70,71,74,75,76,78,79,80,81
+5000
+27 - Selecting variable that doesn't exist
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select BOOLEAN such that Uses(a, "kimchiStew")
+FALSE
+5000
+28 - Syntactically invalid query
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select w such that Next*(c, w) with w.stmt# = -1
+
+5000
+29 - NextBip* query
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a such that NextBip*(a, a)
+23,24,32,33,35,37,38,51,53,74,78,79,80,81,83,84,85
+5000
+30 - AffectsBip* query
+stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
+Select a such that AffectsBip*(a, a)
+
+5000

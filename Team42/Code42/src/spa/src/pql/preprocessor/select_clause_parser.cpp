@@ -355,6 +355,8 @@ SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
       if (synonym_to_entity_->at(synonym)->get_type() == EntityType::ProgLine) {
         return std::make_tuple(synonym, EntityType::ProgLine, AttrValueType::Integer);
       }
+    } else {
+      return std::make_tuple(synonym, EntityType::None, AttrValueType::None);
     }
   } else if (synonym_attribute.size() == 2) {
     std::string synonym = synonym_attribute.at(0);
@@ -798,6 +800,7 @@ SelectClauseParser::SplitClauses(const std::string &input) {
       }
     }
   }
+  if (inverted_commas_found) return false_res;
 
   std::string clean_input = ss.str();
   pos = clean_input.find(' ');

@@ -198,7 +198,7 @@ int QueryOptimizer::AssignPriority(std::vector<std::string> synonyms_used,
   } else if (clause->get_type() == ClauseType::SuchThatClause) {
     std::shared_ptr<SuchThatClause> such_that_clause =
         std::dynamic_pointer_cast<SuchThatClause>(clause);
-// Assigning priority based on number of synonyms used and such that clause type.
+    // Assigning priority based on number of synonyms used and such that clause type.
     if (such_that_clause->get_type() == RelRef::Follows ||
         such_that_clause->get_type() == RelRef::Parent ||
         such_that_clause->get_type() == RelRef::Next) {

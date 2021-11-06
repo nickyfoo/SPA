@@ -12,10 +12,10 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause follows = SuchThatClause("Follows");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_stmt_num(3);
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_stmt_num(4);
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     follows.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> follows_ptr = std::make_shared<SuchThatClause>(follows);
 
@@ -32,10 +32,10 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause follows = SuchThatClause("Follows");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_synonym("s1");
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_stmt_num(4);
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     follows.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> follows_ptr = std::make_shared<SuchThatClause>(follows);
 
@@ -62,10 +62,10 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause follows = SuchThatClause("Follows");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_stmt_num(3);
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_synonym("s1");
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     follows.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> follows_ptr = std::make_shared<SuchThatClause>(follows);
 
@@ -92,10 +92,10 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause follows = SuchThatClause("Follows");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_synonym("s1");
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_synonym("s2");
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     follows.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> follows_ptr = std::make_shared<SuchThatClause>(follows);
 
@@ -132,16 +132,16 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
   }
 }
 
-TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
+TEST_CASE("Follows*Clauses_DifferentNumberOfSyns_OutputsResultTable") {
   SECTION("Follows* with 0 synonyms") {
     // Follows*(5, 11)
     SuchThatClause follows = SuchThatClause("Follows*");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_stmt_num(5);
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_stmt_num(11);
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     follows.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> follows_ptr = std::make_shared<SuchThatClause>(follows);
 
@@ -158,10 +158,10 @@ TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause follows = SuchThatClause("Follows*");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_synonym("s1");
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_stmt_num(4);
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     follows.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> follows_ptr = std::make_shared<SuchThatClause>(follows);
 
@@ -190,10 +190,10 @@ TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause follows = SuchThatClause("Follows*");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_stmt_num(6);
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_synonym("s1");
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     follows.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> follows_ptr = std::make_shared<SuchThatClause>(follows);
 
@@ -222,10 +222,10 @@ TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause follows = SuchThatClause("Follows*");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_synonym("s1");
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_synonym("s2");
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     follows.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> follows_ptr = std::make_shared<SuchThatClause>(follows);
 
@@ -247,16 +247,16 @@ TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
   }
 }
 
-TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
+TEST_CASE("ParentClauses_DifferentNumberOfSyns_OutputsResultTable") {
   SECTION("Parent with 0 synonyms") {
     // Parent(4, 6)
     SuchThatClause parent = SuchThatClause("Parent");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_stmt_num(4);
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_stmt_num(6);
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     parent.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> parent_ptr = std::make_shared<SuchThatClause>(parent);
 
@@ -273,10 +273,10 @@ TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause parent = SuchThatClause("Parent");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_synonym("s1");
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_stmt_num(7);
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     parent.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> parent_ptr = std::make_shared<SuchThatClause>(parent);
 
@@ -303,10 +303,10 @@ TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause parent = SuchThatClause("Parent");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_stmt_num(12);
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_synonym("s1");
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     parent.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> parent_ptr = std::make_shared<SuchThatClause>(parent);
 
@@ -334,10 +334,10 @@ TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause parent = SuchThatClause("Parent");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_synonym("s1");
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_synonym("s2");
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     parent.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> parent_ptr = std::make_shared<SuchThatClause>(parent);
 
@@ -359,16 +359,16 @@ TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
   }
 }
 
-TEST_CASE("Parent*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
+TEST_CASE("Parent*Clauses_DifferentNumberOfSyns_OutputsResultTable") {
   SECTION("Parent* with 0 synonyms") {
     // Parent*(4, 7)
     SuchThatClause parent = SuchThatClause("Parent*");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_stmt_num(4);
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_stmt_num(7);
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     parent.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> parent_ptr = std::make_shared<SuchThatClause>(parent);
 
@@ -385,10 +385,10 @@ TEST_CASE("Parent*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause parent = SuchThatClause("Parent*");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_synonym("s1");
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_stmt_num(7);
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     parent.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> parent_ptr = std::make_shared<SuchThatClause>(parent);
 
@@ -416,10 +416,10 @@ TEST_CASE("Parent*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause parent = SuchThatClause("Parent*");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_stmt_num(4);
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_synonym("s1");
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     parent.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> parent_ptr = std::make_shared<SuchThatClause>(parent);
 
@@ -452,10 +452,10 @@ TEST_CASE("Parent*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause parent = SuchThatClause("Parent*");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_synonym("s1");
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_synonym("s2");
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     parent.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> parent_ptr = std::make_shared<SuchThatClause>(parent);
 

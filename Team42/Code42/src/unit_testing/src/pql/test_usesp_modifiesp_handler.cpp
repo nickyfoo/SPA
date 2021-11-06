@@ -12,10 +12,10 @@ TEST_CASE("UsesPClauses_DifferentCases_OutputsResultTable") {
     SuchThatClause uses = SuchThatClause("Uses");
     EntRef uses_left_proc = EntRef();
     uses_left_proc.set_argument("Example");
-    SuchThatRef *uses_left_such_that = new SuchThatRef(uses_left_proc);
+    auto *uses_left_such_that = new SuchThatRef(uses_left_proc);
     EntRef uses_right_name = EntRef();
     uses_right_name.set_argument("i");
-    SuchThatRef *uses_right_such_that = new SuchThatRef(uses_right_name);
+    auto *uses_right_such_that = new SuchThatRef(uses_right_name);
     uses.set_ref(uses_left_such_that, uses_right_such_that);
     std::shared_ptr<SuchThatClause> uses_ptr = std::make_shared<SuchThatClause>(uses);
 
@@ -32,10 +32,10 @@ TEST_CASE("UsesPClauses_DifferentCases_OutputsResultTable") {
     SuchThatClause uses = SuchThatClause("Uses");
     EntRef uses_left_proc = EntRef();
     uses_left_proc.set_synonym("p");
-    SuchThatRef *uses_left_such_that = new SuchThatRef(uses_left_proc);
+    auto *uses_left_such_that = new SuchThatRef(uses_left_proc);
     EntRef uses_right_name = EntRef();
     uses_right_name.set_argument("x");
-    SuchThatRef *uses_right_such_that = new SuchThatRef(uses_right_name);
+    auto *uses_right_such_that = new SuchThatRef(uses_right_name);
     uses.set_ref(uses_left_such_that, uses_right_such_that);
     std::shared_ptr<SuchThatClause> uses_ptr = std::make_shared<SuchThatClause>(uses);
 
@@ -63,10 +63,10 @@ TEST_CASE("UsesPClauses_DifferentCases_OutputsResultTable") {
     SuchThatClause uses = SuchThatClause("Uses");
     EntRef uses_left_proc = EntRef();
     uses_left_proc.set_argument("q");
-    SuchThatRef *uses_left_such_that = new SuchThatRef(uses_left_proc);
+    auto *uses_left_such_that = new SuchThatRef(uses_left_proc);
     EntRef uses_right_name = EntRef();
     uses_right_name.set_wild_card();
-    SuchThatRef *uses_right_such_that = new SuchThatRef(uses_right_name);
+    auto *uses_right_such_that = new SuchThatRef(uses_right_name);
     uses.set_ref(uses_left_such_that, uses_right_such_that);
     std::shared_ptr<SuchThatClause> uses_ptr = std::make_shared<SuchThatClause>(uses);
 
@@ -83,10 +83,10 @@ TEST_CASE("UsesPClauses_DifferentCases_OutputsResultTable") {
     SuchThatClause uses = SuchThatClause("Uses");
     EntRef uses_left_proc = EntRef();
     uses_left_proc.set_synonym("p");
-    SuchThatRef *uses_left_such_that = new SuchThatRef(uses_left_proc);
+    auto *uses_left_such_that = new SuchThatRef(uses_left_proc);
     EntRef uses_right_name = EntRef();
     uses_right_name.set_wild_card();
-    SuchThatRef *uses_right_such_that = new SuchThatRef(uses_right_name);
+    auto *uses_right_such_that = new SuchThatRef(uses_right_name);
     uses.set_ref(uses_left_such_that, uses_right_such_that);
     std::shared_ptr<SuchThatClause> uses_ptr = std::make_shared<SuchThatClause>(uses);
 
@@ -112,10 +112,10 @@ TEST_CASE("UsesPClauses_DifferentCases_OutputsResultTable") {
     SuchThatClause uses = SuchThatClause("Uses");
     EntRef uses_left_proc = EntRef();
     uses_left_proc.set_argument("Example");
-    SuchThatRef *uses_left_such_that = new SuchThatRef(uses_left_proc);
+    auto *uses_left_such_that = new SuchThatRef(uses_left_proc);
     EntRef uses_right_name = EntRef();
     uses_right_name.set_synonym("v");
-    SuchThatRef *uses_right_such_that = new SuchThatRef(uses_right_name);
+    auto *uses_right_such_that = new SuchThatRef(uses_right_name);
     uses.set_ref(uses_left_such_that, uses_right_such_that);
     std::shared_ptr<SuchThatClause> uses_ptr = std::make_shared<SuchThatClause>(uses);
 
@@ -141,10 +141,10 @@ TEST_CASE("UsesPClauses_DifferentCases_OutputsResultTable") {
     SuchThatClause uses = SuchThatClause("Uses");
     EntRef uses_left_proc = EntRef();
     uses_left_proc.set_synonym("p");
-    SuchThatRef *uses_left_such_that = new SuchThatRef(uses_left_proc);
+    auto *uses_left_such_that = new SuchThatRef(uses_left_proc);
     EntRef uses_right_name = EntRef();
     uses_right_name.set_synonym("v");
-    SuchThatRef *uses_right_such_that = new SuchThatRef(uses_right_name);
+    auto *uses_right_such_that = new SuchThatRef(uses_right_name);
     uses.set_ref(uses_left_such_that, uses_right_such_that);
     std::shared_ptr<SuchThatClause> uses_ptr = std::make_shared<SuchThatClause>(uses);
 
@@ -179,10 +179,10 @@ TEST_CASE("ModifiesPClauses_DifferentCases_OutputsResultTable") {
     SuchThatClause modifies = SuchThatClause("Modifies");
     EntRef modifies_left_proc = EntRef();
     modifies_left_proc.set_argument("Example");
-    SuchThatRef *modifies_left_such_that = new SuchThatRef(modifies_left_proc);
+    auto *modifies_left_such_that = new SuchThatRef(modifies_left_proc);
     EntRef modifies_right_name = EntRef();
     modifies_right_name.set_argument("i");
-    SuchThatRef *modifies_right_such_that = new SuchThatRef(modifies_right_name);
+    auto *modifies_right_such_that = new SuchThatRef(modifies_right_name);
     modifies.set_ref(modifies_left_such_that, modifies_right_such_that);
     std::shared_ptr<SuchThatClause> modifies_ptr = std::make_shared<SuchThatClause>(modifies);
 
@@ -199,10 +199,10 @@ TEST_CASE("ModifiesPClauses_DifferentCases_OutputsResultTable") {
     SuchThatClause modifies = SuchThatClause("Modifies");
     EntRef modifies_left_proc = EntRef();
     modifies_left_proc.set_synonym("p");
-    SuchThatRef *modifies_left_such_that = new SuchThatRef(modifies_left_proc);
+    auto *modifies_left_such_that = new SuchThatRef(modifies_left_proc);
     EntRef modifies_right_name = EntRef();
     modifies_right_name.set_argument("i");
-    SuchThatRef *modifies_right_such_that = new SuchThatRef(modifies_right_name);
+    auto *modifies_right_such_that = new SuchThatRef(modifies_right_name);
     modifies.set_ref(modifies_left_such_that, modifies_right_such_that);
     std::shared_ptr<SuchThatClause> modifies_ptr = std::make_shared<SuchThatClause>(modifies);
 
@@ -229,10 +229,10 @@ TEST_CASE("ModifiesPClauses_DifferentCases_OutputsResultTable") {
     SuchThatClause modifies = SuchThatClause("Modifies");
     EntRef modifies_left_proc = EntRef();
     modifies_left_proc.set_argument("q");
-    SuchThatRef *modifies_left_such_that = new SuchThatRef(modifies_left_proc);
+    auto *modifies_left_such_that = new SuchThatRef(modifies_left_proc);
     EntRef modifies_right_name = EntRef();
     modifies_right_name.set_wild_card();
-    SuchThatRef *modifies_right_such_that = new SuchThatRef(modifies_right_name);
+    auto *modifies_right_such_that = new SuchThatRef(modifies_right_name);
     modifies.set_ref(modifies_left_such_that, modifies_right_such_that);
     std::shared_ptr<SuchThatClause> modifies_ptr = std::make_shared<SuchThatClause>(modifies);
 
@@ -249,10 +249,10 @@ TEST_CASE("ModifiesPClauses_DifferentCases_OutputsResultTable") {
     SuchThatClause modifies = SuchThatClause("Modifies");
     EntRef modifies_left_proc = EntRef();
     modifies_left_proc.set_synonym("p");
-    SuchThatRef *modifies_left_such_that = new SuchThatRef(modifies_left_proc);
+    auto *modifies_left_such_that = new SuchThatRef(modifies_left_proc);
     EntRef modifies_right_name = EntRef();
     modifies_right_name.set_wild_card();
-    SuchThatRef *modifies_right_such_that = new SuchThatRef(modifies_right_name);
+    auto *modifies_right_such_that = new SuchThatRef(modifies_right_name);
     modifies.set_ref(modifies_left_such_that, modifies_right_such_that);
     std::shared_ptr<SuchThatClause> modifies_ptr = std::make_shared<SuchThatClause>(modifies);
 
@@ -278,10 +278,10 @@ TEST_CASE("ModifiesPClauses_DifferentCases_OutputsResultTable") {
     SuchThatClause modifies = SuchThatClause("Modifies");
     EntRef modifies_left_proc = EntRef();
     modifies_left_proc.set_argument("q");
-    SuchThatRef *modifies_left_such_that = new SuchThatRef(modifies_left_proc);
+    auto *modifies_left_such_that = new SuchThatRef(modifies_left_proc);
     EntRef modifies_right_name = EntRef();
     modifies_right_name.set_synonym("v");
-    SuchThatRef *modifies_right_such_that = new SuchThatRef(modifies_right_name);
+    auto *modifies_right_such_that = new SuchThatRef(modifies_right_name);
     modifies.set_ref(modifies_left_such_that, modifies_right_such_that);
     std::shared_ptr<SuchThatClause> modifies_ptr = std::make_shared<SuchThatClause>(modifies);
 
@@ -307,10 +307,10 @@ TEST_CASE("ModifiesPClauses_DifferentCases_OutputsResultTable") {
     SuchThatClause modifies = SuchThatClause("Modifies");
     EntRef modifies_left_proc = EntRef();
     modifies_left_proc.set_synonym("p");
-    SuchThatRef *modifies_left_such_that = new SuchThatRef(modifies_left_proc);
+    auto *modifies_left_such_that = new SuchThatRef(modifies_left_proc);
     EntRef modifies_right_name = EntRef();
     modifies_right_name.set_synonym("v");
-    SuchThatRef *modifies_right_such_that = new SuchThatRef(modifies_right_name);
+    auto *modifies_right_such_that = new SuchThatRef(modifies_right_name);
     modifies.set_ref(modifies_left_such_that, modifies_right_such_that);
     std::shared_ptr<SuchThatClause> modifies_ptr = std::make_shared<SuchThatClause>(modifies);
 

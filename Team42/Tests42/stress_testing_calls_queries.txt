@@ -1,0 +1,20 @@
+1 - Calls a procedure
+procedure p1,p2;
+Select <p1,p2> such that Calls(p1, p2)
+eight sixteen,eight twentyfour,eleven twentytwo,fifteen thirty,five fifteen,five ten,five thirty,five twenty,five twentyfive,four eight,four sixteen,four twelve,four twenty,four twentyeight,four twentyfour,fourteen twentyeight,nine eighteen,nine twentyseven,one eleven,one five,one nineteen,one seven,one seventeen,one thirteen,one three,one twentynine,one twentythree,one two,seven fourteen,seven twentyeight,seven twentyone,six eighteen,six thirty,six twelve,six twentyfour,ten thirty,ten twenty,thirteen twentysix,three eighteen,three fifteen,three nine,three six,three thirty,three twelve,three twentyfour,three twentyone,three twentyseven,twelve twentyfour,two eight,two eighteen,two four,two fourteen,two six,two sixteen,two ten,two thirty,two twelve,two twenty,two twentyeight,two twentyfour,two twentysix,two twentytwo
+5000
+2 - Calls* from main
+procedure p;
+Select p such that Calls*("one", p)
+two,three,four,five,six,seven,eight,nine,ten,eleven,twelve,thirteen,fourteen,fifteen,sixteen,seventeen,eighteen,nineteen,twenty,twentyone,twentytwo,twentythree,twentyfour,twentyfive,twentysix,twentyseven,twentyeight,twentynine,thirty
+5000
+3 - Calls* pair
+procedure p1,p2;
+Select <p1,p2> such that Calls*(p1,p2)
+eight sixteen,eight twentyfour,eleven twentytwo,fifteen thirty,five fifteen,five ten,five thirty,five twenty,five twentyfive,four eight,four sixteen,four twelve,four twenty,four twentyeight,four twentyfour,fourteen twentyeight,nine eighteen,nine twentyseven,one eight,one eighteen,one eleven,one fifteen,one five,one four,one fourteen,one nine,one nineteen,one seven,one seventeen,one six,one sixteen,one ten,one thirteen,one thirty,one three,one twelve,one twenty,one twentyeight,one twentyfive,one twentyfour,one twentynine,one twentyone,one twentyseven,one twentysix,one twentythree,one twentytwo,one two,seven fourteen,seven twentyeight,seven twentyone,six eighteen,six thirty,six twelve,six twentyfour,ten thirty,ten twenty,thirteen twentysix,three eighteen,three fifteen,three nine,three six,three thirty,three twelve,three twentyfour,three twentyone,three twentyseven,twelve twentyfour,two eight,two eighteen,two four,two fourteen,two six,two sixteen,two ten,two thirty,two twelve,two twenty,two twentyeight,two twentyfour,two twentysix,two twentytwo
+5000
+4 - Calls pair
+procedure p1,p2;
+Select <p1,p2> such that Calls(p1,p2)
+eight sixteen,eight twentyfour,eleven twentytwo,fifteen thirty,five fifteen,five ten,five thirty,five twenty,five twentyfive,four eight,four sixteen,four twelve,four twenty,four twentyeight,four twentyfour,fourteen twentyeight,nine eighteen,nine twentyseven,one eleven,one five,one nineteen,one seven,one seventeen,one thirteen,one three,one twentynine,one twentythree,one two,seven fourteen,seven twentyeight,seven twentyone,six eighteen,six thirty,six twelve,six twentyfour,ten thirty,ten twenty,thirteen twentysix,three eighteen,three fifteen,three nine,three six,three thirty,three twelve,three twentyfour,three twentyone,three twentyseven,twelve twentyfour,two eight,two eighteen,two four,two fourteen,two six,two sixteen,two ten,two thirty,two twelve,two twenty,two twentyeight,two twentyfour,two twentysix,two twentytwo
+5000

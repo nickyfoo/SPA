@@ -18,8 +18,11 @@ SelectClauseParser *SelectClauseParser::get_instance() {
   return instance;
 }
 
-void SelectClauseParser::set_select_clause(
-    std::unordered_map<std::string, EntityDeclaration *> *syn_to_ent, std::string select_clause) {
+void SelectClauseParser::set_select_clause(bool semantically_valid,
+                                           std::unordered_map<std::string,
+                                           EntityDeclaration *> *syn_to_ent,
+                                           std::string select_clause) {
+  this->semantically_valid_ = semantically_valid;
   this->synonym_to_entity_ = syn_to_ent;
   select_clause.erase(remove(select_clause.begin(), select_clause.end(), '\n'),
                       select_clause.end());
@@ -47,6 +50,7 @@ std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
   auto *with_ret = new std::vector<WithClause *>();
   bool syntactically_valid = true;
   bool semantically_valid = true;
+
   std::vector<std::string> select_clauses = SplitSelect(select_clause);
   auto *syntactically_false_res = new std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
                              std::vector<PatternClause *> *, std::vector<WithClause *> *,
@@ -79,6 +83,7 @@ std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
       }
     }
   }
+
   for (const std::string &such_that_clause : such_that_clauses) {
     std::vector<SuchThatClause *> *relationship = MakeSuchThatClause(such_that_clause);
     if (relationship == nullptr) {
@@ -114,11 +119,12 @@ std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
       with_ret->push_back(clause);
     }
   }
+
   auto *res = new std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
                              std::vector<PatternClause *> *, std::vector<WithClause *> *,
                              std::unordered_map<std::string, EntityDeclaration *> *, bool, bool>(
       select_ret, such_that_ret, pattern_ret, with_ret, synonym_to_entity_,
-      syntactically_valid, semantically_valid);
+      syntactically_valid, semantically_valid && semantically_valid_);
   return res;
 }
 
@@ -223,16 +229,8 @@ std::vector<WithClause *> *SelectClauseParser::MakeWithClause(const std::string 
     std::string left_ref = with_clause.first;
     std::string right_ref = with_clause.second;
 
-    size_t start = left_ref.find_first_not_of(WHITESPACE);
-    if (start != std::string::npos) left_ref = left_ref.substr(start);
-    size_t end = left_ref.find_last_not_of(WHITESPACE);
-    if (end != std::string::npos) left_ref = left_ref.substr(0, end + 1);
-
-    start = right_ref.find_first_not_of(WHITESPACE);
-    if (start != std::string::npos) right_ref = right_ref.substr(start);
-    end = right_ref.find_last_not_of(WHITESPACE);
-    if (end != std::string::npos) right_ref = right_ref.substr(0, end + 1);
-
+    left_ref = TrimTrailingWhitespaces(left_ref);
+    right_ref = TrimTrailingWhitespaces(right_ref);
     WithClause* with = new WithClause();
     int valid = SetWithRef(with, left_ref, right_ref);
 
@@ -287,6 +285,8 @@ int SelectClauseParser::SetWithRef(WithClause *with, const std::string &left_ref
   EntityType right_type;
   AttrValueType left_attr_value_type;
   AttrValueType right_attr_value_type;
+
+  bool semantically_invalid = false;
   // set as EntityType::None if integer or ident
   if (IsInteger(left_ref)) {
     left_str = left_ref;
@@ -303,7 +303,7 @@ int SelectClauseParser::SetWithRef(WithClause *with, const std::string &left_ref
         GetWithRefTypeAndAttrValueType(left_ref);
     if (left_type == EntityType::None) {
       if (left_str == "") return -1;
-      else return 0;
+      else semantically_invalid = true;
     }
   }
 
@@ -323,9 +323,11 @@ int SelectClauseParser::SetWithRef(WithClause *with, const std::string &left_ref
         GetWithRefTypeAndAttrValueType(right_ref);
     if (right_type == EntityType::None) {
       if (right_str == "") return -1;
-      else return 0;
+      else semantically_invalid = true;
     }
   }
+
+  if (semantically_invalid) return 0;
 
   // not previously declared
   if ((left_type != EntityType::None &&
@@ -353,7 +355,7 @@ SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
       if (synonym_to_entity_->at(synonym)->get_type() == EntityType::ProgLine) {
         return std::make_tuple(synonym, EntityType::ProgLine, AttrValueType::Integer);
       }
-    } else {
+    } else if (IsValidIdentifier(synonym)) {
       return std::make_tuple(synonym, EntityType::None, AttrValueType::None);
     }
   } else if (synonym_attribute.size() == 2) {
@@ -652,6 +654,16 @@ bool SelectClauseParser::IsInteger(const std::string &str) {
   return !str.empty() && it == str.end();
 }
 
+std::string SelectClauseParser::TrimTrailingWhitespaces(const std::string &str) {
+  const std::string WHITESPACE = " \n\r\t\f\v";
+
+  auto str_begin = str.find_first_not_of(WHITESPACE);
+  if (str_begin == std::string::npos) return "";
+
+  auto str_end = str.find_last_not_of(WHITESPACE);
+  return str.substr(str_begin, str_end - str_begin + 1);
+}
+
 std::vector<std::string> SelectClauseParser::SplitSelect(std::string select_clause) {
   const std::string WHITESPACE = " \n\r\t\f\v";
   size_t pos = select_clause.find_first_not_of(WHITESPACE);
@@ -739,12 +751,7 @@ SelectClauseParser::SplitClauses(const std::string &input) {
   for (char c : input) {
     if (c == '\"' || c == '\'') {
       if (inverted_commas_found) {  // closing comma encountered
-        std::string arg = argument_word_stream.str();
-        auto arg_begin = arg.find_first_not_of(WHITESPACE);
-        if (arg_begin == std::string::npos) return false_res;
-
-        auto arg_end = arg.find_last_not_of(WHITESPACE);
-        std::string trimmed_arg = arg.substr(arg_begin, arg_end - arg_begin + 1);
+        std::string trimmed_arg = TrimTrailingWhitespaces(argument_word_stream.str());
         ss << "\"" << trimmed_arg << "\"";
         argument_word_stream.str("");
       }
@@ -752,7 +759,6 @@ SelectClauseParser::SplitClauses(const std::string &input) {
       whitespace_found = false;
     } else if (inverted_commas_found) {
       argument_word_stream << c;
-//      ss << c;
     } else if (isspace(c)) {
       // extra check to account for such that clause without extra spaces
       std::string check_for_such = prev_word_stream.str();
@@ -880,45 +886,41 @@ SelectClauseParser::SplitClauses(const std::string &input) {
 std::vector<std::vector<std::string>> SelectClauseParser::SplitBrackets(
     const std::string &input) {
   const std::string brackets = "(,)";
-  const std::string AND_DELIM = " and ";
   std::vector<std::vector<std::string>> ret;
-  std::vector<std::string> clauses = SplitTokensByDelimiter(input, AND_DELIM);
-  for (const std::string &clause : clauses) {
-    if (clause == "") return {};
-    std::vector<std::string> tokens;
-    std::stringstream ss;
+  if (input == "") return {};
+  std::vector<std::string> tokens;
+  std::stringstream ss;
 
-    bool inverted_commas_found = false;
-    bool open_bracket_found = false;
-    bool close_bracket_found = false;
-    for (char c : clause) {
-      if (c == '\"' || c == '\'') {
-        ss << c;
-        inverted_commas_found = !inverted_commas_found;
-      } else if (inverted_commas_found) {
-        ss << c;
-      } else if (c == '(' || c == '<') {
-        if (open_bracket_found) return {};  // error, found extra
-        open_bracket_found = true;
-        tokens.push_back(ss.str());
-        ss.str("");
-      } else if (c == ')' || c == '>') {
-        if (close_bracket_found) return {};  // error, found extra
-        close_bracket_found = true;
-        tokens.push_back(ss.str());
-        ss.str("");
-      } else if (c == ',') {
-        tokens.push_back(ss.str());
-        ss.str("");
-      } else if (!isspace(c)) {
-        ss << c;
-      }
-    }
-    if (ss.str() != "") {
+  bool inverted_commas_found = false;
+  bool open_bracket_found = false;
+  bool close_bracket_found = false;
+  for (char c : input) {
+    if (c == '\"' || c == '\'') {
+      ss << c;
+      inverted_commas_found = !inverted_commas_found;
+    } else if (inverted_commas_found) {
+      ss << c;
+    } else if (c == '(' || c == '<') {
+      if (open_bracket_found) return {};  // error, found extra
+      open_bracket_found = true;
       tokens.push_back(ss.str());
+      ss.str("");
+    } else if (c == ')' || c == '>') {
+      if (close_bracket_found) return {};  // error, found extra
+      close_bracket_found = true;
+      tokens.push_back(ss.str());
+      ss.str("");
+    } else if (c == ',') {
+      tokens.push_back(ss.str());
+      ss.str("");
+    } else if (!isspace(c)) {
+      ss << c;
     }
-    ret.push_back(tokens);
   }
+  if (ss.str() != "") {
+    tokens.push_back(ss.str());
+  }
+  ret.push_back(tokens);
 
   return ret;
 }
@@ -926,18 +928,14 @@ std::vector<std::vector<std::string>> SelectClauseParser::SplitBrackets(
 std::vector<std::pair<std::string, std::string>> SelectClauseParser::SplitWith(
     const std::string &input) {
   const std::string equal = "=";
-  const std::string AND_DELIM = " and ";
   std::vector<std::pair<std::string, std::string>> ret;
-  std::vector<std::string> clauses = SplitTokensByDelimiter(input, AND_DELIM);
-  for (const std::string &clause : clauses) {
-    std::vector<std::string> with_clause = SplitTokensByEqualDelim(clause);
-    if (with_clause.size() != 2) {
-      return {};
-    }
-    std::string left_ref = with_clause.at(0);
-    std::string right_ref = with_clause.at(1);
-    ret.push_back(std::make_pair(left_ref, right_ref));
+  std::vector<std::string> with_clause = SplitTokensByEqualDelim(input);
+  if (with_clause.size() != 2) {
+    return {};
   }
+  std::string left_ref = with_clause.at(0);
+  std::string right_ref = with_clause.at(1);
+  ret.push_back(std::make_pair(left_ref, right_ref));
 
   return ret;
 }

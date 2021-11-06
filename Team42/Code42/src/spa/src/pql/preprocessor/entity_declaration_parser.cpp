@@ -13,10 +13,12 @@ EntityDeclarationParser *EntityDeclarationParser::get_instance() {
 
 void EntityDeclarationParser::set_entities(std::vector<std::string> *entities) {
   entity_declaration_strings_ = entities;
+  syntactically_valid_ = true;
+  semantically_valid_ = true;
 }
 
-std::unordered_map<std::string, EntityDeclaration *>
-*EntityDeclarationParser::get_entities_map() {
+std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
+bool, bool> EntityDeclarationParser::get_entities_map() {
   auto *entities_map =
       new std::unordered_map<std::string, EntityDeclaration *>;
   for (std::string entity_str : *entity_declaration_strings_) {
@@ -27,23 +29,30 @@ std::unordered_map<std::string, EntityDeclaration *>
     // Trimming entity_str to remove entity type.
     entity_str = entity_str.substr(index_of_entity + 1);
     entity_str = EntityDeclarationParser::trim(entity_str);
-    // If there are no commas but multiple for the
-    // same entity type, or if there's only 1 word, return nullptr. eg stmt s p c;
+    // If there are no commas but multiple synonyms for the
+    // same entity type, or if there's only 1 word, its syntactically invalid. eg stmt s p c;
     std::vector<std::string> tokens = SplitString(entity_str, " ");
     size_t num_of_comma = std::count(entity_str.begin(), entity_str.end(), ',');
     if (num_of_comma < tokens.size() - 1 || index_of_entity == -1) {
-      return nullptr;
+      syntactically_valid_ = false;
+      break;
     }
     auto *synonyms = new std::vector<std::string>();
     EntityType entity_type = CheckEntityType(entity);
-    if (entity_type != EntityType::None &&
-        IsValidSynonym(tokens, synonyms) &&
-        AddToEntitiesMap(entities_map, synonyms, entity_type)) {
-    } else {
-      return nullptr;
+    if (entity_type == EntityType::None ||
+    !IsValidSynonym(tokens, synonyms)) {
+      // Invalid synonym or entity type means its syntactically invalid;
+      syntactically_valid_ = false;
+      break;
+    }
+    if (!AddToEntitiesMap(entities_map, synonyms, entity_type)) {
+      // Having duplicate synonyms means its semantically invalid;
+      semantically_valid_ = false;
+      break;
     }
   }
-  return entities_map;
+
+  return std::make_tuple(entities_map, syntactically_valid_, semantically_valid_);
 }
 
 std::string EntityDeclarationParser::trim(std::string str) {
@@ -69,6 +78,7 @@ bool EntityDeclarationParser::AddToEntitiesMap(
         new EntityDeclaration(entity_type,
                               synonym);
     if (entities_map->find(synonym) != entities_map->end()) {
+      // If there are duplicate synonyms declared, return false;
       return false;
     }
     entities_map->insert({synonym, entity_obj});
@@ -135,8 +145,7 @@ bool EntityDeclarationParser::IsValidSynonym(
     for (std::string split_token : split_tokens) {
       // Checking if each token is a valid identifier
       // and doesn't already exist in synonyms.
-      if (!IsValidIdentifier(split_token) ||
-          std::count(synonyms->begin(), synonyms->end(), split_token)) {
+      if (!IsValidIdentifier(split_token)) {
         return false;
       } else {
         synonyms->push_back(split_token);

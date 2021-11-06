@@ -25,6 +25,13 @@ files = [
     # "iter3_system_test_1",
     # "iter3_system_test_2",
     # "iter3_system_test_3",
+    # "iter3_system_test_4",
+    # "invalid_chars_0"
+    # "patternwith_4",
+    # "patternwith_5"
+    # "select_invalid"
+    # "simple_logicExprNoBracket",
+    "andWith_invalid"
 ]
 
 for file in files:

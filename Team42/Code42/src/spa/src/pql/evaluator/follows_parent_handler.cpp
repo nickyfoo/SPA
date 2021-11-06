@@ -1,4 +1,5 @@
 #include "follows_parent_handler.h"
+#include <assert.h>
 #include "ast.h"
 
 FollowsParentHandler::FollowsParentHandler() {}

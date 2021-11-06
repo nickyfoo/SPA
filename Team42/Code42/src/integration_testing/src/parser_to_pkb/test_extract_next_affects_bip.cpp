@@ -206,7 +206,7 @@ TEST_CASE("PkbAffectsBip_SampleProgram_Correct") {
   // Check Affects(_,_)
   std::set<std::pair<int, int>> *affects_bip_wild_wild =
       pkb.get_affects_bip(PKB::kWild, PKB::kWild);
-  for (auto&[a, affects] : affects_bip_ans) {
+  for (auto &[a, affects] : affects_bip_ans) {
     for (auto &b : affects) {
       REQUIRE(affects_bip_wild_wild->find({a, b}) != affects_bip_wild_wild->end());
     }

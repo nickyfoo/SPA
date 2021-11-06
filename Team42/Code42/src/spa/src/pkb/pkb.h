@@ -157,6 +157,8 @@ class PKB {
                             std::string &var_name);
   // Returns true if v is an assign stmt that modifies var_name
   bool ModifiesVarName(int v, const std::string &var_name);
+  // Traverses CFG to get Next(u,_), since there are negative nodes.
+  void GetFirstPositiveStmts(int u, std::set<int>& visited, std::set<int>& ans);
   // DFS to check reachability for AffectsBip* relationship
   void AffectsBipStarDFS(std::set<std::pair<int, std::string>> &visited,
                          int u,
@@ -182,10 +184,12 @@ class PKB {
   // Reverse Adjacency List of CFG for Next and Affects.
   std::map<int, std::set<int>> reverse_cfg_al_;
   // Adjacency List of CFG for NextBip and AffectsBip, u -> {v, branch}
+  // u is negative if it is the dummy end of procedure node for the procedure starting at u.
   // branch is positive stmt_no if branching out from u to v
   // branch is negative stmt_no if branching back from u to v
   std::map<int, std::set<std::pair<int, int>>> cfg_bip_al_;
   // Reverse Adjacency List of CFG for NextBip and AffectsBip.
+  // u is negative if it is the dummy end of procedure node for the procedure starting at u.
   // branch is positive stmt_no if branching out from u to v
   // branch is negative stmt_no if branching back from u to v
   std::map<int, std::set<std::pair<int, int>>> reverse_cfg_bip_al_;

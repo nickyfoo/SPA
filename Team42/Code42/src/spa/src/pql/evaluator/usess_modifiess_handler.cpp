@@ -1,5 +1,7 @@
 #include "usess_modifiess_handler.h"
 
+#include <assert.h>
+
 UsesSModifiesSHandler::UsesSModifiesSHandler() = default;
 UsesSModifiesSHandler *UsesSModifiesSHandler::instance_ = nullptr;
 

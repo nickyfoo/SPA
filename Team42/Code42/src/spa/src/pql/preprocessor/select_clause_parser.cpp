@@ -287,7 +287,7 @@ int SelectClauseParser::SetWithRef(WithClause *with, const std::string &left_ref
   EntityType right_type;
   AttrValueType left_attr_value_type;
   AttrValueType right_attr_value_type;
-
+  printf("one\n");
   // set as EntityType::None if integer or ident
   if (IsInteger(left_ref)) {
     left_str = left_ref;
@@ -307,7 +307,7 @@ int SelectClauseParser::SetWithRef(WithClause *with, const std::string &left_ref
       else return 0;
     }
   }
-
+  printf("two\n");
   // set as EntityType::None if integer or ident
   if (IsInteger(right_ref)) {
     right_str = right_ref;
@@ -327,7 +327,7 @@ int SelectClauseParser::SetWithRef(WithClause *with, const std::string &left_ref
       else return 0;
     }
   }
-
+  printf("three\n");
   // not previously declared
   if ((left_type != EntityType::None &&
       synonym_to_entity_->find(left_str) == synonym_to_entity_->end()) ||
@@ -335,10 +335,12 @@ int SelectClauseParser::SetWithRef(WithClause *with, const std::string &left_ref
       synonym_to_entity_->find(right_str) == synonym_to_entity_->end())) {
     return 0;
   }
+  printf("four\n");
   // check same type
   if (left_attr_value_type != right_attr_value_type) {  // must be same attribute value types
     return 0;
   }
+  printf("five\n");
   with->set_values(left_str, left_type, left_attr_value_type, right_str, right_type,
                              right_attr_value_type);
   return 1;
@@ -392,11 +394,12 @@ SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
           break;
         default:break;
       }
-
-      if (attribute == "procName" || attribute == "stmt#"
-      || attribute == "value" || attribute == "varName") {  // correct semantics
-        return std::make_tuple(synonym, type, attr_value_type);
-      }
+      printf("here\n");
+      return std::make_tuple(synonym, type, attr_value_type);
+    }
+    if (attribute == "procName" || attribute == "stmt#"
+        || attribute == "value" || attribute == "varName") {  // correct semantics
+      return std::make_tuple(synonym, EntityType::None, AttrValueType::None);
     }
   }
   return std::make_tuple("", EntityType::None, AttrValueType::None);  // not a valid with clause
@@ -742,6 +745,7 @@ SelectClauseParser::SplitClauses(const std::string &input) {
         auto arg_end = arg.find_last_not_of(WHITESPACE);
         std::string trimmed_arg = arg.substr(arg_begin, arg_end - arg_begin + 1);
         ss << "\"" << trimmed_arg << "\"";
+        argument_word_stream.str("");
       }
       inverted_commas_found = !inverted_commas_found;
       whitespace_found = false;

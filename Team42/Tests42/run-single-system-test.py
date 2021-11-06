@@ -20,7 +20,8 @@ files = [
     # "callsStar_1"
     # "SIMPLE_WITH"
     # "andPattern_invalid"
-    "SIMPLE_1"
+    # "SIMPLE_1",
+    "with_0"
 ]
 
 for file in files:

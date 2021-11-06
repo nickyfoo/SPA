@@ -1081,7 +1081,7 @@ TEST_CASE("Pattern_EndingWithSymbol_ReturnsNullPtr") {
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
   bool, bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<5>(*clause) == false);
   REQUIRE(std::get<6>(*clause) == false);
 }
 
@@ -1095,7 +1095,7 @@ TEST_CASE("Pattern_HavingTwoContinuousSymbols_ReturnsNullPtr") {
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
   bool, bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<5>(*clause) == false);
   REQUIRE(std::get<6>(*clause) == false);
 }
 
@@ -1939,7 +1939,7 @@ TEST_CASE("With_ProcedureAndProcedureWrongKeyword_ReturnsNullPtr") {
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
   bool, bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<5>(*clause) == true);
   REQUIRE(std::get<6>(*clause) == false);
 }
 

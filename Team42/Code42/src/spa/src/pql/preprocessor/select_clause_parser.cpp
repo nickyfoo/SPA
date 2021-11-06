@@ -49,7 +49,9 @@ std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
   auto *pattern_ret = new std::vector<PatternClause *>();
   auto *with_ret = new std::vector<WithClause *>();
   bool syntactically_valid = true;
-  bool semantically_valid = semantically_valid_;
+  bool semantically_valid = true;
+  printf("s1: %d\n", syntactically_valid);
+  printf("s2: %d\n", semantically_valid);
   std::vector<std::string> select_clauses = SplitSelect(select_clause);
   auto *syntactically_false_res = new std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
                              std::vector<PatternClause *> *, std::vector<WithClause *> *,
@@ -60,7 +62,7 @@ std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
   if (select_clauses.empty()) {  // invalid select syntax
     return syntactically_false_res;
   }
-
+  printf("one\n");
   for (const std::string &select : select_clauses) {
     ResultClause *result_clause;
     if (select == "BOOLEAN" && select_clauses.size() == 1
@@ -82,6 +84,7 @@ std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
       }
     }
   }
+  printf("two\n");
   for (const std::string &such_that_clause : such_that_clauses) {
     std::vector<SuchThatClause *> *relationship = MakeSuchThatClause(such_that_clause);
     if (relationship == nullptr) {
@@ -93,7 +96,7 @@ std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
       such_that_ret->push_back(clause);
     }
   }
-
+  printf("three\n");
   for (const std::string &pattern_clause : pattern_clauses) {
     std::vector<PatternClause *> *pattern = MakePatternClause(pattern_clause);
     if (pattern == nullptr) {
@@ -105,7 +108,7 @@ std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
       pattern_ret->push_back(clause);
     }
   }
-
+  printf("four\n");
   for (const std::string &with_clause : with_clauses) {
     std::vector<WithClause *> *with = MakeWithClause(with_clause);
     if (with == nullptr) {
@@ -117,11 +120,12 @@ std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
       with_ret->push_back(clause);
     }
   }
+  printf("five\n");
   auto *res = new std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
                              std::vector<PatternClause *> *, std::vector<WithClause *> *,
                              std::unordered_map<std::string, EntityDeclaration *> *, bool, bool>(
       select_ret, such_that_ret, pattern_ret, with_ret, synonym_to_entity_,
-      syntactically_valid, semantically_valid);
+      syntactically_valid, semantically_valid && semantically_valid_);
   return res;
 }
 

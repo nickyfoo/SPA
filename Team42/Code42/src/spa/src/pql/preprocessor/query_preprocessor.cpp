@@ -9,6 +9,9 @@ QueryPreprocessor::QueryPreprocessor(std::string input) {
   std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
   bool, bool> entities_map;
   entities_map = MakeEntitiesMap(entities);
+
+  printf("syn: %d\n", std::get<1>(entities_map));
+  printf("semo: %d\n", std::get<2>(entities_map));
   // If entity declaration is syntactically invalid, return clauses straight
   if (!std::get<1>(entities_map)) {
     auto *select_ret = new std::vector<ResultClause *>();

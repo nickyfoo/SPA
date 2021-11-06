@@ -13,6 +13,8 @@ EntityDeclarationParser *EntityDeclarationParser::get_instance() {
 
 void EntityDeclarationParser::set_entities(std::vector<std::string> *entities) {
   entity_declaration_strings_ = entities;
+  syntactically_valid_ = true;
+  semantically_valid_ = true;
 }
 
 std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
@@ -31,24 +33,31 @@ bool, bool> EntityDeclarationParser::get_entities_map() {
     // same entity type, or if there's only 1 word, its syntactically invalid. eg stmt s p c;
     std::vector<std::string> tokens = SplitString(entity_str, " ");
     size_t num_of_comma = std::count(entity_str.begin(), entity_str.end(), ',');
+    printf("MMM1\n");
     if (num_of_comma < tokens.size() - 1 || index_of_entity == -1) {
       syntactically_valid_ = false;
       break;
     }
+    printf("MMM2\n");
     auto *synonyms = new std::vector<std::string>();
     EntityType entity_type = CheckEntityType(entity);
     if (entity_type == EntityType::None ||
     !IsValidSynonym(tokens, synonyms)) {
       // Invalid synonym or entity type means its syntactically invalid;
+      printf("MMM3\n");
       syntactically_valid_ = false;
       break;
     }
+    printf("MMM4\n");
     if (!AddToEntitiesMap(entities_map, synonyms, entity_type)) {
       // Having duplicate synonyms means its semantically invalid;
       semantically_valid_ = false;
       break;
     }
+    printf("MMM5\n");
   }
+  printf("syntac: %d\n", syntactically_valid_);
+  printf("semantic: %d\n", semantically_valid_);
   return std::make_tuple(entities_map, syntactically_valid_, semantically_valid_);
 }
 

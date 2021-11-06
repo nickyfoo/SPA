@@ -393,7 +393,7 @@ TEST_CASE("SingleClause_ModifiesClause_ReturnsExpected") {
 
   SECTION("ModifiesS with left syn and right arg") {
     std::string ss = "stmt s1;\n"
-                     "Select s1 such that Modifies(s1, 'cenX')";
+                     "Select s1 such that Modifies(s1, \"cenX\")";
     std::vector<std::string> *ret = EvaluateQuery(ss);
 
     std::vector<std::string> expected = {"2", "11", "14", "16", "19", "21"};
@@ -419,7 +419,7 @@ TEST_CASE("SingleClause_ModifiesClause_ReturnsExpected") {
 
   SECTION("ModifiesP with left arg and right syn") {
     std::string ss = "variable v;\n"
-                     "Select v such that Modifies('main', v)";
+                     "Select v such that Modifies(\"main\", v)";
     std::vector<std::string> *ret = EvaluateQuery(ss);
 
     std::vector<std::string> expected = {"x", "y", "count", "cenX", "cenY", "flag", "normSq"};
@@ -896,7 +896,7 @@ TEST_CASE("Pattern_AssignStmtAndPartialPattern_ReturnsEmpty") {
 
 TEST_CASE("Pattern_AssignVariableNameAndWildCard_ReturnsExpected") {
   std::string ss = "assign a;\n"
-                   "Select a pattern a('cenX', _)";
+                   "Select a pattern a(\"cenX\", _)";
   std::vector<std::string> *ret = EvaluateQuery(ss);
 
   std::vector<std::string> expected = {"11", "16", "21"};
@@ -909,7 +909,7 @@ TEST_CASE("Pattern_AssignVariableNameAndWildCard_ReturnsExpected") {
 
 TEST_CASE("Pattern_AssignVariableNameAndExactMatch_ReturnsExpected") {
   std::string ss = "assign a;\n"
-                   "Select a pattern a('cenX', '0')";
+                   "Select a pattern a(\"cenX\", \"0\")";
   std::vector<std::string> *ret = EvaluateQuery(ss);
 
   std::vector<std::string> expected = {"11"};
@@ -922,7 +922,7 @@ TEST_CASE("Pattern_AssignVariableNameAndExactMatch_ReturnsExpected") {
 
 TEST_CASE("Pattern_AssignVariableNameAndPartialMatch_ReturnsExpected") {
   std::string ss = "assign a;\n"
-                   "Select a pattern a('cenX', _'cenX'_)";
+                   "Select a pattern a(\"cenX\", _\"cenX\"_)";
   std::vector<std::string> *ret = EvaluateQuery(ss);
 
   std::vector<std::string> expected = {"16", "21"};
@@ -935,7 +935,7 @@ TEST_CASE("Pattern_AssignVariableNameAndPartialMatch_ReturnsExpected") {
 
 TEST_CASE("Pattern_AssignVariableNameAndPartialMatchBad_ReturnsExpected") {
   std::string ss = "assign a;\n"
-                   "Select a pattern a(_, _'cenX cenY'_)";
+                   "Select a pattern a(_, _\"cenX cenY\"_)";
   std::vector<std::string> *ret = EvaluateQuery(ss);
 
   std::vector<std::string> expected = {};

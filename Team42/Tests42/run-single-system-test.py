@@ -12,7 +12,7 @@ files = [
     # "nextbip_3",
     # "nextbip_4",
     # "nextbip_5",
-    # "testing",
+    "testing",
     # "testing2",
     # "BOOLEAN"
     # "SIMPLE_6_0clause",
@@ -24,7 +24,7 @@ files = [
     # "with_0"
     # "iter3_system_test_1",
     # "iter3_system_test_2",
-    "iter3_system_test_3",
+    # "iter3_system_test_3",
 ]
 
 for file in files:

@@ -1081,7 +1081,7 @@ TEST_CASE("Pattern_EndingWithSymbol_ReturnsNullPtr") {
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
   bool, bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<5>(*clause) == false);
   REQUIRE(std::get<6>(*clause) == false);
 }
 
@@ -1095,7 +1095,7 @@ TEST_CASE("Pattern_HavingTwoContinuousSymbols_ReturnsNullPtr") {
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
   bool, bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == true);
+  REQUIRE(std::get<5>(*clause) == false);
   REQUIRE(std::get<6>(*clause) == false);
 }
 
@@ -1118,7 +1118,7 @@ TEST_CASE("Pattern_KeywordPatternInPattern_ReturnsCorrect") {
   PatternClause *pattern = std::get<2>(*clause)->at(0);
   REQUIRE(pattern->get_synonym()->get_synonym() == "a");
   REQUIRE(pattern->get_variable()->get_type() == EntRefType::WildCard);
-  REQUIRE(pattern->get_exp_spec()->get_expression() == " pattern ");
+  REQUIRE(pattern->get_exp_spec()->get_expression() == "pattern");
   REQUIRE(pattern->get_exp_spec()->IsPartialPattern() == false);
 
   REQUIRE(std::get<3>(*clause)->size() == 0);
@@ -1939,7 +1939,7 @@ TEST_CASE("With_ProcedureAndProcedureWrongKeyword_ReturnsNullPtr") {
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
   bool, bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<5>(*clause) == true);
   REQUIRE(std::get<6>(*clause) == false);
 }
 
@@ -2127,7 +2127,7 @@ TEST_CASE("With_IfAndIntegerSpaceBeforeAttrValueType_ReturnsNullPtr") {
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
   bool, bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<5>(*clause) == true);
   REQUIRE(std::get<6>(*clause) == false);
 }
 
@@ -2141,7 +2141,7 @@ TEST_CASE("With_IfAndIntegerSpaceAfterAttr_ReturnsNullPtr") {
   std::vector<WithClause *> *,
   std::unordered_map<std::string, EntityDeclaration *> *,
   bool, bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<5>(*clause) == true);
   REQUIRE(std::get<6>(*clause) == false);
 }
 

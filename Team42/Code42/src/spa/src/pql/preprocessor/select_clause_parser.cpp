@@ -287,7 +287,6 @@ int SelectClauseParser::SetWithRef(WithClause *with, const std::string &left_ref
   EntityType right_type;
   AttrValueType left_attr_value_type;
   AttrValueType right_attr_value_type;
-  printf("one\n");
   // set as EntityType::None if integer or ident
   if (IsInteger(left_ref)) {
     left_str = left_ref;
@@ -307,7 +306,7 @@ int SelectClauseParser::SetWithRef(WithClause *with, const std::string &left_ref
       else return 0;
     }
   }
-  printf("two\n");
+
   // set as EntityType::None if integer or ident
   if (IsInteger(right_ref)) {
     right_str = right_ref;
@@ -327,7 +326,7 @@ int SelectClauseParser::SetWithRef(WithClause *with, const std::string &left_ref
       else return 0;
     }
   }
-  printf("three\n");
+
   // not previously declared
   if ((left_type != EntityType::None &&
       synonym_to_entity_->find(left_str) == synonym_to_entity_->end()) ||
@@ -335,12 +334,11 @@ int SelectClauseParser::SetWithRef(WithClause *with, const std::string &left_ref
       synonym_to_entity_->find(right_str) == synonym_to_entity_->end())) {
     return 0;
   }
-  printf("four\n");
+
   // check same type
   if (left_attr_value_type != right_attr_value_type) {  // must be same attribute value types
     return 0;
   }
-  printf("five\n");
   with->set_values(left_str, left_type, left_attr_value_type, right_str, right_type,
                              right_attr_value_type);
   return 1;
@@ -396,8 +394,9 @@ SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
           break;
         default:break;
       }
-      printf("here\n");
-      return std::make_tuple(synonym, type, attr_value_type);
+      if (attr_value_type != AttrValueType::None) {
+        return std::make_tuple(synonym, type, attr_value_type);
+      }
     }
     if (attribute == "procName" || attribute == "stmt#"
         || attribute == "value" || attribute == "varName") {  // correct semantics

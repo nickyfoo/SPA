@@ -98,6 +98,7 @@ void ResultTable::CrossJoin(ResultTable &other_result_table,
                             std::unordered_set<std::string> used_synonyms) {
   table *new_table = new std::vector<std::vector<std::string>>();
   table *other_table = other_result_table.get_table();
+
   if (other_table->empty()) {
     delete table_;
     table_ = new_table;

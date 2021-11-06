@@ -723,19 +723,31 @@ SelectClauseParser::SplitClauses(const std::string &input) {
   size_t pos;
   std::string token;
   std::stringstream ss;
+  const std::string WHITESPACE = " \n\r\t\f\v";
 
-  // first pass to remove all whitespaces within brackets and before brackets
+  // first pass to remove all whitespaces within brackets and before brackets,
+  // and trim whitespaces after open commas and before close commas
   bool whitespace_found = true;
   bool open_bracket_found = false;
   bool inverted_commas_found = false;
   std::stringstream prev_word_stream;
+  std::stringstream argument_word_stream;
   for (char c : input) {
     if (c == '\"' || c == '\'') {
-      ss << c;
+      if (inverted_commas_found) {  // closing comma encountered
+        std::string arg = argument_word_stream.str();
+        auto arg_begin = arg.find_first_not_of(WHITESPACE);
+        if (arg_begin == std::string::npos) return false_res;
+
+        auto arg_end = arg.find_last_not_of(WHITESPACE);
+        std::string trimmed_arg = arg.substr(arg_begin, arg_end - arg_begin + 1);
+        ss << "\"" << trimmed_arg << "\"";
+      }
       inverted_commas_found = !inverted_commas_found;
       whitespace_found = false;
     } else if (inverted_commas_found) {
-      ss << c;
+      argument_word_stream << c;
+//      ss << c;
     } else if (isspace(c)) {
       // extra check to account for such that clause without extra spaces
       std::string check_for_such = prev_word_stream.str();

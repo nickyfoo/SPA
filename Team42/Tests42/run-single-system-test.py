@@ -19,7 +19,8 @@ files = [
     # "SIMPLE_6_1clause"
     # "callsStar_1"
     # "SIMPLE_WITH"
-    "andPattern_invalid"
+    # "andPattern_invalid"
+    "SIMPLE_1"
 ]
 
 for file in files:

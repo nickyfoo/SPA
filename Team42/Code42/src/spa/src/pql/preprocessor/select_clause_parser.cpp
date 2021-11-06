@@ -20,7 +20,7 @@ SelectClauseParser *SelectClauseParser::get_instance() {
 
 void SelectClauseParser::set_select_clause(bool semantically_valid,
                                            std::unordered_map<std::string,
-                                           EntityDeclaration *> *syn_to_ent,
+                                                              EntityDeclaration *> *syn_to_ent,
                                            std::string select_clause) {
   this->semantically_valid_ = semantically_valid;
   this->synonym_to_entity_ = syn_to_ent;
@@ -35,7 +35,7 @@ std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
            std::vector<PatternClause *> *, std::vector<WithClause *> *,
            std::unordered_map<std::string, EntityDeclaration *> *,
            bool, bool> *
-    SelectClauseParser::get_clauses() {
+SelectClauseParser::get_clauses() {
   std::tuple<std::string, std::vector<std::string>, std::vector<std::string>,
              std::vector<std::string>>
       clauses;
@@ -53,8 +53,8 @@ std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
 
   std::vector<std::string> select_clauses = SplitSelect(select_clause);
   auto *syntactically_false_res = new std::tuple<std::vector<ResultClause *> *, std::vector<SuchThatClause *> *,
-                             std::vector<PatternClause *> *, std::vector<WithClause *> *,
-                             std::unordered_map<std::string, EntityDeclaration *> *, bool, bool>(
+                                                 std::vector<PatternClause *> *, std::vector<WithClause *> *,
+                                                 std::unordered_map<std::string, EntityDeclaration *> *, bool, bool>(
       select_ret, such_that_ret, pattern_ret, with_ret, synonym_to_entity_,
       false, false);
 
@@ -158,7 +158,7 @@ std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
     }
 
     if (relationship->set_ref(left_such_that_ref, right_such_that_ref) &&
-    valid_left == 1 && valid_right == 1) {
+        valid_left == 1 && valid_right == 1) {
       ret->push_back(relationship);
     } else {  // semantically invalid
       return new std::vector<SuchThatClause *>();;
@@ -186,8 +186,8 @@ std::vector<PatternClause *> *SelectClauseParser::MakePatternClause(
     if (synonym_to_entity_->find(synonym) == synonym_to_entity_->end()) {
       return new std::vector<PatternClause *>();;
     } else if ((synonym_to_entity_->at(synonym)->get_type() == EntityType::Assign ||
-            synonym_to_entity_->at(synonym)->get_type() == EntityType::If ||
-            synonym_to_entity_->at(synonym)->get_type() == EntityType::While)) {
+        synonym_to_entity_->at(synonym)->get_type() == EntityType::If ||
+        synonym_to_entity_->at(synonym)->get_type() == EntityType::While)) {
       pattern = new PatternClause(synonym_to_entity_->find(synonym)->second);
     } else {
       return nullptr;
@@ -231,7 +231,7 @@ std::vector<WithClause *> *SelectClauseParser::MakeWithClause(const std::string 
 
     left_ref = TrimTrailingWhitespaces(left_ref);
     right_ref = TrimTrailingWhitespaces(right_ref);
-    WithClause* with = new WithClause();
+    WithClause *with = new WithClause();
     int valid = SetWithRef(with, left_ref, right_ref);
 
     if (valid == -1) {
@@ -249,8 +249,8 @@ std::vector<WithClause *> *SelectClauseParser::MakeWithClause(const std::string 
 // 0 to represent semantically invalid
 // -1 to represent syntactically invalid
 int SelectClauseParser::SetPatternRef(PatternClause *pattern,
-                                                 const std::string &left_ref,
-                                                 const std::string &right_ref) {
+                                      const std::string &left_ref,
+                                      const std::string &right_ref) {
 //  PatternClause *ret;
   auto *ent_ref = new EntRef();
   if (synonym_to_entity_->find(left_ref) != synonym_to_entity_->end()) {
@@ -262,7 +262,7 @@ int SelectClauseParser::SetPatternRef(PatternClause *pattern,
   } else if (left_ref == "_") {
     ent_ref->set_wild_card();
   } else if (left_ref.length() > 2 && left_ref[0] == '\"' && left_ref[left_ref.length() - 1] == '\"'
-  && IsValidIdentifier(left_ref.substr(1, left_ref.length() - 2))) {
+      && IsValidIdentifier(left_ref.substr(1, left_ref.length() - 2))) {
     ent_ref->set_argument(left_ref.substr(1, left_ref.length() - 2));
   } else {
     return -1;
@@ -333,7 +333,7 @@ int SelectClauseParser::SetWithRef(WithClause *with, const std::string &left_ref
   if ((left_type != EntityType::None &&
       synonym_to_entity_->find(left_str) == synonym_to_entity_->end()) ||
       (right_type != EntityType::None &&
-      synonym_to_entity_->find(right_str) == synonym_to_entity_->end())) {
+          synonym_to_entity_->find(right_str) == synonym_to_entity_->end())) {
     return 0;
   }
 
@@ -342,7 +342,7 @@ int SelectClauseParser::SetWithRef(WithClause *with, const std::string &left_ref
     return 0;
   }
   with->set_values(left_str, left_type, left_attr_value_type, right_str, right_type,
-                             right_attr_value_type);
+                   right_attr_value_type);
   return 1;
 }
 
@@ -394,7 +394,8 @@ SelectClauseParser::GetWithRefTypeAndAttrValueType(std::string ref) {
           if (attribute == "stmt#")
             attr_value_type = AttrValueType::Integer;
           break;
-        default:break;
+        default:
+          break;
       }
       if (attr_value_type != AttrValueType::None) {
         return std::make_tuple(synonym, type, attr_value_type);
@@ -492,7 +493,7 @@ int SelectClauseParser::SetSuchThatRefLeft(SuchThatRef *left_such_that_ref,
       left_ent_ref.set_wild_card();
       left_such_that_ref->set_ent_ref(left_ent_ref);
     } else if (type == RelRef::Next || type == RelRef::NextT ||
-              type == RelRef::NextBip || type == RelRef::NextTBip) {
+        type == RelRef::NextBip || type == RelRef::NextTBip) {
       left_line_ref.set_wild_card();
       left_such_that_ref->set_line_ref(left_line_ref);
     } else {
@@ -520,8 +521,8 @@ int SelectClauseParser::SetSuchThatRefLeft(SuchThatRef *left_such_that_ref,
 // 0 to represent semantically invalid
 // -1 to represent syntactically invalid
 int SelectClauseParser::SetSuchThatRefRight(SuchThatRef *right_such_that_ref,
-                                             SuchThatClause *relationship,
-                                             std::string right_ref) {
+                                            SuchThatClause *relationship,
+                                            std::string right_ref) {
   StmtRef right_stmt_ref;
   EntRef right_ent_ref;
   LineRef right_line_ref;
@@ -614,7 +615,7 @@ int SelectClauseParser::SetSuchThatRefRight(SuchThatRef *right_such_that_ref,
   } else if (right_ref.length() > 2 && right_ref[0] == '\"'
       && right_ref[right_ref.length() - 1] == '\"'
       && IsValidIdentifier(right_ref.substr(1, right_ref.length() - 2))) {
-    right_ent_ref.set_argument(right_ref.substr(1,  right_ref.length() - 2));
+    right_ent_ref.set_argument(right_ref.substr(1, right_ref.length() - 2));
     right_such_that_ref->set_ent_ref(right_ent_ref);
   } else if (IsValidIdentifier(right_ref)) {
     return 0;
@@ -639,7 +640,7 @@ bool SelectClauseParser::IsValidIdentifier(const std::string &str) {
   // Traverse the string for the rest of the characters
   for (int i = 1; i < str.length() - 1; i++) {
     if (!((str[i] >= 'a' && str[i] <= 'z') || (str[i] >= 'A' && str[i] <= 'Z') ||
-          (str[i] >= '0' && str[i] <= '9'))) {
+        (str[i] >= '0' && str[i] <= '9'))) {
       return false;
     }
   }
@@ -953,11 +954,14 @@ ResultClause *SelectClauseParser::ValidateResultClauseWithAttr(const std::string
   EntityType synonym_type = synonym_to_entity_->find(synonym)->second->get_type();
   ReturnType return_type;
   switch (synonym_type) {
-    case EntityType::Procedure:if (attribute == "procName") return_type = ReturnType::Name;
+    case EntityType::Procedure:
+      if (attribute == "procName") return_type = ReturnType::Name;
       break;
-    case EntityType::Variable:if (attribute == "varName") return_type = ReturnType::Name;
+    case EntityType::Variable:
+      if (attribute == "varName") return_type = ReturnType::Name;
       break;
-    case EntityType::Constant:if (attribute == "value") return_type = ReturnType::Integer;
+    case EntityType::Constant:
+      if (attribute == "value") return_type = ReturnType::Integer;
       break;
     case EntityType::Call:
       if (attribute == "procName") {
@@ -984,7 +988,8 @@ ResultClause *SelectClauseParser::ValidateResultClauseWithAttr(const std::string
         return_type = ReturnType::Integer;
         break;
       }
-    default:return nullptr;
+    default:
+      return nullptr;
   }
 
   return new ResultClause(synonym, synonym_type, return_type);

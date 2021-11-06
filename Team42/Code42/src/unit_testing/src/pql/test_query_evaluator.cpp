@@ -15,11 +15,11 @@ TEST_CASE("SingleClause_SuchThatClause_OutputsVectorOfStrings") {
                      "Select s1 such that Follows(s1, 3)";
     auto query = QueryPreprocessor(ss);
     std::tuple<std::vector<ResultClause *> *,
-    std::vector<SuchThatClause *> *,
-    std::vector<PatternClause *> *,
-    std::vector<WithClause *> *,
-    std::unordered_map<std::string, EntityDeclaration *> *,
-    bool, bool> *clause = query.get_clauses();
+               std::vector<SuchThatClause *> *,
+               std::vector<PatternClause *> *,
+               std::vector<WithClause *> *,
+               std::unordered_map<std::string, EntityDeclaration *> *,
+               bool, bool> *clause = query.get_clauses();
     QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clause),
                                                     std::get<2>(*clause),
                                                     std::get<3>(*clause),
@@ -39,11 +39,11 @@ TEST_CASE("SingleClause_SuchThatClause_OutputsVectorOfStrings") {
                      "Select s1 such that Follows(1, s1)";
     auto query = QueryPreprocessor(ss);
     std::tuple<std::vector<ResultClause *> *,
-    std::vector<SuchThatClause *> *,
-    std::vector<PatternClause *> *,
-    std::vector<WithClause *> *,
-    std::unordered_map<std::string, EntityDeclaration *> *,
-    bool, bool> *clause = query.get_clauses();
+               std::vector<SuchThatClause *> *,
+               std::vector<PatternClause *> *,
+               std::vector<WithClause *> *,
+               std::unordered_map<std::string, EntityDeclaration *> *,
+               bool, bool> *clause = query.get_clauses();
     QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clause),
                                                     std::get<2>(*clause),
                                                     std::get<3>(*clause),

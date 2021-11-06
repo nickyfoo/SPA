@@ -134,12 +134,12 @@ class PKB {
 
   // DFS to check reachability for NextBip and AffectsBip* relationship
   void BipReachabilityDFS(std::set<std::pair<int,
-                               std::string>> &visited,
-                               int u, 
-                               std::string &u_hash,
-                               int start, 
-                               std::string &start_hash,
-                               std::vector<int> &call_stack);
+                                             std::string>> &visited,
+                          int u,
+                          std::string &u_hash,
+                          int start,
+                          std::string &start_hash,
+                          std::vector<int> &call_stack);
 
   // DFS to check reachability for AffectsBip relationship.
   // If target is not kWild, supports fast termination to save on unnecessary computations.
@@ -159,7 +159,7 @@ class PKB {
   // Returns true if v is an assign stmt that modifies var_name
   bool ModifiesVarName(int v, const std::string &var_name);
   // Traverses CFG to get Next(u,_), since there are negative nodes.
-  void GetFirstPositiveStmts(int u, std::set<int>& visited, std::set<int>& ans);
+  void GetFirstPositiveStmts(int u, std::set<int> &visited, std::set<int> &ans);
   // DFS to check reachability for AffectsBip* relationship
   void AffectsBipStarDFS(std::set<std::pair<int, std::string>> &visited,
                          int u,

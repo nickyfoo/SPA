@@ -55,7 +55,7 @@ TEST_CASE("AddColumns") {
 
   SECTION("AddColumns_DifferentSize_ThrowsException") {
     result_table.AddSingleColumn("a", {"one", "two", "three"});
-    REQUIRE_THROWS_AS(    result_table.AddSingleColumn("b", {"four", "five", "six", "seven"}), std::runtime_error);
+    REQUIRE_THROWS_AS(result_table.AddSingleColumn("b", {"four", "five", "six", "seven"}), std::runtime_error);
   }
 }
 
@@ -108,7 +108,8 @@ TEST_CASE("GetCommonSynonyms") {
     other_result_table.AddSingleColumn("e", {"four", "five", "six"});
     other_result_table.AddSingleColumn("a", {"seven", "eight", "nine"});
     std::vector<std::pair<std::string, int>> *result = result_table.GetCommonSynonyms(other_result_table);
-    std::vector<std::pair<std::string, int>> *expected = new std::vector<std::pair<std::string, int>>({std::make_pair("a", 2)});
+    std::vector<std::pair<std::string, int>>
+        *expected = new std::vector<std::pair<std::string, int>>({std::make_pair("a", 2)});
     REQUIRE(result->size() == expected->size());
     REQUIRE(result->at(0).first == expected->at(0).first);
     REQUIRE(result->at(0).second == expected->at(0).second);

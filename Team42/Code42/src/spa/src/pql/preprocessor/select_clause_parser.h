@@ -27,7 +27,7 @@ class SelectClauseParser {
              std::vector<WithClause *> *,
              std::unordered_map<std::string, EntityDeclaration *> *,
              bool,
-             bool> * get_clauses();
+             bool> *get_clauses();
 
  private:
   static SelectClauseParser *instance;
@@ -74,4 +74,4 @@ class SelectClauseParser {
   static bool IsInteger(const std::string &str);
   static std::string TrimTrailingWhitespaces(const std::string &str);
 
-  };
+};

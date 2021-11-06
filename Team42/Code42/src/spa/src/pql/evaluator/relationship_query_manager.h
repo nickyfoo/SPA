@@ -16,7 +16,7 @@ class RelationshipQueryManager {
   ResultTable *EvaluateRelationship(std::shared_ptr<SuchThatClause> relationship,
                                     std::unordered_map<std::string,
                                                        std::vector<Entity *>>
-                                                       synonym_to_entities_vec);
+                                    synonym_to_entities_vec);
   ~RelationshipQueryManager();
  private:
   PKB *pkb_;

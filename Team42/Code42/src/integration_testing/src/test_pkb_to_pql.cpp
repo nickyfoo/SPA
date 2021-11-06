@@ -502,7 +502,7 @@ TEST_CASE("SingleClause_NextClause_ReturnsExpected") {
         "Select <p1, p2> such that Next(p1, p2)";
     std::vector<std::string> *ret = EvaluateQuery(ss);
 
-    std::vector<std::string> expected = {"1 2",   "2 3",   "4 5",   "6 7",   "7 8",   "8 9",
+    std::vector<std::string> expected = {"1 2", "2 3", "4 5", "6 7", "7 8", "8 9",
                                          "10 11", "11 12", "12 13", "13 14", "14 15", "15 16",
                                          "16 17", "17 18", "18 14", "14 19", "19 20", "19 21",
                                          "21 22", "20 23", "22 23"};
@@ -583,7 +583,7 @@ TEST_CASE("SingleClause_NextClause_ReturnsExpected") {
         "Select p such that Next(p, _)";
     std::vector<std::string> *ret = EvaluateQuery(ss);
 
-    std::vector<std::string> expected = {"1",  "2",  "4",  "6",  "7",  "8",  "10", "11", "12", "13",
+    std::vector<std::string> expected = {"1", "2", "4", "6", "7", "8", "10", "11", "12", "13",
                                          "14", "15", "16", "17", "18", "19", "20", "21", "22"};
     REQUIRE(ret->size() == expected.size());
     for (int i = 0; i < expected.size(); i++) {
@@ -597,7 +597,7 @@ TEST_CASE("SingleClause_NextClause_ReturnsExpected") {
         "Select p such that Next(_, p)";
     std::vector<std::string> *ret = EvaluateQuery(ss);
 
-    std::vector<std::string> expected = {"2",  "3",  "5",  "7",  "8",  "9",  "11", "12", "13", "14",
+    std::vector<std::string> expected = {"2", "3", "5", "7", "8", "9", "11", "12", "13", "14",
                                          "15", "16", "17", "18", "19", "20", "21", "22", "23"};
     REQUIRE(ret->size() == expected.size());
     for (int i = 0; i < expected.size(); i++) {

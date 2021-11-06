@@ -19,7 +19,7 @@ class ClauseVertex {
   int get_priority() const;
   ~ClauseVertex();
  private:
-  friend bool operator < (const ClauseVertex &lhs, const ClauseVertex &rhs);
+  friend bool operator<(const ClauseVertex &lhs, const ClauseVertex &rhs);
   std::vector<std::string> synonyms_used_;
   int id_;
   int priority_;

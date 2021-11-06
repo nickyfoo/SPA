@@ -1038,7 +1038,7 @@ TEST_CASE("DefaultGrouping_NoOptimization_AddsOnlyToLastGroup") {
                      "Select s1 such that Follows(s1, 4) "
                      "with 2 = 3 pattern a(v, _)";
     WithClause *with = new WithClause("2", EntityType::None, AttrValueType::Integer,
-                                       "3", EntityType::None, AttrValueType::Integer);
+                                      "3", EntityType::None, AttrValueType::Integer);
 
     SuchThatClause *follows = new SuchThatClause("Follows");
     StmtRef left_stmt_ref = StmtRef();

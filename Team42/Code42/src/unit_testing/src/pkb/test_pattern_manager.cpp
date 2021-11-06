@@ -90,19 +90,19 @@ TEST_CASE("TestAssignmentPattern_TwoDifferentPrecedenceOperators_Success", "[pat
 }
 
 TEST_CASE("TestAssignmentPattern_MixedPrecedenceOperators_Success", "[pattern_manager]") {
-    // Which of the patterns match this assignment statement? /
-    // x = v + 3 / ((y - z) % n * t)
-    PKB pkb;
-    Statement s1(1, NodeType::Assign);
-    s1.set_expr_string("v 3 y z - n % t * / +");
+  // Which of the patterns match this assignment statement? /
+  // x = v + 3 / ((y - z) % n * t)
+  PKB pkb;
+  Statement s1(1, NodeType::Assign);
+  s1.set_expr_string("v 3 y z - n % t * / +");
 
-    REQUIRE(pkb.TestAssignmentPattern(&s1, "v + 3 / ((y - z) % n * t)", false) == true);
-    REQUIRE(pkb.TestAssignmentPattern(&s1, "v + 3", true) == false);
-    REQUIRE(pkb.TestAssignmentPattern(&s1, "y\t - \tz", true) == true);
-    REQUIRE(pkb.TestAssignmentPattern(&s1, "((y - z) % n * t)", true) == true);
-    REQUIRE(pkb.TestAssignmentPattern(&s1, "(y - z) % n", true) == true);
-    REQUIRE(pkb.TestAssignmentPattern(&s1, " 3 / ((y - z)", true) == false);
-    REQUIRE(pkb.TestAssignmentPattern(&s1, "3 / ((y - z) % n * t)", true) == true);
+  REQUIRE(pkb.TestAssignmentPattern(&s1, "v + 3 / ((y - z) % n * t)", false) == true);
+  REQUIRE(pkb.TestAssignmentPattern(&s1, "v + 3", true) == false);
+  REQUIRE(pkb.TestAssignmentPattern(&s1, "y\t - \tz", true) == true);
+  REQUIRE(pkb.TestAssignmentPattern(&s1, "((y - z) % n * t)", true) == true);
+  REQUIRE(pkb.TestAssignmentPattern(&s1, "(y - z) % n", true) == true);
+  REQUIRE(pkb.TestAssignmentPattern(&s1, " 3 / ((y - z)", true) == false);
+  REQUIRE(pkb.TestAssignmentPattern(&s1, "3 / ((y - z) % n * t)", true) == true);
 }
 
 TEST_CASE("TestIfWhilePattern_SingleCondition_Success", "[pattern_manager]") {

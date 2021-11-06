@@ -45,7 +45,7 @@ ResultTable *NextHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func)(i
       return nullptr;
     }
   } else if (left_ent.get_type() == LineRefType::Synonym &&
-             right_ent.get_type() == LineRefType::LineNum) {
+      right_ent.get_type() == LineRefType::LineNum) {
     // 2. Next(a, 2)
     auto right_arg = right_ent.get_line_num();
     std::vector<std::string> line_vec;
@@ -62,7 +62,7 @@ ResultTable *NextHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func)(i
 
     ret->AddSingleColumn(left_synonym, line_vec);
   } else if (left_ent.get_type() == LineRefType::LineNum &&
-             right_ent.get_type() == LineRefType::Synonym) {
+      right_ent.get_type() == LineRefType::Synonym) {
     // 3. Next(1, b)
     auto left_arg = left_ent.get_line_num();
     std::vector<std::string> line_vec;
@@ -79,7 +79,7 @@ ResultTable *NextHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func)(i
 
     ret->AddSingleColumn(right_synonym, line_vec);
   } else if (left_ent.get_type() == LineRefType::Synonym &&
-             right_ent.get_type() == LineRefType::Synonym) {
+      right_ent.get_type() == LineRefType::Synonym) {
     // 4. Next(a, b)
     auto left_synonym = left_ent.get_synonym();
     auto right_synonym = right_ent.get_synonym();
@@ -122,7 +122,7 @@ ResultTable *NextHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func)(i
       ret->AddDoubleColumns(left_synonym, left_line_vec, right_synonym, right_line_vec);
     }
   } else if (left_ent.get_type() == LineRefType::WildCard &&
-             right_ent.get_type() == LineRefType::WildCard) {
+      right_ent.get_type() == LineRefType::WildCard) {
     // 5. Next(_, _)
     int left_arg = PKB::kWild;
     int right_arg = PKB::kWild;
@@ -132,7 +132,7 @@ ResultTable *NextHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func)(i
       return nullptr;
     }
   } else if (left_ent.get_type() == LineRefType::LineNum &&
-             right_ent.get_type() == LineRefType::WildCard) {
+      right_ent.get_type() == LineRefType::WildCard) {
     // 6. Next(1, _)
     int left_arg = left_ent.get_line_num();
     int right_arg = PKB::kWild;
@@ -142,7 +142,7 @@ ResultTable *NextHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func)(i
       return nullptr;
     }
   } else if (left_ent.get_type() == LineRefType::WildCard &&
-             right_ent.get_type() == LineRefType::LineNum) {
+      right_ent.get_type() == LineRefType::LineNum) {
     // 7. Next(_, 1)
     int left_arg = PKB::kWild;
     int right_arg = right_ent.get_line_num();
@@ -152,7 +152,7 @@ ResultTable *NextHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func)(i
       return nullptr;
     }
   } else if (left_ent.get_type() == LineRefType::Synonym &&
-             right_ent.get_type() == LineRefType::WildCard) {
+      right_ent.get_type() == LineRefType::WildCard) {
     // 8. Next(a, _)
     int right_arg = PKB::kWild;
     std::vector<std::string> line_vec;
@@ -169,7 +169,7 @@ ResultTable *NextHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func)(i
 
     ret->AddSingleColumn(left_synonym, line_vec);
   } else if (left_ent.get_type() == LineRefType::WildCard &&
-             right_ent.get_type() == LineRefType::Synonym) {
+      right_ent.get_type() == LineRefType::Synonym) {
     // 9. Next(_, a)
     int left_arg = PKB::kWild;
     std::vector<std::string> line_vec;

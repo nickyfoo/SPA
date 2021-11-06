@@ -50,7 +50,7 @@ class Statement : public Entity {
   void set_expr_string(std::string expr_string);
   // Sets the name of the procedure being called, only works for NodeType::Call
   void set_called_proc_name(std::string name);
-  
+
   // Adds a statement that follows before this statement.
   void AddFollower(int line_no);
   // Adds a statement that follows_star before this statement.

@@ -49,7 +49,7 @@ class ProcTable : public Table {
   // Table mapping each procedure name to its corresponding index.
   std::map<std::string, int> name_to_index_;
 
-  // for <p1, p2> in calls_, Calls(v1, v2) is true. Stored as ints for
+  // for <v1, v2> in calls_, Calls(v1, v2) is true. Stored as ints for
   // transitive closure.
   std::map<int, std::set<int>> calls_;
 

@@ -200,43 +200,43 @@ int QueryOptimizer::AssignPriority(std::vector<std::string> synonyms_used,
         std::dynamic_pointer_cast<SuchThatClause>(clause);
 // Assigning priority based on number of synonyms used and such that clause type.
     if (such_that_clause->get_type() == RelRef::Follows ||
-    such_that_clause->get_type() == RelRef::Parent ||
-    such_that_clause->get_type() == RelRef::Next) {
+        such_that_clause->get_type() == RelRef::Parent ||
+        such_that_clause->get_type() == RelRef::Next) {
       if (synonyms_used.size() == 1) {
         return 3;
       } else if (synonyms_used.size() == 2) {
         return 8;
       }
     } else if (such_that_clause->get_type() == RelRef::UsesP ||
-    such_that_clause->get_type() == RelRef::UsesS ||
-    such_that_clause->get_type() == RelRef::ModifiesP ||
-    such_that_clause->get_type() == RelRef::ModifiesS ||
-    such_that_clause->get_type() == RelRef::Calls) {
+        such_that_clause->get_type() == RelRef::UsesS ||
+        such_that_clause->get_type() == RelRef::ModifiesP ||
+        such_that_clause->get_type() == RelRef::ModifiesS ||
+        such_that_clause->get_type() == RelRef::Calls) {
       if (synonyms_used.size() == 1) {
         return 4;
       } else if (synonyms_used.size() == 2) {
         return 9;
       }
     } else if (such_that_clause->get_type() == RelRef::FollowsT ||
-    such_that_clause->get_type() == RelRef::ParentT ||
-    such_that_clause->get_type() == RelRef::NextT ||
-    such_that_clause->get_type() == RelRef::CallsT ||
-    such_that_clause->get_type() == RelRef::Affects ||
-    such_that_clause->get_type() == RelRef::AffectsT) {
+        such_that_clause->get_type() == RelRef::ParentT ||
+        such_that_clause->get_type() == RelRef::NextT ||
+        such_that_clause->get_type() == RelRef::CallsT ||
+        such_that_clause->get_type() == RelRef::Affects ||
+        such_that_clause->get_type() == RelRef::AffectsT) {
       if (synonyms_used.size() == 1) {
         return 5;
       } else if (synonyms_used.size() == 2) {
         return 10;
       }
     } else if (such_that_clause->get_type() == RelRef::AffectsBip ||
-    such_that_clause->get_type() == RelRef::NextBip) {
+        such_that_clause->get_type() == RelRef::NextBip) {
       if (synonyms_used.size() == 1) {
         return 6;
       } else if (synonyms_used.size() == 2) {
         return 11;
       }
     } else if (such_that_clause->get_type() == RelRef::AffectsTBip ||
-    such_that_clause->get_type() == RelRef::NextTBip) {
+        such_that_clause->get_type() == RelRef::NextTBip) {
       if (synonyms_used.size() == 1) {
         return 7;
       } else if (synonyms_used.size() == 2) {
@@ -408,7 +408,7 @@ std::vector<ClauseVertex> QueryOptimizer::MakeWithVertices(std::vector<WithClaus
     clause_vertex.set_id(count);
     count++;
     clause_vertices.push_back(clause_vertex);
-    }
+  }
 
   return clause_vertices;
 }

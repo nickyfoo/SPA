@@ -113,8 +113,8 @@ TEST_CASE("PkbCfg_NestedIf_Correct") {
 TEST_CASE("PkbCfgBip_SampleProgram_Correct") {
   PKB pkb = InitialisePKB(kCfgBipSample);
   std::map<int, std::vector<std::pair<int, int>>> ans = {
-      {-9, {{8,-7},{5,-4}}},
-      {-6, {{3,-2}}},
+      {-9, {{8, -7}, {5, -4}}},
+      {-6, {{3, -2}}},
       {-1, {}},
       {1, {{2, PKB::kNoBranch}}},
       {2, {{6, 2}}},
@@ -143,7 +143,7 @@ TEST_CASE("PkbCFGBip_SecondSampleProgram_Correct") {
   PKB pkb = InitialisePKB(kCfgBipSecondSample);
 
   std::map<int, std::vector<std::pair<int, int>>> ans = {
-      {-4, {{2,-1},{3,-2},{-1,-3}}},
+      {-4, {{2, -1}, {3, -2}, {-1, -3}}},
       {-1, {}},
       {1, {{4, 1}}},
       {2, {{4, 2}}},

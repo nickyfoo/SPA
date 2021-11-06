@@ -28,16 +28,15 @@ std::set<std::pair<int, int>> *PKB::get_next_bip(int a, int b) {
       }
     }
 
-
     for (auto &[u, al_u] : cfg_bip_al_) {
       if (u < 0) continue;
       std::set<int> visited, ans;
       GetFirstPositiveStmts(u, visited, ans);
-      for(auto &v:ans){
-          next_bip_cache[kWild][kWild].insert({ u, v });
-          next_bip_cache[kWild][v].insert({ u, v });
-          next_bip_cache[u][kWild].insert({ u, v });
-          next_bip_cache[u][v].insert({ u, v });
+      for (auto &v:ans) {
+        next_bip_cache[kWild][kWild].insert({u, v});
+        next_bip_cache[kWild][v].insert({u, v});
+        next_bip_cache[u][kWild].insert({u, v});
+        next_bip_cache[u][v].insert({u, v});
       }
     }
   } else if (a != kWild) {
@@ -48,12 +47,11 @@ std::set<std::pair<int, int>> *PKB::get_next_bip(int a, int b) {
       next_bip_cache[a][i] = std::set<std::pair<int, int>>();
     }
 
-
     std::set<int> visited, ans;
     GetFirstPositiveStmts(a, visited, ans);
     for (auto &v:ans) {
-      next_bip_cache[a][kWild].insert({ a, v });
-      next_bip_cache[a][v].insert({ a, v });
+      next_bip_cache[a][kWild].insert({a, v});
+      next_bip_cache[a][v].insert({a, v});
     }
   }
   return &next_bip_cache[a][b];
@@ -329,7 +327,11 @@ std::set<std::pair<int, int>> *PKB::get_affects_bip_star(int a, int b) {
   return &affects_bip_star_cache[a][b];
 }
 
-void PKB::BipReachabilityDFS(std::set<std::pair<int, std::string>> &visited, int u, std::string &u_hash, int start, std::string &start_hash,
+void PKB::BipReachabilityDFS(std::set<std::pair<int, std::string>> &visited,
+                             int u,
+                             std::string &u_hash,
+                             int start,
+                             std::string &start_hash,
                              std::vector<int> &call_stack) {
   if (bip_reachability_dfs_cache.find(u) != bip_reachability_dfs_cache.end()
       && bip_reachability_dfs_cache[u].find(u_hash) != bip_reachability_dfs_cache[u].end()) {
@@ -354,8 +356,8 @@ void PKB::BipReachabilityDFS(std::set<std::pair<int, std::string>> &visited, int
           u_hash.erase(u_hash.size() - 1 - std::to_string(call_stack.back()).size());
           call_stack.pop_back();
 
-          if (visited.find({ v, u_hash }) == visited.end()) {
-            visited.insert({ v, u_hash });
+          if (visited.find({v, u_hash}) == visited.end()) {
+            visited.insert({v, u_hash});
             bip_reachability_dfs_cache[start][start_hash].insert(v);
             BipReachabilityDFS(visited, v, u_hash, start, start_hash, call_stack);
           }
@@ -363,8 +365,7 @@ void PKB::BipReachabilityDFS(std::set<std::pair<int, std::string>> &visited, int
           call_stack.push_back(branch);
           u_hash += std::to_string(branch) + " ";
         }
-      }
-      else {
+      } else {
         BipReachabilityDFS(visited, v, u_hash, start, start_hash, call_stack);
         continue;
       }
@@ -372,13 +373,12 @@ void PKB::BipReachabilityDFS(std::set<std::pair<int, std::string>> &visited, int
     return;
   }
 
-
   for (auto &[v, v_branch] : cfg_bip_al_[u]) {
     if (v < 0) {
       BipReachabilityDFS(visited, v, u_hash, start, start_hash, call_stack);
       continue;
     }
-    
+
     // Was called from another procedure, and this edge is a returning edge
     // that does not return to that procedure
     if (branch != kNoBranch && v_branch < 0 && v_branch != -branch) {
@@ -391,8 +391,8 @@ void PKB::BipReachabilityDFS(std::set<std::pair<int, std::string>> &visited, int
       std::string new_call = std::to_string(v_branch) + " ";
       u_hash += new_call;
 
-      if (visited.find({ v, u_hash }) == visited.end()) {
-        visited.insert({ v, u_hash });
+      if (visited.find({v, u_hash}) == visited.end()) {
+        visited.insert({v, u_hash});
         bip_reachability_dfs_cache[start][start_hash].insert(v);
         BipReachabilityDFS(visited, v, u_hash, start, start_hash, call_stack);
       }
@@ -405,8 +405,8 @@ void PKB::BipReachabilityDFS(std::set<std::pair<int, std::string>> &visited, int
         u_hash.erase(u_hash.size() - 1 - std::to_string(call_stack.back()).size());
         call_stack.pop_back();
 
-        if (visited.find({ v, u_hash }) == visited.end()) {
-          visited.insert({ v, u_hash });
+        if (visited.find({v, u_hash}) == visited.end()) {
+          visited.insert({v, u_hash});
           bip_reachability_dfs_cache[start][start_hash].insert(v);
           BipReachabilityDFS(visited, v, u_hash, start, start_hash, call_stack);
         }
@@ -415,8 +415,8 @@ void PKB::BipReachabilityDFS(std::set<std::pair<int, std::string>> &visited, int
         u_hash += std::to_string(branch) + " ";
       }
     } else if (v_branch == 0) {
-      if (visited.find({ v, u_hash }) == visited.end()) {
-        visited.insert({ v, u_hash });
+      if (visited.find({v, u_hash}) == visited.end()) {
+        visited.insert({v, u_hash});
         bip_reachability_dfs_cache[start][start_hash].insert(v);
         BipReachabilityDFS(visited, v, u_hash, start, start_hash, call_stack);
       }
@@ -432,7 +432,7 @@ void PKB::AffectsBipDFS(int start,
                         std::string &hash,
                         std::string var_name,
                         std::set<std::pair<int, std::string>> &visited) {
-  
+
   int branch;
   if (call_stack.empty()) {
     branch = kNoBranch;
@@ -448,15 +448,14 @@ void PKB::AffectsBipDFS(int start,
           hash.erase(hash.size() - 1 - std::to_string(call_stack.back()).size());
           call_stack.pop_back();
 
-          if (visited.find({ v, hash }) == visited.end()) {
-            visited.insert({ v, hash });
+          if (visited.find({v, hash}) == visited.end()) {
+            visited.insert({v, hash});
             if (v > 0) {
               AddStmtIfAffectedBip(start, start_hash, v, hash, var_name);
               if (!ModifiesVarName(v, var_name)) {
                 AffectsBipDFS(start, start_hash, v, call_stack, hash, var_name, visited);
               }
-            }
-            else {
+            } else {
               AffectsBipDFS(start, start_hash, v, call_stack, hash, var_name, visited);
             }
           }
@@ -464,8 +463,7 @@ void PKB::AffectsBipDFS(int start,
           call_stack.push_back(branch);
           hash += std::to_string(branch) + " ";
         }
-      }
-      else {
+      } else {
 
         AffectsBipDFS(start, start_hash, v, call_stack, hash, var_name, visited);
         continue;

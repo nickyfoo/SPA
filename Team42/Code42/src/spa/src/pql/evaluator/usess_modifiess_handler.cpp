@@ -15,7 +15,7 @@ UsesSModifiesSHandler *UsesSModifiesSHandler::get_instance() {
 void UsesSModifiesSHandler::set_args(PKB *pkb,
                                      std::shared_ptr<SuchThatClause> relationship,
                                      std::unordered_map<std::string,
-                                     std::vector<Entity *>> synonym_to_entities_vec) {
+                                                        std::vector<Entity *>> synonym_to_entities_vec) {
   this->pkb_ = pkb;
   this->relationship_ = relationship;
   this->synonym_to_entities_vec_ = synonym_to_entities_vec;

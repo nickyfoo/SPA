@@ -16,7 +16,7 @@ TEST_CASE("AddingEntitiesToMap_StatementEntities_ReturnsEntitiesMap") {
   };
 
   std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
-  bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
+             bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
   std::unordered_map<std::string, EntityDeclaration *> *entities_map = std::get<0>(entities_parser_tuple);
   bool syntactically_valid = std::get<1>(entities_parser_tuple);
   bool semantically_valid = std::get<2>(entities_parser_tuple);
@@ -46,7 +46,7 @@ TEST_CASE("AddingEntitiesToMap_OtherEntityTypes_ReturnsEntitiesMap") {
           EntityType::Procedure, "procedure")}
   };
   std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
-  bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
+             bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
   std::unordered_map<std::string, EntityDeclaration *> *entities_map = std::get<0>(entities_parser_tuple);
   bool syntactically_valid = std::get<1>(entities_parser_tuple);
   bool semantically_valid = std::get<2>(entities_parser_tuple);
@@ -76,7 +76,7 @@ TEST_CASE("AddingEntitiesToMap_MultipleSynonymsForOneEntityType_ReturnsEntitiesM
   };
 
   std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
-  bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
+             bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
   std::unordered_map<std::string, EntityDeclaration *> *entities_map = std::get<0>(entities_parser_tuple);
   bool syntactically_valid = std::get<1>(entities_parser_tuple);
   bool semantically_valid = std::get<2>(entities_parser_tuple);
@@ -102,7 +102,7 @@ TEST_CASE("InvalidEntityDeclaration_WrongEntityType_ReturnsNullptr") {
   entity_parser->set_entities(entities);
 
   std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
-  bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
+             bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
   std::unordered_map<std::string, EntityDeclaration *> *entities_map = std::get<0>(entities_parser_tuple);
   bool syntactically_valid = std::get<1>(entities_parser_tuple);
   bool semantically_valid = std::get<2>(entities_parser_tuple);
@@ -118,7 +118,7 @@ TEST_CASE("InvalidEntityDeclaration_InvalidSynonym_ReturnsNullptr") {
   entity_parser->set_entities(entities);
 
   std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
-  bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
+             bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
   std::unordered_map<std::string, EntityDeclaration *> *entities_map = std::get<0>(entities_parser_tuple);
   bool syntactically_valid = std::get<1>(entities_parser_tuple);
   bool semantically_valid = std::get<2>(entities_parser_tuple);
@@ -135,7 +135,7 @@ TEST_CASE("InvalidEntityDeclaration_RepeatSynonym_ReturnsNullptr") {
   entity_parser->set_entities(entities);
 
   std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
-  bool, bool> entities_parser_tuple;
+             bool, bool> entities_parser_tuple;
   entities_parser_tuple = entity_parser->get_entities_map();
 
   bool syntactically_valid = std::get<1>(entities_parser_tuple);
@@ -153,7 +153,7 @@ TEST_CASE("InvalidEntityDeclaration_MissingSynonym_ReturnsNullptr") {
   entity_parser->set_entities(entities);
 
   std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
-  bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
+             bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
   std::unordered_map<std::string, EntityDeclaration *> *entities_map = std::get<0>(entities_parser_tuple);
   bool syntactically_valid = std::get<1>(entities_parser_tuple);
   bool semantically_valid = std::get<2>(entities_parser_tuple);
@@ -170,7 +170,7 @@ TEST_CASE("AddingEntitiesToMap_ExtraSpaceInEntityDeclaration_ReturnsEntitiesMap"
   entity_parser->set_entities(entities);
 
   std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
-  bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
+             bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
   std::unordered_map<std::string, EntityDeclaration *> *entities_map = std::get<0>(entities_parser_tuple);
   bool syntactically_valid = std::get<1>(entities_parser_tuple);
   bool semantically_valid = std::get<2>(entities_parser_tuple);
@@ -187,7 +187,7 @@ TEST_CASE("InvalidSynonym_MissingCommaBetweenMultipleDeclaration_ReturnsNullptr"
   entity_parser->set_entities(entities);
 
   std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
-  bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
+             bool, bool> entities_parser_tuple = entity_parser->get_entities_map();
   std::unordered_map<std::string, EntityDeclaration *> *entities_map = std::get<0>(entities_parser_tuple);
   bool syntactically_valid = std::get<1>(entities_parser_tuple);
   bool semantically_valid = std::get<2>(entities_parser_tuple);

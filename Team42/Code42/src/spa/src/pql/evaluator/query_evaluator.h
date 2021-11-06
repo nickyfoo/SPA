@@ -30,4 +30,4 @@ class QueryEvaluator {
                               ResultClause *result_clause,
                               ResultTable *other_result_table);
   void set_used_synonyms();
-  };
+};

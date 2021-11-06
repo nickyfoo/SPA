@@ -18,7 +18,7 @@ PQLQuery::PQLQuery(std::vector<ResultClause *> *return_entities,
 
 PQLQuery::~PQLQuery() = default;
 
-std::vector<ResultClause *> * PQLQuery::get_query_entities() {
+std::vector<ResultClause *> *PQLQuery::get_query_entities() {
   return this->entities_;
 }
 

@@ -39,7 +39,7 @@ void ResultTable::NaturalJoin(ResultTable &other_result_table) {
         index_to_erase.push_back(i);
       }
     }
-    for (int k = index_to_erase.size()-1; k >= 0; --k) {
+    for (int k = index_to_erase.size() - 1; k >= 0; --k) {
       table_->erase(table_->begin() + index_to_erase.at(k));
     }
   } else if (common_synonyms->size() == 1) {  // one common
@@ -54,7 +54,7 @@ void ResultTable::NaturalJoin(ResultTable &other_result_table) {
       auto *other_synonyms_to_index = other_result_table.get_synonym_to_index();
       for (auto &it : *other_synonyms_to_index) {
         if (std::find(synonyms_->begin(), synonyms_->end(), it.first)
-        == synonyms_->end()) {  // if item is new
+            == synonyms_->end()) {  // if item is new
           synonym_to_index_->insert({it.first, synonym_to_index_->size()});
           index_to_synonym_->insert({index_to_synonym_->size(), it.first});
           synonyms_->push_back(it.first);
@@ -86,8 +86,8 @@ void ResultTable::NaturalJoin(ResultTable &other_result_table) {
       delete table_;
       table_ = new_table;
     }
-    for (int k = index_to_erase.size()-1; k >= 0; --k) {
-      table_->erase(table_->begin()+index_to_erase.at(k));
+    for (int k = index_to_erase.size() - 1; k >= 0; --k) {
+      table_->erase(table_->begin() + index_to_erase.at(k));
     }
   } else if (common_synonyms->size() == 0) {  // happens for cases when no used synonyms in clause group
     CrossJoin(other_result_table, {});
@@ -141,7 +141,7 @@ std::vector<std::pair<std::string, int>> *ResultTable::GetCommonSynonyms(
     ResultTable &other_result_table) {
   auto ret = new std::vector<std::pair<std::string, int>>();
   auto *other_synonyms_to_index = other_result_table.get_synonym_to_index();
-  for (auto& it : *other_synonyms_to_index) {
+  for (auto &it : *other_synonyms_to_index) {
     if (synonym_to_index_->find(it.first) != synonym_to_index_->end()) {
       ret->push_back(std::make_pair(it.first, it.second));
     }

@@ -16,7 +16,7 @@ FollowsParentHandler *FollowsParentHandler::get_instance() {
 void FollowsParentHandler::set_args(PKB *pkb,
                                     std::shared_ptr<SuchThatClause> relationship,
                                     std::unordered_map<std::string,
-                                     std::vector<Entity *>> synonym_to_entities_vec) {
+                                                       std::vector<Entity *>> synonym_to_entities_vec) {
   this->pkb_ = pkb;
   this->relationship_ = relationship;
   this->synonym_to_entities_vec_ = synonym_to_entities_vec;
@@ -44,7 +44,7 @@ ResultTable *FollowsParentHandler::EvaluateParentT() {
 
 // if is nullpointer, means False
 // if is empty, means that True with no synonyms
-ResultTable* FollowsParentHandler::Evaluate(std::set<int> *(Statement::*get_normal)(),
+ResultTable *FollowsParentHandler::Evaluate(std::set<int> *(Statement::*get_normal)(),
                                             std::set<int> *(Statement::*get_reverse)()) {
   ResultTable *ret = new ResultTable();
   StmtRef left_ent = relationship_->get_left_ref()->get_stmt_ref();
@@ -122,7 +122,7 @@ ResultTable* FollowsParentHandler::Evaluate(std::set<int> *(Statement::*get_norm
         assert(stmt_left != nullptr && stmt_right != nullptr);
 
         if (stmt_left != nullptr && stmt_right != nullptr
-        && (stmt_left->*get_normal)()->count(stmt_right->get_stmt_no())) {
+            && (stmt_left->*get_normal)()->count(stmt_right->get_stmt_no())) {
           left_stmt_vec.push_back(std::to_string(stmt_left->get_stmt_no()));
           right_stmt_vec.push_back(std::to_string(stmt_right->get_stmt_no()));
         }

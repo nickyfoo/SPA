@@ -7,7 +7,7 @@ QueryPreprocessor::QueryPreprocessor(std::string input) {
   std::string select_clause;
   tie(entities, select_clause) = SplitEntitiesAndSelectClause(input);
   std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
-  bool, bool> entities_map;
+             bool, bool> entities_map;
   entities_map = MakeEntitiesMap(entities);
 
   // If entity declaration is syntactically invalid, return clauses straight
@@ -17,35 +17,35 @@ QueryPreprocessor::QueryPreprocessor(std::string input) {
     auto *pattern_ret = new std::vector<PatternClause *>();
     auto *with_ret = new std::vector<WithClause *>();
     auto *false_res = new std::tuple<std::vector<ResultClause *> *,
-    std::vector<SuchThatClause *> *,
-    std::vector<PatternClause *> *,
-    std::vector<WithClause *> *,
-    std::unordered_map<std::string, EntityDeclaration *> *,
-    bool, bool>(
+                                     std::vector<SuchThatClause *> *,
+                                     std::vector<PatternClause *> *,
+                                     std::vector<WithClause *> *,
+                                     std::unordered_map<std::string, EntityDeclaration *> *,
+                                     bool, bool>(
         select_ret, such_that_ret,
         pattern_ret, with_ret, std::get<0>(entities_map), false, false);
     this->clauses_ = false_res;
     return;
   }
   std::tuple<std::vector<ResultClause *> *,
-  std::vector<SuchThatClause *> *,
-  std::vector<PatternClause *> *,
-  std::vector<WithClause *> *,
-  std::unordered_map<std::string, EntityDeclaration *> *,
-  bool, bool> *clauses = MakeClauses(std::get<2>(entities_map),
-      std::get<0>(entities_map),
-          select_clause);
+             std::vector<SuchThatClause *> *,
+             std::vector<PatternClause *> *,
+             std::vector<WithClause *> *,
+             std::unordered_map<std::string, EntityDeclaration *> *,
+             bool, bool> *clauses = MakeClauses(std::get<2>(entities_map),
+                                                std::get<0>(entities_map),
+                                                select_clause);
   this->clauses_ = clauses;
 }
 
 QueryPreprocessor::~QueryPreprocessor() = default;
 
 std::tuple<std::vector<ResultClause *> *,
-std::vector<SuchThatClause *> *,
-std::vector<PatternClause *> *,
-std::vector<WithClause *> *,
-std::unordered_map<std::string, EntityDeclaration *> *,
-bool, bool> *QueryPreprocessor::get_clauses() {
+           std::vector<SuchThatClause *> *,
+           std::vector<PatternClause *> *,
+           std::vector<WithClause *> *,
+           std::unordered_map<std::string, EntityDeclaration *> *,
+           bool, bool> *QueryPreprocessor::get_clauses() {
   return this->clauses_;
 }
 
@@ -65,7 +65,7 @@ QueryPreprocessor::SplitEntitiesAndSelectClause(std::string input) {
 }
 
 std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
-bool, bool> QueryPreprocessor::MakeEntitiesMap(
+           bool, bool> QueryPreprocessor::MakeEntitiesMap(
     std::vector<std::string> *entities) {
   EntityDeclarationParser *ep = EntityDeclarationParser::get_instance();
   ep->set_entities(entities);
@@ -73,14 +73,14 @@ bool, bool> QueryPreprocessor::MakeEntitiesMap(
 }
 
 std::tuple<std::vector<ResultClause *> *,
-std::vector<SuchThatClause *> *,
-std::vector<PatternClause *> *,
-std::vector<WithClause *> *,
-std::unordered_map<std::string, EntityDeclaration *> *,
-bool, bool> *QueryPreprocessor::MakeClauses(bool semantically_valid,
-                                            std::unordered_map<std::string,
-                                                             EntityDeclaration *> *entities_map,
-                                          const std::string &select_clause) {
+           std::vector<SuchThatClause *> *,
+           std::vector<PatternClause *> *,
+           std::vector<WithClause *> *,
+           std::unordered_map<std::string, EntityDeclaration *> *,
+           bool, bool> *QueryPreprocessor::MakeClauses(bool semantically_valid,
+                                                       std::unordered_map<std::string,
+                                                                          EntityDeclaration *> *entities_map,
+                                                       const std::string &select_clause) {
   SelectClauseParser *scp = SelectClauseParser::get_instance();
   scp->set_select_clause(semantically_valid, entities_map, select_clause);
   std::tuple<std::vector<ResultClause *> *,

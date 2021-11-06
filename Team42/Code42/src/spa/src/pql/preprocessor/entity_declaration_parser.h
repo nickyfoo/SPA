@@ -28,5 +28,5 @@ class EntityDeclarationParser {
   static EntityDeclarationParser *get_instance();
   void set_entities(std::vector<std::string> *entities);
   std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
-  bool, bool> get_entities_map();
+             bool, bool> get_entities_map();
 };

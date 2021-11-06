@@ -18,7 +18,7 @@ void EntityDeclarationParser::set_entities(std::vector<std::string> *entities) {
 }
 
 std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
-bool, bool> EntityDeclarationParser::get_entities_map() {
+           bool, bool> EntityDeclarationParser::get_entities_map() {
   auto *entities_map =
       new std::unordered_map<std::string, EntityDeclaration *>;
   for (std::string entity_str : *entity_declaration_strings_) {
@@ -40,7 +40,7 @@ bool, bool> EntityDeclarationParser::get_entities_map() {
     auto *synonyms = new std::vector<std::string>();
     EntityType entity_type = CheckEntityType(entity);
     if (entity_type == EntityType::None ||
-    !IsValidSynonym(tokens, synonyms)) {
+        !IsValidSynonym(tokens, synonyms)) {
       // Invalid synonym or entity type means its syntactically invalid;
       syntactically_valid_ = false;
       break;

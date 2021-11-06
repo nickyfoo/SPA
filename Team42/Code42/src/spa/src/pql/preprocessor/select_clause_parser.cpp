@@ -718,6 +718,7 @@ SelectClauseParser::SplitClauses(const std::string &input) {
   std::vector<std::string> such_that_clauses;
   std::vector<std::string> pattern_clauses;
   std::vector<std::string> with_clauses;
+  auto false_res = make_tuple("", such_that_clauses, pattern_clauses, with_clauses);
 
   size_t pos;
   std::string token;
@@ -758,14 +759,14 @@ SelectClauseParser::SplitClauses(const std::string &input) {
       }
       ss << c;
       if (open_bracket_found) {  // additional open brackets found
-        return make_tuple(select_clause, such_that_clauses, pattern_clauses, with_clauses);
+        return false_res;
       }
       open_bracket_found = true;
       whitespace_found = true;
     } else if (c == ')' || c == '>') {
       ss << c;
       if (!open_bracket_found) {  // additional close brackets found
-        return make_tuple(select_clause, such_that_clauses, pattern_clauses, with_clauses);
+        return false_res;
       }
       open_bracket_found = false;
       whitespace_found = false;
@@ -776,7 +777,7 @@ SelectClauseParser::SplitClauses(const std::string &input) {
         prev_word_stream << c;
         std::string check_for_such_that = prev_word_stream.str();
         if (check_for_such_that == "such  that") {  // extra spaces between such that clause
-          return make_tuple(select_clause, such_that_clauses, pattern_clauses, with_clauses);
+          return false_res;
         }
       }
     }
@@ -814,25 +815,28 @@ SelectClauseParser::SplitClauses(const std::string &input) {
       if (prev_word_stream.str() == "such") {
         prev_word_stream << " ";
       } else if (prev_word_stream.str() == "such that" || prev_word_stream.str() == "pattern"
-          || prev_word_stream.str() == "with") {
+          || prev_word_stream.str() == "with" || prev_word_stream.str() == "and") {
         if (last_found_such_that) {
           such_that_clauses.push_back(ss.str());
         } else if (last_found_pattern) {
           pattern_clauses.push_back(ss.str());
         } else if (last_found_with) {
           with_clauses.push_back(ss.str());
+        } else if (prev_word_stream.str() == "and") {  // and seen before any clause keywords
+          return false_res;
         } else if (ss.str() != " ") { // if there is a term before the first clause keyword, error
-          select_clause = "";
-          return make_tuple(select_clause, such_that_clauses, pattern_clauses, with_clauses);
+          return false_res;
         }
 
-        last_found_such_that = false;
-        last_found_pattern = false;
-        last_found_with = false;
+        if (prev_word_stream.str() != "and") {
+          last_found_such_that = false;
+          last_found_pattern = false;
+          last_found_with = false;
 
-        if (prev_word_stream.str() == "such that") last_found_such_that = true;
-        else if (prev_word_stream.str() == "pattern") last_found_pattern = true;
-        else if (prev_word_stream.str() == "with") last_found_with = true;
+          if (prev_word_stream.str() == "such that") last_found_such_that = true;
+          else if (prev_word_stream.str() == "pattern") last_found_pattern = true;
+          else if (prev_word_stream.str() == "with") last_found_with = true;
+        }
 
         prev_word_stream.str("");
         ss.str("");

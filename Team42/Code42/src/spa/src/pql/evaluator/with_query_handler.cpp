@@ -1,11 +1,11 @@
-#include "with_query_manager.h"
+#include "with_query_handler.h"
 
-WithQueryManager::WithQueryManager() {
+WithQueryHandler::WithQueryHandler() {
 }
 
-WithQueryManager::~WithQueryManager() = default;
+WithQueryHandler::~WithQueryHandler() = default;
 
-ResultTable *WithQueryManager::EvaluateWith(std::shared_ptr<WithClause> with,
+ResultTable *WithQueryHandler::EvaluateWith(std::shared_ptr<WithClause> with,
                                             std::unordered_map<std::string,
                                                                std::vector<Entity *>> synonym_to_entities_vec) {
   ResultTable *ret = new ResultTable();
@@ -62,7 +62,7 @@ ResultTable *WithQueryManager::EvaluateWith(std::shared_ptr<WithClause> with,
 }
 
 // checks for matching name, but adds the default type to table
-std::vector<std::string> WithQueryManager::GetNames(std::string synonym,
+std::vector<std::string> WithQueryHandler::GetNames(std::string synonym,
                                                     EntityType type,
                                                     std::string argument,
                                                     std::unordered_map<std::string,
@@ -117,7 +117,7 @@ std::vector<std::string> WithQueryManager::GetNames(std::string synonym,
   return output;
 }
 
-std::vector<std::string> WithQueryManager::GetIntegers(std::string synonym,
+std::vector<std::string> WithQueryHandler::GetIntegers(std::string synonym,
                                                        EntityType type,
                                                        std::string argument,
                                                        std::unordered_map<
@@ -154,7 +154,7 @@ std::vector<std::string> WithQueryManager::GetIntegers(std::string synonym,
   return output;
 }
 
-std::tuple<std::vector<std::string>, std::vector<std::string>> WithQueryManager::GetSynonymPairs(
+std::tuple<std::vector<std::string>, std::vector<std::string>> WithQueryHandler::GetSynonymPairs(
     std::shared_ptr<WithClause> with,
     std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec) {
   std::vector<std::string> left_synonym;

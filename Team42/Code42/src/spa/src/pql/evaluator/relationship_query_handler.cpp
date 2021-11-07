@@ -3,18 +3,18 @@
 #include "follows_parent_handler.h"
 #include "next_handler.h"
 #include "procedure.h"
-#include "relationship_query_manager.h"
+#include "relationship_query_handler.h"
 #include "statement.h"
 #include "usesp_modifiesp_handler.h"
 #include "usess_modifiess_handler.h"
 #include "variable.h"
 #include "affects_handler.h"
 
-RelationshipQueryManager::RelationshipQueryManager(PKB *pkb) { this->pkb_ = pkb; }
+RelationshipQueryHandler::RelationshipQueryHandler(PKB *pkb) { this->pkb_ = pkb; }
 
-RelationshipQueryManager::~RelationshipQueryManager() = default;
+RelationshipQueryHandler::~RelationshipQueryHandler() = default;
 
-ResultTable *RelationshipQueryManager::EvaluateRelationship(
+ResultTable *RelationshipQueryHandler::EvaluateRelationship(
     std::shared_ptr<SuchThatClause> relationship,
     std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec) {
   // Iterating through relationships_ and evaluating one by one.

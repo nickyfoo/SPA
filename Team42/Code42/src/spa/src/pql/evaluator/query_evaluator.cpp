@@ -4,9 +4,9 @@
 #include "statement.h"
 #include "procedure.h"
 #include "variable.h"
-#include "pattern_query_manager.h"
-#include "relationship_query_manager.h"
-#include "with_query_manager.h"
+#include "pattern_query_handler.h"
+#include "relationship_query_handler.h"
+#include "with_query_handler.h"
 #include "pql_query.h"
 #include "pkb.h"
 
@@ -41,13 +41,13 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
     }
     return new std::vector<std::string>{};
   }
-  RelationshipQueryManager *relationship_query_manager;
-  PatternQueryManager *pattern_query_manager;
-  WithQueryManager *with_query_manager;
+  RelationshipQueryHandler *relationship_query_manager;
+  PatternQueryHandler *pattern_query_manager;
+  WithQueryHandler *with_query_manager;
   ResultTable *result_table = new ResultTable();
-  relationship_query_manager = new RelationshipQueryManager(pkb_);
-  pattern_query_manager = new PatternQueryManager(pkb_);
-  with_query_manager = new WithQueryManager();
+  relationship_query_manager = new RelationshipQueryHandler(pkb_);
+  pattern_query_manager = new PatternQueryHandler(pkb_);
+  with_query_manager = new WithQueryHandler();
 
   // guaranteed to have at least 3 clause groups,
   // where first group is without synonyms,

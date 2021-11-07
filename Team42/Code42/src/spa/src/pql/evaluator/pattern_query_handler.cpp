@@ -1,16 +1,16 @@
-#include "pattern_query_manager.h"
+#include "pattern_query_handler.h"
 #include "entity_declaration.h"
 #include "statement.h"
 #include <memory>
 #include <set>
 
-PatternQueryManager::PatternQueryManager(PKB *pkb) {
+PatternQueryHandler::PatternQueryHandler(PKB *pkb) {
   this->pkb_ = pkb;
 }
 
-PatternQueryManager::~PatternQueryManager() = default;
+PatternQueryHandler::~PatternQueryHandler() = default;
 
-ResultTable *PatternQueryManager::EvaluatePattern(std::shared_ptr<PatternClause> pattern,
+ResultTable *PatternQueryHandler::EvaluatePattern(std::shared_ptr<PatternClause> pattern,
                                                   const std::unordered_map<std::string,
                                                                            std::vector<Entity *>> &synonym_to_entities_vec) {
   if (pattern->get_type() == EntityType::Assign) {
@@ -22,7 +22,7 @@ ResultTable *PatternQueryManager::EvaluatePattern(std::shared_ptr<PatternClause>
   }
 }
 
-ResultTable *PatternQueryManager::EvaluateAssignPattern(
+ResultTable *PatternQueryHandler::EvaluateAssignPattern(
     std::shared_ptr<PatternClause> pattern, std::unordered_map<std::string,
                                                                std::vector<Entity *>> synonym_to_entities_vec) {
   auto *ret = new ResultTable();
@@ -79,7 +79,7 @@ ResultTable *PatternQueryManager::EvaluateAssignPattern(
   return ret;
 }
 
-ResultTable *PatternQueryManager::EvaluateIfAndWhilePattern(
+ResultTable *PatternQueryHandler::EvaluateIfAndWhilePattern(
     std::shared_ptr<PatternClause> pattern, std::unordered_map<std::string,
                                                                std::vector<Entity *>> synonym_to_entities_vec) {
   auto *ret = new ResultTable();

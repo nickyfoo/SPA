@@ -11,10 +11,10 @@
 #include "entity.hpp"
 #include "result_table.h"
 
-class PatternQueryManager {
+class PatternQueryHandler {
  public:
-  explicit PatternQueryManager(PKB *pkb);
-  ~PatternQueryManager();
+  explicit PatternQueryHandler(PKB *pkb);
+  ~PatternQueryHandler();
   ResultTable *EvaluatePattern(std::shared_ptr<PatternClause> pattern,
                                const std::unordered_map<std::string,
                                                         std::vector<Entity *>> &synonym_to_entities_vec);

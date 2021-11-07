@@ -14,10 +14,10 @@
 #include "unordered_map"
 #include "with_clause.h"
 
-class WithQueryManager {
+class WithQueryHandler {
  public:
-  WithQueryManager();
-  ~WithQueryManager();
+  WithQueryHandler();
+  ~WithQueryHandler();
   ResultTable *EvaluateWith(
       std::shared_ptr<WithClause> with,
       std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec);

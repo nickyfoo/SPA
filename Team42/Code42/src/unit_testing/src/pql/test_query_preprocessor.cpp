@@ -2738,7 +2738,7 @@ TEST_CASE("Select_InvalidAttr_ReturnsCorrect") {
              std::vector<WithClause *> *,
              std::unordered_map<std::string, EntityDeclaration *> *,
              bool, bool> *clause = query.get_clauses();
-  REQUIRE(std::get<5>(*clause) == false);
+  REQUIRE(std::get<5>(*clause) == true);
   REQUIRE(std::get<6>(*clause) == false);
 }
 

@@ -403,7 +403,7 @@ TEST_CASE("GroupingWith_ClausesWithNoSynonyms_AddsOnlyToNoSynGroup") {
     std::string ss = "assign a;\n"
                      "Select a with 2 = 3";
     auto *with = new WithClause("2", EntityType::None, AttrValueType::Integer,
-                                      "3", EntityType::None, AttrValueType::Integer);
+                                "3", EntityType::None, AttrValueType::Integer);
 
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
@@ -429,11 +429,11 @@ TEST_CASE("GroupingWith_ClausesWithNoSynonyms_AddsOnlyToNoSynGroup") {
     std::string ss = "variable v; assign a;\n"
                      "Select a with 3 = 3 and 2 = 4 and 5 = 5";
     auto *with1 = new WithClause("3", EntityType::None, AttrValueType::Integer,
-                                       "3", EntityType::None, AttrValueType::Integer);
+                                 "3", EntityType::None, AttrValueType::Integer);
     auto *with2 = new WithClause("2", EntityType::None, AttrValueType::Integer,
-                                       "4", EntityType::None, AttrValueType::Integer);
+                                 "4", EntityType::None, AttrValueType::Integer);
     auto *with3 = new WithClause("5", EntityType::None, AttrValueType::Integer,
-                                       "5", EntityType::None, AttrValueType::Integer);
+                                 "5", EntityType::None, AttrValueType::Integer);
 
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
@@ -463,7 +463,7 @@ TEST_CASE("GroupingWith_ClausesWithNoReturnSynonyms_AddsOnlyToNoReturnSynGroup")
     std::string ss = "assign a; stmt s1;\n"
                      "Select a with 2 = s1.stmt#";
     auto *with = new WithClause("2", EntityType::None, AttrValueType::Integer,
-                                      "s1", EntityType::Stmt, AttrValueType::Integer);
+                                "s1", EntityType::Stmt, AttrValueType::Integer);
 
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
@@ -489,11 +489,11 @@ TEST_CASE("GroupingWith_ClausesWithNoReturnSynonyms_AddsOnlyToNoReturnSynGroup")
     std::string ss = "variable v; assign a;\n"
                      "Select BOOLEAN with 3 = a.stmt# and v.varName = 'x' and a.stmt# = 5";
     auto *with1 = new WithClause("3", EntityType::None, AttrValueType::Integer,
-                                       "a", EntityType::Stmt, AttrValueType::Integer);
+                                 "a", EntityType::Stmt, AttrValueType::Integer);
     auto *with2 = new WithClause("v", EntityType::Variable, AttrValueType::Name,
-                                       "x", EntityType::None, AttrValueType::Name);
+                                 "x", EntityType::None, AttrValueType::Name);
     auto *with3 = new WithClause("a", EntityType::Assign, AttrValueType::Integer,
-                                       "5", EntityType::None, AttrValueType::Integer);
+                                 "5", EntityType::None, AttrValueType::Integer);
 
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
@@ -523,7 +523,7 @@ TEST_CASE("GroupingWith_ClausesWithReturnSynonyms_AddsOnlyToReturnSynGroup") {
     std::string ss = "assign a; stmt s1;\n"
                      "Select s1 with a.stmt# = s1.stmt#";
     auto *with = new WithClause("a", EntityType::Assign, AttrValueType::Integer,
-                                      "s1", EntityType::Stmt, AttrValueType::Integer);
+                                "s1", EntityType::Stmt, AttrValueType::Integer);
 
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
@@ -549,11 +549,11 @@ TEST_CASE("GroupingWith_ClausesWithReturnSynonyms_AddsOnlyToReturnSynGroup") {
     std::string ss = "assign a, a2;\n"
                      "Select <a, a2> with 3 = a.stmt# and a.stmt# = a2.stmt# and a.stmt# = 5";
     auto *with1 = new WithClause("3", EntityType::None, AttrValueType::Integer,
-                                       "a", EntityType::Stmt, AttrValueType::Integer);
+                                 "a", EntityType::Stmt, AttrValueType::Integer);
     auto *with2 = new WithClause("a", EntityType::Stmt, AttrValueType::Integer,
-                                       "a2", EntityType::Stmt, AttrValueType::Integer);
+                                 "a2", EntityType::Stmt, AttrValueType::Integer);
     auto *with3 = new WithClause("a", EntityType::Assign, AttrValueType::Integer,
-                                       "5", EntityType::None, AttrValueType::Integer);
+                                 "5", EntityType::None, AttrValueType::Integer);
 
     auto *such_that_clauses = new std::vector<SuchThatClause *>();
     auto *pattern_clauses = new std::vector<PatternClause *>();
@@ -586,7 +586,7 @@ TEST_CASE("GroupingNoReturnButConnected_ClausesWithSynonyms_AddsToReturnSynGroup
     std::string ss = "assign a; stmt s1, s2;\n"
                      "Select s1 with a.stmt# = s1.stmt# such that Follows(a, s2)";
     auto *with = new WithClause("a", EntityType::Assign, AttrValueType::Integer,
-                                      "s1", EntityType::Stmt, AttrValueType::Integer);
+                                "s1", EntityType::Stmt, AttrValueType::Integer);
 
     auto *follows = new SuchThatClause("Follows");
     StmtRef left_stmt_ref = StmtRef();
@@ -622,7 +622,7 @@ TEST_CASE("GroupingNoReturnButConnected_ClausesWithSynonyms_AddsToReturnSynGroup
     std::string ss = "assign a; variable v; stmt s1, s2;\n"
                      "Select s1 such that Follows(a, s1) pattern a(v, _) with 3 = s2.stmt#";
     auto *with = new WithClause("3", EntityType::None, AttrValueType::Integer,
-                                      "s2", EntityType::Stmt, AttrValueType::Integer);
+                                "s2", EntityType::Stmt, AttrValueType::Integer);
 
     auto *follows = new SuchThatClause("Follows");
     StmtRef left_stmt_ref = StmtRef();
@@ -667,7 +667,7 @@ TEST_CASE("SortingWithinGroup_SortingHasReturnSynonymGroup_AddsOnlyToReturnSynGr
     std::string ss = "assign a; stmt s1;\n"
                      "Select s1 such that Follows(s1, 4) with a.stmt# = s1.stmt#";
     auto *with = new WithClause("a", EntityType::Assign, AttrValueType::Integer,
-                                      "s1", EntityType::Stmt, AttrValueType::Integer);
+                                "s1", EntityType::Stmt, AttrValueType::Integer);
 
     auto *follows = new SuchThatClause("Follows");
     StmtRef left_stmt_ref = StmtRef();
@@ -705,7 +705,7 @@ TEST_CASE("SortingWithinGroup_SortingHasReturnSynonymGroup_AddsOnlyToReturnSynGr
     std::string ss = "assign a; stmt s1;\n"
                      "Select <s1, a> such that Parent*(4, a) and Follows(s1, 4) with a.stmt# = s1.stmt#";
     auto *with = new WithClause("a", EntityType::Assign, AttrValueType::Integer,
-                                      "s1", EntityType::Stmt, AttrValueType::Integer);
+                                "s1", EntityType::Stmt, AttrValueType::Integer);
 
     auto *follows = new SuchThatClause("Follows");
     StmtRef left_stmt_ref = StmtRef();
@@ -757,7 +757,7 @@ TEST_CASE("SortingWithinGroup_SortingHasReturnSynonymGroup_AddsOnlyToReturnSynGr
     std::string ss = "assign a; stmt s1; variable v;\n"
                      "Select <s1, a> such that Parent*(s1, a) and Follows(s1, 4) with a.stmt# = s1.stmt# pattern a(v, _)";
     auto *with = new WithClause("a", EntityType::Assign, AttrValueType::Integer,
-                                      "s1", EntityType::Stmt, AttrValueType::Integer);
+                                "s1", EntityType::Stmt, AttrValueType::Integer);
 
     auto *follows = new SuchThatClause("Follows");
     StmtRef left_stmt_ref = StmtRef();
@@ -819,7 +819,7 @@ TEST_CASE("SortingWithinGroup_SortingHasReturnSynonymGroup_AddsOnlyToReturnSynGr
     std::string ss = "assign a, a1; stmt s1;\n"
                      "Select <s1, a> such that Follows(s1, a) and Affects(a, a1) and Parent*(s1, 3) with a.stmt# = 3 pattern a1(_, 'x')";
     auto *with = new WithClause("a", EntityType::Assign, AttrValueType::Integer,
-                                      "3", EntityType::None, AttrValueType::Integer);
+                                "3", EntityType::None, AttrValueType::Integer);
 
     auto *follows = new SuchThatClause("Follows");
     StmtRef left_stmt_ref = StmtRef();
@@ -898,7 +898,7 @@ TEST_CASE("SortingWithinGroup_SortingNoReturnSynonymGroup_AddsOnlyToNoReturnSynG
     std::string ss = "assign a; stmt s1;\n"
                      "Select s1 such that Follows(a, 4) with a.stmt# = 4";
     auto *with = new WithClause("a", EntityType::Assign, AttrValueType::Integer,
-                                      "4", EntityType::None, AttrValueType::Integer);
+                                "4", EntityType::None, AttrValueType::Integer);
 
     auto *follows = new SuchThatClause("Follows");
     StmtRef left_stmt_ref = StmtRef();
@@ -934,7 +934,7 @@ TEST_CASE("SortingWithinGroup_SortingNoReturnSynonymGroup_AddsOnlyToNoReturnSynG
     std::string ss = "assign a; stmt s1, s2;\n"
                      "Select s2 such that Parent*(4, a) and Follows(s1, 4) with a.stmt# = s1.stmt#";
     auto *with = new WithClause("a", EntityType::Assign, AttrValueType::Integer,
-                                      "s1", EntityType::Stmt, AttrValueType::Integer);
+                                "s1", EntityType::Stmt, AttrValueType::Integer);
 
     auto *follows = new SuchThatClause("Follows");
     StmtRef left_stmt_ref = StmtRef();
@@ -981,7 +981,7 @@ TEST_CASE("SortingWithinGroup_SortingNoReturnSynonymGroup_AddsOnlyToNoReturnSynG
                      "Select s2 such that Parent*(s1, a) and Follows(s1, 4) "
                      "with a.stmt# = s1.stmt# pattern a(v, _)";
     auto *with = new WithClause("a", EntityType::Assign, AttrValueType::Integer,
-                                      "s1", EntityType::Stmt, AttrValueType::Integer);
+                                "s1", EntityType::Stmt, AttrValueType::Integer);
 
     auto *follows = new SuchThatClause("Follows");
     StmtRef left_stmt_ref = StmtRef();
@@ -1036,7 +1036,7 @@ TEST_CASE("DefaultGrouping_NoOptimization_AddsOnlyToLastGroup") {
                      "Select s1 such that Follows(s1, 4) "
                      "with 2 = 3 pattern a(v, _)";
     auto *with = new WithClause("2", EntityType::None, AttrValueType::Integer,
-                                      "3", EntityType::None, AttrValueType::Integer);
+                                "3", EntityType::None, AttrValueType::Integer);
 
     auto *follows = new SuchThatClause("Follows");
     StmtRef left_stmt_ref = StmtRef();

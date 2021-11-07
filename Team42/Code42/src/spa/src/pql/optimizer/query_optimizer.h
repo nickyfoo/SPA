@@ -42,4 +42,9 @@ class QueryOptimizer {
                            std::unordered_map<int, bool> *has_visited_clause,
                            std::string curr_syn);
   bool ReturnEntitiesContainSynonym(std::string s);
+  std::vector<std::shared_ptr<ClauseGroup>> MakeClauseGroupings(
+      std::unordered_map<std::string, std::vector<ClauseVertex>> *vertices_to_iterate,
+      std::unordered_map<std::string, std::vector<ClauseVertex>> *syn_to_clause,
+      std::unordered_map<std::string, bool> *has_visited_syn,
+      std::unordered_map<int, bool> *has_visited_clause);
 };

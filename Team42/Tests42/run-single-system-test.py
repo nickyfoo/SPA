@@ -2,7 +2,7 @@ import subprocess
 import sys
 
 files = [
-    "testing"
+    "iter3_system_test_1"
 ]
 
 for file in files:

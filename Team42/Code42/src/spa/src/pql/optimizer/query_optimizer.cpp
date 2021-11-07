@@ -1,10 +1,8 @@
 #include <algorithm>
 
 #include "query_optimizer.h"
-#include <algorithm>
 #include <iterator>
 
-int count = 0;
 QueryOptimizer::QueryOptimizer(std::vector<SuchThatClause *> *relationships,
                                std::vector<PatternClause *> *patterns,
                                std::vector<WithClause *> *withs,
@@ -13,6 +11,7 @@ QueryOptimizer::QueryOptimizer(std::vector<SuchThatClause *> *relationships,
   this->patterns_ = patterns;
   this->withs_ = withs;
   this->return_entities_ = return_entities;
+  this->count_ = 0;
 }
 
 // Optimizer is "off" and will create 3 groups with only the last group filled.
@@ -101,48 +100,6 @@ std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateOptimizedGroupin
     }
   }
 
-  // iterate through return synonyms and run dfs to group clauses based on connected synonyms.
-//  for (auto pair : return_syn_to_clause) {
-//    if (!has_visited_syn->at(pair.first)) {
-//      // run dfs if synonym has not been visited
-//      ClauseGroup *has_return_syn_group = new ClauseGroup();
-//      FindConnectedGroups(has_return_syn_group,
-//                          syn_to_clause,
-//                          has_visited_syn,
-//                          has_visited_clause,
-//                          pair.first);
-//      for (std::string syn_used : has_return_syn_group->get_syn_used()) {
-//        // Remove synonyms used from syn_to_clause if they are connected to return syns
-//        syn_to_clause.erase(syn_to_clause.find(syn_used));
-//      }
-//      has_return_syn_group->SortWithinGroup();
-//      std::shared_ptr<ClauseGroup> connected_syn_group_ptr =
-//          std::make_shared<ClauseGroup>(*has_return_syn_group);
-//      return_syn_clause_groupings.push_back(connected_syn_group_ptr);
-//    }
-//  }
-//  // Create and add group with no return synonyms
-//  //  clause_groupings.push_back(MakeNoReturnSynGroup(syn_to_clause, has_visited_clause));
-//  for (auto pair : syn_to_clause) {
-//    if (!has_visited_syn->at(pair.first)) {
-//      // run dfs if synonym has not been visited
-//      ClauseGroup *no_return_syn_group = new ClauseGroup();
-//      FindConnectedGroups(no_return_syn_group,
-//                          syn_to_clause,
-//                          has_visited_syn,
-//                          has_visited_clause,
-//                          pair.first);
-//      for (std::string syn_used : no_return_syn_group->get_syn_used()) {
-//        // Remove synonyms used from syn_to_clause if they are connected to return syns
-//        syn_to_clause.erase(syn_to_clause.find(syn_used));
-//      }
-//      no_return_syn_group->SortWithinGroup();
-//      std::shared_ptr<ClauseGroup> connected_syn_group_ptr =
-//          std::make_shared<ClauseGroup>(*no_return_syn_group);
-//      no_return_syn_clause_groupings.push_back(connected_syn_group_ptr);
-//    }
-//  }
-
   // Create vector of ClauseGroups for return syn and no return syns.
   std::vector<std::shared_ptr<ClauseGroup>> return_syn_clause_groupings =
       MakeClauseGroupings(&return_syn_to_clause, &syn_to_clause, has_visited_syn, has_visited_clause);
@@ -154,17 +111,7 @@ std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::CreateOptimizedGroupin
                           no_return_syn_clause_groupings.end());
   clause_groupings.insert(clause_groupings.end(), return_syn_clause_groupings.begin(),
                           return_syn_clause_groupings.end());
-  // If there are no clauses with return synonym, add an empty group to the vector.
-//  if (has_return_syn_used.empty()) {
-//    auto has_return_syn_group = ClauseGroup();
-//    std::shared_ptr<ClauseGroup> has_return_syn_group_ptr =
-//        std::make_shared<ClauseGroup>(has_return_syn_group);
-//    clause_groupings.push_back(has_return_syn_group_ptr);
-//  } else {
-//    // Add rest of groups with connected return synonyms
-//    clause_groupings.insert(clause_groupings.end(), return_syn_clause_groupings.begin(),
-//                            return_syn_clause_groupings.end());
-//  }
+
   return clause_groupings;
 }
 
@@ -184,10 +131,7 @@ std::vector<std::shared_ptr<ClauseGroup>> QueryOptimizer::MakeClauseGroupings(
                           has_visited_syn,
                           has_visited_clause,
                           pair.first);
-//      for (std::string syn_used : group->get_syn_used()) {
-//        // Remove synonyms used from syn_to_clause if they are connected to return syns
-//        syn_to_clause->erase(syn_to_clause->find(syn_used));
-//      }
+
       group->SortWithinGroup();
       std::shared_ptr<ClauseGroup> connected_syn_group_ptr =
           std::make_shared<ClauseGroup>(*group);
@@ -314,29 +258,6 @@ int QueryOptimizer::AssignPriority(std::vector<std::string> synonyms_used,
   }
 }
 
-std::shared_ptr<ClauseGroup> QueryOptimizer::MakeNoReturnSynGroup(
-    std::unordered_map<std::string, std::vector<ClauseVertex>> syn_to_clause,
-    std::unordered_map<int, bool> *has_visited_clause) {
-  // Constructs vector of clauses with no return synonym used and creates a group.
-  std::vector<ClauseVertex> no_return_syn_used;
-  for (auto pair : syn_to_clause) {
-    for (ClauseVertex clause_vertex : pair.second) {
-      // Adding clause vertex to no return syn if it hasn't been added before
-      if (!has_visited_clause->at(clause_vertex.get_id())) {
-        no_return_syn_used.push_back(clause_vertex);
-        has_visited_clause->at(clause_vertex.get_id()) = true;
-      }
-    }
-  }
-  ClauseGroup clause_group = ClauseGroup();
-  clause_group.set_clauses(no_return_syn_used);
-//  clause_group.SortWithinGroup();
-  std::shared_ptr<ClauseGroup> no_syn_group_ptr = std::make_shared<ClauseGroup>(clause_group);
-  return no_syn_group_ptr;
-}
-
-
-
 std::vector<ClauseVertex> QueryOptimizer::MakeSuchThatVertices(std::vector<SuchThatClause *> *such_that_clauses) {
   // Iterating through such that clauses to build a vector of clause vertices.
   std::vector<ClauseVertex> clause_vertices;
@@ -392,8 +313,8 @@ std::vector<ClauseVertex> QueryOptimizer::MakeSuchThatVertices(std::vector<SuchT
     // Creating clause vertex and assigning priority to it.
     ClauseVertex clause_vertex = ClauseVertex(synonyms_used, has_return_syn, clause_ptr);
     clause_vertex.set_priority(AssignPriority(synonyms_used, clause_ptr));
-    clause_vertex.set_id(count);
-    count++;
+    clause_vertex.set_id(count_);
+    count_++;
     clause_vertices.push_back(clause_vertex);
   }
   return clause_vertices;
@@ -431,8 +352,8 @@ std::vector<ClauseVertex> QueryOptimizer::MakePatternVertices(std::vector<Patter
     // Creating clause vertex and assigning priority to it.
     ClauseVertex clause_vertex = ClauseVertex(synonyms_used, has_return_syn, clause_ptr);
     clause_vertex.set_priority(AssignPriority(synonyms_used, clause_ptr));
-    clause_vertex.set_id(count);
-    count++;
+    clause_vertex.set_id(count_);
+    count_++;
     clause_vertices.push_back(clause_vertex);
   }
 
@@ -469,8 +390,8 @@ std::vector<ClauseVertex> QueryOptimizer::MakeWithVertices(std::vector<WithClaus
     // Creating clause vertex and assigning priority to it.
     ClauseVertex clause_vertex = ClauseVertex(synonyms_used, has_return_syn, clause_ptr);
     clause_vertex.set_priority(AssignPriority(synonyms_used, clause_ptr));
-    clause_vertex.set_id(count);
-    count++;
+    clause_vertex.set_id(count_);
+    count_++;
     clause_vertices.push_back(clause_vertex);
   }
 

@@ -25,15 +25,13 @@ class QueryOptimizer {
   std::vector<PatternClause *> *patterns_;
   std::vector<WithClause *> *withs_;
   std::vector<ResultClause *> *return_entities_;
+  int count_;
   std::vector<ClauseVertex> MakeSuchThatVertices(std::vector<SuchThatClause *> *such_that_clauses);
   std::vector<ClauseVertex> MakePatternVertices(std::vector<PatternClause *> *pattern_clauses);
   std::vector<ClauseVertex> MakeWithVertices(std::vector<WithClause *> *with_clauses);
   std::vector<ClauseVertex> CombineAllVertices(std::vector<ClauseVertex> such_that_vertices,
                                                std::vector<ClauseVertex> pattern_vertices,
                                                std::vector<ClauseVertex> with_vertices);
-  std::shared_ptr<ClauseGroup> MakeNoReturnSynGroup(
-      std::unordered_map<std::string, std::vector<ClauseVertex>> syn_to_clause,
-      std::unordered_map<int, bool> *has_visited_clause);
   int AssignPriority(std::vector<std::string> synonyms_used,
                      std::shared_ptr<Clause> clause);
   void FindConnectedGroups(ClauseGroup *clause_group,

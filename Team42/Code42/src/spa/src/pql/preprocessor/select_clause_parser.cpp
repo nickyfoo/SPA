@@ -85,6 +85,7 @@ SelectClauseParser::get_clauses() {
   }
 
   for (const std::string &such_that_clause : such_that_clauses) {
+    printf("SUCHHH: %s\n",such_that_clause.c_str());
     std::vector<SuchThatClause *> *relationship = MakeSuchThatClause(such_that_clause);
     if (relationship == nullptr) {
       return syntactically_false_res;
@@ -143,6 +144,7 @@ std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
     if (relationship_clause.size() != 3) {
       return nullptr;
     }
+    printf("relationship clause at 0: %s\n", relationship_clause.at(0).c_str());
     auto *relationship = new SuchThatClause(relationship_clause.at(0));
     if (relationship->get_type() == RelRef::None) {  // invalid relation
       return nullptr;
@@ -916,6 +918,8 @@ std::vector<std::vector<std::string>> SelectClauseParser::SplitBrackets(
       ss.str("");
     } else if (!isspace(c)) {
       ss << c;
+    } else if (isspace(c) && !open_bracket_found) {
+      ss << " ";
     }
   }
   if (ss.str() != "") {

@@ -33,15 +33,17 @@ std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
     // same entity type, or if there's only 1 word, its syntactically invalid. eg stmt s p c;
     std::vector<std::string> tokens = SplitString(entity_str, " ");
     size_t num_of_comma = std::count(entity_str.begin(), entity_str.end(), ',');
-    if (num_of_comma < tokens.size() - 1 || index_of_entity == -1) {
+    if (index_of_entity == -1) {
       syntactically_valid_ = false;
       break;
     }
     auto *synonyms = new std::vector<std::string>();
     EntityType entity_type = CheckEntityType(entity);
     if (entity_type == EntityType::None ||
-        !IsValidSynonym(tokens, synonyms)) {
-      // Invalid synonym or entity type means its syntactically invalid;
+        !IsValidSynonym(tokens, synonyms) ||
+        num_of_comma != synonyms->size() - 1) {
+      // Invalid synonym or entity type means its syntactically invalid
+      // wrong number of commas also means syntactically invalid, eg stmt , s;
       syntactically_valid_ = false;
       break;
     }

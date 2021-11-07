@@ -3,7 +3,9 @@
 #include <utility>
 #include <algorithm>
 
-ClauseGroup::ClauseGroup() = default;
+ClauseGroup::ClauseGroup() {
+  has_return_syn_ = false;
+}
 
 ClauseGroup::~ClauseGroup() = default;
 
@@ -25,6 +27,14 @@ void ClauseGroup::AddClause(ClauseVertex clause_vertex) {
 
 void ClauseGroup::set_clauses(std::vector<ClauseVertex> clauses) {
   this->clauses_ = clauses;
+}
+
+bool ClauseGroup::set_has_return_syn(bool new_bool) {
+  has_return_syn_ = new_bool;
+}
+
+bool ClauseGroup::get_has_return_syn() {
+  return has_return_syn_;
 }
 
 void ClauseGroup::SortWithinGroup() {

@@ -12,7 +12,7 @@ files = [
     # "nextbip_3",
     # "nextbip_4",
     # "nextbip_5",
-    "testing",
+    # "testing",
     # "testing2",
     # "BOOLEAN"
     # "SIMPLE_6_0clause",
@@ -24,14 +24,14 @@ files = [
     # "with_0"
     # "iter3_system_test_1",
     # "iter3_system_test_2",
-    # "iter3_system_test_3",
+    "iter3_system_test_3",
     # "iter3_system_test_4",
     # "invalid_chars_0"
     # "patternwith_4",
     # "patternwith_5"
     # "select_invalid"
     # "simple_logicExprNoBracket",
-    "andWith_invalid"
+    # "andWith_invalid"
 ]
 
 for file in files:

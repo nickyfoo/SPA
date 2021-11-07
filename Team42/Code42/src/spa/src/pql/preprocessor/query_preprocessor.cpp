@@ -1,6 +1,6 @@
 #include "memory"
 #include "query_preprocessor.h"
-#include "query_optimizer.h"
+#include "optimizer/query_optimizer.h"
 
 QueryPreprocessor::QueryPreprocessor(std::string input) {
   std::vector<std::string> *entities;

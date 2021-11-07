@@ -8,7 +8,7 @@
 #include "pattern_clause.h"
 #include "such_that_clause.h"
 #include "with_clause.h"
-#include "clause_group.h"
+#include "optimizer/clause_group.h"
 #include "result_clause.h"
 
 class PQLQuery {

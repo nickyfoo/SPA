@@ -7,7 +7,7 @@
 
 #include <query_evaluator.h>
 #include <query_preprocessor.h>
-#include <query_optimizer.h>
+#include <optimizer/query_optimizer.h>
 
 enum ProgramSource {
   kSampleSource,

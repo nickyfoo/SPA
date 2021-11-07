@@ -1,4 +1,4 @@
-#include "query_optimizer.h"
+#include "optimizer/query_optimizer.h"
 #include "catch.hpp"
 
 TEST_CASE("GroupingSuchThat_ClausesWithNoSynonyms_AddsOnlyToNoSynGroup") {

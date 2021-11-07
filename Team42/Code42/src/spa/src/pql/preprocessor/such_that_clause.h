@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include "such_that_ref.h"
-#include "clause.hpp"
+#include "optimizer/clause.hpp"
 
 enum class RelRef {
   Follows,

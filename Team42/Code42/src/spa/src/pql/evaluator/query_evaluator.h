@@ -8,7 +8,7 @@
 #include "pql_query.h"
 #include "entity_declaration.h"
 #include "result_table.h"
-#include "clause_group.h"
+#include "optimizer/clause_group.h"
 
 class QueryEvaluator {
  public:

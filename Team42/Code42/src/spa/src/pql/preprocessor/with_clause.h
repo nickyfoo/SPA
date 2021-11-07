@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 #include "entity_declaration.h"
-#include "clause.hpp"
+#include "optimizer/clause.hpp"
 
 enum class AttrValueType {
   Name,

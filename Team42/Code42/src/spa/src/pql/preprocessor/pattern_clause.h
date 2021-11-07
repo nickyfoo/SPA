@@ -3,7 +3,7 @@
 #include "entity_declaration.h"
 #include "expression_spec.h"
 #include "ent_ref.h"
-#include "clause.hpp"
+#include "optimizer/clause.hpp"
 
 class PatternClause : public Clause {
  public:

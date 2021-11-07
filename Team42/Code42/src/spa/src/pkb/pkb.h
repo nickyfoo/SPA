@@ -12,7 +12,7 @@
 #include "tables/stmt_table.h"
 #include "tables/var_table.h"
 #include "tables/const_table.h"
-#include "pattern_manager.h"
+#include "pattern_handler.h"
 #include "pkb_exception.h"
 
 class PKB {
@@ -40,14 +40,14 @@ class PKB {
   // Gets the total number of procedures in the procedure table
   int get_num_procedures();
   // Gets all procedures in the program.
-  std::vector<Procedure *> get_all_procedures();
+  virtual std::vector<Procedure *> get_all_procedures();
   // Gets a procedure by its procedure name.
   virtual Procedure *get_procedure(std::string &name);
 
   // Gets the total number of statements in the statement table.
   int get_num_statements();
   // Gets all statements in the statement table.
-  std::vector<Statement *> get_all_statements();
+  virtual std::vector<Statement *> get_all_statements();
   // Gets all statements of the given type.
   std::vector<Statement *> get_statements(NodeType type);
   // Gets a statement by its corresponding line number.
@@ -133,8 +133,14 @@ class PKB {
                       bool forward_relation);
 
   // DFS to check reachability for NextBip and AffectsBip* relationship
-  void BipReachabilityDFS(std::set<std::pair<int, std::string>> &prev_stmts, int u,
-                          std::vector<int> &call_stack, std::string &hash);
+  void BipReachabilityDFS(std::set<std::pair<int,
+                                             std::string>> &visited,
+                          int u,
+                          std::string &u_hash,
+                          int start,
+                          std::string &start_hash,
+                          std::vector<int> &call_stack);
+
   // DFS to check reachability for AffectsBip relationship.
   // If target is not kWild, supports fast termination to save on unnecessary computations.
   void AffectsBipDFS(int start,
@@ -152,6 +158,8 @@ class PKB {
                             std::string &var_name);
   // Returns true if v is an assign stmt that modifies var_name
   bool ModifiesVarName(int v, const std::string &var_name);
+  // Traverses CFG to get Next(u,_), since there are negative nodes.
+  void GetFirstPositiveStmts(int u, std::set<int> &visited, std::set<int> &ans);
   // DFS to check reachability for AffectsBip* relationship
   void AffectsBipStarDFS(std::set<std::pair<int, std::string>> &visited,
                          int u,
@@ -162,7 +170,7 @@ class PKB {
   std::string CallStackToString(std::vector<int> *call_stack);
 
   // Root AST node of the program.
-  PatternManager pattern_manager_;
+  PatternHandler pattern_handler_;
   // Table of procedures in the program.
   ProcTable proc_table_;
   // Table of statements in the program.
@@ -177,10 +185,12 @@ class PKB {
   // Reverse Adjacency List of CFG for Next and Affects.
   std::map<int, std::set<int>> reverse_cfg_al_;
   // Adjacency List of CFG for NextBip and AffectsBip, u -> {v, branch}
+  // u is negative if it is the dummy end of procedure node for the procedure starting at u.
   // branch is positive stmt_no if branching out from u to v
   // branch is negative stmt_no if branching back from u to v
   std::map<int, std::set<std::pair<int, int>>> cfg_bip_al_;
   // Reverse Adjacency List of CFG for NextBip and AffectsBip.
+  // u is negative if it is the dummy end of procedure node for the procedure starting at u.
   // branch is positive stmt_no if branching out from u to v
   // branch is negative stmt_no if branching back from u to v
   std::map<int, std::set<std::pair<int, int>>> reverse_cfg_bip_al_;

@@ -92,6 +92,10 @@ class Statement : public Entity {
   NodeType kind_;
   // Name of procedure being called, only valid if of NodeType::Call
   std::string called_proc_name;
+  // Name of procedure that this statement is in 
+  std::string parent_proc;
+  // Last statements for container statements
+  std::set<int> last_stmts_;
 
   // For v in followers_, Follows(this, v) is true.
   std::set<int> followers_, followers_star_;

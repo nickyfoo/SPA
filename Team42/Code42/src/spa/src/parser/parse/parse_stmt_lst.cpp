@@ -14,7 +14,7 @@ std::vector<StatementNode *> ParseStmtLst(BufferedLexer *lexer, ParseState *stat
 
   while (t->kind_ != TokenType::RBrace) {
     if (t->kind_ != TokenType::Name) {
-    throw ParseException("expected statement but got '" + t->value_ + "'", t->line_no_, t->col_no_);
+      throw ParseException("expected statement but got '" + t->value_ + "'", t->line_no_, t->col_no_);
     }
 
     if (t->value_ == "read") {

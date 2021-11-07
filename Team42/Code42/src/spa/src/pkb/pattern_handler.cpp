@@ -1,12 +1,12 @@
-#include "pattern_manager.h"
+#include "pattern_handler.h"
 
 #include <iostream>
 #include <stack>
 #include <sstream>
 
-PatternManager::PatternManager() = default;
+PatternHandler::PatternHandler() = default;
 
-PatternManager::~PatternManager() = default;
+PatternHandler::~PatternHandler() = default;
 
 auto CheckNextChar(bool is_ident);
 
@@ -21,7 +21,7 @@ auto CheckNextChar(bool is_ident) {
 }
 
 // Returns an infix expression in postfix notation
-std::string PatternManager::GetPostfixExpr(std::string infix_expr) {
+std::string PatternHandler::GetPostfixExpr(std::string infix_expr) {
   std::stack<char> ops;
   std::stringstream output;
   std::string::iterator it;
@@ -111,7 +111,7 @@ std::string PatternManager::GetPostfixExpr(std::string infix_expr) {
   return output.str();
 }
 
-bool PatternManager::TestAssignmentPattern(Statement *assignment_stmt,
+bool PatternHandler::TestAssignmentPattern(Statement *assignment_stmt,
                                            const std::string &pattern,
                                            bool is_partial_match) {
   if (pattern.empty()) return false;
@@ -126,7 +126,7 @@ bool PatternManager::TestAssignmentPattern(Statement *assignment_stmt,
   }
 }
 
-bool PatternManager::TestIfWhilePattern(Statement *stmt, const std::string &variable) {
+bool PatternHandler::TestIfWhilePattern(Statement *stmt, const std::string &variable) {
   if (variable.empty()) return false;
   std::stringstream expr_ss, variable_ss;
   variable_ss << " " << variable << " ";

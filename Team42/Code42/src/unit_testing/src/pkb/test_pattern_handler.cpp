@@ -4,7 +4,7 @@
 #include "catch.hpp"
 #include "entities/statement.h"
 
-TEST_CASE("TestAssignmentPattern_OnlyOneVariable", "[pattern_manager]") {
+TEST_CASE("TestAssignmentPattern_OnlyOneVariable", "[pattern_handler]") {
   SECTION("Constant") {
     PKB pkb;
     Statement s2(1, NodeType::Assign);
@@ -27,7 +27,7 @@ TEST_CASE("TestAssignmentPattern_OnlyOneVariable", "[pattern_manager]") {
   }
 }
 
-TEST_CASE("TestAssignmentPattern_OnlyOneOperator", "[pattern_manager]") {
+TEST_CASE("TestAssignmentPattern_OnlyOneOperator", "[pattern_handler]") {
   SECTION("Variable PLUS constant") {
     PKB pkb;
     Statement s2(1, NodeType::Assign);
@@ -55,7 +55,7 @@ TEST_CASE("TestAssignmentPattern_OnlyOneOperator", "[pattern_manager]") {
   }
 }
 
-TEST_CASE("TestAssignmentPattern_TwoDifferentPrecedenceOperators_Success", "[pattern_manager]") {
+TEST_CASE("TestAssignmentPattern_TwoDifferentPrecedenceOperators_Success", "[pattern_handler]") {
   SECTION("Expression PLUS Expression") {
     PKB pkb;
     Statement s1(1, NodeType::Assign);
@@ -89,23 +89,23 @@ TEST_CASE("TestAssignmentPattern_TwoDifferentPrecedenceOperators_Success", "[pat
   }
 }
 
-TEST_CASE("TestAssignmentPattern_MixedPrecedenceOperators_Success", "[pattern_manager]") {
-    // Which of the patterns match this assignment statement? /
-    // x = v + 3 / ((y - z) % n * t)
-    PKB pkb;
-    Statement s1(1, NodeType::Assign);
-    s1.set_expr_string("v 3 y z - n % t * / +");
+TEST_CASE("TestAssignmentPattern_MixedPrecedenceOperators_Success", "[pattern_handler]") {
+  // Which of the patterns match this assignment statement? /
+  // x = v + 3 / ((y - z) % n * t)
+  PKB pkb;
+  Statement s1(1, NodeType::Assign);
+  s1.set_expr_string("v 3 y z - n % t * / +");
 
-    REQUIRE(pkb.TestAssignmentPattern(&s1, "v + 3 / ((y - z) % n * t)", false) == true);
-    REQUIRE(pkb.TestAssignmentPattern(&s1, "v + 3", true) == false);
-    REQUIRE(pkb.TestAssignmentPattern(&s1, "y\t - \tz", true) == true);
-    REQUIRE(pkb.TestAssignmentPattern(&s1, "((y - z) % n * t)", true) == true);
-    REQUIRE(pkb.TestAssignmentPattern(&s1, "(y - z) % n", true) == true);
-    REQUIRE(pkb.TestAssignmentPattern(&s1, " 3 / ((y - z)", true) == false);
-    REQUIRE(pkb.TestAssignmentPattern(&s1, "3 / ((y - z) % n * t)", true) == true);
+  REQUIRE(pkb.TestAssignmentPattern(&s1, "v + 3 / ((y - z) % n * t)", false) == true);
+  REQUIRE(pkb.TestAssignmentPattern(&s1, "v + 3", true) == false);
+  REQUIRE(pkb.TestAssignmentPattern(&s1, "y\t - \tz", true) == true);
+  REQUIRE(pkb.TestAssignmentPattern(&s1, "((y - z) % n * t)", true) == true);
+  REQUIRE(pkb.TestAssignmentPattern(&s1, "(y - z) % n", true) == true);
+  REQUIRE(pkb.TestAssignmentPattern(&s1, " 3 / ((y - z)", true) == false);
+  REQUIRE(pkb.TestAssignmentPattern(&s1, "3 / ((y - z) % n * t)", true) == true);
 }
 
-TEST_CASE("TestIfWhilePattern_SingleCondition_Success", "[pattern_manager]") {
+TEST_CASE("TestIfWhilePattern_SingleCondition_Success", "[pattern_handler]") {
   PKB pkb;
   Statement s1(1, NodeType::If);
   s1.set_expr_string("count i ==");
@@ -116,7 +116,7 @@ TEST_CASE("TestIfWhilePattern_SingleCondition_Success", "[pattern_manager]") {
   REQUIRE(pkb.TestIfWhilePattern(&s1, "v") == false);
 }
 
-TEST_CASE("TestIfWhilePattern_MultipleConditions_Success", "[pattern_manager]") {
+TEST_CASE("TestIfWhilePattern_MultipleConditions_Success", "[pattern_handler]") {
   PKB pkb;
   Statement s1(1, NodeType::While);
   s1.set_expr_string("7 x 0 != yellow 0 != &&");

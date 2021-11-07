@@ -165,10 +165,10 @@ std::map<int, std::set<std::pair<int, int>>> *PKB::get_reverse_cfg_bip_al() {
 bool PKB::TestAssignmentPattern(Statement *statement,
                                 const std::string &pattern,
                                 bool is_partial_match) {
-  return pattern_manager_.TestAssignmentPattern(statement, pattern, is_partial_match);
+  return pattern_handler_.TestAssignmentPattern(statement, pattern, is_partial_match);
 }
 
 bool PKB::TestIfWhilePattern(Statement *stmt, const std::string &variable) {
-  return pattern_manager_.TestIfWhilePattern(stmt, variable);
+  return pattern_handler_.TestIfWhilePattern(stmt, variable);
 }
 

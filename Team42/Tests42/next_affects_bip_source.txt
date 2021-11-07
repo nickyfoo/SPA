@@ -1,0 +1,98 @@
+procedure confusedAuntie {
+  read pricetag;
+  print enter;
+  while(shopping != done){
+    call bargainForPrice;
+    if (cost <= 1234567890000000000) then {
+      while(budget-fruit >= 0){
+        apple = banana;
+        banana = carrot;
+        carrot = dragonfruit;
+        dragonfruit = eggs;
+        eggs = apple;
+        while(budget-item >= 0){
+          fanta = grape;
+          grape = honey;
+          honey = ice;
+          ice = jelly;
+          jelly = fanta;
+        }
+        kale = longan;
+        longan = mushroom;
+        mushroom = nuts;
+        nuts = orange;
+        orange = kale;
+      }
+    } else {
+      if(beg==for+free) then {
+        price29 = price30;
+        price28 = price29;
+        price27 = price28;
+        price26 = price27;
+        price25 = price26;
+        price24 = price25;
+        price23 = price24;
+        price22 = price23;
+        price21 = price22;
+        price20 = price21;
+        price19 = price20;
+        price18 = price19;
+        price17 = price18;
+        price16 = price17;
+        price15 = price16;
+        price14 = price15;
+        price13 = price14;
+        price12 = price13;
+        price11 = price12;
+        price10 = price11;
+        price30 = price10;
+      } else {
+        price30 = price29;
+        price29 = price28;
+        price28 = price27;
+        price27 = price26;
+        price26 = price25;
+        price25 = price24;
+        price24 = price23;
+        price23 = price22;
+        price22 = price21;
+        price21 = price20;
+        price20 = price19;
+        price19 = price18;
+        price18 = price17;
+        price17 = price16;
+        price16 = price15;
+        price15 = price14;
+        price14 = price13;
+        price13 = price12;
+        price12 = price11;
+        price11 = price10;
+        price10 = price30;
+      }
+    }
+    call bargainForPrice;
+  }
+}
+
+procedure bargainForPrice {
+  while(auntie != satisfied){
+    price30 = price25;
+    price25 = price20;
+    price20 = price15;
+    price15 = price10;
+    price05 = price30;
+    while(auntie == wantdiscount){
+      disc1 = disc2;
+      disc2 = disc3;
+      disc3 = disc4;
+      disc4 = disc5;
+      disc5 = disc1;
+    }
+    price05 = price04;
+    price04 = price03;
+    price03 = price02;
+    price02 = price01;
+    price01 = price05;
+  }
+}
+

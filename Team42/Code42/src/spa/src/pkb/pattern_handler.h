@@ -5,11 +5,11 @@
 #include <string>
 #include "entities/statement.h"
 
-class PatternManager {
+class PatternHandler {
  public:
-  PatternManager();
+  PatternHandler();
 
-  ~PatternManager();
+  ~PatternHandler();
 
   // Tests the assignment expression against the given pattern.
   // Returns true if pattern matches.

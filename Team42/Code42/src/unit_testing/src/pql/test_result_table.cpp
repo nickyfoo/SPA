@@ -55,7 +55,7 @@ TEST_CASE("AddColumns") {
 
   SECTION("AddColumns_DifferentSize_ThrowsException") {
     result_table.AddSingleColumn("a", {"one", "two", "three"});
-    REQUIRE_THROWS_AS(    result_table.AddSingleColumn("b", {"four", "five", "six", "seven"}), std::runtime_error);
+    REQUIRE_THROWS_AS(result_table.AddSingleColumn("b", {"four", "five", "six", "seven"}), std::runtime_error);
   }
 }
 
@@ -108,7 +108,7 @@ TEST_CASE("GetCommonSynonyms") {
     other_result_table.AddSingleColumn("e", {"four", "five", "six"});
     other_result_table.AddSingleColumn("a", {"seven", "eight", "nine"});
     std::vector<std::pair<std::string, int>> *result = result_table.GetCommonSynonyms(other_result_table);
-    std::vector<std::pair<std::string, int>> *expected = new std::vector<std::pair<std::string, int>>({std::make_pair("a", 2)});
+    auto *expected = new std::vector<std::pair<std::string, int>>({std::make_pair("a", 2)});
     REQUIRE(result->size() == expected->size());
     REQUIRE(result->at(0).first == expected->at(0).first);
     REQUIRE(result->at(0).second == expected->at(0).second);
@@ -123,7 +123,7 @@ TEST_CASE("GetCommonSynonyms") {
     other_result_table.AddSingleColumn("a", {"seven", "eight", "nine"});
     std::vector<std::pair<std::string, int>> *result = result_table.GetCommonSynonyms(other_result_table);
     std::sort(result->begin(), result->end());
-    std::vector<std::pair<std::string, int>> *expected = new std::vector<std::pair<std::string, int>>(
+    auto *expected = new std::vector<std::pair<std::string, int>>(
         {std::make_pair("a", 2), std::make_pair("b", 1)});
     std::sort(result->begin(), result->end());
     REQUIRE(result->size() == expected->size());
@@ -145,7 +145,7 @@ TEST_CASE("Joins") {
     other_result_table.AddSingleColumn("d", {"one", "two", "three"});
     other_result_table.AddSingleColumn("a", {"one", "two", "four"});
     result_table.NaturalJoin(other_result_table);
-    table *expected = new std::vector<std::vector<std::string>>();
+    auto *expected = new std::vector<std::vector<std::string>>();
     expected->push_back({"one", "four", "seven", "one"});
     expected->push_back({"two", "five", "eight", "two"});
     std::vector<std::string> col_a = {"one", "two"};
@@ -169,8 +169,8 @@ TEST_CASE("Joins") {
     result_table.AddSingleColumn("b", {"four", "five", "six"});
     other_result_table.AddSingleColumn("c", {"seven", "eight", "nine"});
     other_result_table.AddSingleColumn("d", {"ten", "eleven", "twelve"});
-    result_table.CrossJoin(other_result_table);
-    table *expected = new std::vector<std::vector<std::string>>();
+    result_table.CrossJoin(other_result_table, {});
+    auto *expected = new std::vector<std::vector<std::string>>();
     expected->push_back({"one", "four", "seven", "ten"});
     expected->push_back({"one", "four", "eight", "eleven"});
     expected->push_back({"one", "four", "nine", "twelve"});
@@ -212,8 +212,8 @@ TEST_CASE("Joins") {
     result_table.AddSingleColumn("b", {"four", "five", "six"});
     other_result_table.AddSingleColumn("c", {"seven", "eight", "nine"});
     other_result_table.AddSingleColumn("d", {"ten", "eleven", "twelve"});
-    result_table.CrossJoin(other_result_table);
-    table *expected = new std::vector<std::vector<std::string>>();
+    result_table.CrossJoin(other_result_table, {});
+    auto *expected = new std::vector<std::vector<std::string>>();
     expected->push_back({"one", "four", "seven", "ten"});
     expected->push_back({"one", "four", "eight", "eleven"});
     expected->push_back({"one", "four", "nine", "twelve"});
@@ -238,6 +238,7 @@ TEST_CASE("Joins") {
     std::vector<std::string> col_d = {"ten", "eleven", "twelve",
                                       "ten", "eleven", "twelve",
                                       "ten", "eleven", "twelve"};
+
     REQUIRE(result_table.get_table()->size() == expected->size());
     REQUIRE(result_table.get_synonym_to_index()->size() == 4);
     REQUIRE(result_table.get_synonym_to_index()->at("a") == 0);

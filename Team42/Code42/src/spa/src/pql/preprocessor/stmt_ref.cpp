@@ -34,10 +34,14 @@ int StmtRef::get_stmt_num() const {
 // used for logging purposes
 std::string StmtRef::get_value() {
   switch (this->type_) {
-    case StmtRefType::Synonym:return this->synonym_;
-    case StmtRefType::StmtNum:return std::to_string(this->stmt_num_);
-    case StmtRefType::WildCard:return "_";
-    default:return "No value!";
+    case StmtRefType::Synonym:
+      return this->synonym_;
+    case StmtRefType::StmtNum:
+      return std::to_string(this->stmt_num_);
+    case StmtRefType::WildCard:
+      return "_";
+    default:
+      return "No value!";
   }
 }
 

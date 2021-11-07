@@ -1,0 +1,98 @@
+   procedure confusedAuntie {
+01   read pricetag;
+02   print enter;
+03   while(shopping != done){
+04     call bargainForPrice;
+05     if (cost <= 1234567890000000000) then {
+06       while(budget-fruit >= 0){
+07         apple = banana;
+08         banana = carrot;
+09         carrot = dragonfruit;
+10         dragonfruit = eggs;
+11         eggs = apple;
+12         while(budget-item >= 0){
+13           fanta = grape;
+14           grape = honey;
+15           honey = ice;
+16           ice = jelly;
+17           jelly = fanta;
+           }
+18         kale = longan;
+19         longan = mushroom;
+20         mushroom = nuts;
+21         nuts = orange;
+22         orange = kale;
+         }
+       } else {
+23       if(beg==for+free) then {
+24         price29 = price30;
+25         price28 = price29;
+26         price27 = price28;
+27         price26 = price27;
+28         price25 = price26;
+29         price24 = price25;
+30         price23 = price24;
+31         price22 = price23;
+32         price21 = price22;
+33         price20 = price21;
+34         price19 = price20;
+35         price18 = price19;
+36         price17 = price18;
+37         price16 = price17;
+38         price15 = price16;
+39         price14 = price15;
+40         price13 = price14;
+41         price12 = price13;
+42         price11 = price12;
+43         price10 = price11;
+44         price30 = price10;
+         } else {
+45         price30 = price29;
+46         price29 = price28;
+47         price28 = price27;
+48         price27 = price26;
+49         price26 = price25;
+50         price25 = price24;
+51         price24 = price23;
+52         price23 = price22;
+53         price22 = price21;
+54         price21 = price20;
+55         price20 = price19;
+56         price19 = price18;
+57         price18 = price17;
+58         price17 = price16;
+59         price16 = price15;
+60         price15 = price14;
+61         price14 = price13;
+62         price13 = price12;
+63         price12 = price11;
+64         price11 = price10;
+65         price10 = price30;
+         }
+       }
+66     call bargainForPrice;
+     }
+   }
+   
+   procedure bargainForPrice {
+67   while(auntie != satisfied){
+68     price30 = price25;
+69     price25 = price20;
+70     price20 = price15;
+71     price15 = price10;
+72     price05 = price30;
+73     while(auntie == wantdiscount){
+74       disc1 = disc2;
+75       disc2 = disc3;
+76       disc3 = disc4;
+77       disc4 = disc5;
+78       disc5 = disc1;
+       }
+79     price05 = price04;
+80     price04 = price03;
+81     price03 = price02;
+82     price02 = price01;
+83     price01 = price05;
+     }
+   }
+   

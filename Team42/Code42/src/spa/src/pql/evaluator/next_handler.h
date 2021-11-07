@@ -13,6 +13,8 @@ class NextHandler {
                 std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec);
   ResultTable *EvaluateNext();
   ResultTable *EvaluateNextT();
+  ResultTable *EvaluateNextBip();
+  ResultTable *EvaluateNextTBip();
 
  private:
   static NextHandler *instance_;

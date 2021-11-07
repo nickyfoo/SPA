@@ -565,7 +565,7 @@ Select v such that Uses(s,v) pattern a(v,_) with 4 = 5
 5000
 114 - Next* and Parent, If Pattern, With AttrRef AttrRef
 call c; stmt s; read r; if ifs; constant co;
-Select c.procName Next*(r, ifs) and Parent(ifs, c) pattern ifs(_,_,_) with c.stmt# = co.value
+Select c.procName such that Next*(r, ifs) and Parent(ifs, c) pattern ifs(_,_,_) with c.stmt# = co.value
 g
 5000
 115 - Calls and UsesP and ModifiesS, Assign Pattern and If Pattern, With Name Name

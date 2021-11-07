@@ -7,7 +7,7 @@
 #include "sstream"
 #include "query_preprocessor.h"
 #include "query_evaluator.h"
-#include "query_optimizer.h"
+#include "optimizer/query_optimizer.h"
 
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;
@@ -61,23 +61,27 @@ void TestWrapper::evaluate(std::string query, std::list<std::string> &results) {
              std::vector<PatternClause *> *,
              std::vector<WithClause *> *,
              std::unordered_map<std::string, EntityDeclaration *> *,
-             bool> *clauses = query_preprocessor->get_clauses();
+             bool, bool> *clauses = query_preprocessor->get_clauses();
   PQLQuery *pql_query;
-  if (!std::get<5>(*clauses)) {
+  bool is_syntactically_valid = std::get<5>(*clauses);
+  bool is_semantically_valid = std::get<6>(*clauses);
+  if (!is_syntactically_valid || !is_semantically_valid) {
     pql_query = new PQLQuery(std::get<0>(*clauses),
                  {},
                  {},
-                 std::get<5>(*clauses));
+                 is_syntactically_valid,
+                 is_semantically_valid);
   } else {
     QueryOptimizer query_optimizer = QueryOptimizer(std::get<1>(*clauses),
                                                     std::get<2>(*clauses),
                                                     std::get<3>(*clauses),
                                                     std::get<0>(*clauses));
-    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateGroupings();
+    std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     pql_query = new PQLQuery(std::get<0>(*clauses),
                              clause_groups,
                              std::get<4>(*clauses),
-                             std::get<5>(*clauses));
+                             std::get<5>(*clauses),
+                             std::get<6>(*clauses));
   }
   auto *query_evaluator = new QueryEvaluator(pql_query, pkb_);
   std::vector<std::string> *res = query_evaluator->Evaluate();

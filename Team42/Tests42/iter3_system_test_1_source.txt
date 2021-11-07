@@ -1,0 +1,151 @@
+procedure hello {
+    print hundredlines;
+    read letsgo;
+    if (!(i == j) || (k - l > 50)) then {
+        while (i > 50) {
+            i = i - 1;
+            j = k + l;
+            m = j * j - 1;
+            call bye;
+        }
+        print imdone;
+    } else {
+        if (corona == gone) then {
+            read canitravel;
+            while (budget > 3000) {
+                money = money * money;
+                budget = budget + money;
+                print canitravel;
+            }
+            icantravel = 1;
+        } else {
+            call sadboy;
+            howtomakehundredlines = 0;
+            call iwanttotravel;
+        }
+    }
+    something = 6 % something;
+    hello = something - 5;
+    complexpattern = ((5 * hello) - (6 % something) - (3 + icantravel)) * 7;
+    imdone = 1;
+}
+
+procedure bye {
+    if (calledhere == true) then {
+        i = 51;
+        print calledhere;
+        if (nestedloop == 5) then {
+            if (nestanotherloop == onemore) then {
+                if (lastloop == nomore) then {
+                    while (trywhile == true) {
+                        print hopethisworks;
+                        read something;
+                    }
+                } else {
+                    while (preparingtoleave == 5) {
+                        print leave;
+                    }
+                }
+            } else {
+                read nestedwithin;
+            }
+        } else {
+            lastinner = 31415926535;
+        }
+    } else {
+        read manyassignments;
+        a = 1 + 2 + (7 * 8) - 5;
+        b = 4928123 * 680234;
+        c = 305 % 5 % 70;
+        d = hachoo;
+    }
+    print goodbyeworld;
+}
+
+procedure sadboy {
+    while (loopone == 1) {
+        while (looptwo == 2) {
+            while (loopthree == 3) {
+                while (loopfour == 4) {
+                    while (loopfive == 5) {
+                        sadboy = q * q;
+                        crying = sadboy + corona;
+                    }
+                }
+            }
+            print putsomethinghere;
+        }
+        read imhungry;
+        imhungry = imhungry +   5;
+    }
+    if ((sadboy != sad) && (corona == gone)) then {
+        worldishappy = true;
+    } else {
+        print lifesux;
+    }
+}
+
+procedure iwanttotravel {
+    egypt = option1;
+    paris = option1;
+    taiwan = option2;
+    america = option2;
+    china = option3;
+    if ((budget < egypt) && (budget < paris)) then {
+        if ((budget < taiwan) && (budget < america)) then {
+            if (budget > china) then {
+                print option3;
+            } else {
+                read boohoostayinsg;
+            }
+        } else {
+            print option2;
+        }
+    } else {
+        print option1;
+    }
+    call sgairlines;
+}
+
+procedure sgairlines {
+    read howtohelpyou;
+    print iwanttofly;
+    if ((iwanttofly == true) && (corona == false) && (budget == rich)) then {
+        print flymyminion;
+    } else {
+        print boohoostayinsg;
+    }
+}
+
+procedure noonecallsme {
+    print tryedgecases;
+    if (pattern == suchthat) then {
+        Select = FALSE;
+        FALSE = TRUE * NOT;
+        with = varName + procName;
+    } else {
+        if = while;
+        then = if + while;
+        else = then / 2;
+    }
+    while (while == TRUE) {
+        print print;
+        read read;
+    }
+    print read;
+    read print;
+    read call;
+    stmt = assign;
+    assign = read;
+    read = print;
+    print = calls * procedure;
+    Follows = ParentT + FollowsT;
+    with = stmtRef + entRef;
+    progline = n * 5;
+    variable = constant * constant;
+    integer = 1 + 2 + 3 + 4 + 5;
+    pi = 31415926535;
+    stmt = 98;
+    onemoreline = almostthere;
+    line100 = yay;
+}

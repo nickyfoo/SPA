@@ -28,7 +28,6 @@ const Token *BufferedLexer::PeekNextToken() {
   return this->buffer_.front();
 }
 
-
 const Token *BufferedLexer::PeekNextToken(int offset) {
   if (this->buffer_.size() > offset) {
     return this->buffer_[offset];

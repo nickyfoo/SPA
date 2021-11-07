@@ -160,7 +160,6 @@ std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
     if (valid_left == -1 || valid_right == -1) {  // syntactically invalid
       return nullptr;
     }
-
     if (relationship->set_ref(left_such_that_ref, right_such_that_ref) &&
         valid_left == 1 && valid_right == 1) {
       ret->push_back(relationship);
@@ -507,7 +506,7 @@ int SelectClauseParser::SetSuchThatRefLeft(SuchThatRef *left_such_that_ref,
     }
   } else if (left_ref.length() > 2 && left_ref[0] == '\"'
       && left_ref[left_ref.length() - 1] == '\"'
-      && IsValidIdentifier(left_ref.substr(1, left_ref.length() - 1))) {
+      && IsValidIdentifier(left_ref.substr(1, left_ref.length() - 2))) {
     left_ent_ref.set_argument(left_ref.substr(1, left_ref.length() - 2));
     left_such_that_ref->set_ent_ref(left_ent_ref);
   } else if (IsValidIdentifier(left_ref)) {
@@ -644,10 +643,8 @@ bool SelectClauseParser::IsValidIdentifier(const std::string &str) {
 
   // Traverse the string for the rest of the characters
   for (int i = 1; i < str.length(); i++) {
-    printf("%c\n", str[i]);
     if (!((str[i] >= 'a' && str[i] <= 'z') || (str[i] >= 'A' && str[i] <= 'Z') ||
         (str[i] >= '0' && str[i] <= '9'))) {
-      printf("here??\n");
       return false;
     }
   }

@@ -2,7 +2,7 @@ import subprocess
 import sys
 
 files = [
-    "multiclause_1"
+    "testing"
 ]
 
 for file in files:

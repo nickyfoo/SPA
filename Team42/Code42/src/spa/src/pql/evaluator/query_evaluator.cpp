@@ -53,7 +53,10 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
   // where first group is without synonyms,
   // second group is without any return synonyms,
   // and third groups on are those with synonyms in results
+  bool found_first_table = false;
   for (int i = 0; i < clause_groups_.size(); i++) {
+    bool has_syn = !clause_groups_.at(i)->get_syn_used().empty();
+    bool has_return_syn = clause_groups_.at(i)->get_has_return_syn();
     std::vector<ClauseVertex> clause_vertexes = clause_groups_.at(i)->get_clauses();
     ResultTable *intermediate_table = new ResultTable();
     bool first_table_entry = true;
@@ -90,16 +93,17 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         intermediate_table->NaturalJoin(*table);
       }
     }
-    if (i == 1) {  // first two groups which only has to evaluate true / false
+    if (has_syn && !has_return_syn) {  // has no return synonyms, check for non-empty table
       if (intermediate_table->get_table()->size() == 0 && !first_table_entry) {
         return ConvertToOutput(result_table, false);
       }
-    } else if (i == 2) {  // first group when the result table is initially empty
+    } else if (has_return_syn && !found_first_table) {  // result table is initially empty
       if (!first_table_entry && intermediate_table->get_table()->empty()) {  // found a clause
         return ConvertToOutput(result_table, false);
       }
       result_table->set_table(*intermediate_table);
-    } else if (i > 2) {
+      found_first_table = true;
+    } else if (has_return_syn && found_first_table) {  // update result table
       result_table->CrossJoin(*intermediate_table, used_synonyms_);
       if (!first_table_entry && result_table->get_table()->empty()) {
         return ConvertToOutput(result_table, false);

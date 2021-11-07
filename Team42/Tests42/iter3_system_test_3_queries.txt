@@ -40,7 +40,7 @@ Select <w, w1> such that Parent*(w, a) and Parent*(ifs, a) and Parent*(w, cl) an
 5000
 9 - Multiple Uses with no common synonym
 stmt s, s1, s2; assign a, a1; while w, w1; if ifs, ifs1; variable v, v1; procedure p, q, p1; constant c, c1; call cl; print pn; read re; prog_line n, n1;
-Select ifs1 such that Uses(ifs1, "ingredients") and Uses(p, v1) and Uses(q, "i") and Uses(ifs, v1)
+Select ifs1 such that Uses(ifs1, "ingredients") and Uses(a,v) and Uses(p, v1) and Uses(q, "i") and Uses(ifs, v1)
 4,5,12,26,61,65
 5000
 10 - Multiple Uses with common synonym

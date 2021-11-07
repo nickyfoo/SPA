@@ -12,7 +12,7 @@ files = [
     # "nextbip_3",
     # "nextbip_4",
     # "nextbip_5",
-    "testing",
+    # "testing",
     # "testing2",
     # "BOOLEAN"
     # "SIMPLE_6_0clause",
@@ -31,7 +31,17 @@ files = [
     # "patternwith_5"
     # "select_invalid"
     # "simple_logicExprNoBracket",
-    # "andWith_invalid"
+    # "next_affects_bip_copy"
+    # "performance600_chainedAffects",
+    # "performance600_chainedAffectsStar",
+    # "performance600_chainedNext",
+    # "performance600_chainedNextStar",
+    # "performance600_intergroupShortcircuit",
+    # "performance600_intragroupShortcircuit",
+    # "performance600_nextSTar+AffectsStar+Tuple",
+    # "performance600_runtimeCache",
+    # "stress",
+    "affects"
 ]
 
 for file in files:

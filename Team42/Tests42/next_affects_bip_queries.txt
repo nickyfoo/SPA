@@ -1,0 +1,100 @@
+1 - Follows + AffectsBip for statements that affect the pervious statement
+stmt s1, s2;
+Select s1 such that Follows(s1, s2) and AffectsBip(s1, s2)
+24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43
+5000
+2 - Modifies 2 procedures modify the same variable
+procedure p1, p2; variable v;
+Select v such that Modifies(p1, v) and Modifies(p2, v) with p1.procName = "confusedAuntie" and p2.procName = "bargainForPrice"
+disc1,disc2,disc3,disc4,disc5,price01,price02,price03,price04,price05,price15,price20,price25,price30
+5000
+3 - AffectsBip for the first assignment statement in a while loop
+stmt s;
+Select s such that AffectsBip(s,7)
+8
+5000
+4 - AffectsBip* for the assignment statement in a while loop
+stmt s;
+Select s such that AffectsBip*(s,7)
+7,8,9,10,11
+5000
+5 - AffectsBip + Uses + Modifies + Next
+stmt s1, s2; variable v;
+Select v such that AffectsBip(s1,s2) and Uses(s2, v) and Modifies(s1, v) and Next(s2,s1)
+banana,carrot,disc2,disc3,disc4,disc5,dragonfruit,eggs,grape,honey,ice,jelly,longan,mushroom,nuts,orange,price01,price02,price03,price04,price10,price11,price12,price13,price14,price15,price16,price17,price18,price19,price20,price21,price22,price23,price24,price25,price26,price27,price28,price29
+5000
+6 - AffectsBip* + Parent
+stmt s1, s2; variable v; if ifs;
+Select v such that AffectsBip*(s1,_) and Uses(s2, v) and Parent(ifs, s1) and Parent(ifs, s2)
+price10,price11,price12,price13,price14,price15,price16,price17,price18,price19,price20,price21,price22,price23,price24,price25,price26,price27,price28,price29,price30
+5000
+7 - AffectsBip + Modifies + withRef
+stmt s; variable v;
+Select v such that AffectsBip(s,_) such that Modifies(s,v) with s.stmt# = 45
+price30
+5000
+8 - AffectsBip* + Modifies + withRef
+stmt s; variable v;
+Select v such that AffectsBip*(s,_) such that Modifies(s,v) with s.stmt# = 45
+price30
+5000
+9 - AffectsBip negative case, first statement is not an assignment statement
+stmt s;
+Select s such that AffectsBip(23,_)
+
+5000
+10 - AffectsBip* negative case, first statement is not an assignment statement
+stmt s;
+Select s such that AffectsBip*(23,_)
+
+5000
+11 - Follows + NextBip
+stmt s1, s2;
+Select s1 such that Follows(s1, s2) and NextBip(s2, s1)
+
+5000
+12 - Follows + NextBip*
+stmt s1, s2;
+Select s1 such that Follows(s1, s2) and NextBip*(s2, s1)
+4,5,7,8,9,10,11,12,13,14,15,16,18,19,20,21,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,68,69,70,71,72,73,74,75,76,77,79,80,81,82
+5000
+13 - NextBip for the last assignment statement in an if loop nested in a while loop
+stmt s;
+Select s such that NextBip(44,s)
+66
+5000
+14 - NextBip* for the last assignment statement in an if loop nested in a while loop
+stmt s;
+Select s such that NextBip*(44,s)
+3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83
+5000
+15 - NextBip on self statement, negative case
+stmt s; while w;
+Select s such that NextBip(s,s)
+
+5000
+16 - NextBip on self statement + Parent + withRef
+stmt s; while w;
+Select s such that NextBip*(s,s) and Parent(w,s) with w.stmt# = 12
+13,14,15,16,17
+5000
+17 - NextBip across procedures
+stmt s1,s2; variable v; procedure p1,p2;
+Select v such that NextBip(s1,s2) such that Modifies(s1, v) such that Modifies(s2, v) such that Modifies(p1, v) such that Modifies(p2, v) with p1.procName = "confusedAuntie" and p2.procName = "bargainForPrice"
+disc1,disc2,disc3,disc4,disc5,price01,price02,price03,price04,price05,price15,price20,price25,price30
+5000
+18 - Tuples for NextBip* with different statement types
+call c; print p; while w;
+Select <c,w,p> such that NextBip*(c,w) and NextBip*(p,c)
+4 12 2,4 3 2,4 6 2,4 67 2,4 73 2,66 12 2,66 3 2,66 6 2,66 67 2,66 73 2
+5000
+19 - NextBip negative case, first statement of procedure
+stmt s;
+Select s such that NextBip(s,1)
+
+5000
+20 - NextBip* all statements
+stmt s;
+Select s such that NextBip*(1,s)
+2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83
+5000

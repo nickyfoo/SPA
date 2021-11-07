@@ -11,6 +11,7 @@ files = [
     "iter3_system_test_2",
     "iter3_system_test_3",
     "iter3_system_test_4",
+    "next_affects_bip",
     "next",
     "no_common_synonyms",
     "one_common_synonym",

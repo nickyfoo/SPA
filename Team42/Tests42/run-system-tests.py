@@ -2,6 +2,7 @@ import subprocess
 import sys
 
 files = [
+    "affects",
     "and_clauses",
     "BOOLEAN",
     "calls",

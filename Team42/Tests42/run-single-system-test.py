@@ -41,7 +41,8 @@ files = [
     # "performance600_nextSTar+AffectsStar+Tuple",
     # "performance600_runtimeCache",
     # "stress",
-    "affects"
+    "invalid_1",
+    "invalid_2"
 ]
 
 for file in files:

@@ -806,7 +806,7 @@ SelectClauseParser::SplitClauses(const std::string &input) {
       }
     }
   }
-  if (inverted_commas_found) return false_res;
+  if (inverted_commas_found || open_bracket_found) return false_res;
 
   std::string clean_input = ss.str();
   pos = clean_input.find(' ');

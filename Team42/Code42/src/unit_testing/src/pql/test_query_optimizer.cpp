@@ -114,6 +114,7 @@ TEST_CASE("GroupingSuchThat_ClausesWithNoReturnSynonyms_AddsOnlyToNoReturnSynGro
     REQUIRE(clause_groups.size() == 2);
     REQUIRE(clause_groups[0]->get_clauses().empty());
     REQUIRE(clause_groups[1]->get_clauses().size() == 1);
+    REQUIRE(clause_groups[1]->get_has_return_syn() == false);
   }
 
   SECTION("3 Clauses") {
@@ -162,9 +163,12 @@ TEST_CASE("GroupingSuchThat_ClausesWithNoReturnSynonyms_AddsOnlyToNoReturnSynGro
                                                     with_clauses,
                                                     return_syns);
     std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
-    REQUIRE(clause_groups.size() == 2);
+    REQUIRE(clause_groups.size() == 3);
     REQUIRE(clause_groups[0]->get_clauses().empty());
-    REQUIRE(clause_groups[1]->get_clauses().size() == 3);
+    REQUIRE(clause_groups[2]->get_clauses().size() == 2);
+    REQUIRE(clause_groups[1]->get_clauses().size() == 1);
+    REQUIRE(clause_groups[1]->get_has_return_syn() == false);
+    REQUIRE(clause_groups[2]->get_has_return_syn() == false);
   }
 }
 
@@ -512,8 +516,8 @@ TEST_CASE("GroupingWith_ClausesWithNoReturnSynonyms_AddsOnlyToNoReturnSynGroup")
     std::vector<std::shared_ptr<ClauseGroup>> clause_groups = query_optimizer.CreateOptimizedGroupings();
     REQUIRE(clause_groups.size() == 3);
     REQUIRE(clause_groups[0]->get_clauses().empty());
-    REQUIRE(clause_groups[1]->get_clauses().size() == 2);
-    REQUIRE(clause_groups[2]->get_clauses().size() == 1);
+    REQUIRE(clause_groups[2]->get_clauses().size() == 2);
+    REQUIRE(clause_groups[1]->get_clauses().size() == 1);
     REQUIRE(clause_groups[1]->get_has_return_syn() == false);
     REQUIRE(clause_groups[2]->get_has_return_syn() == false);
   }
@@ -650,7 +654,6 @@ TEST_CASE("GroupingNoReturnButConnected_ClausesWithSynonyms_AddsToReturnSynGroup
     such_that_clauses->push_back(follows);
     pattern_clauses->push_back(pattern);
 
-    printf("fatal error before here\n");
     QueryOptimizer query_optimizer = QueryOptimizer(such_that_clauses,
                                                     pattern_clauses,
                                                     with_clauses,
@@ -987,12 +990,12 @@ TEST_CASE("SortingWithinGroup_SortingNoReturnSynonymGroup_AddsOnlyToNoReturnSynG
     std::string ss = "assign a; stmt s1, s2; variable v;\n"
                      "Select s2 such that Parent*(s1, a) and Follows(s3, 4) "
                      "with a1.stmt# = s4.stmt# pattern a(v, _)";
-    auto *with = new WithClause("a", EntityType::Assign, AttrValueType::Integer,
-                                "s1", EntityType::Stmt, AttrValueType::Integer);
+    auto *with = new WithClause("a1", EntityType::Assign, AttrValueType::Integer,
+                                "s4", EntityType::Stmt, AttrValueType::Integer);
 
     auto *follows = new SuchThatClause("Follows");
     StmtRef left_stmt_ref = StmtRef();
-    left_stmt_ref.set_synonym("s1");
+    left_stmt_ref.set_synonym("s3");
     auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_stmt_num(4);

@@ -1,28 +1,29 @@
-#include "pkb.h"
+#include <pkb.h>
 #include <algorithm>
 #include <vector>
-#include <queue>
 #include "ast_utils.hpp"
 
 PKB::PKB() = default;
 
-PKB::PKB(Node *programRoot) {
-  this->root_ = programRoot;
-  Initialise();
-}
-
 PKB::~PKB() = default;
 
-void PKB::AddProcedure(Node *node, std::vector<Node *> ancestor_list) {
+void PKB::AddProcedure(Node *node, const std::vector<Node *> &ancestor_list) {
   auto *procedure_node = dynamic_cast<ProcedureNode *>(node);
-  proc_table_.AddProcedure(procedure_node->get_name());
+  std::string proc_name = procedure_node->get_name();
+  std::vector<StatementNode *> stmt_lst = procedure_node->get_stmt_lst();
+  sort(stmt_lst.begin(), stmt_lst.end(),
+       [](StatementNode *a, StatementNode *b) {
+         return a->get_stmt_no() < b->get_stmt_no();
+       });
+  int stmt_no = procedure_node->get_stmt_lst()[0]->get_stmt_no();
+  proc_table_.AddProcedure(proc_name, stmt_no);
 }
 
-void PKB::AddStatement(Node *node, std::vector<Node *> ancestor_list) {
+void PKB::AddStatement(Node *node, const std::vector<Node *> &ancestor_list) {
   stmt_table_.AddStatement(node);
 }
 
-void PKB::AddExprString(Node *node, std::vector<Node *> ancestor_list) {
+void PKB::AddExprString(Node *node, const std::vector<Node *> &ancestor_list) {
   if (node->get_kind() == NodeType::Assign) {
     auto *assign_node = dynamic_cast<AssignNode *>(node);
     switch (assign_node->expr()->get_kind()) {
@@ -68,7 +69,8 @@ void PKB::AddExprString(Node *node, std::vector<Node *> ancestor_list) {
             ->set_expr_string(expr_string);
         break;
       }
-      default:break;
+      default:
+        break;
     }
   }
 
@@ -91,19 +93,20 @@ void PKB::AddExprString(Node *node, std::vector<Node *> ancestor_list) {
             ->set_expr_string(expr_string);
         break;
       }
-      default:break;
+      default:
+        break;
     }
   }
 }
 
-void PKB::AddVariable(Node *node, std::vector<Node *> ancestor_list) {
+void PKB::AddVariable(Node *node, const std::vector<Node *> &ancestor_list) {
   auto *identifier_node = dynamic_cast<IdentifierNode *>(node);
   if (ancestor_list.back()->get_kind() != NodeType::Call) {
     var_table_.AddVariable(identifier_node->get_name());
   }
 }
 
-void PKB::AddConstant(Node *node, std::vector<Node *> ancestor_list) {
+void PKB::AddConstant(Node *node, const std::vector<Node *> &ancestor_list) {
   auto *constant_node = dynamic_cast<ConstantNode *>(node);
   const_table_.AddConstant(constant_node->get_value());
 }
@@ -152,41 +155,20 @@ std::map<int, std::set<int>> *PKB::get_reverse_cfg_al() {
   return &reverse_cfg_al_;
 }
 
-bool PKB::TestAssignmentPattern(Statement *statement, std::string pattern, bool is_partial_match) {
-  return pattern_manager_.TestAssignmentPattern(statement, pattern, is_partial_match);
+std::map<int, std::set<std::pair<int, int>>> *PKB::get_cfg_bip_al() {
+  return &cfg_bip_al_;
+}
+std::map<int, std::set<std::pair<int, int>>> *PKB::get_reverse_cfg_bip_al() {
+  return &reverse_cfg_bip_al_;
 }
 
-bool PKB::TestIfWhilePattern(Statement *stmt, std::string variable) {
-  return pattern_manager_.TestIfWhilePattern(stmt, variable);
+bool PKB::TestAssignmentPattern(Statement *statement,
+                                const std::string &pattern,
+                                bool is_partial_match) {
+  return pattern_handler_.TestAssignmentPattern(statement, pattern, is_partial_match);
 }
 
-void PKB::PrintStatements() {
-  stmt_table_.PrintStatements();
+bool PKB::TestIfWhilePattern(Statement *stmt, const std::string &variable) {
+  return pattern_handler_.TestIfWhilePattern(stmt, variable);
 }
 
-void PKB::PrintProcedures() {
-  proc_table_.PrintProcedureDetails();
-}
-
-void PKB::PrintVariables() {
-  var_table_.PrintVariableDetails();
-}
-
-void PKB::PrintCFGAL() {
-  for (auto &[u, al] : cfg_al_) {
-    std::cout << u << "->";
-    for (auto &v : al) {
-      std::cout << v << ' ';
-    }
-    std::cout << '\n';
-  }
-}
-
-void PKB::Initialise() {
-  ExtractEntities();
-  ExtractFollows();
-  ExtractParent();
-  ExtractCalls();
-  ExtractUsesModifies();
-  ExtractCFG();
-}

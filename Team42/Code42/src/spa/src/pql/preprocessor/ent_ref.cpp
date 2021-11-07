@@ -33,9 +33,13 @@ std::string EntRef::get_argument() {
 // used for logging purposes
 std::string EntRef::get_value() {
   switch (this->type_) {
-    case EntRefType::Synonym:return this->synonym_;
-    case EntRefType::Argument:return this->argument_;
-    case EntRefType::WildCard:return "_";
-    default:return "No value!";
+    case EntRefType::Synonym:
+      return this->synonym_;
+    case EntRefType::Argument:
+      return this->argument_;
+    case EntRefType::WildCard:
+      return "_";
+    default:
+      return "No value!";
   }
 }

@@ -4,55 +4,59 @@
 #include "statement.h"
 #include "procedure.h"
 #include "variable.h"
-#include "pattern_query_manager.h"
-#include "relationship_query_manager.h"
-#include "with_query_manager.h"
+#include "pattern_query_handler.h"
+#include "relationship_query_handler.h"
+#include "with_query_handler.h"
 #include "pql_query.h"
 #include "pkb.h"
 
 QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
-  if (pql_query != nullptr && pql_query->is_valid_query()) {
+  if (pql_query != nullptr) {
     this->entities_to_return_ = pql_query->get_query_entities();
-    this->clause_groups_ = pql_query->get_clause_groups();
     this->synonym_to_entity_dec_ = pql_query->get_synonym_to_entities();
-    this->is_valid_query_ = pql_query->is_valid_query();
+    this->is_syntactically_valid_ = pql_query->is_syntactically_valid();
+    this->is_semantically_valid_ = pql_query->is_semantically_valid();
     this->pkb_ = pkb;
-  } else {
-    if (pql_query != nullptr && !pql_query->get_query_entities()->empty()) {
-      this->entities_to_return_ = pql_query->get_query_entities();
-    } else {
-      this->entities_to_return_ = nullptr;
+    if (pql_query->is_syntactically_valid() && pql_query->is_semantically_valid()) {
+      this->clause_groups_ = pql_query->get_clause_groups();
+      set_used_synonyms();
     }
+  } else {
+    this->entities_to_return_ = nullptr;
     this->synonym_to_entity_dec_ = nullptr;
-    this->is_valid_query_ = false;
+    this->is_syntactically_valid_ = false;
+    this->is_semantically_valid_ = false;
     this->pkb_ = nullptr;
   }
 }
 
 std::vector<std::string> *QueryEvaluator::Evaluate() {
-  if (!is_valid_query_) {  // if not valid query
+  if (!is_syntactically_valid_ || !is_semantically_valid_) {  // if not valid query
     if (entities_to_return_ != nullptr &&
-    entities_to_return_->size() == 1 &&
-    entities_to_return_->at(0)->get_return_type() == ReturnType::Boolean) {
-      return new std::vector<std::string>{"FALSE"};
-    } else {
-      return new std::vector<std::string>{};
+        entities_to_return_->size() == 1 &&
+        entities_to_return_->at(0)->get_return_type() == ReturnType::Boolean) {
+      if (is_syntactically_valid_) {
+        return new std::vector<std::string>{"FALSE"};
+      }
     }
+    return new std::vector<std::string>{};
   }
-
-  RelationshipQueryManager *relationship_query_manager;
-  PatternQueryManager *pattern_query_manager;
-  WithQueryManager *with_query_manager;
+  RelationshipQueryHandler *relationship_query_manager;
+  PatternQueryHandler *pattern_query_manager;
+  WithQueryHandler *with_query_manager;
   ResultTable *result_table = new ResultTable();
-  relationship_query_manager = new RelationshipQueryManager(pkb_);
-  pattern_query_manager = new PatternQueryManager(pkb_);
-  with_query_manager = new WithQueryManager();
+  relationship_query_manager = new RelationshipQueryHandler(pkb_);
+  pattern_query_manager = new PatternQueryHandler(pkb_);
+  with_query_manager = new WithQueryHandler();
 
   // guaranteed to have at least 3 clause groups,
   // where first group is without synonyms,
   // second group is without any return synonyms,
   // and third groups on are those with synonyms in results
+  bool found_first_table = false;
   for (int i = 0; i < clause_groups_.size(); i++) {
+    bool has_syn = !clause_groups_.at(i)->get_syn_used().empty();
+    bool has_return_syn = clause_groups_.at(i)->get_has_return_syn();
     std::vector<ClauseVertex> clause_vertexes = clause_groups_.at(i)->get_clauses();
     ResultTable *intermediate_table = new ResultTable();
     bool first_table_entry = true;
@@ -65,7 +69,7 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         case ClauseType::SuchThatClause:
           table = relationship_query_manager->EvaluateRelationship(
               std::dynamic_pointer_cast<SuchThatClause>(
-                  clause_vertex.get_clause()),synonym_to_entities_vec);
+                  clause_vertex.get_clause()), synonym_to_entities_vec);
           break;
         case ClauseType::PatternClause:
           table = pattern_query_manager->EvaluatePattern(std::dynamic_pointer_cast<PatternClause>(
@@ -75,7 +79,8 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
           table = with_query_manager->EvaluateWith(std::dynamic_pointer_cast<WithClause>(
               clause_vertex.get_clause()), synonym_to_entities_vec);
           break;
-        default:throw std::runtime_error("Unknown ClauseType found");
+        default:
+          throw std::runtime_error("Unknown ClauseType found");
       }
       // if a nullptr is received, means that clause evaluates to false or empty results
       if (table == nullptr) {
@@ -88,22 +93,22 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
         intermediate_table->NaturalJoin(*table);
       }
     }
-    if (i == 1) {  // first two groups which only has to evaluate true / false
+    if (has_syn && !has_return_syn) {  // has no return synonyms, check for non-empty table
       if (intermediate_table->get_table()->size() == 0 && !first_table_entry) {
         return ConvertToOutput(result_table, false);
       }
-    } else if (i == 2) {  // first group when the result table is initially empty
+    } else if (has_return_syn && !found_first_table) {  // result table is initially empty
       if (!first_table_entry && intermediate_table->get_table()->empty()) {  // found a clause
         return ConvertToOutput(result_table, false);
       }
       result_table->set_table(*intermediate_table);
-    } else if (i > 2) {
-      result_table->CrossJoin(*intermediate_table);
+      found_first_table = true;
+    } else if (has_return_syn && found_first_table) {  // update result table
+      result_table->CrossJoin(*intermediate_table, used_synonyms_);
       if (!first_table_entry && result_table->get_table()->empty()) {
         return ConvertToOutput(result_table, false);
       }
     }
-
   }
   return ConvertToOutput(result_table, true);
 }
@@ -221,18 +226,17 @@ std::vector<std::string>
   auto *output = new std::vector<std::string>();
   if (!is_valid_query) {
     if (entities_to_return_->size() == 1
-    && entities_to_return_->at(0)->get_return_type() == ReturnType::Boolean) {
+        && entities_to_return_->at(0)->get_return_type() == ReturnType::Boolean) {
       output->push_back("FALSE");
     }
     return output;
   }
 
   if (entities_to_return_->size() == 1
-  && entities_to_return_->at(0)->get_return_type() == ReturnType::Boolean) {
+      && entities_to_return_->at(0)->get_return_type() == ReturnType::Boolean) {
     output->push_back("TRUE");
     return output;
   }
-
   std::vector<int> indexes_of_return_entities;
   auto synonym_to_index_map = table_result->get_synonym_to_index();
   auto index_to_synonym_map = table_result->get_index_to_synonym();
@@ -240,9 +244,10 @@ std::vector<std::string>
   for (ResultClause *result_clause : *entities_to_return_) {
     std::string elem = result_clause->get_elem();
     std::string synonym = result_clause->get_synonym();
-
     // use the exact result as key
+
     if (synonym_to_index_map->find(elem) == synonym_to_index_map->end()) {
+
       ResultTable *new_table = new ResultTable();
       // synonym was used previously,
       if (synonym_to_index_map->find(synonym) != synonym_to_index_map->end()) {
@@ -250,21 +255,23 @@ std::vector<std::string>
       } else {
         MakeTableForUnusedEntity(new_table, result_clause);
       }
-
+      // empty result for the result clause
+      if (new_table->get_table()->empty()) {
+        return output;
+      }
       if (table_result->get_table()->empty()) {
-        table_result = new_table;
-        synonym_to_index_map = table_result->get_synonym_to_index();
+        table_result->set_table(*new_table);
+        synonym_to_index_map = new_table->get_synonym_to_index();
+        index_to_synonym_map = new_table->get_index_to_synonym();
       } else {
         table_result->NaturalJoin(*new_table);
       }
     }
   }
-
   // second loop to retrieve synonym indexes
   for (ResultClause *result_clause : *entities_to_return_) {
     indexes_of_return_entities.push_back(synonym_to_index_map->at(result_clause->get_elem()));
   }
-
   std::set<std::string> unique_results;
   for (std::vector<std::string> row : *table_result->get_table()) {
     std::stringstream ss;
@@ -389,16 +396,18 @@ void QueryEvaluator::MakeTableForUnusedEntity(ResultTable *result_table,
     case EntityType::None:
       throw std::runtime_error("Unknown EntityType!");
   }
-
   result_table->AddSingleColumn(elem, to_add);
 }
-
 
 void QueryEvaluator::MakeTableForUsedEntity(ResultTable *result_table,
                                             ResultClause *result_clause,
                                             ResultTable *other_result_table) {
   std::vector<std::string> synonym_vec = other_result_table->GetColumnVec(
       result_clause->get_synonym());
+
+  // removing duplicates in the column vec, since we are doing natural join later
+  sort(synonym_vec.begin(), synonym_vec.end());
+  synonym_vec.erase(unique(synonym_vec.begin(), synonym_vec.end()), synonym_vec.end());
 
   std::string elem = result_clause->get_elem();
   EntityType synonym_type = result_clause->get_synonym_type();
@@ -459,4 +468,10 @@ void QueryEvaluator::MakeTableForUsedEntity(ResultTable *result_table,
 
   result_table->AddDoubleColumns(result_clause->get_synonym(),
                                  synonym_vec, elem, to_add);
+}
+
+void QueryEvaluator::set_used_synonyms() {
+  for (ResultClause *result_clause : *entities_to_return_) {
+    used_synonyms_.insert(result_clause->get_synonym());
+  }
 }

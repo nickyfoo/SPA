@@ -4,7 +4,7 @@
 
 class Entity {
  protected:
-  Entity() {}
+  Entity() = default;
 
-  virtual ~Entity() {};
+  virtual ~Entity() = default;;
 };

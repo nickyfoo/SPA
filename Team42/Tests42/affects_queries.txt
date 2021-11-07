@@ -1,0 +1,70 @@
+1 - Affects two integer
+
+Select BOOLEAN such that Affects(2,3)
+TRUE
+5000
+2 - Affects integer and assign
+assign a;
+Select a such that Affects(2,a)
+3,5
+5000
+3 - Affects stmt (assign) and integer
+stmt s;
+Select s such that Affects(s,13)
+9,12
+5000
+4 - Affects itself
+assign a;
+Select a such that Affects(a,a)
+17
+5000
+5 - Affects assign pair
+assign a1,a2;
+Select <a1,a2> such that Affects(a1,a2)
+2 3,2 5,9 13,10 12,10 14,12 13,14 15,17 17
+5000
+6 - Affects two pairs
+assign a1,a2,a3;
+Select a3 such that Affects(a1,a2) and Affects(a2,a3)
+13,15,17
+5000
+7 - Affects ifs (semantically wrong)
+if ifs;
+Select BOOLEAN such that Affects(_,ifs)
+FALSE
+5000
+8 - Affects* 2 integers in same procedure
+
+Select BOOLEAN such that Affects*(10,15)
+TRUE
+5000
+9 - Affects* 2 integers different procedure
+
+Select BOOLEAN such that Affects*(2,12)
+FALSE
+5000
+10 - Affects* integer and assign
+assign a;
+Select a such that Affects*(10,a)
+12,13,14,15
+5000
+11 - Affects* stmt(assign) and integer
+stmt s;
+Select s such that Affects*(s,15)
+10,14
+5000
+12 - Affects* itself
+assign a;
+Select <a.stmt#,a> such that Affects*(a,a)
+17 17
+5000
+13 - Affects* pairs
+assign a1,a2;
+Select <a1,a2> such that Affects*(a1,a2)
+2 3,2 5,9 13,10 12,10 13,10 14,10 15,12 13,14 15,17 17
+5000
+14 - Affects* two pairs
+assign a1,a2,a3;
+Select a1 such that Affects*(a1,a2) and Affects*(a2,a3)
+10,17
+5000

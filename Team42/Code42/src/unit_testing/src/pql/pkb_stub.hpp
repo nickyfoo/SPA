@@ -111,7 +111,7 @@ class PKBStub : public PKB {
     return var_table_.get_all_vars();
   }
 
-  std::vector<Procedure *> get_all_procs() {
+  std::vector<Procedure *> get_all_procedures() override {
     return proc_table_.get_all_procs();
   }
 
@@ -140,11 +140,7 @@ class PKBStub : public PKB {
                             "z = x + 1; }"
                             "else {"
                             "x = z + x; } }";
-    //Parsing source
-    BufferedLexer lexer(samplePQL);
-    ParseState s{};
-    ProgramNode *p = ParseProgram(&lexer, &s);
-    PKB pkb = PKB(p);
+    PKB pkb;
 
     // printing statements
     for (Statement *stmt : pkb.get_all_statements()) {

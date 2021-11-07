@@ -1,0 +1,26 @@
+procedure affectsOne {
+    print hello;
+    x = i + hello;
+    y = x + y;
+    while (i != 0) {
+        byebye = x + 360;
+        call affectsTwo;
+        heyo = y + 25;
+    }
+    read imdone;
+}
+
+procedure affectsTwo {
+    a = byebye + hello;
+    hello = 635;
+    if (0 == hello) then {
+        x = x + hello;
+        y = a + x;
+    } else {
+        fifty = hello;
+    }
+    sixty = fifty;
+    while (2 == 2) {
+        itself = itself;
+    }
+}

@@ -1,0 +1,140 @@
+procedure main {
+1   call statements;
+2   call containers;
+3   call expressions;
+4   call spaces;
+5   call names;
+6   call call;
+7   call nesting;
+}
+
+procedure statements {
+8   read a;
+9   b = 999999999999999999999999;
+10  print b;
+11  call containers;
+}
+
+procedure containers {
+12  if (a == b) then {
+13      a = 0;
+14      b = 0;
+    } else {
+15      a = b;
+16      b = a;
+    }
+
+17  while (1 != 0) {
+18      out = 10101;
+19      print out;
+    }
+
+20  i = 0;
+21  while (i < 10) {
+22      print i;
+23      i = i + 1;
+    }
+}
+
+procedure expressions {
+24  x = 1 + 1 - 1 * 1 / 1 % 1;
+25  y = ((((1 + 1) - 1) * 1) / 1) % 1;
+26  read z;
+27  result = ((1 + 2) + y / (3 + 4 - 5 * z)) / (x - 6 * 7);
+28  print result;
+
+29  if (x >= 1) then {
+30      print result;
+    } else {
+31      result = 0;
+    }
+
+32  if (((x > y) && (y >= z)) || (((y < x) && (x <= z)) || ((x == z) && (y != x)))) then {
+33      print result;
+    } else {
+34      result = 0;
+    }
+
+35  i = 1;
+36  while (!(i >= 5 * z % 3)) {
+37      print i;
+38      i = i * 2 - 1;
+    }
+
+39  i = 1;
+40  while (!(i >= (5 + z) * 34)) {
+41      print i;
+42      i = i * 2 + 1;
+    }
+}
+
+procedure spaces {
+43 44 45 46    x=1 +                           3/4*5; read a; read b; read c;
+47                            result = (a+b+c)
+        /x;
+48 print result;
+49    call
+    statements;
+50    i=0;
+51 52 while(i<10){i=i+1;}
+53    result
+= result*2;
+54 if                                 (result<
+    50) then
+{
+55                        print result;
+56 } else { result = 0; }
+}
+
+procedure names {
+57  if = 1;
+58  while = 2;
+59  call = 3;
+60  print = 4;
+61  read = 5;
+62  if = while*call+(5-3%6*341);
+63  print=read+if*581212405;
+
+64  i124091241241l1240ui = a89eqjdg78345145;
+65  print print;
+66  call call;
+67  read read;
+68  if (if >= while) then {
+69      l23456789010000000000000000000000000000000000 = if + while;
+    } else {
+70      while = if + 5000;
+    }
+}
+
+procedure call {
+71  call = 1;
+72  print call;
+}
+
+procedure nesting {
+73  error = 5001;
+74  i = 0;
+75  j = 0;
+76  k = 0;
+77  if (1 == 1) then {
+78      while (i < 50) {
+79          i = i + 1;
+80          if (1 == 1) then {
+81              while (j < 50) {
+82                  j = j + 1;
+83                  if (1 == 1) then {
+84                      while (k < 50) {
+85                          k = k + 1;
+                        }
+                    } else {
+86                      print error;
+                    }
+                }
+            } else {
+87              print error;
+            }
+        }
+    } else {
+88      print error;
+    }
+}

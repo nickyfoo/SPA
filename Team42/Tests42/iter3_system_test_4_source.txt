@@ -1,0 +1,142 @@
+procedure office {
+  boss = Ah + SLAVE + cAN + d00 + 4 + M3;
+  SLAVE = (why) + ((cann0t + d0) + 4 + yourself); 
+  print work;
+
+  a = b;
+  b = 1;
+  a = b + c;
+  c=b+	c;
+  d	=e+f+g;
+  e=f+(g+h);
+  f=((h))+(g);
+  g = ((((((h))))));
+  h = a - b + c / d * e % f;
+  i = ((a - b) + c) / (d * (e % f));
+  j = 3 * 4;
+  k = k % 4;
+
+  i = knowMY / alph*b3t;
+  why = do / I + have * to / this;
+  read angry;
+  time = 2322;
+  myOTpay = 0;
+  missed = date * with + boyFie;
+
+  while(work == not + done) {
+    cry = tears + 3203;
+    type = alph*b3t;
+  }
+
+  work = finally * done;
+  call boyFie;
+  print resignationLetter;
+}
+
+procedure boyFie {
+  gf = take + call;
+  read helloIbUSY;
+  boss = is + very + mean / 2 + me;
+  while (gf == still + talking) {
+    pretend = listen;
+    ear = 1 + in + 1 + out;
+    yap = yap * yap;
+    if (i == bored) then {
+      while ((1 == not) && (caught > yet)) {
+        msg = side / bb * what + she % doing;
+        if (sId3Bb == isFre3) then {
+          call sId3Bb;
+          angry = sId3Bb - now;
+          print breakUpMsg;
+          she = broke + up / with *me;
+          while(i == sad) {
+            cry = tears + 3203;
+          }
+        } else {
+          ok = lor;
+          listen = 2 / mainBb;
+        }
+      }
+    } else {
+      scold = boss + w + honey;
+      print voodooTemplate;
+      read Scr1pt;
+      call curseBigBoss;
+      call curseBigBoss;
+      print gfHappy;
+    }
+  }
+}
+
+procedure sId3Bb {
+  read boyFie;
+  hi = wanna + come + over;
+  boyFie = i + calling * mainBb;
+  while (angry == jealous) {
+    print ultimatum;
+    hangup = now;
+    boyFie = harh;
+    mainBb = sad - (i + also + sad);
+    if (mainBb > sId3Bb) then {
+      we = break / up;
+      my = sideBb + is + (better + 2 + m3) % anyway;
+      boyFie = gesp;
+      print shocked;
+      u = never / say * that + you % also * (have - side + bb);
+      how = could + u;
+      while (karma == good && (god + is) == fair) {
+        boyFie = 0;
+        sId3Bb = 1;
+      }
+    } else {
+      i = break + up *with - myMainBb * ok;
+    }
+  }
+}
+
+procedure curseBigBoss {
+  read boss;
+  print hairDroppppp;
+  while (curse != complete) {
+    if (hairDroppppp == really) then {
+      curse = curse + 1;
+      curse = complete;
+      complete = curse;
+    } else {
+      print bossGetDiarrhea;
+      if (bossGetDiarrhea == reallyyyy) then {
+        curse = curse + 2;
+        curse = complete;
+        complete = curse;
+      } else {
+        read fireBoss;
+        if (fireBoss == please) then {
+          curse = curse + 3;
+          curse = complete;
+          complete = curse;
+        } else {
+          print openHisHouse;
+          try = open +safe;
+          print password;
+          input = 1234567890;
+          password = not + safe + lol;
+          if (stealHis % Fortune == (i + am) * rich) then {
+            curse = curse + 3;
+            curse = complete;
+            complete = curse;
+          } else {
+            password = failed;
+            security = called * police;
+            eeee = ooorh + eeee + ooorh;
+            police = coming * soon;
+            print help;
+            this = curse / fail;
+            read iQuit;
+            climb = out + of * window;
+            print escape;
+          }
+        }
+      }
+    }
+  }
+}

@@ -12,10 +12,10 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause follows = SuchThatClause("Follows");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_stmt_num(3);
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_stmt_num(4);
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     follows.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> follows_ptr = std::make_shared<SuchThatClause>(follows);
 
@@ -23,9 +23,7 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, {});
-    follows_parents_handler->set_function_pointers(&Statement::get_followers,
-                                                   &Statement::get_followees);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateFollows();
     REQUIRE(res->get_table()->empty() == true);
   }
 
@@ -34,10 +32,10 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause follows = SuchThatClause("Follows");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_synonym("s1");
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_stmt_num(4);
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     follows.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> follows_ptr = std::make_shared<SuchThatClause>(follows);
 
@@ -53,9 +51,7 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_followers,
-                                                   &Statement::get_followees);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateFollows();
     REQUIRE(res->get_table()->size() == 1);
     REQUIRE(res->get_table()->at(0).size() == 1);
     REQUIRE(res->get_table()->at(0).at(0) == "3");
@@ -66,10 +62,10 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause follows = SuchThatClause("Follows");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_stmt_num(3);
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_synonym("s1");
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     follows.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> follows_ptr = std::make_shared<SuchThatClause>(follows);
 
@@ -85,9 +81,7 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_followers,
-                                                   &Statement::get_followees);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateFollows();
     REQUIRE(res->get_table()->size() == 1);
     REQUIRE(res->get_table()->at(0).size() == 1);
     REQUIRE(res->get_table()->at(0).at(0) == "4");
@@ -98,10 +92,10 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause follows = SuchThatClause("Follows");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_synonym("s1");
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_synonym("s2");
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     follows.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> follows_ptr = std::make_shared<SuchThatClause>(follows);
 
@@ -118,9 +112,7 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_followers,
-                                                   &Statement::get_followees);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateFollows();
     REQUIRE(res->get_table()->size() == 7);
     REQUIRE(res->get_table()->at(0).size() == 2);
     REQUIRE(res->get_table()->at(0).at(0) == "1");
@@ -140,16 +132,16 @@ TEST_CASE("FollowsClauses_DifferentNumberOfSyns_OutputsResultTable") {
   }
 }
 
-TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
+TEST_CASE("Follows*Clauses_DifferentNumberOfSyns_OutputsResultTable") {
   SECTION("Follows* with 0 synonyms") {
     // Follows*(5, 11)
     SuchThatClause follows = SuchThatClause("Follows*");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_stmt_num(5);
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_stmt_num(11);
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     follows.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> follows_ptr = std::make_shared<SuchThatClause>(follows);
 
@@ -157,9 +149,7 @@ TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, {});
-    follows_parents_handler->set_function_pointers(&Statement::get_followers_star,
-                                                   &Statement::get_followees_star);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateFollowsT();
     REQUIRE(res->get_table()->empty() == true);
   }
 
@@ -168,10 +158,10 @@ TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause follows = SuchThatClause("Follows*");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_synonym("s1");
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_stmt_num(4);
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     follows.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> follows_ptr = std::make_shared<SuchThatClause>(follows);
 
@@ -187,9 +177,7 @@ TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_followers_star,
-                                                   &Statement::get_followees_star);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateFollowsT();
     REQUIRE(res->get_table()->size() == 3);
     REQUIRE(res->get_table()->at(0).size() == 1);
     REQUIRE(res->get_table()->at(0).at(0) == "1");
@@ -202,10 +190,10 @@ TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause follows = SuchThatClause("Follows*");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_stmt_num(6);
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_synonym("s1");
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     follows.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> follows_ptr = std::make_shared<SuchThatClause>(follows);
 
@@ -221,9 +209,7 @@ TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_followers_star,
-                                                   &Statement::get_followees_star);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateFollowsT();
     REQUIRE(res->get_table()->size() == 3);
     REQUIRE(res->get_table()->at(0).size() == 1);
     REQUIRE(res->get_table()->at(0).at(0) == "9");
@@ -236,10 +222,10 @@ TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause follows = SuchThatClause("Follows*");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_synonym("s1");
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_synonym("s2");
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     follows.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> follows_ptr = std::make_shared<SuchThatClause>(follows);
 
@@ -256,23 +242,21 @@ TEST_CASE("Follows*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, follows_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_followers_star,
-                                                   &Statement::get_followees_star);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateFollowsT();
     REQUIRE(res->get_table()->size() == 16);
   }
 }
 
-TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
+TEST_CASE("ParentClauses_DifferentNumberOfSyns_OutputsResultTable") {
   SECTION("Parent with 0 synonyms") {
     // Parent(4, 6)
     SuchThatClause parent = SuchThatClause("Parent");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_stmt_num(4);
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_stmt_num(6);
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     parent.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> parent_ptr = std::make_shared<SuchThatClause>(parent);
 
@@ -280,9 +264,7 @@ TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, parent_ptr, {});
-    follows_parents_handler->set_function_pointers(&Statement::get_children,
-                                                   &Statement::get_parents);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateParent();
     REQUIRE(res->get_table()->empty() == true);
   }
 
@@ -291,10 +273,10 @@ TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause parent = SuchThatClause("Parent");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_synonym("s1");
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_stmt_num(7);
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     parent.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> parent_ptr = std::make_shared<SuchThatClause>(parent);
 
@@ -310,9 +292,7 @@ TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, parent_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_children,
-                                                   &Statement::get_parents);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateParent();
     REQUIRE(res->get_table()->size() == 1);
     REQUIRE(res->get_table()->at(0).size() == 1);
     REQUIRE(res->get_table()->at(0).at(0) == "6");
@@ -323,10 +303,10 @@ TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause parent = SuchThatClause("Parent");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_stmt_num(12);
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_synonym("s1");
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     parent.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> parent_ptr = std::make_shared<SuchThatClause>(parent);
 
@@ -342,9 +322,7 @@ TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, parent_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_children,
-                                                   &Statement::get_parents);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateParent();
     REQUIRE(res->get_table()->size() == 2);
     REQUIRE(res->get_table()->at(0).size() == 1);
     REQUIRE(res->get_table()->at(0).at(0) == "13");
@@ -356,10 +334,10 @@ TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause parent = SuchThatClause("Parent");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_synonym("s1");
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_synonym("s2");
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     parent.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> parent_ptr = std::make_shared<SuchThatClause>(parent);
 
@@ -376,23 +354,21 @@ TEST_CASE("ParentClauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, parent_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_children,
-                                                   &Statement::get_parents);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateParent();
     REQUIRE(res->get_table()->size() == 9);
   }
 }
 
-TEST_CASE("Parent*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
+TEST_CASE("Parent*Clauses_DifferentNumberOfSyns_OutputsResultTable") {
   SECTION("Parent* with 0 synonyms") {
     // Parent*(4, 7)
     SuchThatClause parent = SuchThatClause("Parent*");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_stmt_num(4);
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_stmt_num(7);
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     parent.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> parent_ptr = std::make_shared<SuchThatClause>(parent);
 
@@ -400,9 +376,7 @@ TEST_CASE("Parent*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, parent_ptr, {});
-    follows_parents_handler->set_function_pointers(&Statement::get_children_star,
-                                                   &Statement::get_parents_star);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateParentT();
     REQUIRE(res->get_table()->empty() == true);
   }
 
@@ -411,10 +385,10 @@ TEST_CASE("Parent*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause parent = SuchThatClause("Parent*");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_synonym("s1");
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_stmt_num(7);
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     parent.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> parent_ptr = std::make_shared<SuchThatClause>(parent);
 
@@ -430,9 +404,7 @@ TEST_CASE("Parent*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, parent_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_children_star,
-                                                   &Statement::get_parents_star);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateParentT();
     REQUIRE(res->get_table()->size() == 2);
     REQUIRE(res->get_table()->at(0).size() == 1);
     REQUIRE(res->get_table()->at(0).at(0) == "4");
@@ -444,10 +416,10 @@ TEST_CASE("Parent*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause parent = SuchThatClause("Parent*");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_stmt_num(4);
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_synonym("s1");
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     parent.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> parent_ptr = std::make_shared<SuchThatClause>(parent);
 
@@ -463,9 +435,7 @@ TEST_CASE("Parent*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, parent_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_children_star,
-                                                   &Statement::get_parents_star);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateParentT();
     REQUIRE(res->get_table()->size() == 7);
     REQUIRE(res->get_table()->at(0).size() == 1);
     REQUIRE(res->get_table()->at(0).at(0) == "5");
@@ -482,10 +452,10 @@ TEST_CASE("Parent*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
     SuchThatClause parent = SuchThatClause("Parent*");
     StmtRef left_stmt_ref = StmtRef();
     left_stmt_ref.set_synonym("s1");
-    SuchThatRef *left_such_that_ref = new SuchThatRef(left_stmt_ref);
+    auto *left_such_that_ref = new SuchThatRef(left_stmt_ref);
     StmtRef right_stmt_ref = StmtRef();
     right_stmt_ref.set_synonym("s2");
-    SuchThatRef *right_such_that_ref = new SuchThatRef(right_stmt_ref);
+    auto *right_such_that_ref = new SuchThatRef(right_stmt_ref);
     parent.set_ref(left_such_that_ref, right_such_that_ref);
     std::shared_ptr<SuchThatClause> parent_ptr = std::make_shared<SuchThatClause>(parent);
 
@@ -502,9 +472,7 @@ TEST_CASE("Parent*Clauses_DiferentNumberOfSyns_OutputsResultTable") {
 
     FollowsParentHandler *follows_parents_handler = FollowsParentHandler::get_instance();
     follows_parents_handler->set_args(pkb_stub, parent_ptr, syn_to_entities_vec);
-    follows_parents_handler->set_function_pointers(&Statement::get_children_star,
-                                                   &Statement::get_parents_star);
-    ResultTable *res = follows_parents_handler->Evaluate();
+    ResultTable *res = follows_parents_handler->EvaluateParentT();
     REQUIRE(res->get_table()->size() == 11);
   }
 }

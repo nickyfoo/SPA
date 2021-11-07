@@ -1,0 +1,155 @@
+1 - Get constant values
+assign a;
+Select a pattern a(_,"31415926535")
+36,97
+5000
+2 - Assign with used constant
+assign a; constant c;
+Select c with a.stmt# = c.value
+5,6,7,98
+5000
+3 - Variable across different procedures
+procedure p; if ifs; variable v;
+Select <p, ifs.stmt#> such that Calls(p,_) and Uses(p, v) with v.varName = "corona" pattern ifs(v,_,_)
+hello 10, hello 53, hello 71, iwanttotravel 10, iwanttotravel 53, iwanttotravel 71
+5000
+4 - Nested if loop with Next
+if ifs1,ifs2; variable v1,v2;
+Select <ifs2,v2> such that Uses(ifs1,v2) pattern ifs1(v1,_,_) with v1.varName = "budget" such that Next(ifs1, ifs2) pattern ifs2(v2,_,_)
+62 taiwan, 62 america, 62 budget, 63 budget, 63 china
+5000
+5 - Find else condition
+if ifs1,ifs2,ifs3; print p1,p2,p3; read r;
+Select r.varName such that Parent(ifs1,ifs2) and Parent(ifs2,ifs3) and Next(ifs1,p1) and Next(ifs2,p2) and Next(ifs3,p3) and Next(ifs3,r)
+boohoostayinsg
+5000
+6 - Find all procedures that was called and called something else
+procedure p1,p2;
+Select <p1,p2> such that Calls(_,p1) and Calls(p1,p2)
+iwanttotravel sgairlines
+5000
+7 - Find all variables used in procedure within container statements that is assigned
+procedure p; variable v,v1; print pn; assign a;
+Select v such that Uses(p, v1) with v1.varName = "tryedgecases" and pn.varName = v1.varName such that Parent(_,a) pattern a(v,_) such that Next*(pn,a)
+Select, FALSE, with, if, then, else
+5000
+8 - Find all variables used within while containers
+while w; variable v;
+Select <w,v.varName> pattern w(v,_)
+4 i, 12 budget, 30 trywhile, 30 true, 33 preparingtoleave, 43 loopone, 44 looptwo, 45 loopthree, 46 loopfour, 47 loopfive, 82 while, 82 TRUE
+5000
+9 - Affects with same parent (i.e. in same loop)
+assign a1,a2; stmt s;
+Select <a1,a2> such that Affects(a1,a2) and Parent(s, a1) and Parent(s, a2)
+6 7, 13 13, 14 14, 13 14,48 49,79 80, 80 81
+5000
+10 - Assignment with variable on left and right hand side
+assign a; variable v;
+Select <a.stmt#, v.varName> such that Uses(a,v) and Modifies(a,v)
+5 i,13 money,14 budget,20 something,52 imhungry
+5000
+11 - Testing keywords
+assign with; variable stmtRef;
+Select <with.stmt#, stmtRef> pattern with("with",_) such that Uses(with, stmtRef)
+78 varName, 78 procName, 93 stmtRef, 93 entRef
+5000
+12 - Constant and stmt number
+read r; constant c;
+Select r.varName with r.stmt# = c.value
+letsgo, imhungry
+5000
+13 - Next pairs in procedure
+stmt s,s1,s2; if ifs;
+Select <s1,s2> pattern ifs("calledhere",_,_) such that Next*(ifs,s1) such that Next(s1,s2)
+25 26,26 27,27 28,27 36,28 29,28 35,29 30,29 33,30 31,31 32,32 30,30 42,33 34,34 33,33 42,35 42,36 42,37 38,38 39,39 40,40 41,41 42
+5000
+14 - Simple pattern with brackets
+assign a; variable v;
+Select <a,v> pattern a(_,_" (6 %    something)  "_) such that Modifies(a,v)
+22 complexpattern, 20 something
+5000
+15 - Testing BOOLEAN keywords
+assign a;
+Select BOOLEAN such that Uses(a,"TRUE")
+TRUE
+5000
+16 - Nested Next in while loop
+while w,w1,w2; stmt s;
+Select <w1,w2> such that Parent*(w,w1) with s.stmt# = w.stmt# such that Next(w1,w2)
+44 45,45 46,46 47,47 46,46 45
+5000
+17 - All Affects*
+assign a1,a2;
+Select <a1,a2> such that Affects*(a1,a2)
+6 7,13 13,13 14,14 14,16 22,20 21,20 22,21 22,48 49,79 80,79 81,80 81
+5000
+18 - Follows with stmt such that variable used before is used next
+stmt s1,s2; variable v;
+Select <s1,s2> such that Follows(s1,s2) and Modifies(s1,v) and Uses(s2,v)
+3 20,6 7,11 12,13 14,20 21,21 22,43 53,48 49,51 52,60 61,61 68,79 80,80 81,82 85
+5000
+19 - Comparing procname and varname
+procedure p; variable v;
+Select p.procName with p.procName = v.varName
+hello, sadboy
+5000
+20 - All assignments where left hand variable is printed
+assign a; print pn; variable v;
+Select <a.stmt#, pn.varName> such that Modifies(a, v) with v.varName = pn.varName
+23 imdone, 90 read, 91 print
+5000
+21 - All nested if pairs
+if ifs1, ifs2;
+Select <ifs1, ifs2> such that Parent(ifs1, ifs2)
+3 10,24 27,27 28,28 29,61 62,62 63
+5000
+22 - Check all print statements with their varname and stmt#
+print pn;
+Select <pn, pn.varName, pn.stmt#>
+1 hundredlines 1,9 imdone 9,15 canitravel 15,26 calledhere 26,31 hopethisworks 31,34 leave 34,42 goodbyeworld 42,50 putsomethinghere 50,55 lifesux 55,64 option3 64,66 option2 66, 67 option1 67, 70 iwanttofly 70, 72 flymyminion 72, 73 boohoostayinsg 73,74 tryedgecases 74,83 print 83,85 read 85,
+5000
+23 - Find all assignments in while loop that have the variable in condition
+while w; assign a; variable v;
+Select <w,a,v> pattern w(v,_) such that Parent(w,a) and Modifies(a,v)
+12 14 budget,4 5 i
+5000
+24 - Complex query
+assign a1,a2; print pn; read r; while w; if ifs; variable v1,v2; stmt s;
+Select a2 pattern w(v1,_) such that Parent(w,a1) and Modifies(a1,v1) and Next(pn,r) and Next*(r, a2) and Follows(r, ifs) and Parent(ifs,w) pattern ifs(v2,_,_) and a2(v2,_) such that Modifies(a2,v2) and Follows(a2,s) and Uses(s,v2)
+6
+5000
+25 - Testing keywords Select
+assign Select; if ifs; variable v;
+Select Select such that Parent(ifs, Select) pattern Select("Select",_)
+76
+5000
+26 - All print in nested if which is used beforehand
+if ifs; print pn; assign a; variable v;
+Select <pn, pn.varName> such that Parent*(ifs, pn) and Follows*(a, ifs) and Uses(a, v) with pn.varName = v.varName
+64 option3, 66 option2, 67 option1
+5000
+27 - Find all variables used in a long condition
+variable v1,v2; print pn; if ifs;
+Select v2 such that Next(ifs, pn) with pn.varName = "boohoostayinsg" pattern ifs(v2,_,_)
+iwanttofly, true, corona, false, budget, rich
+5000
+28 - Nested Next*
+stmt s;
+Select s such that Next*(49,s)
+43,44,45,46,47,48,49,50,51,52,53,54,55
+5000
+29 - Find all edge cases variables in procedure that are used
+variable v; procedure p;
+Select v with p.procName = "noonecallsme" such that Uses(p,v)
+tryedgecases,pattern,suchthat,FALSE,TRUE,NOT,varName,procName,while,if,then,print,read,assign,calls,procedure,ParentT,FollowsT,stmtRef,entRef,n,constant,almostthere,yay
+5000
+30 - Constants that belong to some statement#
+constant c; stmt s;
+Select c with c.value = s.stmt#
+1,2,3,4,5,6,7,8,50,51,70,98
+5000
+31 - Many variables declared and many clauses, but evaluate to false (check for early termination)
+assign a1,a2,a3,a4,a5,a6,a7,a8,a9,a10; stmt s1,s2,s3,s4,s5,s6,s7,s8,s9,s10; if ifs1,ifs2,ifs3,ifs4,ifs5,ifs6,ifs7,ifs8,ifs9,ifs10; while w1,w2,w3,w4,w5,w6,w7,w8,w9,w10; read r1,r2,r3,r4,r5,r6,r7,r8,r9,r10; print pn1,pn2,pn3,pn4,pn5,pn6,pn7,pn8,pn9,pn10; proc p1,p2,p3,p4,p5,p6,p7,p8,p9,p10; call c1,c2,c3,c4,c5,c6,c7,c8,c9,c10;
+Select with a1.stmt# = a2.stmt# and a2.stmt# = a3.stmt# and  a3.stmt# = a4.stmt# and  a4.stmt# = a5.stmt# and s1.stmt# = s2.stmt# and s1.stmt# = s2.stmt# and s2.stmt# = s3.stmt# and s3.stmt# = s4.stmt# and s4.stmt# = s5.stmt# and r1.varName = r2.varName and r1.varName = r2.varName and r2.varName = r3.varName and r3.varName = r4.varName and r4.varName = r5.varName and p1.varName = p2.varName and pn1.varName = pn2.varName and pn2.varName = pn3.varName and pn3.varName = pn4.varName and pn4.varName = pn5.varName and p1.procName = p2.procName and p2.procName = p3.procName and p3.procName = p4.procName and p4.procName = p5.procName and p5.procName = "nonexistent"
+
+5000

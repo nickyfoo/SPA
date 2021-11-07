@@ -1,0 +1,145 @@
+  procedure hungryStudent {
+01  timeNow = 6;
+02  what = should + i * eat;
+03  recipe = i + know + none;
+04  if (cravings == korean) then {
+05    if (fridge == empty) then {
+06      what = was + i * thinking;
+07      call poorStudentMeal;
+      } else {
+08      recipe = kimchi + stew + recipe;
+09      print recipe;
+10      call makeKimchiStew;
+      }
+    } else {
+11    how = about * ramen;
+12    if (fridge + ingredients <= 0) then {
+13      you = know * what;
+14      forget = it;
+15      call poorStudentMeal;
+      } else {
+16      recipe = ramen / recipe;
+17      print recipe;
+18      call makeRamen;
+      }
+    }
+19  timeNow = 9;
+20  i = hungry + tired;
+21  assignments = 10000 + due;
+22  moralOfStory = dont + try / cooking;
+  }
+  
+  procedure poorStudentMeal {
+23  dinner = expired / bread;
+24  plus = a * mental / breakdown;
+  }
+  
+  procedure makeKimchiStew {
+25  ingredients = kimchi + pork + tofu + greenOnions + onion + salt + sugar + pepperPaste;
+26  if (availableIngredients < ingredients) then {
+27    i = guess / i + will * do + (without / those);
+    } else {
+28    soup = will / be * successful;
+29    i = optimistic;
+    }
+30  step1 = boil + water;
+31  while (water == (not + boil)) {
+32    pork = slice / thinly;
+33    kimchi = chop;
+34    while (chopping < onions) {
+35      cry = while / chopping;
+      }
+36    if (finger == cut) then {
+37      i = idiot;
+      } else {
+38      i = masterChef;
+      }
+    }
+39  step2 = (add + ingredients) / to * pot;
+40  pot = add / sauces + and * pray;
+41  timeNow = 7; 
+42  i = very / hungry;
+43  while (timeNow < 730) {
+44    read textbook;
+    }
+45  check = soup;
+46  forgot = to / turn * heat + on;
+47  i = idiot;
+48  heat = on;
+49  while (soup == cooking) {
+50    if (i == sleepy) then {
+51      eyes = close / for * (five + mins);
+      } else {
+52      read textbook;
+53      eyes = slowly / close;
+      }
+    }
+54  timeNow = 10;
+55  i = overslept;
+56  idiot = i;
+57  soup = burnt + mess;
+58  while (i == crying) {
+59    call poorStudentMeal;
+    }
+  }
+  
+  procedure makeRamen {
+60  ingredients = noodles + chicken + greenOnions + soySauce + mushrooms + garlic + mirin + eggs;
+61  if (availableIngredients == ingredients - noodles) then {
+62    why = (am + i / making) * ramen / if * i + dont / have * noodles;
+63    noodles = take / from * instant + noodles;
+    } else {
+64    continue = cooking;
+    }
+65  if (availableIngredients == ingredients - chicken) then {
+66    chicken = luxury;
+67    i = dont * need;
+    } else {
+68    prepare = chicken;
+69    place = chicken / marinade * in - bowl;
+70    chicken = mix + well;
+71    marinade = one + hour;
+72    if ((i == can + wait) && timeNow < 8) then {
+73      while (time < one + hour) {
+74        i = wait;
+        }
+      } else {
+75      i = rather / eat + tasteless - chicken;
+76      chicken = roast + in + oven;
+      }
+    }
+77  while (chicken == cooking) {
+78    prepare = soup;
+79    pot = stock + soySauce + mushrooms + garlic + greenOnions + mirin;
+80    heat = on;
+81    pot = boil;
+    }
+82  while (soup == boiling) {
+83    prepare = noodles;
+84    boil = water;
+85    noodles = cook + for + fiveMins;
+    }
+86  soup = done; 
+87  now = taste / soup;
+88  if (soup == (taste * terrible) * 8) then {
+89    i = not + masterchef;
+90    if (i == can + save + this) then {
+91      who = am - i * kidding;
+      } else {
+92      i = still + have * chicken;
+      }
+    } else {
+93    this = probably / (wont + happen);
+    }
+94  onlyHope = chicken;
+95  chicken = done + now;
+96  looks = not + appetising;
+97  taste = terrible;
+98  if (i == give + up) then {
+99    call poorStudentMeal;
+    } else {
+100    read recipe;
+101    i = screwed + up;
+    }
+102  call poorStudentMeal;
+  }

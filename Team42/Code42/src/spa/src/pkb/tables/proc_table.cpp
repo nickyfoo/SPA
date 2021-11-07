@@ -6,13 +6,13 @@ ProcTable::ProcTable() = default;
 
 ProcTable::~ProcTable() = default;
 
-int ProcTable::AddProcedure(const std::string &name) {
+int ProcTable::AddProcedure(const std::string &name, int stmt_no) {
   auto it = name_to_index_.find(name);
   if (it != name_to_index_.end()) {
     return it->second;
   }
   int pos = table_.size();
-  Procedure p(name);
+  Procedure p(name, stmt_no);
   table_.push_back(p);
   name_to_index_[name] = pos;
   return pos;
@@ -40,14 +40,14 @@ Procedure *ProcTable::get_procedure(const std::string &name) {
 void ProcTable::ProcessCalls() {
   for (Procedure &p : table_) {
     for (auto &proc_name : *p.get_calls()) {
-      calls_int_[name_to_index_[p.get_name()]].insert(name_to_index_[proc_name]);
+      calls_[name_to_index_[p.get_name()]].insert(name_to_index_[proc_name]);
     }
   }
 }
 
 void ProcTable::ProcessCallsStar() {
   int n = table_.size();
-  std::vector<std::vector<int>> d = GetTransitiveClosure(calls_int_, n);
+  std::vector<std::vector<int>> d = GetTransitiveClosure(calls_, n);
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < n; j++) {
       if (d[i][j] == 0) continue;
@@ -60,7 +60,7 @@ void ProcTable::ProcessCallsStar() {
 void ProcTable::PrintProcedures() {
   std::cout << "ProcTable size: " << table_.size() << '\n';
   for (Procedure p : table_) {
-    std::cout << p.get_name() << '\n';
+    std::cout << p.get_name() << ' ' << p.get_stmt_no() << '\n';
   }
 }
 
@@ -83,17 +83,17 @@ std::vector<std::vector<int>> ProcTable::SetupAL() {
   return al;
 }
 
-void ProcTable::DFS(int u, std::vector<std::vector<int>> &al,
-                    std::vector<int> &status, std::vector<int> &ans) {
-  status[u] = VISITED;
+void ProcTable::ToposortProcsDFS(int u, std::vector<std::vector<int>> &al,
+                                 std::vector<int> &status, std::vector<int> &ans) {
+  status[u] = kVisited;
   for (auto &v : al[u]) {
-    if (status[v] == UNVISITED) {
-      DFS(v, al, status, ans);
-    } else if (status[v] == VISITED) {
+    if (status[v] == kUnvisited) {
+      ToposortProcsDFS(v, al, status, ans);
+    } else if (status[v] == kVisited) {
       throw PKBException("Cyclic procedure calls detected");
     }
   }
-  status[u] = EXPLORED;
+  status[u] = kExplored;
   ans.push_back(u);
 }
 
@@ -124,8 +124,8 @@ void ProcTable::ProcessUsesModifiesIndirect() {
   std::vector<int> ans_int;
   std::vector<int> status(table_.size(), 0);
   for (int i = 0; i < table_.size(); i++) {
-    if (status[i] == UNVISITED) {
-      DFS(i, adj_list, status, ans_int);
+    if (status[i] == kUnvisited) {
+      ToposortProcsDFS(i, adj_list, status, ans_int);
     }
   }
   reverse(ans_int.begin(), ans_int.end());

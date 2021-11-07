@@ -42,7 +42,7 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
         // clear all operators till matching LParen found
         const Token *op_token;
         while (!operator_stack.empty() &&
-               (op_token = operator_stack.top())->kind_ != TokenType::LParen) {
+            (op_token = operator_stack.top())->kind_ != TokenType::LParen) {
           operator_stack.pop();
 
           if (IsExprOp(op_token->kind_)) {
@@ -194,8 +194,8 @@ ParseExpression(BufferedLexer *lexer, ParseState *state, std::string end) {
       default:
         // clear all operators with higher precedence
         while (!operator_stack.empty() &&
-               (op_token = operator_stack.top())->kind_ != TokenType::LParen &&
-               Precedes(op_token->kind_, next_token->kind_)) {
+            (op_token = operator_stack.top())->kind_ != TokenType::LParen &&
+            Precedes(op_token->kind_, next_token->kind_)) {
           operator_stack.pop();
 
           if (IsExprOp(op_token->kind_)) {

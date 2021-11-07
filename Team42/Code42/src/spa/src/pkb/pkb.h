@@ -12,7 +12,7 @@
 #include "tables/stmt_table.h"
 #include "tables/var_table.h"
 #include "tables/const_table.h"
-#include "pattern_manager.h"
+#include "pattern_handler.h"
 #include "pkb_exception.h"
 
 class PKB {
@@ -134,12 +134,13 @@ class PKB {
 
   // DFS to check reachability for NextBip and AffectsBip* relationship
   void BipReachabilityDFS(std::set<std::pair<int,
-                               std::string>> &visited,
-                               int u, 
-                               std::string &u_hash,
-                               int start, 
-                               std::string &start_hash,
-                               std::vector<int> &call_stack);
+                                             std::string>> &visited,
+                          int u,
+                          std::string &u_hash,
+                          int start,
+                          std::string &start_hash,
+                          std::vector<int> &call_stack);
+
   // DFS to check reachability for AffectsBip relationship.
   // If target is not kWild, supports fast termination to save on unnecessary computations.
   void AffectsBipDFS(int start,
@@ -158,7 +159,7 @@ class PKB {
   // Returns true if v is an assign stmt that modifies var_name
   bool ModifiesVarName(int v, const std::string &var_name);
   // Traverses CFG to get Next(u,_), since there are negative nodes.
-  void GetFirstPositiveStmts(int u, std::set<int>& visited, std::set<int>& ans);
+  void GetFirstPositiveStmts(int u, std::set<int> &visited, std::set<int> &ans);
   // DFS to check reachability for AffectsBip* relationship
   void AffectsBipStarDFS(std::set<std::pair<int, std::string>> &visited,
                          int u,
@@ -169,7 +170,7 @@ class PKB {
   std::string CallStackToString(std::vector<int> *call_stack);
 
   // Root AST node of the program.
-  PatternManager pattern_manager_;
+  PatternHandler pattern_handler_;
   // Table of procedures in the program.
   ProcTable proc_table_;
   // Table of statements in the program.

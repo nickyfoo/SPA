@@ -32,8 +32,8 @@ void ClauseGroup::SortWithinGroup() {
   std::sort(this->clauses_.begin(),
             this->clauses_.end(),
             [](ClauseVertex &lhs, ClauseVertex &rhs) {
-    return lhs.get_priority() < rhs.get_priority();
-  });
+              return lhs.get_priority() < rhs.get_priority();
+            });
 
   // use prim's algorithm to order clauses such that synonyms in a clause were evaluated in
   // a previous clause
@@ -70,8 +70,8 @@ void ClauseGroup::SortWithinGroup() {
   // Creating visits set and priority queue
   std::unordered_set<int> visited;
   std::priority_queue<std::pair<int, ClauseVertex>,
-  std::vector<std::pair<int, ClauseVertex>>,
-  std::greater<>> pqueue;
+                      std::vector<std::pair<int, ClauseVertex>>,
+                      std::greater<>> pqueue;
   pqueue.push(std::make_pair(clauses_.at(0).get_priority(), clauses_.at(0)));
 
   // Looping through priority queue and finding MST

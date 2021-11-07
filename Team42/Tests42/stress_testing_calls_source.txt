@@ -1,0 +1,175 @@
+procedure one {
+    call two;
+    call three;
+    call five;
+    call seven;
+    call eleven;
+    call thirteen;
+    call seventeen;
+    call nineteen;
+    call twentythree;
+    call twentynine;
+}
+
+
+procedure two {
+    call four;
+    call six;
+    call eight;
+    call ten;
+    call twelve;
+    call fourteen;
+    call sixteen;
+    call eighteen;
+    call twenty;
+    call twentytwo;
+    call twentyfour;
+    call twentysix;
+    call twentyeight;
+    call thirty;
+}
+
+procedure three {
+    call six;
+    call nine;
+    call twelve;
+    call fifteen;
+    call eighteen;
+    call twentyone;
+    call twentyfour;
+    call twentyseven;
+    call thirty;
+}
+
+procedure four {
+    call eight;
+    call twelve;
+    call sixteen;
+    call twenty;
+    call twentyfour;
+    call twentyeight;
+}
+
+procedure five {
+    call ten;
+    call fifteen;
+    call twenty;
+    call twentyfive;
+    call thirty;
+}
+
+procedure six {
+    call twelve;
+    call eighteen;
+    call twentyfour;
+    call thirty;
+}
+
+procedure seven {
+    call fourteen;
+    call twentyone;
+    call twentyeight;
+}
+
+procedure eight {
+    call sixteen;
+    call twentyfour;
+}
+
+procedure nine {
+    call eighteen;
+    call twentyseven;
+}
+
+procedure ten {
+    call twenty;
+    call thirty;
+}
+
+procedure eleven {
+    call twentytwo;
+}
+
+procedure twelve {
+    call twentyfour;
+}
+
+procedure thirteen {
+    call twentysix;
+}
+
+procedure fourteen {
+    call twentyeight;
+}
+
+procedure fifteen {
+    call thirty;
+}
+
+procedure sixteen {
+    print fiftyfour;
+}
+
+procedure seventeen {
+    read fiftyfive;
+}
+
+procedure eighteen {
+    fiftysix = 56;
+}
+
+procedure nineteen {
+    hello = 57;
+}
+
+procedure twenty {
+    while (c < 58) {
+        if (x == 59) then {
+            print sixty;
+        } else {
+            read sixtyone;
+        }
+    }
+}
+
+procedure twentyone {
+    print sixtytwo;
+}
+
+procedure twentytwo {
+    read sixtythree;
+    print sixtyfour;
+}
+
+procedure twentythree {
+    histeph = 65;
+}
+
+procedure twentyfour {
+    whatareudoing = 66;
+}
+
+procedure twentyfive {
+    print sixtyseven;
+}
+
+procedure twentysix {
+    read sixtyeight;
+}
+
+procedure twentyseven {
+    print sixtynine;
+}
+
+procedure twentyeight {
+    bye = 70;
+}
+
+procedure twentynine {
+    heyoooo = 71;
+    heyyyyyy = 72;
+}
+
+procedure thirty {
+    byeimdone = 73;
+}

@@ -27,7 +27,7 @@ class Procedure : public Entity {
   std::set<std::string> *get_callers();
   // Gets the procedures that call star this procedure.
   std::set<std::string> *get_callers_star();
-  
+
   // Adds a variable that this procedure uses.
   void AddUses(const std::string &var_name);
   // Adds a variable that this procedure modifies.

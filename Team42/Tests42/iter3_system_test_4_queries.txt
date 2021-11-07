@@ -1,0 +1,155 @@
+1 - Follows with statement and wildcard
+stmt s;
+Select s such that Follows (s, _)
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,25,26,28,29,30,32,33,34,37,39,40,41,42,45,47,48,49,50,51,53,54,55,57,58,59,60,62,63,64,65,66,67,69,72,73,76,77,79,81,82,84,86,87,89,90,91,92,93,95,96,98,99,100,101,102,103,104,105
+5000
+2 - Follows with statement number and statement number, negative case (different nesting levels)
+stmt s;
+Select s such that Follows (38, 39)
+
+5000
+3 - Parent* with statement and statement number
+stmt s;
+Select s such that Parent*(s, _)
+22,31,35,36,38,43,56,61,68,74,75,80,85,94
+5000
+4 - Assignment pattern with partial match
+assign a;
+Select a pattern a(_, _"alph*b3t"_)
+24
+5000
+5 - Assignment pattern with partial match, negative case
+assign a;
+Select a pattern a(_, _"in + 1"_)
+
+5000
+6 - Assignment pattern with partial match, note: tabs included in pattern
+assign a;
+Select a pattern a(_, _" 	c /	 d * e"_)
+12
+5000
+7 - Assignment pattern with exact match and LHS variable defined
+assign a;
+Select a pattern a("boyFie", _)
+55,59,64,69
+5000
+8 - Parent with wildcard and assignment, withRef constant value and statement number
+assign a;
+Select a with c.value = a.stmt# such that Parent(_, a)
+
+5000
+9 - Parent and Follows, wildcard and assignment
+assign a;
+Select a such that Parent(_, a) and Follows(a, _)
+23,32,33,34,37,40,42,45,47,58,59,60,62,63,64,66,67,69,76,77,81,82,86,87,90,92,93,95,96,98,99,100,101,103,105
+5000
+10 - Follows, Uses and Modifies
+assign a; while w; variable v; 
+Select v such that Follows (w, a) and Uses (w, v) such that Modifies (a, v)
+work
+5000
+11 - Affects with statement and statement number
+stmt s; 
+Select s.stmt# such that Affects (s, 12)
+5,6,7,8,9,10
+5000
+12 - Calls for indirect calling procedures
+procedure p, q, r;
+Select <p, r> such that Calls(p, q) and Calls*(q, r)
+office sId3Bb,office curseBigBoss
+5000
+13 - Parent for indirectly nested statements
+stmt a, b, c;
+Select <a, c> such that Parent(a, b) and Parent*(b, c) and Parent(c, _)
+31 36,31 38,31 43,35 38,35 43,36 43,56 68,74 80,74 85,74 94,75 85,75 94,80 94
+5000
+14 - Parent for indirectly nested while statements
+while w, x, y;
+Select <w, y> such that Parent*(w, x) and Parent*(x, y)
+31 43
+5000
+15 - Modifies, Next* and pattern 
+assign a; while w; variable v;   
+Select a such that Modifies(a, v) and Next*(a, w) pattern w(v, _)
+28,76,77,78,81,82,83,86,87,88,95,96,97
+5000
+16 - Next for read statements
+read r;
+Select r such that Next(_,r) and Next(r,_)
+18,29,49,84,104
+5000
+17 - Modifies for all variables modified by procedure name
+variable v; assign a;
+Select v such that Modifies("office",v) and Modifies(a,v)
+SLAVE,a,angry,boss,b,boyFie,c,climb,complete,curse,cry,i,d,e,ear,eeee,f,g,gf,h,hangup,hi,how,input,j,k,listen,mainBb,missed,msg,my,myOTpay,ok,password,police,pretend,sId3Bb,scold,security,she,this,time,try,type,u,we,why,work,yap,
+5000
+18 - Uses and Modifies for the same statement
+variable v; assign a;
+Select a such that Uses(a,v) and Modifies(a,v)
+100,15,34,7,76,81,86,95
+5000
+19 - Parent and Modifies 
+if ifs; while w; stmt s;
+Select w such that Parent(w,ifs) and Modifies(s, v) and Parent(ifs, s)
+
+5000
+20 - With attrRef and attrRef name
+variable v; read r;
+Select <v, r> with v.varName = r.varName
+Scr1pt 49,angry 18,boss 72,boyFie 53,fireBoss 84,helloIbUSY 29,iQuit 104
+5000
+21 - With attrRef and attrRef name for different statements
+variable v; read r; print p;
+Select <v, r> with v.varName = r.varName and v.varName = p.varName
+
+5000
+22 - If Pattern synonym
+if ifs;
+Select ifs pattern ifs("i",_,_)
+35,94
+5000
+23 - While Pattern synonym
+while w;
+Select w pattern w("curse",_)
+74
+5000
+24 - Tuples and Affects for self Affecting statements
+assign a1, a2;
+Select <a1,a2> such that Affects(a1, a2) and Affects(a2, a2)
+100 100, 34 34
+5000
+25 - Tuples and Affects* for self Affect* statements
+assign a1, a2;
+Select <a1,a2> such that Affects*(a1, a2) and Affects*(a2, a2)
+34 34,77 77,77 78,77 82,77 83,77 87,77 88,77 96,77 97,78 77,78 78,78 82,78 83,78 87,78 88,78 96,78 97,82 77,82 78,82 82,82 83,82 87,82 88,82 96,82 97,83 77,83 78,83 82,83 83,83 87,83 88,83 96,83 97,87 77,87 78,87 82,87 83,87 87,87 88,87 96,87 97,88 77,88 78,88 82,88 83,88 87,88 88,88 96,88 97,96 77,96 78,96 82,96 83,96 87,96 88,96 96,96 97,97 77,97 78,97 82,97 83,97 87,97 88,97 96,97 97,100 100
+5000
+26 - Next* with integer and statement
+stmt s;
+Select s such that Next*(44,s)
+31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52
+5000
+27 - Next* with single statement
+stmt s;
+Select s such that Next*(s,s)
+100,101,102,103,104,105,106,22,23,24,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99
+5000
+28 - Next with single statement
+stmt s;
+Select s such that Next(s,s)
+
+5000
+29 - Next* and Parent, If Pattern, With AttrRef AttrRef
+call c; stmt s; read r; if ifs;
+Select c.procName such that Next*(r, ifs) and Parent(ifs, c) pattern ifs(_,_,_)
+curseBigBoss,sId3Bb
+5000
+30 - Next for looping Assignment and While
+assign a; while w;
+Select <a,w> such that Next(a,w) and Next(w,a)
+44 43
+5000
+31 - Pattern with exact assignment pattern, note: pattern had multiple nested brackets
+assign a;
+Select a pattern a(_, "h")
+11
+5000

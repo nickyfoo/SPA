@@ -53,9 +53,9 @@ class DesignExtractor {
   void CallsProcessCallNode(Node *node, std::vector<Node *> &ancestors);
 
   // Recursively gets the last stmts of a statement.
-  std::set<std::pair<int,int>> GetLastStmts(StatementNode *node, bool forCFG);
+  std::set<std::pair<int, int>> GetLastStmts(StatementNode *node, bool forCFG);
   // Processes stmt list and stores stmt nodes into the CFG.
-  void CFGProcessStmtLst(std::vector<StatementNode*>& stmt_lst);
+  void CFGProcessStmtLst(std::vector<StatementNode *> &stmt_lst);
   // Process and store the AST procedure node into the CFG.
   void CFGProcessProcedureNode(Node *node);
   // Process and store the AST if node into the CFG.

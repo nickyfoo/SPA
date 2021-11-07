@@ -13,10 +13,12 @@ EntityDeclarationParser *EntityDeclarationParser::get_instance() {
 
 void EntityDeclarationParser::set_entities(std::vector<std::string> *entities) {
   entity_declaration_strings_ = entities;
+  syntactically_valid_ = true;
+  semantically_valid_ = true;
 }
 
 std::tuple<std::unordered_map<std::string, EntityDeclaration *> *,
-bool, bool> EntityDeclarationParser::get_entities_map() {
+           bool, bool> EntityDeclarationParser::get_entities_map() {
   auto *entities_map =
       new std::unordered_map<std::string, EntityDeclaration *>;
   for (std::string entity_str : *entity_declaration_strings_) {
@@ -38,7 +40,7 @@ bool, bool> EntityDeclarationParser::get_entities_map() {
     auto *synonyms = new std::vector<std::string>();
     EntityType entity_type = CheckEntityType(entity);
     if (entity_type == EntityType::None ||
-    !IsValidSynonym(tokens, synonyms)) {
+        !IsValidSynonym(tokens, synonyms)) {
       // Invalid synonym or entity type means its syntactically invalid;
       syntactically_valid_ = false;
       break;
@@ -49,6 +51,7 @@ bool, bool> EntityDeclarationParser::get_entities_map() {
       break;
     }
   }
+
   return std::make_tuple(entities_map, syntactically_valid_, semantically_valid_);
 }
 

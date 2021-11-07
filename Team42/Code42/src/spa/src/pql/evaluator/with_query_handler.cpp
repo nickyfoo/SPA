@@ -1,25 +1,25 @@
-#include "with_query_manager.h"
+#include "with_query_handler.h"
 
-WithQueryManager::WithQueryManager() {
+WithQueryHandler::WithQueryHandler() {
 }
 
-WithQueryManager::~WithQueryManager() = default;
+WithQueryHandler::~WithQueryHandler() = default;
 
-ResultTable *WithQueryManager::EvaluateWith(std::shared_ptr<WithClause> with,
+ResultTable *WithQueryHandler::EvaluateWith(std::shared_ptr<WithClause> with,
                                             std::unordered_map<std::string,
-                                            std::vector<Entity *>> synonym_to_entities_vec) {
+                                                               std::vector<Entity *>> synonym_to_entities_vec) {
   ResultTable *ret = new ResultTable();
   AttrValueType return_type = with->get_left_attr_value_type();
   std::vector<std::string> vec;
   if (with->get_left_type() == EntityType::None
-  && with->get_right_type() == EntityType::None) {  // 12 = 12
+      && with->get_right_type() == EntityType::None) {  // 12 = 12
     if (with->get_left_ref() != with->get_right_ref()) {
       return nullptr;
     } else {
       return ret;
     }
   } else if (with->get_left_type() == EntityType::None
-  && with->get_right_type() != EntityType::None) {  // 12 = s.stmt#
+      && with->get_right_type() != EntityType::None) {  // 12 = s.stmt#
     if (return_type == AttrValueType::Integer) {
       vec = GetIntegers(with->get_right_ref(), with->get_right_type(),
                         with->get_left_ref(), synonym_to_entities_vec);
@@ -32,7 +32,7 @@ ResultTable *WithQueryManager::EvaluateWith(std::shared_ptr<WithClause> with,
       throw std::runtime_error("Unknown AttrValueType!");
     }
   } else if (with->get_left_type() != EntityType::None
-  && with->get_right_type() == EntityType::None) {  // s.stmt# = 12
+      && with->get_right_type() == EntityType::None) {  // s.stmt# = 12
     if (return_type == AttrValueType::Integer) {
       vec = GetIntegers(with->get_left_ref(), with->get_left_type(),
                         with->get_right_ref(), synonym_to_entities_vec);
@@ -45,7 +45,7 @@ ResultTable *WithQueryManager::EvaluateWith(std::shared_ptr<WithClause> with,
       throw std::runtime_error("Unknown AttrValueType!");
     }
   } else if (with->get_left_type() != EntityType::None &&
-  with->get_right_type() != EntityType::None) {  // s.stmt# = a.stmt#
+      with->get_right_type() != EntityType::None) {  // s.stmt# = a.stmt#
     std::vector<std::string> left_vec, right_vec;
     std::tie(left_vec, right_vec) = GetSynonymPairs(with, synonym_to_entities_vec);
     if (with->get_left_ref() == with->get_right_ref()) {
@@ -62,12 +62,12 @@ ResultTable *WithQueryManager::EvaluateWith(std::shared_ptr<WithClause> with,
 }
 
 // checks for matching name, but adds the default type to table
-std::vector<std::string> WithQueryManager::GetNames(std::string synonym,
+std::vector<std::string> WithQueryHandler::GetNames(std::string synonym,
                                                     EntityType type,
                                                     std::string argument,
                                                     std::unordered_map<std::string,
                                                                        std::vector<Entity *>>
-                                                                       synonym_to_entities_vec) {
+                                                    synonym_to_entities_vec) {
   std::vector<std::string> output;
   for (Entity *entity : synonym_to_entities_vec.at(synonym)) {
     switch (type) {
@@ -117,12 +117,12 @@ std::vector<std::string> WithQueryManager::GetNames(std::string synonym,
   return output;
 }
 
-std::vector<std::string> WithQueryManager::GetIntegers(std::string synonym,
+std::vector<std::string> WithQueryHandler::GetIntegers(std::string synonym,
                                                        EntityType type,
                                                        std::string argument,
                                                        std::unordered_map<
-                                                           std::string,std::vector<Entity *>>
-                                                           synonym_to_entities_vec) {
+                                                           std::string, std::vector<Entity *>>
+                                                       synonym_to_entities_vec) {
   std::vector<std::string> output;
   for (Entity *entity : synonym_to_entities_vec.at(synonym)) {
     switch (type) {
@@ -154,7 +154,7 @@ std::vector<std::string> WithQueryManager::GetIntegers(std::string synonym,
   return output;
 }
 
-std::tuple<std::vector<std::string>, std::vector<std::string>> WithQueryManager::GetSynonymPairs(
+std::tuple<std::vector<std::string>, std::vector<std::string>> WithQueryHandler::GetSynonymPairs(
     std::shared_ptr<WithClause> with,
     std::unordered_map<std::string, std::vector<Entity *>> synonym_to_entities_vec) {
   std::vector<std::string> left_synonym;

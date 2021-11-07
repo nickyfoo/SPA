@@ -48,7 +48,7 @@ std::string ExpressionNode::ToString() {
   std::stringstream res;
   res << "ExpressionNode: {\n"
       << "Op: " + op + "\n"
-      << "Left:\n" 
+      << "Left:\n"
       << left + "\n"
       << "Right:\n"
       << right + "\n"

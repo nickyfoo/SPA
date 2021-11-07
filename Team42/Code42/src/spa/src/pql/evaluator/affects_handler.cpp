@@ -31,7 +31,7 @@ ResultTable *AffectsHandler::EvaluateAffectsTBip() { return Evaluate(&PKB::get_a
 
 // if is nullpointer, means False
 // if is empty, means that True with no synonyms
-ResultTable* AffectsHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func)(int, int)) {
+ResultTable *AffectsHandler::Evaluate(std::set<std::pair<int, int>> *(PKB::*func)(int, int)) {
   ResultTable *ret = new ResultTable();
 
   relationship_->get_left_ref()->get_type();

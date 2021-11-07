@@ -4,9 +4,9 @@
 #include "statement.h"
 #include "procedure.h"
 #include "variable.h"
-#include "pattern_query_manager.h"
-#include "relationship_query_manager.h"
-#include "with_query_manager.h"
+#include "pattern_query_handler.h"
+#include "relationship_query_handler.h"
+#include "with_query_handler.h"
 #include "pql_query.h"
 #include "pkb.h"
 
@@ -33,21 +33,21 @@ QueryEvaluator::QueryEvaluator(PQLQuery *pql_query, PKB *pkb) {
 std::vector<std::string> *QueryEvaluator::Evaluate() {
   if (!is_syntactically_valid_ || !is_semantically_valid_) {  // if not valid query
     if (entities_to_return_ != nullptr &&
-    entities_to_return_->size() == 1 &&
-    entities_to_return_->at(0)->get_return_type() == ReturnType::Boolean) {
+        entities_to_return_->size() == 1 &&
+        entities_to_return_->at(0)->get_return_type() == ReturnType::Boolean) {
       if (is_syntactically_valid_) {
         return new std::vector<std::string>{"FALSE"};
       }
     }
     return new std::vector<std::string>{};
   }
-  RelationshipQueryManager *relationship_query_manager;
-  PatternQueryManager *pattern_query_manager;
-  WithQueryManager *with_query_manager;
+  RelationshipQueryHandler *relationship_query_manager;
+  PatternQueryHandler *pattern_query_manager;
+  WithQueryHandler *with_query_manager;
   ResultTable *result_table = new ResultTable();
-  relationship_query_manager = new RelationshipQueryManager(pkb_);
-  pattern_query_manager = new PatternQueryManager(pkb_);
-  with_query_manager = new WithQueryManager();
+  relationship_query_manager = new RelationshipQueryHandler(pkb_);
+  pattern_query_manager = new PatternQueryHandler(pkb_);
+  with_query_manager = new WithQueryHandler();
 
   // guaranteed to have at least 3 clause groups,
   // where first group is without synonyms,
@@ -76,7 +76,8 @@ std::vector<std::string> *QueryEvaluator::Evaluate() {
           table = with_query_manager->EvaluateWith(std::dynamic_pointer_cast<WithClause>(
               clause_vertex.get_clause()), synonym_to_entities_vec);
           break;
-        default:throw std::runtime_error("Unknown ClauseType found");
+        default:
+          throw std::runtime_error("Unknown ClauseType found");
       }
       // if a nullptr is received, means that clause evaluates to false or empty results
       if (table == nullptr) {
@@ -221,14 +222,14 @@ std::vector<std::string>
   auto *output = new std::vector<std::string>();
   if (!is_valid_query) {
     if (entities_to_return_->size() == 1
-    && entities_to_return_->at(0)->get_return_type() == ReturnType::Boolean) {
+        && entities_to_return_->at(0)->get_return_type() == ReturnType::Boolean) {
       output->push_back("FALSE");
     }
     return output;
   }
 
   if (entities_to_return_->size() == 1
-  && entities_to_return_->at(0)->get_return_type() == ReturnType::Boolean) {
+      && entities_to_return_->at(0)->get_return_type() == ReturnType::Boolean) {
     output->push_back("TRUE");
     return output;
   }
@@ -394,7 +395,6 @@ void QueryEvaluator::MakeTableForUnusedEntity(ResultTable *result_table,
   result_table->AddSingleColumn(elem, to_add);
 }
 
-
 void QueryEvaluator::MakeTableForUsedEntity(ResultTable *result_table,
                                             ResultClause *result_clause,
                                             ResultTable *other_result_table) {
@@ -403,7 +403,7 @@ void QueryEvaluator::MakeTableForUsedEntity(ResultTable *result_table,
 
   // removing duplicates in the column vec, since we are doing natural join later
   sort(synonym_vec.begin(), synonym_vec.end());
-  synonym_vec.erase( unique( synonym_vec.begin(), synonym_vec.end() ), synonym_vec.end() );
+  synonym_vec.erase(unique(synonym_vec.begin(), synonym_vec.end()), synonym_vec.end());
 
   std::string elem = result_clause->get_elem();
   EntityType synonym_type = result_clause->get_synonym_type();
@@ -467,7 +467,7 @@ void QueryEvaluator::MakeTableForUsedEntity(ResultTable *result_table,
 }
 
 void QueryEvaluator::set_used_synonyms() {
-  for (ResultClause* result_clause : *entities_to_return_) {
+  for (ResultClause *result_clause : *entities_to_return_) {
     used_synonyms_.insert(result_clause->get_synonym());
   }
 }

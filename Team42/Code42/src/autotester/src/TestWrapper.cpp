@@ -7,7 +7,7 @@
 #include "sstream"
 #include "query_preprocessor.h"
 #include "query_evaluator.h"
-#include "query_optimizer.h"
+#include "optimizer/query_optimizer.h"
 
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;

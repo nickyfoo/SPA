@@ -3,9 +3,9 @@
 WithClause::WithClause() = default;
 
 WithClause::WithClause(std::string left_ref, EntityType left_type,
-                            AttrValueType left_attr_value_type,
-                            std::string right_ref, EntityType right_type,
-                            AttrValueType right_attr_value_type) {
+                       AttrValueType left_attr_value_type,
+                       std::string right_ref, EntityType right_type,
+                       AttrValueType right_attr_value_type) {
   this->left_ref_ = left_ref;
   this->left_type_ = left_type;
   this->left_attr_value_type_ = left_attr_value_type;
@@ -41,9 +41,9 @@ AttrValueType WithClause::get_right_attr_value_type() {
 }
 
 void WithClause::set_values(std::string left_ref, EntityType left_type,
-                       AttrValueType left_attr_value_type,
-                       std::string right_ref, EntityType right_type,
-                       AttrValueType right_attr_value_type) {
+                            AttrValueType left_attr_value_type,
+                            std::string right_ref, EntityType right_type,
+                            AttrValueType right_attr_value_type) {
   this->left_ref_ = left_ref;
   this->left_type_ = left_type;
   this->left_attr_value_type_ = left_attr_value_type;

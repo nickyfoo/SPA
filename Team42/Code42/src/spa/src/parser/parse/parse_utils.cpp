@@ -119,10 +119,10 @@ bool IsExpressionToken(const Token *t) {
 // TODO: ADD SUPPORT FOR REL AND COND OPERATORS
 bool Precedes(TokenType op1, TokenType op2) {
   std::map<TokenType, int> operator_weights{
-      {TokenType::And, 1},    {TokenType::Or, 1},       {TokenType::Eq, 2},
-      {TokenType::Neq, 2},    {TokenType::Gt, 3},       {TokenType::Gte, 3},
-      {TokenType::Lt, 3},     {TokenType::Lte, 3},      {TokenType::Plus, 4},
-      {TokenType::Minus, 4},  {TokenType::Multiply, 5}, {TokenType::Divide, 5},
+      {TokenType::And, 1}, {TokenType::Or, 1}, {TokenType::Eq, 2},
+      {TokenType::Neq, 2}, {TokenType::Gt, 3}, {TokenType::Gte, 3},
+      {TokenType::Lt, 3}, {TokenType::Lte, 3}, {TokenType::Plus, 4},
+      {TokenType::Minus, 4}, {TokenType::Multiply, 5}, {TokenType::Divide, 5},
       {TokenType::Modulo, 5}, {TokenType::Not, 6}};
 
   // return true if t1 has greater or equal precedence than t2

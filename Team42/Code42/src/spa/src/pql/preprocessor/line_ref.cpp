@@ -34,10 +34,14 @@ int LineRef::get_line_num() const {
 // used for logging purposes
 std::string LineRef::get_value() {
   switch (this->type_) {
-    case LineRefType::Synonym:return this->synonym_;
-    case LineRefType::LineNum:return std::to_string(this->line_num_);
-    case LineRefType::WildCard:return "_";
-    default:return "No value!";
+    case LineRefType::Synonym:
+      return this->synonym_;
+    case LineRefType::LineNum:
+      return std::to_string(this->line_num_);
+    case LineRefType::WildCard:
+      return "_";
+    default:
+      return "No value!";
   }
 }
 

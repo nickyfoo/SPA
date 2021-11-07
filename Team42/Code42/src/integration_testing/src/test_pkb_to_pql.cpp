@@ -393,7 +393,7 @@ TEST_CASE("SingleClause_ModifiesClause_ReturnsExpected") {
 
   SECTION("ModifiesS with left syn and right arg") {
     std::string ss = "stmt s1;\n"
-                     "Select s1 such that Modifies(s1, 'cenX')";
+                     "Select s1 such that Modifies(s1, \"cenX\")";
     std::vector<std::string> *ret = EvaluateQuery(ss);
 
     std::vector<std::string> expected = {"2", "11", "14", "16", "19", "21"};
@@ -419,7 +419,7 @@ TEST_CASE("SingleClause_ModifiesClause_ReturnsExpected") {
 
   SECTION("ModifiesP with left arg and right syn") {
     std::string ss = "variable v;\n"
-                     "Select v such that Modifies('main', v)";
+                     "Select v such that Modifies(\"main\", v)";
     std::vector<std::string> *ret = EvaluateQuery(ss);
 
     std::vector<std::string> expected = {"x", "y", "count", "cenX", "cenY", "flag", "normSq"};
@@ -502,7 +502,7 @@ TEST_CASE("SingleClause_NextClause_ReturnsExpected") {
         "Select <p1, p2> such that Next(p1, p2)";
     std::vector<std::string> *ret = EvaluateQuery(ss);
 
-    std::vector<std::string> expected = {"1 2",   "2 3",   "4 5",   "6 7",   "7 8",   "8 9",
+    std::vector<std::string> expected = {"1 2", "2 3", "4 5", "6 7", "7 8", "8 9",
                                          "10 11", "11 12", "12 13", "13 14", "14 15", "15 16",
                                          "16 17", "17 18", "18 14", "14 19", "19 20", "19 21",
                                          "21 22", "20 23", "22 23"};
@@ -583,7 +583,7 @@ TEST_CASE("SingleClause_NextClause_ReturnsExpected") {
         "Select p such that Next(p, _)";
     std::vector<std::string> *ret = EvaluateQuery(ss);
 
-    std::vector<std::string> expected = {"1",  "2",  "4",  "6",  "7",  "8",  "10", "11", "12", "13",
+    std::vector<std::string> expected = {"1", "2", "4", "6", "7", "8", "10", "11", "12", "13",
                                          "14", "15", "16", "17", "18", "19", "20", "21", "22"};
     REQUIRE(ret->size() == expected.size());
     for (int i = 0; i < expected.size(); i++) {
@@ -597,7 +597,7 @@ TEST_CASE("SingleClause_NextClause_ReturnsExpected") {
         "Select p such that Next(_, p)";
     std::vector<std::string> *ret = EvaluateQuery(ss);
 
-    std::vector<std::string> expected = {"2",  "3",  "5",  "7",  "8",  "9",  "11", "12", "13", "14",
+    std::vector<std::string> expected = {"2", "3", "5", "7", "8", "9", "11", "12", "13", "14",
                                          "15", "16", "17", "18", "19", "20", "21", "22", "23"};
     REQUIRE(ret->size() == expected.size());
     for (int i = 0; i < expected.size(); i++) {
@@ -896,7 +896,7 @@ TEST_CASE("Pattern_AssignStmtAndPartialPattern_ReturnsEmpty") {
 
 TEST_CASE("Pattern_AssignVariableNameAndWildCard_ReturnsExpected") {
   std::string ss = "assign a;\n"
-                   "Select a pattern a('cenX', _)";
+                   "Select a pattern a(\"cenX\", _)";
   std::vector<std::string> *ret = EvaluateQuery(ss);
 
   std::vector<std::string> expected = {"11", "16", "21"};
@@ -909,7 +909,7 @@ TEST_CASE("Pattern_AssignVariableNameAndWildCard_ReturnsExpected") {
 
 TEST_CASE("Pattern_AssignVariableNameAndExactMatch_ReturnsExpected") {
   std::string ss = "assign a;\n"
-                   "Select a pattern a('cenX', '0')";
+                   "Select a pattern a(\"cenX\", \"0\")";
   std::vector<std::string> *ret = EvaluateQuery(ss);
 
   std::vector<std::string> expected = {"11"};
@@ -922,7 +922,7 @@ TEST_CASE("Pattern_AssignVariableNameAndExactMatch_ReturnsExpected") {
 
 TEST_CASE("Pattern_AssignVariableNameAndPartialMatch_ReturnsExpected") {
   std::string ss = "assign a;\n"
-                   "Select a pattern a('cenX', _'cenX'_)";
+                   "Select a pattern a(\"cenX\", _\"cenX\"_)";
   std::vector<std::string> *ret = EvaluateQuery(ss);
 
   std::vector<std::string> expected = {"16", "21"};
@@ -935,7 +935,7 @@ TEST_CASE("Pattern_AssignVariableNameAndPartialMatch_ReturnsExpected") {
 
 TEST_CASE("Pattern_AssignVariableNameAndPartialMatchBad_ReturnsExpected") {
   std::string ss = "assign a;\n"
-                   "Select a pattern a(_, _'cenX cenY'_)";
+                   "Select a pattern a(_, _\"cenX cenY\"_)";
   std::vector<std::string> *ret = EvaluateQuery(ss);
 
   std::vector<std::string> expected = {};

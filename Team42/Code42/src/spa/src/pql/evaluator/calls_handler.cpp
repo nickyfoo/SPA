@@ -64,7 +64,7 @@ ResultTable *CallsHandler::Evaluate(std::set<std::string> *(Procedure::*get_norm
       ret->AddDoubleColumns(left_synonym, proc_left_vec, right_synonym, proc_right_vec);
     }
   } else if (left_ent.get_type() == EntRefType::Synonym &&
-             right_ent.get_type() == EntRefType::Argument) {
+      right_ent.get_type() == EntRefType::Argument) {
     // 2. Calls(a, "y")
     auto left_synonym = left_ent.get_synonym();
     std::vector<std::string> proc_vec;
@@ -82,7 +82,7 @@ ResultTable *CallsHandler::Evaluate(std::set<std::string> *(Procedure::*get_norm
 
     ret->AddSingleColumn(left_synonym, proc_vec);
   } else if (left_ent.get_type() == EntRefType::Synonym &&
-             right_ent.get_type() == EntRefType::WildCard) {
+      right_ent.get_type() == EntRefType::WildCard) {
     // 3. Calls(a, _)
     auto left_synonym = left_ent.get_synonym();
     std::vector<std::string> proc_vec;
@@ -100,7 +100,7 @@ ResultTable *CallsHandler::Evaluate(std::set<std::string> *(Procedure::*get_norm
 
     ret->AddSingleColumn(left_synonym, proc_vec);
   } else if (left_ent.get_type() == EntRefType::Argument &&
-             right_ent.get_type() == EntRefType::Synonym) {
+      right_ent.get_type() == EntRefType::Synonym) {
     // 4. Calls("x", b)
     auto left_proc_name = left_ent.get_argument();
 
@@ -119,7 +119,7 @@ ResultTable *CallsHandler::Evaluate(std::set<std::string> *(Procedure::*get_norm
     auto right_synonym = right_ent.get_synonym();
     ret->AddSingleColumn(right_synonym, proc_vec);
   } else if (left_ent.get_type() == EntRefType::Argument &&
-             right_ent.get_type() == EntRefType::Argument) {
+      right_ent.get_type() == EntRefType::Argument) {
     // 5. Calls("x", "y")
     auto left_proc_name = left_ent.get_argument();
     auto right_proc_name = right_ent.get_argument();
@@ -135,7 +135,7 @@ ResultTable *CallsHandler::Evaluate(std::set<std::string> *(Procedure::*get_norm
       return nullptr;
     }
   } else if (left_ent.get_type() == EntRefType::Argument &&
-             right_ent.get_type() == EntRefType::WildCard) {
+      right_ent.get_type() == EntRefType::WildCard) {
     // 6. Calls("x", _)
     auto left_proc_name = left_ent.get_argument();
 
@@ -150,7 +150,7 @@ ResultTable *CallsHandler::Evaluate(std::set<std::string> *(Procedure::*get_norm
       return nullptr;
     }
   } else if (left_ent.get_type() == EntRefType::WildCard &&
-             right_ent.get_type() == EntRefType::Synonym) {
+      right_ent.get_type() == EntRefType::Synonym) {
     // 7. Calls(_, b)
     auto right_synonym = right_ent.get_synonym();
 
@@ -169,7 +169,7 @@ ResultTable *CallsHandler::Evaluate(std::set<std::string> *(Procedure::*get_norm
 
     ret->AddSingleColumn(right_synonym, proc_vec);
   } else if (left_ent.get_type() == EntRefType::WildCard &&
-             right_ent.get_type() == EntRefType::Argument) {
+      right_ent.get_type() == EntRefType::Argument) {
     // 8. Calls(_, "y")
     auto right_proc_name = right_ent.get_argument();
     auto *proc_right = pkb_->get_procedure(right_proc_name);
@@ -183,7 +183,7 @@ ResultTable *CallsHandler::Evaluate(std::set<std::string> *(Procedure::*get_norm
       return nullptr;
     }
   } else if (left_ent.get_type() == EntRefType::WildCard &&
-             right_ent.get_type() == EntRefType::WildCard) {
+      right_ent.get_type() == EntRefType::WildCard) {
     // 9. Calls(_, _)
     auto procs = pkb_->get_all_procedures();
     for (auto p : procs) {

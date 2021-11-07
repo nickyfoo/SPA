@@ -130,7 +130,7 @@ const Token *Lexer::Name() {
   int startCol = cur_col_;
 
   while (!this->PointerAtEnd() &&
-         (std::isalpha(this->GetCurChar()) || std::isdigit(this->GetCurChar()))) {
+      (std::isalpha(this->GetCurChar()) || std::isdigit(this->GetCurChar()))) {
     value += this->GetCurChar();
     this->AdvancePointer();
   }

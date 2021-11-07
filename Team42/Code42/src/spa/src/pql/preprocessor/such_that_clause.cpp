@@ -117,7 +117,8 @@ bool SuchThatClause::set_ref(SuchThatRef *left, SuchThatRef *right) {
         return true;
       }
       return false;
-    default:break;
+    default:
+      break;
   }
   return false;
 }
@@ -132,27 +133,44 @@ RelRef SuchThatClause::get_type() {
 
 std::string SuchThatClause::get_type_str() {
   switch (this->type_) {
-    case RelRef::Follows:return "Follows";
-    case RelRef::FollowsT:return "Follows*";
-    case RelRef::Parent:return "Parent";
-    case RelRef::ParentT:return "Parent*";
+    case RelRef::Follows:
+      return "Follows";
+    case RelRef::FollowsT:
+      return "Follows*";
+    case RelRef::Parent:
+      return "Parent";
+    case RelRef::ParentT:
+      return "Parent*";
     case RelRef::Uses:
     case RelRef::UsesP:
-    case RelRef::UsesS:return "Uses";
+    case RelRef::UsesS:
+      return "Uses";
     case RelRef::Modifies:
     case RelRef::ModifiesP:
-    case RelRef::ModifiesS:return "Modifies";
-    case RelRef::Next:return "Next";
-    case RelRef::NextT:return "Next*";
-    case RelRef::Affects:return "Affects";
-    case RelRef::AffectsT:return "Affects*";
-    case RelRef::Calls:return "Calls";
-    case RelRef::CallsT:return "Calls*";
-    case RelRef::NextBip:return "NextBip";
-    case RelRef::NextTBip:return "NextBip*";
-    case RelRef::AffectsBip:return "AffectsBip";
-    case RelRef::AffectsTBip:return "AffectsBip*";
-    default:return "Unknown Type";
+    case RelRef::ModifiesS:
+      return "Modifies";
+    case RelRef::Next:
+      return "Next";
+    case RelRef::NextT:
+      return "Next*";
+    case RelRef::Affects:
+      return "Affects";
+    case RelRef::AffectsT:
+      return "Affects*";
+    case RelRef::Calls:
+      return "Calls";
+    case RelRef::CallsT:
+      return "Calls*";
+    case RelRef::NextBip:
+      return "NextBip";
+    case RelRef::NextTBip:
+      return "NextBip*";
+    case RelRef::AffectsBip:
+      return "AffectsBip";
+    case RelRef::AffectsTBip:
+      return "AffectsBip*";
+    default:
+      return "Unknown Type";
   }
 }
 

@@ -1,0 +1,151 @@
+procedure hello {
+    1 print hundredlines;
+    2 read letsgo;
+    3 if (!(i == j) || (k - l > 50)) then {
+    4      while (i > 50) {
+    5          i = i - 1;
+    6          j = k + l;
+    7          m = j * j - 1;
+    8          call bye;
+        }
+    9      print imdone;
+        } else {
+    10    if (corona == gone) then {
+    11        read canitravel;
+    12        while (budget > 3000) {
+    13            money = money * money;
+    14            budget = budget + money;
+    15            print canitravel;
+              }
+    16        icantravel = 1;
+          } else {
+    17        call sadboy;
+    18        howtomakehundredlines = 0;
+    19        call iwanttotravel;
+          }
+      }
+    20  something = 6 % something;
+    21  hello = something - 5;
+    22  complexpattern = ((5 * hello) - (6 % something) - (3 + icantravel)) * 7;
+    23  imdone = 1;
+}
+
+procedure bye {
+    24  if (calledhere == true) then {
+    25      i = 51;
+    26      print calledhere;
+    27      if (nestedloop == 5) then {
+    28          if (nestanotherloop == onemore) then {
+    29              if (lastloop == nomore) then {
+    30                  while (trywhile == true) {
+    31                      print hopethisworks;
+    32                      read something;
+                      }
+                  } else {
+    33                  while (preparingtoleave == 5) {
+    34                      print leave;
+                      }
+                  }
+              } else {
+    35              read nestedwithin;
+              }
+          } else {
+    36          lastinner = 31415926535;
+          }
+      } else {
+    37      read manyassignments;
+    38      a = 1 + 2 + (7 * 8) - 5;
+    39      b = 4928123 * 680234;
+    40      c = 305 % 5 % 70;
+    41      d = hachoo;
+      }
+    42  print goodbyeworld;
+}
+
+procedure sadboy {
+    43  while (loopone == 1) {
+    44      while (looptwo == 2) {
+    45          while (loopthree == 3) {
+    46              while (loopfour == 4) {
+    47                  while (loopfive == 5) {
+    48                      sadboy = q * q;
+    49                      crying = sadboy + corona;
+                      }
+                  }
+              }
+    50          print putsomethinghere;
+          }
+    51      read imhungry;
+    52      imhungry = imhungry +   5;
+      }
+    53  if ((sadboy != sad) && (corona == gone)) then {
+    54      worldishappy = true;
+      } else {
+    55      print lifesux;
+      }
+}
+
+procedure iwanttotravel {
+    56  egypt = option1;
+    57  paris = option1;
+    58  taiwan = option2;
+    59  america = option2;
+    60  china = option3;
+    61  if ((budget < egypt) && (budget < paris)) then {
+    62      if ((budget < taiwan) && (budget < america)) then {
+    63          if (budget > china) then {
+    64              print option3;
+              } else {
+    65              read boohoostayinsg;
+              }
+          } else {
+    66          print option2;
+          }
+      } else {
+    67      print option1;
+      }
+    68  call sgairlines;
+}
+
+procedure sgairlines {
+    69  read howtohelpyou;
+    70  print iwanttofly;
+    71  if ((iwanttofly == true) && (corona == false) && (budget == rich)) then {
+    72      print flymyminion;
+      } else {
+    73      print boohoostayinsg;
+      }
+}
+
+procedure noonecallsme {
+    74  print tryedgecases;
+    75  if (pattern == suchthat) then {
+    76      Select = FALSE;
+    77      FALSE = TRUE * NOT;
+    78      with = varName + procName;
+      } else {
+    79      if = while;
+    80      then = if + while;
+    81      else = then / 2;
+      }
+    82  while (while == TRUE) {
+    83      print print;
+    84      read read;
+      }
+    85  print read;
+    86  read print;
+    87  read call;
+    88 stmt = assign;
+    89  assign = read;
+    90  read = print;
+    91  print = calls * procedure;
+    92  Follows = ParentT + FollowsT;
+    93  with = stmtRef + entRef;
+    94  progline = n * 5;
+    95  variable = constant * constant;
+    96  integer = 1 + 2 + 3 + 4 + 5;
+    97  pi = 31415926535;
+    98  stmt = 98;
+    99  onemoreline = almostthere;
+    100  line100 = yay;
+}

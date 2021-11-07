@@ -1,0 +1,161 @@
+procedure StressTestWhile {
+    while (a < 1) {
+        while (b < 2) {
+            while (c < 3) {
+                while (d < 4) {
+                    while (e < 5) {
+                        while (f < 6) {
+                            while (g < 7) {
+                                while (h < 8) {
+                                    while (i < 9) {
+                                        while (j < 10) {
+                                            while (k < 11) {
+                                                while (l < 12) {
+                                                    while (m < 13) {
+                                                        while (n < 14) {
+                                                            while (o < 15) {
+                                                                while (p < 16) {
+                                                                    while (q < 17) {
+                                                                        while (r < 18) {
+                                                                            while (s < 19) {
+                                                                                while (t < 20) {
+                                                                                    while (u < 21) {
+                                                                                        while (v < 22) {
+                                                                                            while (w < 23) {
+                                                                                                while (x < 24) {
+                                                                                                    while (y < 25) {
+                                                                                                        while (z < 26){
+                                                                                                            hellyeah = 27;
+                                                                                                            g = g + 28;
+                                                                                                            while (a < 29) {
+                                                                                                                while (b < 30) {
+                                                                                                                    while (c < 31) {
+                                                                                                                        while (d < 32) {
+                                                                                                                            while (e < 33) {
+                                                                                                                                while (f < 34) {
+                                                                                                                                    while (g < 35) {
+                                                                                                                                        while (h < 36) {
+                                                                                                                                            while (i < 37) {
+                                                                                                                                                while (j < 38) {
+                                                                                                                                                    while (k < 39) {
+                                                                                                                                                        while (l < 40) {
+                                                                                                                                                            while (m < 41) {
+                                                                                                                                                                while (n < 42) {
+                                                                                                                                                                    while (o < 43) {
+                                                                                                                                                                        while (p < 44) {
+                                                                                                                                                                            while (q < 45) {
+                                                                                                                                                                                while (r < 46) {
+                                                                                                                                                                                    while (s < 47) {
+                                                                                                                                                                                        while (t < 48) {
+                                                                                                                                                                                            while (u < 49) {
+                                                                                                                                                                                                while (v < 50) {
+                                                                                                                                                                                                    while (w < 51) {
+                                                                                                                                                                                                        while (x < 52) {
+                                                                                                                                                                                                            while (y < 53) {
+                                                                                                                                                                                                                while (z < 54){
+                                                                                                                                                                                                                    isitgonnacrash = 55;
+                                                                                                                                                                                                                }
+                                                                                                                                                                                                                z = 56;
+                                                                                                                                                                                                            }
+                                                                                                                                                                                                            y = 57;
+                                                                                                                                                                                                        }
+                                                                                                                                                                                                        x = 58;
+                                                                                                                                                                                                    }
+                                                                                                                                                                                                    w = 59;
+                                                                                                                                                                                                }
+                                                                                                                                                                                                v = 60;
+                                                                                                                                                                                            }
+                                                                                                                                                                                            u = 61;
+                                                                                                                                                                                        }
+                                                                                                                                                                                        t = 62;
+                                                                                                                                                                                    }
+                                                                                                                                                                                    r = 63;
+                                                                                                                                                                                }
+                                                                                                                                                                                s = 64;
+                                                                                                                                                                            }
+                                                                                                                                                                            q = 65;
+                                                                                                                                                                        }
+                                                                                                                                                                        p = 66;
+                                                                                                                                                                    }
+                                                                                                                                                                    o = 67;
+                                                                                                                                                                }
+                                                                                                                                                                n = 68;
+                                                                                                                                                            }
+                                                                                                                                                            m = 69;
+                                                                                                                                                        }
+                                                                                                                                                        l = 70;
+                                                                                                                                                    }
+                                                                                                                                                    k = 71;
+                                                                                                                                                }
+                                                                                                                                                j = 72;
+                                                                                                                                            }
+                                                                                                                                            i = 73;
+                                                                                                                                        }
+                                                                                                                                        h = 74;
+                                                                                                                                    }
+                                                                                                                                    g = 75;
+                                                                                                                                }
+                                                                                                                                f = 76;
+                                                                                                                            }
+                                                                                                                            e = 77;
+                                                                                                                        }
+                                                                                                                        d = 78;
+                                                                                                                    }
+                                                                                                                    c = 79;
+                                                                                                                }
+                                                                                                                b = 80;
+                                                                                                            }
+                                                                                                            a = 81;
+                                                                                                        }
+                                                                                                        eightytwo = z;
+                                                                                                    }
+                                                                                                    eightythree = y;
+                                                                                                }
+                                                                                                eightyfour = x;
+                                                                                            }
+                                                                                            eightyfive = w;
+                                                                                        }
+                                                                                        eightysix = v;
+                                                                                    }
+                                                                                    eightyseven = u;
+                                                                                }
+                                                                                eightyeight = t;
+                                                                            }
+                                                                            eightynine = r;
+                                                                        }
+                                                                        ninety = s;
+                                                                    }
+                                                                    ninetyone = q;
+                                                                }
+                                                                ninetytwo = p;
+                                                            }
+                                                            ninetythree = o;
+                                                        }
+                                                        ninetyfour = n;
+                                                    }
+                                                    ninetyfive = m;
+                                                }
+                                                ninetysix = l;
+                                            }
+                                            ninetyseven = k;
+                                        }
+                                        ninetyeight = j;
+                                    }
+                                    ninetynine = i;
+                                }
+                                hundred = h;
+                            }
+                            hundredone = g;
+                        }
+                        hundredtwo = f;
+                    }
+                    hundredthree = e;
+                }
+                hundredfour = d;
+            }
+            hundredfive = c;
+        }
+        hundredsix = b;
+    }
+    hundredseven = a;
+}

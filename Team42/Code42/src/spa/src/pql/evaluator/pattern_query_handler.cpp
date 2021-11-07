@@ -1,19 +1,18 @@
-#include "pattern_query_manager.h"
+#include "pattern_query_handler.h"
 #include "entity_declaration.h"
 #include "statement.h"
 #include <memory>
 #include <set>
 
-PatternQueryManager::PatternQueryManager(PKB *pkb) {
+PatternQueryHandler::PatternQueryHandler(PKB *pkb) {
   this->pkb_ = pkb;
 }
 
-PatternQueryManager::~PatternQueryManager() = default;
+PatternQueryHandler::~PatternQueryHandler() = default;
 
-
-ResultTable *PatternQueryManager::EvaluatePattern(std::shared_ptr<PatternClause> pattern,
+ResultTable *PatternQueryHandler::EvaluatePattern(std::shared_ptr<PatternClause> pattern,
                                                   const std::unordered_map<std::string,
-                                                  std::vector<Entity *>> &synonym_to_entities_vec) {
+                                                                           std::vector<Entity *>> &synonym_to_entities_vec) {
   if (pattern->get_type() == EntityType::Assign) {
     return EvaluateAssignPattern(pattern, synonym_to_entities_vec);
   } else if (pattern->get_type() == EntityType::If || pattern->get_type() == EntityType::While) {
@@ -23,9 +22,9 @@ ResultTable *PatternQueryManager::EvaluatePattern(std::shared_ptr<PatternClause>
   }
 }
 
-ResultTable *PatternQueryManager::EvaluateAssignPattern(
+ResultTable *PatternQueryHandler::EvaluateAssignPattern(
     std::shared_ptr<PatternClause> pattern, std::unordered_map<std::string,
-    std::vector<Entity *>> synonym_to_entities_vec) {
+                                                               std::vector<Entity *>> synonym_to_entities_vec) {
   auto *ret = new ResultTable();
   EntityDeclaration *synonym = pattern->get_synonym();
   EntRef *left_ent = pattern->get_variable();
@@ -80,9 +79,9 @@ ResultTable *PatternQueryManager::EvaluateAssignPattern(
   return ret;
 }
 
-ResultTable *PatternQueryManager::EvaluateIfAndWhilePattern(
+ResultTable *PatternQueryHandler::EvaluateIfAndWhilePattern(
     std::shared_ptr<PatternClause> pattern, std::unordered_map<std::string,
-    std::vector<Entity *>> synonym_to_entities_vec) {
+                                                               std::vector<Entity *>> synonym_to_entities_vec) {
   auto *ret = new ResultTable();
   EntityDeclaration *synonym = pattern->get_synonym();
   EntRef *variable = pattern->get_variable();
@@ -117,7 +116,7 @@ ResultTable *PatternQueryManager::EvaluateIfAndWhilePattern(
         stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
       }
     } else if (variable->get_type() == EntRefType::WildCard) {  // pattern if(_, _, _)
-      if (!stmt ->get_vars_from_expr_string().empty()) {
+      if (!stmt->get_vars_from_expr_string().empty()) {
         stmt_vec.push_back(std::to_string(stmt->get_stmt_no()));
       }
     }

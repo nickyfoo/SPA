@@ -12,7 +12,7 @@
 #include "tables/stmt_table.h"
 #include "tables/var_table.h"
 #include "tables/const_table.h"
-#include "pattern_manager.h"
+#include "pattern_handler.h"
 #include "pkb_exception.h"
 
 class PKB {
@@ -170,7 +170,7 @@ class PKB {
   std::string CallStackToString(std::vector<int> *call_stack);
 
   // Root AST node of the program.
-  PatternManager pattern_manager_;
+  PatternHandler pattern_handler_;
   // Table of procedures in the program.
   ProcTable proc_table_;
   // Table of statements in the program.

@@ -1,27 +1,24 @@
 import subprocess
 import sys
 
-# files = [
-#     # "affectsbip_1",
-#     # "affectsbip_2",
-#     # "affectsbip_3",
-#     # "affectsbip_4",
-#     # "affectsbip_5",
-#     # "nextbip_1",
-#     # "nextbip_2",
-#     # "nextbip_3",
-#     # "nextbip_4",
-#     # "nextbip_5",
-#     # "testing",
-#     # "testing2",
-#     # "BOOLEAN"
-#     # "SIMPLE_6_0clause",
-#     # "SIMPLE_6_1clause"
-#     # "callsStar_1"
-#     "SIMPLE_WITH"
-# ]
 files = [
-    "test4"
+    # "affectsbip_1",
+    # "affectsbip_2",
+    # "affectsbip_3",
+    # "affectsbip_4",
+    # "affectsbip_5",
+    # "nextbip_1",
+    # "nextbip_2",
+    # "nextbip_3",
+    # "nextbip_4",
+    # "nextbip_5",
+    # "testing",
+    # "testing2",
+    # "BOOLEAN"
+    # "SIMPLE_6_0clause",
+    # "SIMPLE_6_1clause"
+    # "callsStar_1"
+    "SIMPLE_WITH"
 ]
 
 for file in files:

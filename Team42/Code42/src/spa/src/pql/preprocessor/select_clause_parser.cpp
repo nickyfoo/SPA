@@ -74,6 +74,10 @@ SelectClauseParser::get_clauses() {
       semantically_valid = false;
     } else {
       result_clause = ValidateResultClauseWithAttr(select);
+      if (result_clause != nullptr &&
+      result_clause->get_return_type() == ReturnType::Default) {  // flag for unmatched attrRef
+        semantically_valid = false;
+      }
     }
     if (semantically_valid) {
       if (result_clause == nullptr || !result_clause->set_elem()) {
@@ -85,7 +89,6 @@ SelectClauseParser::get_clauses() {
   }
 
   for (const std::string &such_that_clause : such_that_clauses) {
-    printf("SUCHHH: %s\n",such_that_clause.c_str());
     std::vector<SuchThatClause *> *relationship = MakeSuchThatClause(such_that_clause);
     if (relationship == nullptr) {
       return syntactically_false_res;
@@ -144,7 +147,6 @@ std::vector<SuchThatClause *> *SelectClauseParser::MakeSuchThatClause(
     if (relationship_clause.size() != 3) {
       return nullptr;
     }
-    printf("relationship clause at 0: %s\n", relationship_clause.at(0).c_str());
     auto *relationship = new SuchThatClause(relationship_clause.at(0));
     if (relationship->get_type() == RelRef::None) {  // invalid relation
       return nullptr;
@@ -186,7 +188,8 @@ std::vector<PatternClause *> *SelectClauseParser::MakePatternClause(
     if (synonym.empty() || left_ref.empty() || right_ref.empty()) return nullptr;
     PatternClause *pattern;
     if (synonym_to_entity_->find(synonym) == synonym_to_entity_->end()) {
-      return new std::vector<PatternClause *>();;
+      if (IsValidIdentifier(synonym)) return new std::vector<PatternClause *>();
+      else return nullptr;
     } else if ((synonym_to_entity_->at(synonym)->get_type() == EntityType::Assign ||
         synonym_to_entity_->at(synonym)->get_type() == EntityType::If ||
         synonym_to_entity_->at(synonym)->get_type() == EntityType::While)) {
@@ -640,9 +643,11 @@ bool SelectClauseParser::IsValidIdentifier(const std::string &str) {
   }
 
   // Traverse the string for the rest of the characters
-  for (int i = 1; i < str.length() - 1; i++) {
+  for (int i = 1; i < str.length(); i++) {
+    printf("%c\n", str[i]);
     if (!((str[i] >= 'a' && str[i] <= 'z') || (str[i] >= 'A' && str[i] <= 'Z') ||
         (str[i] >= '0' && str[i] <= '9'))) {
+      printf("here??\n");
       return false;
     }
   }
@@ -906,7 +911,11 @@ std::vector<std::vector<std::string>> SelectClauseParser::SplitBrackets(
     } else if (c == '(' || c == '<') {
       if (open_bracket_found) return {};  // error, found extra
       open_bracket_found = true;
-      tokens.push_back(ss.str());
+      std::string to_push = ss.str();
+      if (to_push.length() > 0 && to_push[to_push.length() - 1] == ' ') {
+        to_push = to_push.substr(0, to_push.length() - 1);
+      }
+      tokens.push_back(to_push);
       ss.str("");
     } else if (c == ')' || c == '>') {
       if (close_bracket_found) return {};  // error, found extra
@@ -956,7 +965,7 @@ ResultClause *SelectClauseParser::ValidateResultClauseWithAttr(const std::string
     return nullptr;
   }
   EntityType synonym_type = synonym_to_entity_->find(synonym)->second->get_type();
-  ReturnType return_type;
+  ReturnType return_type = ReturnType::Default;
   switch (synonym_type) {
     case EntityType::Procedure:
       if (attribute == "procName") return_type = ReturnType::Name;
@@ -968,33 +977,22 @@ ResultClause *SelectClauseParser::ValidateResultClauseWithAttr(const std::string
       if (attribute == "value") return_type = ReturnType::Integer;
       break;
     case EntityType::Call:
-      if (attribute == "procName") {
-        return_type = ReturnType::Name;
-        break;
-      } else if (attribute == "stmt#") {
-        return_type = ReturnType::Integer;
-        break;
-      }
+      if (attribute == "procName") return_type = ReturnType::Name;
+      else if (attribute == "stmt#") return_type = ReturnType::Integer;
+      break;
     case EntityType::Print:
     case EntityType::Read:
-      if (attribute == "varName") {
-        return_type = ReturnType::Name;
-        break;
-      } else if (attribute == "stmt#") {
-        return_type = ReturnType::Integer;
-        break;
-      }
+      if (attribute == "varName") return_type = ReturnType::Name;
+      else if (attribute == "stmt#") return_type = ReturnType::Integer;
+      break;
     case EntityType::Stmt:
     case EntityType::While:
     case EntityType::If:
     case EntityType::Assign:
-      if (attribute == "stmt#") {
-        return_type = ReturnType::Integer;
-        break;
-      }
+      if (attribute == "stmt#") return_type = ReturnType::Integer;
+      break;
     default:
       return nullptr;
   }
-
   return new ResultClause(synonym, synonym_type, return_type);
 }
